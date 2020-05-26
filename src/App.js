@@ -1,24 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
+import SortingSketch from './components/sorting';
 import './App.css';
+import Navbar from './components/Navbar';
 
 function App() {
+  const [currentScreen, setScreen] = useState("home")
+  let currComponent = currentScreen === "sorting" ? <SortingSketch handler={setScreen} />  : currentScreen === "home" ? <p>HOMESCREEN</p> : undefined;
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navbar handler={setScreen} />
+      <div style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
+        {currComponent}
+      </div>
     </div>
   );
 }
