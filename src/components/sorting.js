@@ -39,18 +39,40 @@ class SortingSketch extends Component {
     }
     let minind = -1;
     for (let j = this.values.length-1; j >= this.i; j--) {
-      this.comparisons += 1;
+      this.comparisons++;
       if (minind === -1 || this.values[j] > this.values[minind]) {
         minind = j;
       }
     }
     this.moveCount++;
-    this.currLine = this.i; 
+    this.currLine = minind; 
     let temp = this.values[minind];
     this.values[minind] = this.values[this.i];
     this.values[this.i] = temp;
     this.i++;
 
+  }
+
+  insertionSort = () => {
+    if (this.i === this.values.length-1) {
+      this.finished();
+      return;
+    }
+    let next = this.values[this.i+1];
+    for (let j = 0; j < this.i+1; j++) {
+      this.comparisons++;
+      if (this.values[j] < next) {
+        this.currLine = j;
+        for(let k = this.i; k > j-1; k--) {
+          this.values[k+1] = this.values[k];
+          this.moveCount++;
+        }
+        this.values[j] = next;
+        this.moveCount++;
+        break;
+      }
+    }  
+    this.i++;
   }
 
 
@@ -61,13 +83,13 @@ class SortingSketch extends Component {
     }
     for (let j = 0; j < this.values.length-this.i-1; j++) {
       this.comparisons++;
+      this.currLine = j+1;
       if (this.values[j] < this.values[j+1]) {
         this.moveCount++;
         let temp = this.values[j];
         this.values[j] = this.values[j+1];
         this.values[j+1] = temp;
       }
-      this.currLine = this.values.length-this.i;
     }
     this.i++;
   }
@@ -81,19 +103,19 @@ class SortingSketch extends Component {
 
   update = () => {
     if (this.currentAlg === "bubbleSort") this.bubbleSort();
-    if (this.currentAlg === "selectionSort") this.selectionSort();
+    else if (this.currentAlg === "selectionSort") this.selectionSort();
+    else if (this.currentAlg === "insertionSort") this.insertionSort();
   }
 
   resetBoard = () => {
     this.p5.loop();
-    this.moveCount = 0;
-    this.comparisons = 0;
     for (let i = 0; i < this.width/4; i++){ 
       this.values[i] = Math.floor(Math.random() * this.height);
     }
     this.i = 0;
-   // this.p5.noLoop();
-
+    this.p5.noLoop();
+    this.moveCount = 0;
+    this.comparisons = 0;
   }
 
   setAlg = (nextAlg) => {
@@ -109,36 +131,44 @@ class SortingSketch extends Component {
   }
 
   navBar = () => {
-    const yoffset = this.height+30;
+    const yoffset = this.height+83;
     this.p5.stroke(200);
     let res = this.p5.createButton("Reset").parent(this.canvasParentRef);
     res.size(50,50);
-    res.position(50, yoffset, 200);
-    res.mousePressed(this.resetBoard);
+    res.position(0, yoffset, 200);
+    res.mousePressed(() => {this.resetBoard(); this.comparisons=0; this.moveCount=0;});
 
     let stop = this.p5.createButton("Stop").parent(this.canvasParentRef);
     stop.size(50,50);
-    stop.position(100, yoffset, 200);
-    stop.mousePressed(this.p5.noLoop);
+    stop.position(50, yoffset, 200);
+    stop.mousePressed(() => {this.p5.noLoop()});
 
     let start = this.p5.createButton("Start").parent(this.canvasParentRef);
     start.size(50,50);
-    start.position(150, yoffset, 200);
-    start.mousePressed(this.p5.loop);
+    start.position(100, yoffset, 200);
+    start.mousePressed(() => {this.p5.loop()});
 
     let bubble = this.p5.createButton("bubbleSort").parent(this.canvasParentRef);
     bubble.size(100,50);
-    bubble.position(200, yoffset, 200);
+    bubble.position(150, yoffset, 200);
     bubble.mousePressed(() => {
       this.currentAlg = "bubbleSort";
       this.resetBoard();
     });
 
-    let quick = this.p5.createButton("selectionSort").parent(this.canvasParentRef);
-    quick.size(100,50);
-    quick.position(300, yoffset, 200);
-    quick.mousePressed(() => {
+    let selection = this.p5.createButton("selectionSort").parent(this.canvasParentRef);
+    selection.size(100,50);
+    selection.position(250, yoffset, 200);
+    selection.mousePressed(() => {
       this.currentAlg = "selectionSort";
+      this.resetBoard();
+    });
+
+    let insertion = this.p5.createButton("insertionSort").parent(this.canvasParentRef);
+    insertion.size(100,50);
+    insertion.position(350, yoffset, 200);
+    insertion.mousePressed(() => {
+      this.currentAlg = "insertionSort";
       this.resetBoard();
     });
 
@@ -146,16 +176,20 @@ class SortingSketch extends Component {
 
   draw = p5 => {
     p5.background(0);
-    this.update();
     this.drawLines();
-    p5.fill(200);
     p5.stroke(0);
+    let squarecolor = p5.color(0);
+    squarecolor.setAlpha(200);
+    p5.fill(squarecolor);
+    p5.rect(this.width-130, 0, 150, 120);
+    p5.fill(200);
     p5.textSize(16);
     p5.text(this.currentAlg, this.width-120, 70, 90, 50);
     p5.textSize(14);
     p5.text("Comparisons: " + this.comparisons, this.width-120, 50, 150, 50);
     p5.text("Moves: " + this.moveCount, this.width-120, 30, 90, 50);
     p5.text("Items: " + this.values.length, this.width-120, 10, 90, 50);
+    this.update();
   }
 
   drawLines = () => { 

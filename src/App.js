@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
 import SortingSketch from './components/sorting';
 import './App.css';
 import Navbar from './components/Navbar';
