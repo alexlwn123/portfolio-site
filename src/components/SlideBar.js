@@ -6,19 +6,22 @@ import CalendlyIcon from "@mui/icons-material/CalendarToday";
 import EmailIcon from "@mui/icons-material/Email";
 import React from "react";
 
-export default function Slidebar(props) {
+export default function Slidebar() {
+  const copy = () => {
+    navigator?.clipboard?.writeText("Alex Lewin");
+  };
   return (
     <div className="collapse sm:visible bg-black h-screen min-w-[25%] fixed">
       <div className="nav flex text-white text-lg mt-10 flex-col align-middle justify-center text-center w-full gap-5 overflow-hidden">
         <div>
           <img
-            src={require("../assets/images/MyImage.webp")}
+            src={require("../assets/images/Portraitpic.png")}
             alt="Alex Lewin"
-            className="rounded-full border-solid cursor-pointer border-[8px] border-stone-600 min-h-fit mx-auto  max-w-[190px]"
+            className="border-solid cursor-pointer border-[2px] border-stone-600 min-h-fit mx-auto  max-w-[250px]"
           />
-          <h3 className="text-white name py-4 font-medium ">
+          <h2 onClick={copy} className="text-white pt-4 text-3xl hover:scale-105 cursor-pointer">
             Alex Lewin
-          </h3>
+          </h2>
         </div>
         <p
           className={`cursor-pointer hover:text-blue-600 hover:-translate-y-0.5 hover:text-xl transition hover:transition`}
