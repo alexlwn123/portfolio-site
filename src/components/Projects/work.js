@@ -12,7 +12,8 @@ export default function work({ title, desc, link, code, img, video, tweet, under
     //   }}
     //   className="bg-[#0b212d]  rounded-2xl max-w-[362px]  h-full bg-gradient-to-r from-green-700 to-pink-800 p-[1px]"
     // >
-      <div className="bg-[#0b212d] w-full h-full rounded-2xl p-4 flex flex-col justify-between border-yellow-500 border-2 ">
+      // <div className="bg-[#0b212d] w-full h-full rounded-2xl p-4 flex flex-col justify-between border-yellow-500 border-2 ">
+      <div className="bg-[#0b212d] w-full h-full rounded-2xl p-4 flex flex-col justify-between border-yellow-500 border-[1px] ">
         <div>
           <div className="relative w-full rounded-2xl">
             <img
@@ -24,7 +25,7 @@ export default function work({ title, desc, link, code, img, video, tweet, under
           <div className="mt-5">
             <h3 className="text-white font-bold text-[24px]">{title}</h3>
             <p className="mt-2 text-secondary text-[14px]">{desc}</p>
-            {under && <p className="mt-2 text-secondary text-[14px]">{under}</p>}
+            {under && <p className="mt-2 text-secondary text-[14px] font-bold text-yellow-500">{under}</p>}
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-2 text-[14px]">

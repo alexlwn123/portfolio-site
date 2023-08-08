@@ -16,9 +16,9 @@ export default function Home() {
       </div>
       <div className="w-full m-auto pb-10">
         <ul className="text-center list-none list-inside text-sm lg:text-xl space-y-2">
-          <li className="hover:animate-pulse">I like to study 📚 & build 🔨 projects with <span className="text-yellow-500">₿itcoin</span>.</li>
-          <li className="hover:animate-pulse">I like to discover 🔎 & tinker️ with new tech 🤖.</li>
-          <li className="hover:animate-pulse">I like to travel 🌎 and compete 🥇 in hackathons.</li>
+          <li className="hover:animate-pulse">I study 📚 & build 🔨 projects with <span className="text-yellow-500">₿itcoin</span>.</li>
+          <li className="hover:animate-pulse">I discover 🔎 & tinker️ with new tech 🤖.</li>
+          <li className="hover:animate-pulse">I travel 🌎 and compete 🥇 in hackathons.</li>
         </ul>
       </div>
       <button

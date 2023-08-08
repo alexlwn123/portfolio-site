@@ -7,7 +7,7 @@ import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timel
 
 export default function Timeline() {
   return (
-    <div id="timeline" className="min-h-screen flex-col items-center text-center m-auto py-5 mt-20">
+    <div id="timeline" className="min-h-screen flex-col items-center text-center m-auto py-20 mt-20">
       <div className="text-5xl font-bold py-8">
         Timeline
       </div>
