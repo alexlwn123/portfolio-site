@@ -1,24 +1,31 @@
-import GraphemeSplitter from "grapheme-splitter";
 import "../../App.css";
 
 export default function Home() {
   return (
     <div className="min-h-screen grid grid-cols-1 gap-7 name content-center text-center px-2">
       <h1
-        className="head text-5xl font-semibold tracking-[3px] pb-2 "
+        className="head text-5xl font-semibold tracking-[3px] pb-2 pt-20 "
       >
-       ✋ Hiya, I'm Alex.
+       <span className="wave">✋</span> Hiya, I'm Alex.
       </h1>
       <div
-        className="text-4xl text-yellow-500 pb-16"
+        className="text-4xl text-yellow-500 pb-10"
       >
         {" "}
         <h1>A software engineer from Atlanta, GA.</h1>
       </div>
+      <div className="w-full m-auto pb-10">
+        {/* <p className="text-center pb-1">A little about me:</p> */}
+        <ul className="text-center list-none list-inside text-sm lg:text-xl hover:animate-pulse space-y-2">
+          <li>I like to study 📚 & build 🔨 projects with <spam className="text-yellow-500">₿itcoin</spam>.</li>
+          <li>I like to discover 🔎 & tinker️ with new tech 🤖.</li>
+          <li>I like to travel 🌎 and compete 🥇 in hackathons.</li>
+        </ul>
+      </div>
       <button
         className="py-2 mx-auto px-7 bg-transparent border-2 w-fit border-blue-500 rounded-sm  hover:-translate-y-1.5 duration-[350ms] hover:duration-[350ms] hover:bg-blue-800"
       >
-        <a href="#contact">Contact Me</a>
+        <a href="#contact">Reach Out</a>
       </button>
       <div
         className="m-auto cursor-pointer w-fit bottom-16 pt-10"

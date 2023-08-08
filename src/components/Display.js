@@ -6,7 +6,7 @@ import Contact from "./Contact";
 
 export default function Display() {
   return (
-    <div className="sm:pl-[25%] w-screen back text-white p-3 bg-fixed">
+    <div className="sm:pl-[25%] sm:w-4/5 px-7 m-auto back text-white p-3 bg-fixed divide-y-4 divide-slate-100">
       <Home />
       <Resume />
       <Projects />

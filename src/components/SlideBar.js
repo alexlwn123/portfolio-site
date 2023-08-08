@@ -2,7 +2,8 @@ import "../App.css";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import CalendlyLink from "@mui/icons-material/CalendarToday";
+import CalendlyIcon from "@mui/icons-material/CalendarToday";
+import EmailIcon from "@mui/icons-material/Email";
 import React from "react";
 
 export default function Slidebar(props) {
@@ -40,7 +41,7 @@ export default function Slidebar(props) {
           <a href="/#contact">Contact</a>
         </p>
       </div>
-      <div className="text-white flex flex-row gap-5 w-fit mx-auto pt-7" >
+      <div className="text-white flex flex-row gap-3 w-fit mx-auto pt-7" >
         <div
           onClick={() =>
             window.open("https://github.com/alexlwn123", "_blank")
@@ -71,7 +72,14 @@ export default function Slidebar(props) {
             window.open("https://calendly.com/alexlewin/30-minutes", "_blank")
           }
         >
-          <CalendlyLink className="cursor-pointer hover:scale-105" />
+          <CalendlyIcon className="cursor-pointer hover:scale-105" />
+        </div>
+        <div
+          onClick={() =>
+            window.open("mailto:alexlwn123@gmail.com", "_blank")
+          }
+        >
+          <EmailIcon className="cursor-pointer hover:scale-105" />
         </div>
       </div>
     </div>

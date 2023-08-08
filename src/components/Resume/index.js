@@ -7,14 +7,14 @@ import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timel
 
 export default function Resume() {
   return (
-    <div id="resume" className="min-h-screen flex-col items-center text-center m-auto">
+    <div id="resume" className="min-h-screen flex-col items-center text-center m-auto py-5">
       <div className="text-5xl font-bold py-8">
         Timeline
       </div>
       <VerticalTimeline 
         layout='2-columns'
         animate={true} 
-        lineColor='#0b212d'
+        lineColor='rgb(59, 130, 246)'
       >
         <VerticalTimelineElement
           contentStyle={{ background: '#0b212d', color: '#fff' }}
@@ -24,7 +24,7 @@ export default function Resume() {
           icon={<School />}
         >
           <h3 className="font-large">BlockSpaces</h3>
-          <h4 className="vertical-timeline-element-subtitle">Full Stack Engineer</h4>
+          <h4 className="vertical-timeline-element-subtitle text-yellow-500">Full Stack Engineer</h4>
           <p>Bitcoin Lightning</p>
         </VerticalTimelineElement>
         <VerticalTimelineElement
@@ -35,7 +35,7 @@ export default function Resume() {
           icon={<School />}
         >
           <h3 className="vertical-timeline-element-title">NCR Corporation</h3>
-          <h4 className="vertical-timeline-element-subtitle">Software Engineer</h4>
+          <h4 className="vertical-timeline-element-subtitle text-yellow-500">Software Engineer</h4>
           <p>Software Innovation Lab</p>
         </VerticalTimelineElement>
         <VerticalTimelineElement
@@ -46,7 +46,7 @@ export default function Resume() {
           icon={<School />}
         >
           <h3 className="vertical-timeline-element-title">Began Univeristy</h3>
-          <h4 className="vertical-timeline-element-subtitle">Auburn University</h4>
+          <h4 className="vertical-timeline-element-subtitle text-yellow-500">Auburn University</h4>
           <p>Undergraduate Software Engineering</p>
         </VerticalTimelineElement>
       </VerticalTimeline>
