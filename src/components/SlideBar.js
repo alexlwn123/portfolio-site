@@ -4,9 +4,29 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import CalendlyIcon from "@mui/icons-material/CalendarToday";
 import EmailIcon from "@mui/icons-material/Email";
-import React from "react";
+import React, { useEffect } from "react";
+import { useScrollPosition } from "../hooks/useScrollPosition";
 
 export default function Slidebar() {
+  const scrollPosition = useScrollPosition();
+  const [focusedComponent, setFocusedComponent] = React.useState(null);
+  const [scrollHeights, setScrollHeights] = React.useState([0, 0, 0, 0, 0]);
+  useEffect(() => {
+    const projects = document.querySelector("#projects").scrollHeight;
+    const timeline = document.querySelector("#timeline").scrollHeight;
+    const contact = document.querySelector("#contact").scrollHeight;
+    setScrollHeights([0, projects, timeline+projects, contact+timeline+projects]);
+  }, [focusedComponent]);
+
+  useEffect(() => {
+    const section = scrollPosition === 0 ? 0 
+      : scrollPosition <= scrollHeights[1] ? 1
+      : scrollPosition <= scrollHeights[2] ? 2
+      : 3;
+    if (focusedComponent === section) return;
+    setFocusedComponent(section);
+  }, [focusedComponent, scrollHeights, scrollPosition]);
+
   const copy = () => {
     navigator?.clipboard?.writeText("Alex Lewin");
   };
@@ -24,22 +44,30 @@ export default function Slidebar() {
           </h2>
         </div>
         <p
-          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition
+            ${focusedComponent === 0 ? "text-blue-600" : ""}
+          `}
         >
           <a href="/#">Home</a>
         </p>
         <p
-          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
-        >
-          <a href="/#timeline">Timeline</a>
-        </p>
-        <p
-          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition
+            ${focusedComponent === 1 ? "text-blue-600" : ""}
+          `}
         >
           <a href="/#projects">Projects</a>
         </p>
         <p
-          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition
+            ${focusedComponent === 2 ? "text-blue-600" : ""}
+          `}
+        >
+          <a href="/#timeline">Timeline</a>
+        </p>
+        <p
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition
+            ${focusedComponent === 3 ? "text-blue-600" : ""}
+          `}
         >
           <a href="/#contact">Contact</a>
         </p>

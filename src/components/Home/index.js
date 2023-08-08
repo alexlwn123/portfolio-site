@@ -29,7 +29,7 @@ export default function Home() {
       <div
         className="m-auto cursor-pointer w-fit bottom-16 pt-10 hover:-translate-y-1.5 duration-[350ms] hover:duration-[350ms]"
       >
-        <a href="#resume" className="text-slate-400">
+        <a href="#projects" className="text-slate-400">
           <svg
             width="24"
             height="24"

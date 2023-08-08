@@ -7,6 +7,7 @@ import EmailIcon from "@mui/icons-material/Email";
 export default function Contact() {
   return (
     <div
+      id="contact"
       className="flex text-center flex-col gap-12 mt-10 overflow-hidden py-10" 
     >
       <div className="text-4xl font-bold">
