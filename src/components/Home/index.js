@@ -15,9 +15,8 @@ export default function Home() {
         <h1>A software engineer from Atlanta, GA.</h1>
       </div>
       <div className="w-full m-auto pb-10">
-        {/* <p className="text-center pb-1">A little about me:</p> */}
         <ul className="text-center list-none list-inside text-sm lg:text-xl space-y-2">
-          <li className="hover:animate-pulse">I like to study 📚 & build 🔨 projects with <spam className="text-yellow-500">₿itcoin</spam>.</li>
+          <li className="hover:animate-pulse">I like to study 📚 & build 🔨 projects with <span className="text-yellow-500">₿itcoin</span>.</li>
           <li className="hover:animate-pulse">I like to discover 🔎 & tinker️ with new tech 🤖.</li>
           <li className="hover:animate-pulse">I like to travel 🌎 and compete 🥇 in hackathons.</li>
         </ul>

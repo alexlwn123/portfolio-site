@@ -7,21 +7,26 @@ export default function Projects() {
       className="min-h-screen flex flex-col justify-center text-center gap-10"
     >
       <div
-        className="font-extrabold py-5 mt-10 text-5xl"
+        className="font-extrabold mt-10 text-5xl"
       >
         Projects
       </div>
-      <div className="flex flex-wrap flex-row justify-center w-full p-4 gap-12">
+      <p>Here's a collection of some personal projects I'm most proud of.</p>
+      {/* <div className="grid-cols-1 sm:grid-cols-2 flex flex-wrap flex-row justify-center w-full p-4 gap-12"> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 justify-center w-full gap-8">
         {projects.map((project, ind) => {
           return (
             <div key={ind}>
               <Work
                 title={project.title}
                 desc={project.desc}
+                under={project.under}
                 img={project.img}
                 link={project.link}
                 code={project.code}
-                tags={project.tags}
+                video={project.video}
+                tweet={project.tweet}
+                place={project.place}
               />
             </div>
           );

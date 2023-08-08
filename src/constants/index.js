@@ -1,119 +1,69 @@
 export const projects = [
   {
-    title: "Plants vs Zombies API",
-    desc: "An API built with with NextTS and Tailwind CSS to help website builders build their websites about Plants-vs-Zombies-2 easily! Data has been scraped from fandom websites and all data are  error free",
-    tags: [
-      {
-        name: "NextTs",
-        color: "red-600",
-      },
-      {
-        name: "TailwindCSS",
-        color: "green-600",
-      },
-    ],
-    img: "https://cdn.discordapp.com/attachments/1096426516667174994/1109025615442608168/pvz.png",
-    link: "https://pvz-2-api.vercel.app/",
-    code: "https://github.com/code-cracked/plants-vs-zombies-api",
+    title: "Last Pay Wins",
+    desc: "An addictive game that illustrates the Lightning Network’s instant settlement. Collected/distributed >2.5mil sats in its first week.",
+    under: "Won 2nd Place at the Pleb.fi Miami 2023.",
+    img: "https://user-images.githubusercontent.com/43247027/240331021-6a2a46aa-63aa-4543-b5dd-19d1b9b1f661.png",
+    link: "https://lastpaywins.com",
+    code: "https://github.com/alexlwn123/LastPayWins",
+    tweet: "https://twitter.com/PlebFi/status/1658986375327150080",
+    place: 2,
+    event: 'https://pleb.fi/miami2023/'
   },
   {
-    title: "Web-Chat-App",
-    desc: "An app made with NextJs to help each other communicate fastly and securely. We can also search for the friends with their username.Realtime updates on messages.",
-    tags: [
-      {
-        name: "NextJs",
-        color: "red-600",
-      },
-      {
-        name: "ChakraUI",
-        color: "green-600",
-      },
-      {
-        name: "SocketIO",
-        color: "yellow-600",
-      },
-      {
-        name: "MongoDB",
-        color: "blue-800",
-      },
-    ],
-    img: "https://user-images.githubusercontent.com/88134306/227576773-06c3a1d2-0a1a-4ab2-8d1f-e06d71408410.png",
-    link: "https://web-chat-app-brown.vercel.app",
-    code: "https://github.com/daniel-jebarson/web-chat-app",
+    title: "Auntie LN",
+    desc: "Proof of concept for verifiable communication between lightning nodes on Nostr. Creates an alternative transport layer for the Lightning Network.",
+    under: "Won 1st Place at the SatsxSW 2023 Hackathon.",
+    img: "https://pbs.twimg.com/media/FrnqVsjWYAMILkH?format=jpg&name=large",
+    link: "https://bolt.fun/project/auntie-ln",
+    code: "https://github.com/alexlwn123/thunderhub",
+    video: "https://youtu.be/JB5tyLmPBqU",
+    tweet: "https://twitter.com/PlebLab/status/1637628536260292608",
+    place: 1,
+    event: 'https://twitter.com/BlockSpaces_io/status/1637642107048402944'
   },
   {
-    title: "Exploiter(deprecated)",
-    desc: "This is the simple multi-featured discord bot which is in more than 90+ servers that resembles lords mobile as mini game. It contains the featiures of many bots such as dyno,carl-bot,mee6 etc.It helps to authorize the users, audit the messages and can also be used for other server developments and also for mini-games.  ",
-    tags: [
-      {
-        name: "Python",
-        color: "red-600",
-      },
-      {
-        name: "Discord.py",
-        color: "green-600",
-      },
-      {
-        name: "discord-interactions",
-        color: "yellow-600",
-      },
-      {
-        name: "Flask",
-        color: "blue-800",
-      },
-    ],
-    img: "https://cdn.discordapp.com/attachments/1096426516667174994/1109031291522928670/Exploiter.png",
-    link: "https://drive.google.com/file/d/1npEOuOhQh-1zRiLB9fFn-6ORTwd1gZkl/view",
-    code: "https://github.com/daniel-jebarson/EXPLOITER",
+    title: "Tree-pay UX",
+    desc: "Created a UX for congestion-controlled bitcoin transactions using CTV.",
+    under: "Tied for 2nd place at the Pleb.fi Miami 2022 Hackathon.",
+    img: "https://pbs.twimg.com/media/FPn80SsWUAACzEv?format=jpg&name=large",
+    link: "https://www.figma.com/file/l3q7Qn5IB2H45XF5QJ39tE/TreePay-UX?node-id=0%3A1",
+    code: "https://github.com/atlantabitdevs/treepay-ux",
+    tweet: "https://twitter.com/JeremyRubin/status/1511517162099380230",
+    place: 2,
+    event: 'https://pleb.fi/miami2022/'
   },
   {
-    title: "Stock Market",
-    desc: "Stock Market Website done with ReactJs as Frontend and Express as Backend. This websites gives practice for people those who want to start using stock market. It is based on realtime update of stock value.",
-    tags: [
-      {
-        name: "ReactJs",
-        color: "red-600",
-      },
-      {
-        name: "ExpressJs",
-        color: "green-600",
-      },
-      {
-        name: "MongoDB",
-        color: "blue-800",
-      },
-    ],
-    img: "https://cdn.discordapp.com/attachments/1096426516667174994/1109032447783469097/image.png",
-    link: "https://stock-market-seven.vercel.app/",
-    code: "https://github.com/daniel-jebarson/Stock-Market",
+    title: "Arion Parking",
+    desc: "Created a next-gen parking app that uses the Lightning Network for payments.",
+    under: "Won 1st place at the Bolt.fun Shock The Web Hackathon.",
+    img: "https://github.com/atlantabitdevs/park-lightning/blob/master/arion.png?raw=true",
+    link: "https://arionparking.tech/",
+    video: "https://www.youtube.com/watch?v=kMpse9ChX3g",
+    code: "https://github.com/atlantabitdevs/park-lightning",
+    tweet: "https://twitter.com/boltfun_btc/status/1508538497581424640",
+    place: 1,
+    event: "https://twitter.com/boltfun_btc/status/1508538497581424640"
   },
   {
-    title: "You-Farm",
-    desc: "An app made with NextJs, Machine Learning and ExpressJs to help farmers to sell their crops without intermediate. It also suggests which crops are needed for the specific soil.",
-    tags: [
-      {
-        name: "NextJs",
-        color: "red-600",
-      },
-      {
-        name: "MaterialUI",
-        color: "green-600",
-      },
-      {
-        name: "ExpressJs",
-        color: "yellow-600",
-      },
-      {
-        name: "FireBase",
-        color: "blue-800",
-      },
-      {
-        name: "Machine Learning",
-        color: "orange-600",
-      },
-    ],
-    img: "https://cdn.discordapp.com/attachments/1096426516667174994/1109035277814611978/Screenshot_19.png",
-    link: "https://github.com/code-cracked/you-farm",
-    code: "https://github.com/code-cracked/you-farm",
+    title: "Pleb.FM",
+    desc: "Built a lightning-powered Jukebox / radio-station. It’s an ongoing auction for the next song to be played.",
+    under: 'Won 1st Place at the SatsxSW 2022 Hackathon.',
+    img: "https://user-images.githubusercontent.com/43247027/158082232-07c9724c-515a-4987-8632-e7aac93ebfd7.png",
+    link: "https://pleb.fm/",
+    code: "https://github.com/alexlwn123/ln-jukebox",
+    video: "https://youtu.be/_AwXSzzc9k0?t=839",
+    tweet: "https://twitter.com/_AlexLewin/status/1503267191768199169",
+    place: 1,
+    event: 'https://www.thrillerbitcoin.com/satsx-hackathon-by-pleb-lab-day-2/'
   },
+  {
+    title: "Chesscup Hack",
+    desc: "Created a bot that uses browser automation to quickly solve puzzles on Chesscup.",
+    under: "Currnetly holds all world records on the site.",
+    img: "https://user-images.githubusercontent.com/43247027/215305511-7c58f261-0b5e-41b9-a776-c9b6d38920b4.png",
+    link: "https://chesscup.org/",
+    code: "https://github.com/alexlwn123/Chesscup-hack",
+    tweet: "https://twitter.com/_AlexLewin/status/1673532600143560705", 
+  }
 ];

@@ -1,16 +1,18 @@
-import Github from '@mui/icons-material/GitHub'
-import Tilt from "react-parallax-tilt";
-export default function work({ title, desc, tags, link, code, img }) {
+import { YouTube, Link, GitHub, Twitter } from '@mui/icons-material';
+export default function work({ title, desc, link, code, img, video, tweet, under, place, event }) {
+  const Medal = (place) => {
+    return place === 1 ? '🥇' : '🥈';
+  }
   return (
-    <Tilt
-      options={{
-        max: 45,
-        scale: 1,
-        speed: 450,
-      }}
-      className="bg-[#0b212d]  rounded-2xl max-w-[362px]  h-full bg-gradient-to-r from-green-700 to-pink-800 p-[1px]"
-    >
-      <div className="bg-[#0b212d] w-full h-full rounded-2xl p-4 flex flex-col justify-between">
+    // <div
+    //   options={{
+    //     max: 45,
+    //     scale: 1,
+    //     speed: 450,
+    //   }}
+    //   className="bg-[#0b212d]  rounded-2xl max-w-[362px]  h-full bg-gradient-to-r from-green-700 to-pink-800 p-[1px]"
+    // >
+      <div className="bg-[#0b212d] w-full h-full rounded-2xl p-4 flex flex-col justify-between border-yellow-500 border-2 ">
         <div>
           <div className="relative w-full rounded-2xl">
             <img
@@ -18,38 +20,51 @@ export default function work({ title, desc, tags, link, code, img }) {
               alt={title}
               className="w-full h-full max-h-[200px] min-h-[200px] rounded-[10px] object-cover border-[1px] border-secondary"
             />
-            <div className="absolute inset-0 flex justify-end m-3 ">
-              <div
-                onClick={() => window.open(link, "_blank")}
-                className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer mr-2"
-              >
-                <Github className="w-4/5 h-4/5 object-contain" />
-              </div>
-              <div
-                onClick={() => window.open(code, "_blank")}
-                className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer "
-              >
-                <Github className="w-4/5 h-4/5 object-contain" />
-              </div>
-            </div>
           </div>
           <div className="mt-5">
             <h3 className="text-white font-bold text-[24px]">{title}</h3>
             <p className="mt-2 text-secondary text-[14px]">{desc}</p>
+            {under && <p className="mt-2 text-secondary text-[14px]">{under}</p>}
           </div>
         </div>
-
         <div className="mt-4 flex flex-wrap gap-2 text-[14px]">
-          {tags.map((tag) => (
-            <p
-              key={tag.name}
-              className={`font-medium text-${tag.color} py-0.5 px-1 bg-slate-800 rounded-sm shadow`}
+          {place && 
+            <div
+              onClick={() => window.open(event, "_blank")}
+              className="w-9 h-9 border-secondary flex items-center justify-center cursor-pointer hover:scale-110 hover:transition transition"
             >
-              {tag.name}
-            </p>
-          ))}
+              <p className='text-4xl'>{Medal(place)}</p>
+            </div>
+          }
+          <div
+            onClick={() => window.open(link, "_blank")}
+            className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer hover:scale-110 hover:transition transition"
+          >
+            <GitHub className="w-4/5 h-4/5 object-contain" />
+          </div>
+          <div
+            onClick={() => window.open(code, "_blank")}
+            className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer hover:scale-110 hover:transition transition"
+          >
+            <Link className="w-4/5 h-4/5 object-contain" />
+          </div>
+          {video && 
+            <div
+              onClick={() => window.open(video, "_blank")}
+              className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer hover:scale-110 hover:transition transition"
+            >
+              <YouTube className="w-4/5 h-4/5 object-contain" />
+            </div>
+          }
+          {tweet && 
+            <div
+              onClick={() => window.open(tweet, "_blank")}
+              className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer hover:scale-110 hover:transition transition"
+            >
+              <Twitter className="w-4/5 h-4/5 object-contain" />
+            </div>
+          }
         </div>
       </div>
-    </Tilt>
   );
 }

@@ -24,22 +24,22 @@ export default function Slidebar() {
           </h2>
         </div>
         <p
-          className={`cursor-pointer hover:text-blue-600 hover:-translate-y-0.5 hover:text-xl transition hover:transition`}
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
         >
           <a href="/#">Home</a>
         </p>
         <p
-          className={`cursor-pointer hover:text-blue-600 hover:-translate-y-0.5 hover:text-xl transition hover:transition`}
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
         >
-          <a href="/#resume">Resume</a>
+          <a href="/#timeline">Timeline</a>
         </p>
         <p
-          className={`cursor-pointer hover:text-blue-600 hover:-translate-y-0.5 hover:text-xl transition hover:transition`}
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
         >
           <a href="/#projects">Projects</a>
         </p>
         <p
-          className={`cursor-pointer hover:text-blue-600 hover:-translate-y-0.5 hover:text-xl transition hover:transition`}
+          className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition`}
         >
           <a href="/#contact">Contact</a>
         </p>
