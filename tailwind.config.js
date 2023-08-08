@@ -8,9 +8,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      animation: {
-        zoomy: "3s linear 100ms infinite alternate zoomy",
-      },
       keyframes: {
         zoomy: {
           "0%": {

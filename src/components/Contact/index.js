@@ -11,7 +11,6 @@ import CopyrightIcon from "@mui/icons-material/Copyright";
 import emailjs from "emailjs-com";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import * as LottiePlayer from "@lottiefiles/lottie-player";
 import { useState } from "react";
 
 export default function Contact() {
@@ -78,12 +77,12 @@ export default function Contact() {
       id="contact"
       className="flex text-center flex-col gap-12 mt-10 min-h-screen overflow-hidden"
     >
-      <div className="text-5xl font-bold" data-aos={"fade"}>
+      <div className="text-5xl font-bold">
         Contact
       </div>
       <div className="flex flex-row  ">
         <div className="flex-auto  w-32 pl-10 overflow-visible">
-          <form onSubmit={handleSubmit} data-aos={"slide-up"}>
+          <form onSubmit={handleSubmit}>
             <label class="block mb-2 text-2xl font-semibold mt-3  text-white ">
               Get in Touch
             </label>
@@ -184,7 +183,7 @@ export default function Contact() {
           </form>
         </div>
         <div className="flex-auto w-80  flex flex-col justify-center text-center items-center  gap-1">
-          <div data-aos={"fade-left"}>
+          <div>
             <lottie-player
               autoplay
               loop
@@ -193,7 +192,7 @@ export default function Contact() {
               style={{ width: "350px" }}
             />
           </div>
-          <div data-aos={"slide-up"} className="text-center">
+          <div>
             <div className="text-center mt-2 text-3xl font-bold">Follow Me</div>
             <div className="text-white flex flex-row gap-7 w-fit mx-auto pt-4">
               <div
