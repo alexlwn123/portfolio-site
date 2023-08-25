@@ -25,7 +25,7 @@ export default function Timeline() {
         >
           <h3 className="font-large">BlockSpaces</h3>
           <h4 className="vertical-timeline-element-subtitle text-yellow-500">Full Stack Engineer</h4>
-          <p>Bitcoin Lightning</p>
+          <p>My first expxosure to the start-up world. </p>
         </VerticalTimelineElement>
         <VerticalTimelineElement
           contentStyle={{ background: '#0b212d', color: '#fff' }}

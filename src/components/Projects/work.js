@@ -38,13 +38,13 @@ export default function work({ title, desc, link, code, img, video, tweet, under
             </div>
           }
           <div
-            onClick={() => window.open(link, "_blank")}
+            onClick={() => window.open(code, "_blank")}
             className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer hover:scale-110 hover:transition transition"
           >
             <GitHub className="w-4/5 h-4/5 object-contain" />
           </div>
           <div
-            onClick={() => window.open(code, "_blank")}
+            onClick={() => window.open(link, "_blank")}
             className="bg-slate-800 w-9 h-9 rounded-full border-[1px] border-secondary flex items-center justify-center cursor-pointer hover:scale-110 hover:transition transition"
           >
             <Link className="w-4/5 h-4/5 object-contain" />

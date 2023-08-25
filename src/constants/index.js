@@ -46,7 +46,7 @@ export const projects = [
     event: "https://twitter.com/boltfun_btc/status/1508538497581424640"
   },
   {
-    title: "Pleb.FM",
+    title: "Pleb FM",
     desc: "Built a lightning-powered Jukebox / radio-station. It’s an ongoing auction for the next song to be played.",
     under: 'Won 1st Place at the SatsxSW 2022 Hackathon.',
     img: "https://user-images.githubusercontent.com/43247027/158082232-07c9724c-515a-4987-8632-e7aac93ebfd7.png",
