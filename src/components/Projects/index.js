@@ -27,6 +27,7 @@ export default function Projects() {
                 video={project.video}
                 tweet={project.tweet}
                 place={project.place}
+                event={project.event}
               />
             </div>
           );

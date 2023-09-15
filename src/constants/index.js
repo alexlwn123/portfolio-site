@@ -11,6 +11,18 @@ export const projects = [
     event: 'https://pleb.fi/miami2023/'
   },
   {
+    title: "Pleb FM",
+    desc: "Built a lightning-powered Jukebox / radio-station. It’s an ongoing auction for the next song to be played.",
+    under: "Won 1st Place at the SatsxSW 2022 Hackathon. Raised over 2 million satoshis at TABConf 2023",
+    img: "https://github.com/PlebFM/PlebFM/assets/43247027/d4c9bccb-e99e-493e-96a5-7e429e90cdd6",
+    link: "https://pleb.fm/",
+    code: "https://github.com/plebfm/plebfm",
+    video: "https://youtu.be/_AwXSzzc9k0?t=839",
+    tweet: "https://x.com/atlbitlab/status/1701359384851292201",
+    place: 1,
+    event: 'https://www.thrillerbitcoin.com/satsx-hackathon-by-pleb-lab-day-2/'
+  },
+  {
     title: "Auntie LN",
     desc: "Proof of concept for verifiable communication between lightning nodes on Nostr. Creates an alternative transport layer for the Lightning Network.",
     under: "Won 1st Place at the SatsxSW 2023 Hackathon.",
@@ -44,18 +56,6 @@ export const projects = [
     tweet: "https://twitter.com/boltfun_btc/status/1508538497581424640",
     place: 1,
     event: "https://twitter.com/boltfun_btc/status/1508538497581424640"
-  },
-  {
-    title: "Pleb FM",
-    desc: "Built a lightning-powered Jukebox / radio-station. It’s an ongoing auction for the next song to be played.",
-    under: 'Won 1st Place at the SatsxSW 2022 Hackathon.',
-    img: "https://user-images.githubusercontent.com/43247027/158082232-07c9724c-515a-4987-8632-e7aac93ebfd7.png",
-    link: "https://pleb.fm/",
-    code: "https://github.com/alexlwn123/ln-jukebox",
-    video: "https://youtu.be/_AwXSzzc9k0?t=839",
-    tweet: "https://twitter.com/_AlexLewin/status/1503267191768199169",
-    place: 1,
-    event: 'https://www.thrillerbitcoin.com/satsx-hackathon-by-pleb-lab-day-2/'
   },
   {
     title: "Chesscup Hack",
