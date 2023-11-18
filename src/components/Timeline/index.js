@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import 'react-vertical-timeline-component/style.min.css';
 import { PermIdentity, School, Bolt, AttachMoney } from '@mui/icons-material'
 import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
@@ -7,10 +7,12 @@ import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timel
 
 export default function Timeline() {
   // Hacky stuff to center the date
-  const elem = document.getElementsByClassName('vertical-timeline-element-date');
-  for (let i = 0; i < elem.length; i++) {
-    elem[i].style.textAlign = 'center'
-  }
+  useEffect(() => {
+    const elems = document.querySelectorAll('.vertical-timeline-element-date');
+    elems.forEach((elem) => {
+        elem.style.textAlign = 'center';
+    });
+  }, [])
   return (
     <div id="timeline" className=" text-center m-auto py-20 mt-20">
       <div className="text-5xl font-bold py-8">
