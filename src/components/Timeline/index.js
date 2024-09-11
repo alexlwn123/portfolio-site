@@ -1,73 +1,87 @@
 import React, { useEffect } from 'react';
 import 'react-vertical-timeline-component/style.min.css';
-import { PermIdentity, School, Bolt, AttachMoney } from '@mui/icons-material'
-import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
-
-
+import { AppShortcut, PermIdentity, School, Bolt, AttachMoney } from '@mui/icons-material'
+import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
 
 export default function Timeline() {
-  // Hacky stuff to center the date
   useEffect(() => {
     const elems = document.querySelectorAll('.vertical-timeline-element-date');
     elems.forEach((elem) => {
-        elem.style.textAlign = 'center';
+      elem.style.textAlign = 'center';
     });
-  }, [])
+  }, []);
+
+  const timelineElementStyle = {
+    background: '#0b212d',
+    color: '#fff',
+    transition: 'all 0.3s ease',
+  };
+
   return (
-    <div id="timeline" className=" text-center m-auto py-20 mt-20">
+    <div id="timeline" className="text-center m-auto py-20 mt-20">
       <div className="text-5xl font-bold py-8">
         Timeline
       </div>
-      <VerticalTimeline 
+      <VerticalTimeline
         layout='2-columns'
-        animate={true} 
+        animate={true}
         lineColor='rgb(59, 130, 246)'
       >
-        <VerticalTimelineElement
-          contentStyle={{ background: '#0b212d', color: '#fff' }}
-          contentArrowStyle={{ borderRight: '7px solid green' }}
-          date="November 2023"
-          iconStyle={{ background: '#0b212d', color: '#fff' }}
-          icon={<PermIdentity />}
-        >
-          <h3 className="font-large">Zion</h3>
-          <h4 className="vertical-timeline-element-subtitle text-yellow-500">Full Stack Engineer</h4>
-          <p>Building applications involving Decentralized Identity</p>
-        </VerticalTimelineElement>
-        <VerticalTimelineElement
-          contentStyle={{ background: '#0b212d', color: '#fff' }}
-          contentArrowStyle={{ borderRight: '7px solid green' }}
-          date="May 2022"
-          style={{textAlign: 'center'}}
-          iconStyle={{ background: '#0b212d', color: '#fff' }}
-          icon={<Bolt />}
-        >
-          <h3 className="font-large">BlockSpaces</h3>
-          <h4 className="vertical-timeline-element-subtitle text-yellow-500">Full Stack Engineer</h4>
-          <p>My first expxosure to the start-up world</p>
-        </VerticalTimelineElement>
-        <VerticalTimelineElement
-          contentStyle={{ background: '#0b212d', color: '#fff' }}
-          contentArrowStyle={{ borderRight: '7px solid green' }}
-          date="May 2020"
-          iconStyle={{ background: '#0b212d', color: '#fff' }}
-          icon={<AttachMoney />}
-        >
-          <h3 className="vertical-timeline-element-title">NCR Corporation</h3>
-          <h4 className="vertical-timeline-element-subtitle text-yellow-500">Software Engineer</h4>
-          <p>Software Innovation Lab</p>
-        </VerticalTimelineElement>
-        <VerticalTimelineElement
-          contentStyle={{ background: '#0b212d', color: '#fff' }}
-          contentArrowStyle={{ borderRight: '7px solid green' }}
-          date="August 2018"
-          iconStyle={{ background: '#0b212d', color: '#fff' }}
-          icon={<School />}
-        >
-          <h3 className="vertical-timeline-element-title">Began Univeristy</h3>
-          <h4 className="vertical-timeline-element-subtitle text-yellow-500">Auburn University</h4>
-          <p>Undergraduate Software Engineering</p>
-        </VerticalTimelineElement>
+        {[
+          {
+            date: "March 2024",
+            icon: <AppShortcut />,
+            title: "Fedi",
+            subtitle: "Senior Software Engineer",
+            content: "Building a community focused super app and developer tooling for fedimint"
+          },
+          {
+            date: "November 2023",
+            icon: <PermIdentity />,
+            title: "Zion",
+            subtitle: "Full Stack Engineer",
+            content: "Building applications involving Decentralized Identity"
+          },
+          {
+            date: "May 2022",
+            icon: <Bolt />,
+            title: "BlockSpaces",
+            subtitle: "Full Stack Engineer",
+            content: "My first exposure to the start-up world"
+          },
+          {
+            date: "May 2020",
+            icon: <AttachMoney />,
+            title: "NCR Corporation",
+            subtitle: "Software Engineer",
+            content: "Software Innovation Lab"
+          },
+          {
+            date: "August 2018",
+            icon: <School />,
+            title: "Began University",
+            subtitle: "Auburn University",
+            content: "Undergraduate Software Engineering"
+          }
+        ].map((item, index) => (
+          <VerticalTimelineElement
+            key={index}
+            contentStyle={{
+              ...timelineElementStyle,
+              cursor: 'pointer',
+            }}
+            contentArrowStyle={{ borderRight: '7px solid green' }}
+            date={item.date}
+            iconStyle={{ background: '#0b212d', color: '#fff' }}
+            icon={item.icon}
+          >
+            <div>
+              <h3 className="font-large">{item.title}</h3>
+              <h4 className="text-yellow-500">{item.subtitle}</h4>
+              <p>{item.content}</p>
+            </div>
+          </VerticalTimelineElement>
+        ))}
       </VerticalTimeline>
     </div>
   );
