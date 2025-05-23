@@ -5,8 +5,10 @@ export default function Home() {
     <div className="min-h-screen grid grid-cols-1 gap-7 name content-center text-center px-2">
       <h1
         className="head text-5xl font-semibold tracking-[3px] pb-2 pt-20 "
+        aria-label="Alex Lewin - Full Stack Developer"
+        tabIndex={0}
       >
-       <span className="wave">✋</span> Hiya, I'm Alex.
+        <span className="wave">✋</span> Hiya, I'm <span className="text-blue-500 font-bold">Alex</span>.
       </h1>
       <div
         className="text-4xl text-yellow-500 pb-10"
