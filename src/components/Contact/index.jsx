@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -6,6 +6,17 @@ import CalendlyIcon from "@mui/icons-material/CalendarToday";
 import EmailIcon from "@mui/icons-material/Email";
 
 export default function Contact() {
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText("alexlwn123@gmail.com");
+  };
+
+  const [showCopied, setShowCopied] = useState(false);
+
+  const handleCopyWithTooltip = () => {
+    handleCopyEmail();
+    setShowCopied(true);
+    setTimeout(() => setShowCopied(false), 1000);
+  };
   return (
     <div
       id="contact"
@@ -43,10 +54,19 @@ export default function Contact() {
         >
           <CalendlyIcon className="cursor-pointer hover:scale-105" />
         </div>
-        <div
-          onClick={() => window.open("mailto:alexlwn123@gmail.com", "_blank")}
-        >
-          <EmailIcon className="cursor-pointer hover:scale-105" />
+        <div className="relative">
+          <button
+            onClick={handleCopyWithTooltip}
+            aria-label="Copy email address to clipboard"
+            className="cursor-pointer hover:scale-105"
+          >
+            <EmailIcon />
+          </button>
+          {showCopied && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded text-sm">
+              Copied
+            </div>
+          )}
         </div>
       </div>
     </div>

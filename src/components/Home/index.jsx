@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="min-h-screen grid grid-cols-1 gap-7 name content-center text-center px-2">
       <h1
-        className="head text-5xl font-semibold tracking-[3px] pb-2 pt-20 "
+        className="head text-6xl font-semibold tracking-[3px] pb-2 pt-20 "
         aria-label="Alex Lewin - Full Stack Developer"
         tabIndex={0}
       >

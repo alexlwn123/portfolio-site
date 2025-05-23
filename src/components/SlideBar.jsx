@@ -3,6 +3,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import CalendlyIcon from "@mui/icons-material/CalendarToday";
 import EmailIcon from "@mui/icons-material/Email";
+import portrait from "../assets/alex-lewin.png";
 import { useEffect, useState } from "react";
 import { useScrollPosition } from "../hooks/useScrollPosition";
 
@@ -10,6 +11,18 @@ export default function Slidebar() {
   const scrollPosition = useScrollPosition();
   const [focusedComponent, setFocusedComponent] = useState(null);
   const [scrollHeights, setScrollHeights] = useState([0, 0, 0, 0, 0]);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText("alexlwn123@gmail.com");
+  };
+
+  const [showCopied, setShowCopied] = useState(false);
+
+  const handleCopyWithTooltip = () => {
+    handleCopyEmail();
+    setShowCopied(true);
+    setTimeout(() => setShowCopied(false), 1000);
+  };
   useEffect(() => {
     const projects = document.querySelector("#projects").scrollHeight;
     const timeline = document.querySelector("#timeline").scrollHeight;
@@ -43,7 +56,7 @@ export default function Slidebar() {
       <div className="nav flex text-white text-lg mt-10 flex-col align-middle justify-center text-center w-full gap-5 overflow-hidden">
         <div>
           <img
-            src={"/src/assets/images/alex-lewin.png"}
+            src={portrait}
             alt="Alex Lewin, Full Stack Developer"
             aria-label="Alex Lewin, Full Stack Developer"
             className="border-solid cursor-pointer border-[2px] border-stone-600 min-h-fit mx-auto max-w-[250px]"
@@ -138,14 +151,21 @@ export default function Slidebar() {
         >
           <CalendlyIcon className="cursor-pointer hover:scale-105" />
         </a>
-        <a
-          href="mailto:alexlwn123@gmail.com"
-          aria-label="Email Alex Lewin"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <EmailIcon className="cursor-pointer hover:scale-105" />
-        </a>
+
+        <div className="relative">
+          <button
+            onClick={handleCopyWithTooltip}
+            aria-label="Copy email address to clipboard"
+            className="cursor-pointer hover:scale-105"
+          >
+            <EmailIcon />
+          </button>
+          {showCopied && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded text-sm">
+              Copied
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
