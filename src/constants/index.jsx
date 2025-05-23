@@ -8,19 +8,20 @@ export const projects = [
     code: "https://github.com/alexlwn123/LastPayWins",
     tweet: "https://twitter.com/PlebFi/status/1658986375327150080",
     place: 2,
-    event: 'https://pleb.fi/miami2023/'
+    event: "https://pleb.fi/miami2023/",
   },
   {
     title: "Pleb FM",
     desc: "Built a lightning-powered Jukebox / radio-station. It’s an ongoing auction for the next song to be played.",
-    under: "Won 1st Place at the SatsxSW 2022 Hackathon. Raised over 2 million satoshis at TABConf 2023",
+    under:
+      "Won 1st Place at the SatsxSW 2022 Hackathon. Raised over 2 million satoshis at TABConf 2023",
     img: "https://github.com/PlebFM/PlebFM/assets/43247027/d4c9bccb-e99e-493e-96a5-7e429e90cdd6",
     link: "https://pleb.fm/",
     code: "https://github.com/plebfm/plebfm",
     video: "https://youtu.be/_AwXSzzc9k0?t=839",
     tweet: "https://x.com/atlbitlab/status/1701359384851292201",
     place: 1,
-    event: 'https://www.thrillerbitcoin.com/satsx-hackathon-by-pleb-lab-day-2/'
+    event: "https://www.thrillerbitcoin.com/satsx-hackathon-by-pleb-lab-day-2/",
   },
   {
     title: "Auntie LN",
@@ -32,7 +33,7 @@ export const projects = [
     video: "https://youtu.be/JB5tyLmPBqU",
     tweet: "https://twitter.com/PlebLab/status/1637628536260292608",
     place: 1,
-    event: 'https://twitter.com/BlockSpaces_io/status/1637642107048402944'
+    event: "https://twitter.com/BlockSpaces_io/status/1637642107048402944",
   },
   {
     title: "Tree-pay UX",
@@ -43,7 +44,7 @@ export const projects = [
     code: "https://github.com/atlantabitdevs/treepay-ux",
     tweet: "https://twitter.com/JeremyRubin/status/1511517162099380230",
     place: 2,
-    event: 'https://pleb.fi/miami2022/'
+    event: "https://pleb.fi/miami2022/",
   },
   {
     title: "Arion Parking",
@@ -55,7 +56,7 @@ export const projects = [
     code: "https://github.com/atlantabitdevs/park-lightning",
     tweet: "https://twitter.com/boltfun_btc/status/1508538497581424640",
     place: 1,
-    event: "https://twitter.com/boltfun_btc/status/1508538497581424640"
+    event: "https://twitter.com/boltfun_btc/status/1508538497581424640",
   },
   {
     title: "Chesscup Hack",
@@ -64,6 +65,6 @@ export const projects = [
     img: "https://user-images.githubusercontent.com/43247027/215305511-7c58f261-0b5e-41b9-a776-c9b6d38920b4.png",
     link: "https://chesscup.org/",
     code: "https://github.com/alexlwn123/Chesscup-hack",
-    tweet: "https://twitter.com/_AlexLewin/status/1673532600143560705", 
-  }
+    tweet: "https://twitter.com/_AlexLewin/status/1673532600143560705",
+  },
 ];
