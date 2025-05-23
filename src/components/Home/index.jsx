@@ -1,3 +1,4 @@
+import React from "react";
 import "../../App.css";
 
 export default function Home() {
@@ -8,29 +9,31 @@ export default function Home() {
         aria-label="Alex Lewin - Full Stack Developer"
         tabIndex={0}
       >
-        <span className="wave">✋</span> Hiya, I'm <span className="text-blue-500 font-bold">Alex</span>.
+        <span className="wave">✋</span> Hiya, I'm{" "}
+        <span className="font-bold">Alex</span>.
       </h1>
-      <div
-        className="text-4xl text-yellow-500 pb-10"
-      >
+      <div className="text-4xl text-yellow-500 pb-10">
         {" "}
         <h1>A software engineer from Atlanta, GA.</h1>
       </div>
       <div className="w-full m-auto pb-10">
         <ul className="text-center list-none list-inside text-sm lg:text-xl space-y-2">
-          <li className="hover:animate-pulse">I study 📚 & build 🔨 projects with <span className="text-yellow-500">₿itcoin</span>.</li>
-          <li className="hover:animate-pulse">I discover 🔎 & tinker️ with new tech 🤖.</li>
-          <li className="hover:animate-pulse">I travel 🌎 and compete 🥇 in hackathons.</li>
+          <li className="hover:animate-pulse">
+            I study 📚 & build 🔨 projects with{" "}
+            <span className="text-yellow-500">₿itcoin</span>.
+          </li>
+          <li className="hover:animate-pulse">
+            I discover 🔎 & tinker️ with new tech 🤖.
+          </li>
+          <li className="hover:animate-pulse">
+            I travel 🌎 and compete 🥇 in hackathons.
+          </li>
         </ul>
       </div>
-      <button
-        className="py-2 mx-auto px-7 bg-transparent border-2 w-fit border-blue-500 rounded-sm  hover:-translate-y-1.5 duration-[350ms] hover:duration-[350ms] hover:bg-blue-800"
-      >
+      <button className="py-2 mx-auto px-7 bg-transparent border-2 w-fit border-blue-500 rounded-sm  hover:-translate-y-1.5 duration-[350ms] hover:duration-[350ms] hover:bg-blue-800">
         <a href="#contact">Reach Out</a>
       </button>
-      <div
-        className="m-auto cursor-pointer w-fit bottom-16 pt-10 hover:-translate-y-1.5 duration-[350ms] hover:duration-[350ms]"
-      >
+      <div className="m-auto cursor-pointer w-fit bottom-16 pt-10 hover:-translate-y-1.5 duration-[350ms] hover:duration-[350ms]">
         <a href="#projects" className="text-slate-400">
           <svg
             width="24"

@@ -1,3 +1,4 @@
+import React from "react";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -8,16 +9,12 @@ export default function Contact() {
   return (
     <div
       id="contact"
-      className="flex text-center flex-col gap-12 mt-10 overflow-hidden py-10" 
+      className="flex text-center flex-col gap-12 mt-10 overflow-hidden py-10"
     >
-      <div className="text-4xl font-bold">
-        Contact
-      </div>
+      <div className="text-4xl font-bold">Contact</div>
       <div className="flex-auto w-80 flex justify-center text-center items-center gap-5 m-auto">
         <div
-          onClick={() =>
-            window.open("https://github.com/alexlwn123", "_blank")
-          }
+          onClick={() => window.open("https://github.com/alexlwn123", "_blank")}
         >
           <GitHubIcon className="cursor-pointer hover:scale-105" />
         </div>
@@ -47,9 +44,7 @@ export default function Contact() {
           <CalendlyIcon className="cursor-pointer hover:scale-105" />
         </div>
         <div
-          onClick={() =>
-            window.open("mailto:alexlwn123@gmail.com", "_blank")
-          }
+          onClick={() => window.open("mailto:alexlwn123@gmail.com", "_blank")}
         >
           <EmailIcon className="cursor-pointer hover:scale-105" />
         </div>

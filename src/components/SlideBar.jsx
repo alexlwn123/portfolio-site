@@ -1,28 +1,36 @@
-import "../App.css";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import CalendlyIcon from "@mui/icons-material/CalendarToday";
 import EmailIcon from "@mui/icons-material/Email";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useScrollPosition } from "../hooks/useScrollPosition";
 
 export default function Slidebar() {
   const scrollPosition = useScrollPosition();
-  const [focusedComponent, setFocusedComponent] = React.useState(null);
-  const [scrollHeights, setScrollHeights] = React.useState([0, 0, 0, 0, 0]);
+  const [focusedComponent, setFocusedComponent] = useState(null);
+  const [scrollHeights, setScrollHeights] = useState([0, 0, 0, 0, 0]);
   useEffect(() => {
     const projects = document.querySelector("#projects").scrollHeight;
     const timeline = document.querySelector("#timeline").scrollHeight;
     const contact = document.querySelector("#contact").scrollHeight;
-    setScrollHeights([0, projects, timeline + projects, contact + timeline + projects]);
+    setScrollHeights([
+      0,
+      projects,
+      timeline + projects,
+      contact + timeline + projects,
+    ]);
   }, [focusedComponent]);
 
   useEffect(() => {
-    const section = scrollPosition === 0 ? 0
-      : scrollPosition <= scrollHeights[1] ? 1
-        : scrollPosition <= scrollHeights[2] ? 2
-          : 3;
+    const section =
+      scrollPosition === 0
+        ? 0
+        : scrollPosition <= scrollHeights[1]
+        ? 1
+        : scrollPosition <= scrollHeights[2]
+        ? 2
+        : 3;
     if (focusedComponent === section) return;
     setFocusedComponent(section);
   }, [focusedComponent, scrollHeights, scrollPosition]);
@@ -35,7 +43,7 @@ export default function Slidebar() {
       <div className="nav flex text-white text-lg mt-10 flex-col align-middle justify-center text-center w-full gap-5 overflow-hidden">
         <div>
           <img
-            src={require("../assets/images/alex-lewin.png")}
+            src={"/src/assets/images/alex-lewin.png"}
             alt="Alex Lewin, Full Stack Developer"
             aria-label="Alex Lewin, Full Stack Developer"
             className="border-solid cursor-pointer border-[2px] border-stone-600 min-h-fit mx-auto max-w-[250px]"
@@ -51,21 +59,53 @@ export default function Slidebar() {
         <nav aria-label="Main navigation" className="mt-6">
           <ul className="flex flex-col gap-2">
             <li>
-              <a href="/#" aria-label="Home section" className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${focusedComponent === 0 ? "text-blue-600" : ""}`}>Home</a>
+              <a
+                href="/#"
+                aria-label="Home section"
+                className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${
+                  focusedComponent === 0 ? "text-blue-600" : ""
+                }`}
+              >
+                Home
+              </a>
             </li>
             <li>
-              <a href="/#projects" aria-label="Projects section" className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${focusedComponent === 1 ? "text-blue-600" : ""}`}>Projects</a>
+              <a
+                href="/#projects"
+                aria-label="Projects section"
+                className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${
+                  focusedComponent === 1 ? "text-blue-600" : ""
+                }`}
+              >
+                Projects
+              </a>
             </li>
             <li>
-              <a href="/#timeline" aria-label="Timeline section" className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${focusedComponent === 2 ? "text-blue-600" : ""}`}>Timeline</a>
+              <a
+                href="/#timeline"
+                aria-label="Timeline section"
+                className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${
+                  focusedComponent === 2 ? "text-blue-600" : ""
+                }`}
+              >
+                Timeline
+              </a>
             </li>
             <li>
-              <a href="/#contact" aria-label="Contact section" className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${focusedComponent === 3 ? "text-blue-600" : ""}`}>Contact</a>
+              <a
+                href="/#contact"
+                aria-label="Contact section"
+                className={`cursor-pointer hover:text-blue-600 hover:text-xl transition hover:transition ${
+                  focusedComponent === 3 ? "text-blue-600" : ""
+                }`}
+              >
+                Contact
+              </a>
             </li>
           </ul>
         </nav>
       </div>
-      <div className="text-white flex flex-row gap-3 w-fit mx-auto pt-7" >
+      <div className="text-white flex flex-row gap-3 w-fit mx-auto pt-7">
         <a
           href="https://github.com/alexlwn123"
           aria-label="GitHub profile of Alex Lewin"
