@@ -42,7 +42,7 @@ export default function Contact() {
         </div>
         <div
           onClick={() =>
-            window.open("https://twitter.com/_AlexLewin", "_blank")
+            window.open("https://x.com/ALewin", "_blank")
           }
         >
           <TwitterIcon className="cursor-pointer hover:scale-105" />

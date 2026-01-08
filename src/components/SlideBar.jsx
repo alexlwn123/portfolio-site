@@ -136,7 +136,7 @@ export default function Slidebar() {
           <LinkedInIcon className="cursor-pointer hover:scale-105" />
         </a>
         <a
-          href="https://twitter.com/_AlexLewin"
+          href="https://x.com/ALewin"
           aria-label="Twitter profile of Alex Lewin"
           target="_blank"
           rel="noopener noreferrer"

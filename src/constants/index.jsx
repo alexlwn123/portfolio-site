@@ -65,6 +65,6 @@ export const projects = [
     img: "https://user-images.githubusercontent.com/43247027/215305511-7c58f261-0b5e-41b9-a776-c9b6d38920b4.png",
     link: "https://chesscup.org/",
     code: "https://github.com/alexlwn123/Chesscup-hack",
-    tweet: "https://twitter.com/_AlexLewin/status/1673532600143560705",
+    tweet: "https://x.com/ALewin/status/1673532600143560705",
   },
 ];
