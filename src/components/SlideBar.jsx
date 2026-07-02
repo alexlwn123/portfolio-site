@@ -1,7 +1,7 @@
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import CalendlyIcon from "@mui/icons-material/CalendarToday";
+import CalendarIcon from "@mui/icons-material/CalendarToday";
 import EmailIcon from "@mui/icons-material/Email";
 import portrait from "../assets/alex-lewin.png";
 import { useEffect, useState } from "react";
@@ -144,12 +144,12 @@ export default function Slidebar() {
           <TwitterIcon className="cursor-pointer hover:scale-105" />
         </a>
         <a
-          href="https://calendly.com/alexlewin/30-minutes"
-          aria-label="Book a meeting with Alex Lewin on Calendly"
+          href="https://fantastical.app/alexlwn123/30mins"
+          aria-label="Book a meeting with Alex Lewin"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <CalendlyIcon className="cursor-pointer hover:scale-105" />
+          <CalendarIcon className="cursor-pointer hover:scale-105" />
         </a>
 
         <div className="relative">

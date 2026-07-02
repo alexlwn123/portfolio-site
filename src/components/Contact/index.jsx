@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import CalendlyIcon from "@mui/icons-material/CalendarToday";
+import CalendarIcon from "@mui/icons-material/CalendarToday";
 import EmailIcon from "@mui/icons-material/Email";
 
 export default function Contact() {
@@ -49,10 +49,10 @@ export default function Contact() {
         </div>
         <div
           onClick={() =>
-            window.open("https://calendly.com/alexlewin/30-minutes", "_blank")
+            window.open("https://fantastical.app/alexlwn123/30mins", "_blank")
           }
         >
-          <CalendlyIcon className="cursor-pointer hover:scale-105" />
+          <CalendarIcon className="cursor-pointer hover:scale-105" />
         </div>
         <div className="relative">
           <button
