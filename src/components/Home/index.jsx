@@ -26,7 +26,7 @@ export default function Home() {
             I discover 🔎 & tinker️ with new tech 🤖.
           </li>
           <li className="hover:animate-pulse">
-            I travel 🌎 and compete 🥇 in hackathons.
+            I travel 🌎 and organize hackathons.
           </li>
         </ul>
       </div>
