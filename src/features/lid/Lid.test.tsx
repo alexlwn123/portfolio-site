@@ -60,11 +60,11 @@ describe('Lid', () => {
     expect(name.querySelector('a')).toBeNull()
   })
 
-  it('wraps everything in the main landmark', () => {
+  it('leaves the main landmark to the page, which puts the sections under it', () => {
     const container = renderLid()
 
-    expect(screen.getAllByRole('main')).toHaveLength(1)
-    expect(screen.getByRole('main')).toContainElement(container.querySelector('[data-lid-stage]'))
+    expect(screen.queryByRole('main')).toBeNull()
+    expect(container.querySelector('[data-lid-desk] [data-lid-stage]')).not.toBeNull()
   })
 
   it('sticks down every sticker once, in reading order', () => {

@@ -208,7 +208,8 @@ test('looks like the approved mockup at 728 wide, the additions aside', async ({
   await openMockup(mockupPage, MOCKUPS.firstScreen, COMPARED_WIDTH)
   const mockup = await mockupPage.screenshot({ fullPage: true, animations: 'disabled' })
   await openLid(page, COMPARED_WIDTH)
-  const lid = await page.screenshot({ fullPage: true, animations: 'disabled' })
+  // The lid alone: the sections under it are no part of the mockup.
+  const lid = await page.locator('[data-lid-desk]').screenshot({ animations: 'disabled' })
   const excluded = [...(await additionsOnLid(page)), ...(await vacatedOnMockup(mockupPage))]
 
   const diff = await diffScreenshots(page, mockup, lid, await stickerRegions(page), excluded)

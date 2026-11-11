@@ -1,0 +1,118 @@
+/*
+ * A band of the home page. It is as wide as the screen, and what is in it is
+ * measured in the lid's design unit: inside .units one em is ten units, on an
+ * artboard 1100 units wide on a laptop, 728 on a tablet and 390 on a phone.
+ * The three widths and the two breakpoints are the lid's own (see
+ * src/features/lid/placement/artboards.ts), so a sticker is the same size
+ * here as it is up there.
+ */
+.frame {
+  /* The lamp at rest, as on the lid. Shadows and foil read these. */
+  --lamp-rest-x: 0.35;
+  --lamp-rest-y: 0.3;
+  --lamp-x: var(--lamp-rest-x);
+  --lamp-y: var(--lamp-rest-y);
+  --cast-reach: 1.8em;
+
+  position: relative;
+  isolation: isolate;
+
+  /* Room for whatever the page pins to the top of the screen. */
+  scroll-margin-top: var(--pinned-height, 0px);
+  container: section / inline-size;
+  overflow-x: clip;
+  color: var(--white);
+  font-family: var(--font-body);
+  line-height: normal;
+}
+
+/* The lid again: brushed cobalt. */
+.lid {
+  background:
+    radial-gradient(90% 50% at 10% -5%, rgba(150, 170, 255, 0.35), transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      rgba(0, 0, 40, 0.05) 1px 2px,
+      transparent 2px 4px
+    ),
+    var(--cobalt);
+}
+
+/* A cutting mat: ink, ruled in spearmint. */
+.mat {
+  background:
+    linear-gradient(rgba(47, 230, 181, 0.22) 1px, transparent 1px) 0 0 / 100% 10rem,
+    linear-gradient(90deg, rgba(47, 230, 181, 0.22) 1px, transparent 1px) 0 0 / 10rem 100%,
+    linear-gradient(rgba(47, 230, 181, 0.08) 1px, transparent 1px) 0 0 / 100% 2rem,
+    linear-gradient(90deg, rgba(47, 230, 181, 0.08) 1px, transparent 1px) 0 0 / 2rem 100%,
+    var(--ink);
+}
+
+.units {
+  max-width: 1920px;
+  margin-inline: auto;
+  padding: 7em 5em 9em;
+  font-size: min(calc(100cqw / 110), calc(1920px / 110));
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4em;
+  align-items: flex-start;
+  margin-bottom: 4.5em;
+}
+
+/* The heading is sized as a sticker, not as a heading. */
+.title {
+  margin: 0;
+  font: inherit;
+  rotate: -2.5deg;
+}
+
+.label {
+  padding: 1.5em 2.4em 1.3em;
+  border-radius: 1em;
+}
+
+.words {
+  display: block;
+  color: var(--ink);
+  font-size: 5.6em;
+  line-height: 0.95;
+}
+
+.kicker {
+  margin: 0 0 0 0.6em;
+  color: var(--hi);
+  font-size: 2.2em;
+  line-height: 1.2;
+  rotate: -1.5deg;
+}
+
+@container section (max-width: 1099px) {
+  .units {
+    padding: 6em 3em 8em;
+    font-size: calc(100cqw / 72.8);
+  }
+}
+
+@container section (max-width: 560px) {
+  .units {
+    padding: 5em 1.6em 6.5em;
+    font-size: calc(100cqw / 39);
+  }
+
+  .header {
+    margin-bottom: 3.2em;
+  }
+
+  .words {
+    font-size: 4.4em;
+  }
+
+  .kicker {
+    font-size: 1.9em;
+  }
+}

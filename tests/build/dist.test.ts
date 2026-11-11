@@ -237,7 +237,7 @@ describe('the home page’s script', () => {
   it('ships the lid whole without it: every note and every button is in the markup', async () => {
     const page = await readPage(HOME)
     const notes = [...page.querySelectorAll('[data-note]')]
-    const buttons = [...page.querySelectorAll('main button')]
+    const buttons = [...page.querySelectorAll('[data-lid] button')]
 
     expect(notes).toHaveLength(page.querySelectorAll('[data-peelable]').length)
     expect(notes.length).toBeGreaterThan(0)

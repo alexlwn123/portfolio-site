@@ -1,0 +1,58 @@
+/*
+ * A sticker in the flow of a section: the shadow of Sticker.module.css
+ * without its placement. The lamp is at rest here, so the shadow falls
+ * straight down, as it does on the lid before the page's script runs.
+ */
+.stuck {
+  --lx: var(--lamp-rest-x);
+  --ly: var(--lamp-rest-y);
+  --cast-x: calc((var(--lamp-rest-x) - var(--lx)) * var(--cast-reach));
+  --cast-y: calc(0.5em + (var(--lamp-rest-y) - var(--ly)) * var(--cast-reach));
+  --lift: 0;
+
+  position: relative;
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(var(--cast-x) var(--cast-y) 0.5em rgba(var(--shadow-rgb), 0.38));
+}
+
+/* A sticker that is a link lifts under the pointer and under keyboard focus. */
+.lifts {
+  transition:
+    translate var(--duration-hover) var(--ease-slap),
+    scale var(--duration-hover) var(--ease-slap),
+    filter var(--duration-hover);
+}
+
+.lifts:hover,
+.lifts:focus-visible {
+  --lift: 1;
+
+  z-index: 2;
+  translate: 0 -0.35em;
+  scale: 1.035;
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(
+      calc(var(--cast-x) * 2.6) calc(var(--cast-y) * 2.6) 1em rgba(var(--shadow-rgb), 0.42)
+    );
+}
+
+/* The lid's ring: highlighter with an ink edge, visible on any surface. */
+.lifts:focus-visible {
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.3em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lifts {
+    transition: none;
+  }
+}

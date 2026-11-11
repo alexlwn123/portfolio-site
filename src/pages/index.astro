@@ -6,7 +6,7 @@ import { getImage } from 'astro:assets'
 import portrait from '../assets/alex-lewin.png'
 import { content, stats } from '../content'
 import { resolveBadgePhoto } from '../features/badge/photoSources'
-import { Lid } from '../features/lid/Lid'
+import { HomePage } from '../features/home/HomePage'
 import { buildMeta } from '../features/seo/meta'
 import Base from '../layouts/Base.astro'
 
@@ -14,7 +14,7 @@ const photo = await resolveBadgePhoto(getImage, portrait)
 ---
 
 <Base meta={buildMeta('home', content, stats)}>
-  <Lid content={content} stats={stats} photo={photo} />
+  <HomePage content={content} stats={stats} photo={photo} />
 </Base>
 
 <script>

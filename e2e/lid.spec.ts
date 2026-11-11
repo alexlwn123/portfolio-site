@@ -196,7 +196,7 @@ test.describe('the lid', () => {
     await expect(plain.getByRole('button')).toHaveCount(0)
     await expect(plain.locator('[data-lid][data-enhanced]')).toHaveCount(0)
     // The notes are in the page all the same: tucked out of sight, and read out.
-    await expect(plain.getByRole('main').getByRole('link')).toHaveCount(
+    await expect(plain.locator('[data-lid]').getByRole('link')).toHaveCount(
       hrefs.length + noteHrefs.length,
     )
     await expect(plain.locator('[data-note]')).toHaveCount(NOTED_IDS.length)

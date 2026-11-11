@@ -46,7 +46,7 @@ export async function openLid(page: Page, width: number): Promise<void> {
 
 /** Every link on the lid, in the order the markup has them. */
 export function lidLinks(page: Page): Locator {
-  return page.getByRole('main').getByRole('link')
+  return page.locator('[data-lid]').getByRole('link')
 }
 
 /** How long the stickers take to slap down, the last of them included. */

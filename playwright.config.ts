@@ -2,7 +2,9 @@ import { defineConfig, devices } from '@playwright/test'
 
 // A dedicated port, so the specs never run against a dev server by accident:
 // the dev server injects scripts, and these specs assert that none are shipped.
-const PORT = 4391
+const DEFAULT_PORT = 4391
+// Several checkouts of the site can run their specs at once, each on its own port.
+const PORT = Number(process.env.E2E_PORT ?? DEFAULT_PORT)
 
 // --ignore-lock makes this a one-off foreground server. Without it, Astro
 // detaches the preview server into the background whenever it detects an AI
