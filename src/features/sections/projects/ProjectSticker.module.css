@@ -1,0 +1,151 @@
+/*
+ * One project on the mat: the sticker, and under it what the project is and
+ * where to find it. The sticker's width, the tilt of the whole and where it
+ * sits in the mat's grid are set from outside (ProjectsSection.module.css)
+ * through --face, --tilt and the grid properties.
+ */
+.item {
+  --face: 21em;
+  --tilt: 0deg;
+  --caption-tilt: 1.2deg;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: var(--lean, flex-start);
+  width: var(--item, var(--face));
+  max-width: 100%;
+  list-style: none;
+  rotate: var(--tilt);
+}
+
+/* The sticker, with whatever is pinned to it. */
+.top {
+  position: relative;
+  flex: none;
+  width: calc(var(--face) * var(--face-scale, 1));
+  max-width: 100%;
+}
+
+/* What it is and where to find it. Under the sticker, unless the mat says beside. */
+.about {
+  display: flex;
+  flex-direction: column;
+  align-items: var(--lean, flex-start);
+  width: 100%;
+  min-width: 0;
+}
+
+/* A heading for the outline; on the mat it is the sticker and nothing more. */
+.name {
+  margin: 0;
+  font: inherit;
+}
+
+.face {
+  width: 100%;
+}
+
+/* The lid's stickers are set in type, so they grow by their type size. */
+.item[data-face='jukebox'] .face,
+.item[data-face='parking'] .face,
+.item[data-face='bumper'] .face {
+  font-size: calc(var(--type, 1.5em) * var(--face-scale, 1));
+}
+
+.item[data-face='jukebox'] .top,
+.item[data-face='bumper'] .top,
+.item[data-face='jukebox'] .face,
+.item[data-face='bumper'] .face {
+  width: max-content;
+}
+
+/* Planted in the sticker's top corner, leaning out. */
+.flag {
+  position: absolute;
+  top: var(--flag-top, -1.4em);
+  right: -1em;
+  left: var(--flag-left, calc(100% - 5.5em));
+  z-index: 2;
+  rotate: var(--flag-tilt, 5deg);
+}
+
+/* In his hand, over the sticker of the place he works. */
+.dayJob {
+  position: absolute;
+  top: -1.55em;
+  left: 0.9em;
+  display: flex;
+  gap: 0.3em;
+  align-items: center;
+  margin: 0;
+  color: var(--hi);
+  font-size: 2.3em;
+  line-height: 1;
+  white-space: nowrap;
+  rotate: -4deg;
+}
+
+.pointer {
+  width: 0.85em;
+  height: 0.85em;
+  translate: 0 0.12em;
+}
+
+/*
+ * What the project is, printed on a strip from a label printer and stuck
+ * across the sticker's foot. The ticks down its left edge are where the
+ * printer cut it.
+ */
+.tape {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  max-width: min(100%, 19.5em);
+  margin: -0.75em var(--caption-outset, 0) 0 var(--caption-inset, 0.9em);
+  padding: 0.55em 0.95em 0.6em 1.25em;
+  border-radius: 0.12em;
+  background:
+    repeating-linear-gradient(var(--ink) 0 0.16em, transparent 0.16em 0.4em) 0.5em 0 / 0.14em 100%
+      no-repeat,
+    var(--tape, var(--white));
+  box-shadow:
+    0 0.1em 0 rgba(var(--shadow-rgb), 0.5),
+    0 0.35em 0.5em rgba(var(--shadow-rgb), 0.4);
+  color: var(--ink);
+  font-size: 1.42em;
+  font-weight: var(--weight-medium);
+  line-height: 1.24;
+  rotate: var(--caption-tilt);
+}
+
+/* The same, for a description short enough to write on the mat by hand. */
+.hand {
+  position: relative;
+  z-index: 1;
+  max-width: min(100%, 13.5em);
+  margin: 0.45em var(--caption-outset, 0) 0 var(--caption-inset, 0.6em);
+  color: var(--pen, var(--white));
+  font-size: 1.95em;
+  line-height: 1.1;
+  text-wrap: balance;
+  rotate: calc(var(--caption-tilt) * -1.4);
+}
+
+.links {
+  position: relative;
+  z-index: 1;
+  margin: 0.95em var(--caption-outset, 0) 0 var(--caption-inset, 0.9em);
+  rotate: calc(var(--caption-tilt) * 0.5);
+}
+
+@container section (max-width: 560px) {
+  .tape {
+    max-width: min(100%, 20em);
+    font-size: 1.5em;
+  }
+
+  .dayJob {
+    font-size: 2.1em;
+  }
+}

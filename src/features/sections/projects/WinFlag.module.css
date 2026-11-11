@@ -1,0 +1,75 @@
+/*
+ * A pennant on a pin. The cloth is cut to a swallowtail and sits inside a
+ * white copy of itself, which is its die-cut edge. The pin is the stick on
+ * the left, with a round head.
+ */
+.flag {
+  --tail: 1.1em;
+
+  width: max-content;
+  max-width: 17em;
+  padding-left: 0.5em;
+}
+
+/* The pin: a white stick down the hoist, longer than the cloth. */
+.flag::before {
+  position: absolute;
+  top: -0.5em;
+  bottom: -2.2em;
+  left: 0;
+  width: 0.5em;
+  border-radius: 0.3em;
+  background: var(--white);
+  content: '';
+}
+
+/* Its head. */
+.flag::after {
+  position: absolute;
+  top: -1.1em;
+  left: -0.35em;
+  width: 1.2em;
+  height: 1.2em;
+  border: 0.22em solid var(--white);
+  border-radius: 50%;
+  background: var(--gum);
+  content: '';
+}
+
+.edge,
+.cloth {
+  display: block;
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--tail)) 50%, 100% 100%, 0 100%);
+}
+
+.edge {
+  padding: 0.3em 0.75em 0.3em 0;
+  background: var(--white);
+}
+
+.cloth {
+  padding: 0.55em 1.9em 0.5em 0.8em;
+  background: var(--hi);
+  color: var(--ink);
+}
+
+.result {
+  display: block;
+  font-size: 1.75em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.event {
+  display: block;
+  margin-top: 0.25em;
+  font-size: 1.2em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+@container section (max-width: 560px) {
+  .event {
+    font-size: 1.25em;
+  }
+}
