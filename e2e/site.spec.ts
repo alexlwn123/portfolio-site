@@ -43,9 +43,9 @@ for (const path of PAGES) {
     await page.waitForLoadState('networkidle')
 
     const origin = new URL(baseURL ?? '').origin
-    const foreign = requests.filter((request) => new URL(request.url()).origin !== origin)
+    const foreign = requests().filter((request) => new URL(request.url()).origin !== origin)
     expect(foreign.map((request) => request.url())).toEqual([])
-    expect(requests.length).toBeGreaterThan(0)
+    expect(requests().length).toBeGreaterThan(0)
   })
 
   test(`${path} produces no console output or page errors`, async ({ page }) => {
@@ -54,7 +54,7 @@ for (const path of PAGES) {
     await page.goto(path)
     await page.waitForLoadState('networkidle')
 
-    expect(output).toEqual([])
+    expect(output()).toEqual([])
   })
 
   test(`${path} does not block zooming`, async ({ page }) => {

@@ -139,7 +139,7 @@ describe('organized', () => {
           date.start.year * 10000 + (date.start.month ?? 0) * 100 + (date.start.day ?? 0),
       )
 
-    expect(starts).toEqual([...starts].sort((a, b) => b - a))
+    expect(starts).toEqual(starts.toSorted((a, b) => b - a))
   })
 })
 

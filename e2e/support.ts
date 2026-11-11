@@ -1,16 +1,28 @@
 import type { Page, Request } from '@playwright/test'
 
-/** Records every request the page makes from now on. Read it after loading. */
-export function collectRequests(page: Page): readonly Request[] {
-  const requests: Request[] = []
-  page.on('request', (request) => requests.push(request))
-  return requests
+/** Reads what a collector has gathered so far. */
+export type Collected<T> = () => readonly T[]
+
+/** Records every request the page makes from now on. */
+export function collectRequests(page: Page): Collected<Request> {
+  let requests: readonly Request[] = []
+  page.on('request', (request) => {
+    requests = [...requests, request]
+  })
+  return () => requests
 }
 
 /** Records console messages and uncaught errors from now on. */
-export function collectConsole(page: Page): readonly string[] {
-  const output: string[] = []
-  page.on('console', (message) => output.push(`${message.type()}: ${message.text()}`))
-  page.on('pageerror', (error) => output.push(`pageerror: ${error.message}`))
-  return output
+export function collectConsole(page: Page): Collected<string> {
+  let output: readonly string[] = []
+  const record = (line: string): void => {
+    output = [...output, line]
+  }
+  page.on('console', (message) => {
+    record(`${message.type()}: ${message.text()}`)
+  })
+  page.on('pageerror', (error) => {
+    record(`pageerror: ${error.message}`)
+  })
+  return () => output
 }

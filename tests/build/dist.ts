@@ -28,7 +28,7 @@ export async function listDistFiles(): Promise<readonly string[]> {
   return entries
     .filter((entry) => entry.isFile())
     .map((entry) => relative(DIST, join(entry.parentPath, entry.name)))
-    .sort()
+    .toSorted()
 }
 
 /** Scripts that a browser would run: everything except JSON-LD data blocks. */

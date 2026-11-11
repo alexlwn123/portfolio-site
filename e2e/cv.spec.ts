@@ -22,7 +22,7 @@ test.describe('/cv/', () => {
     await page.goto('/cv/')
     await page.waitForLoadState('networkidle')
 
-    const scripts = requests.filter((request) => request.resourceType() === 'script')
+    const scripts = requests().filter((request) => request.resourceType() === 'script')
     expect(scripts.map((request) => request.url())).toEqual([])
     await expect(page.locator('script:not([type="application/ld+json"])')).toHaveCount(0)
   })

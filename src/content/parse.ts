@@ -45,16 +45,15 @@ export function recordList<Schema extends z.ZodType<{ id: string }>>(
   schema: Schema,
 ): z.ZodArray<Schema> {
   return z.array(schema).superRefine((records, context) => {
-    const seen = new Set<string>()
     records.forEach((record, index) => {
-      if (seen.has(record.id)) {
+      const firstIndex = records.findIndex((other) => other.id === record.id)
+      if (firstIndex !== index) {
         context.addIssue({
           code: 'custom',
           path: [index, 'id'],
           message: `Duplicate id "${record.id}"`,
         })
       }
-      seen.add(record.id)
     })
   })
 }
