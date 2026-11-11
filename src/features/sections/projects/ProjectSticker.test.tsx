@@ -39,6 +39,42 @@ describe('ProjectSticker', () => {
     expect(renderSticker(spec('auntie-ln'))).toHaveAttribute('data-won', '')
   })
 
+  it('says where it stands on the mat, at a laptop’s width and at a tablet’s', () => {
+    render(
+      <ul>
+        <ProjectSticker
+          sticker={spec('kattis')}
+          place={{
+            laptop: { row: 4, span: 5, place: 'middle' },
+            tablet: { row: 7, span: 4, place: 'first' },
+          }}
+        />
+      </ul>,
+    )
+    const item = screen.getByRole('listitem', {
+      name: (name) => name.startsWith(spec('kattis').name),
+    })
+
+    expect(item).toHaveAttribute('data-span', '5')
+    expect(item).toHaveAttribute('data-place', 'middle')
+    expect(item).toHaveAttribute('data-span-tablet', '4')
+    expect(item).toHaveAttribute('data-place-tablet', 'first')
+  })
+
+  it('says nothing about a place it was not given', () => {
+    const item = renderSticker(spec('kattis'))
+
+    expect(item).not.toHaveAttribute('data-span')
+    expect(item).not.toHaveAttribute('data-place')
+  })
+
+  it('marks the sticker itself, apart from its caption, so the mat can stand it on a line', () => {
+    const item = renderSticker(spec('kattis'))
+
+    expect(item.querySelectorAll('[data-art]')).toHaveLength(1)
+    expect(item.querySelector('[data-art]')).toContainElement(within(item).getByRole('heading'))
+  })
+
   it('leaves a project that did not win unmarked', () => {
     expect(renderSticker(spec('btc-plinko'))).not.toHaveAttribute('data-won')
   })
@@ -98,6 +134,11 @@ describe('ProjectSticker', () => {
 
     const kattis = renderSticker(spec('kattis'))
     expect(within(kattis).queryByRole('link', { name: /^kattis:/ })).toBeNull()
+  })
+
+  it('marks the day job, so the mat can leave room over it for his note', () => {
+    expect(renderSticker(spec('finite-computer'))).toHaveAttribute('data-day-job', '')
+    expect(renderSticker(spec('kattis'))).not.toHaveAttribute('data-day-job')
   })
 
   it('says which project is his day job, and only that one', () => {

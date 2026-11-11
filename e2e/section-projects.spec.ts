@@ -22,8 +22,8 @@ const shown = publishableProjects(content.projects)
 const ROW_WIDTHS = [1440, 900] as const
 /** The mat's own scales run to the edge of the screen: they are the mat, not what is on it. */
 const MAT_FURNITURE = '[data-mat-prop="ruler"]'
-/** Stickers whose feet are this close, in pixels, stand on one line. */
-const SAME_LINE_PX = 1
+/** Stickers whose feet are this close, in pixels, stand on one line: a foot is measured in whole pixels. */
+const SAME_LINE_PX = 2
 /** The fewest rows the stickers make, and the fewest stickers a row holds. */
 const FEWEST_ROWS = 3
 const FEWEST_IN_A_ROW = 2
@@ -61,14 +61,16 @@ async function standings(section: Locator): Promise<readonly Standing[]> {
 
 /** The stickers gathered into the rows they stand in, top row first, each left to right. */
 function rowsOf(stickers: readonly Standing[]): readonly (readonly Standing[])[] {
-  const feet = [...new Set(stickers.map(({ foot }) => Math.round(foot / SAME_LINE_PX)))]
-  return feet
-    .toSorted((one, other) => one - other)
-    .map((line) =>
-      stickers
-        .filter(({ foot }) => Math.round(foot / SAME_LINE_PX) === line)
-        .toSorted((one, other) => one.left - other.left),
-    )
+  const down = stickers.toSorted((one, other) => one.foot - other.foot)
+  // A new row starts where a foot is lower than the one before it by more than a rounding.
+  const rows = down.reduce<readonly (readonly Standing[])[]>((found, sticker) => {
+    const row = found.at(-1)
+    const last = row?.at(-1)
+    return row !== undefined && last !== undefined && sticker.foot - last.foot <= SAME_LINE_PX
+      ? [...found.slice(0, -1), [...row, sticker]]
+      : [...found, [sticker]]
+  }, [])
+  return rows.map((row) => row.toSorted((one, other) => one.left - other.left))
 }
 
 /** A name as a pattern that matches it literally, at the start of an accessible name. */

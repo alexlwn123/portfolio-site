@@ -67,20 +67,21 @@
   stroke: var(--white);
 }
 
-/* Lying across its place on the mat, blade up and to the right. */
+/* The knife lies across the mat, blade to the right, as it was put down. */
 .prop[data-mat-prop='knife'] {
   display: grid;
   place-items: center;
-  height: 100%;
+  width: 30em;
+  height: 12em;
 }
 
 .prop[data-mat-prop='knife'] .knife {
-  rotate: 24deg;
+  rotate: 78deg;
 }
 
 .prop[data-mat-prop='knife'] .note {
-  bottom: 0.2em;
-  left: -0.6em;
+  bottom: 0;
+  left: 1em;
   rotate: -8deg;
 }
 
@@ -88,21 +89,4 @@
   right: 0;
   bottom: -1.3em;
   rotate: -4deg;
-}
-
-/* On a phone the knife lies across the column, between two stickers. */
-@container section (max-width: 560px) {
-  .prop[data-mat-prop='knife'] {
-    width: 30em;
-    height: 12em;
-  }
-
-  .prop[data-mat-prop='knife'] .knife {
-    rotate: 78deg;
-  }
-
-  .prop[data-mat-prop='knife'] .note {
-    bottom: 0;
-    left: 1em;
-  }
 }

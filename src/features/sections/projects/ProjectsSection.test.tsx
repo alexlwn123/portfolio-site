@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../../content'
 import { publishableProjects } from '../../../content/derive'
 import { projectsCopy } from './copy'
+import { MAT } from './matRows'
 import { ProjectsSection } from './ProjectsSection'
 
 const publishable = publishableProjects(content.projects)
@@ -98,6 +99,23 @@ describe('ProjectsSection', () => {
       expect(name).not.toBe('')
     }
     expect(names.filter((name) => name.endsWith('hackathon wins'))).toEqual([])
+  })
+
+  it('stands every sticker in a row of the mat, and sweeps the scraps to the end of the last', () => {
+    const section = renderSection()
+    const standing = [...section.querySelectorAll('[data-project], [data-mat-prop="offcuts"]')]
+    const columns = (attribute: string): number =>
+      standing.reduce((total, item) => total + Number(item.getAttribute(attribute)), 0)
+
+    for (const item of standing) {
+      expect(item).toHaveAttribute('data-span')
+      expect(item).toHaveAttribute('data-span-tablet')
+    }
+    expect(standing.at(-1)).toHaveAttribute('data-mat-prop', 'offcuts')
+    expect(standing[0]).toHaveAttribute('data-place', 'first')
+    // Whole rows only: twenty-four columns to a row on a laptop, twelve on a tablet.
+    expect(columns('data-span') % MAT.laptop.columns).toBe(0)
+    expect(columns('data-span-tablet') % MAT.tablet.columns).toBe(0)
   })
 
   it('keeps the mat’s furniture out of a screen reader’s way, and has no inline styles', () => {

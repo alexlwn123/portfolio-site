@@ -3,13 +3,16 @@ import type { ReactElement } from 'react'
 import { cx } from '../../../../lib/classNames'
 import paint from '../../../stickers/paint.module.css'
 import voice from '../../../stickers/voice.module.css'
+import { type MatPlace, placeData } from '../matRows'
 import styles from './mat.module.css'
 
-interface MatPropProps {
+interface OffcutsProps {
   /** What is scribbled on the mat beside it. */
   readonly note: string
-  /** Where it lies. */
+  /** How it lies. */
   readonly className?: string | undefined
+  /** Where on the mat it lies: at the end of the last row of stickers. */
+  readonly place?: MatPlace | undefined
 }
 
 /** A scrap of vinyl with the shapes of a coin, a star and a bolt cut out of it. */
@@ -31,9 +34,14 @@ const CURLS = [
  * the shapes that were cut from it, and a few curls of vinyl. A list item, as
  * the knife is, and furniture too.
  */
-export function Offcuts({ note, className }: MatPropProps): ReactElement {
+export function Offcuts({ note, className, place }: OffcutsProps): ReactElement {
   return (
-    <li className={cx(styles.prop, className)} aria-hidden="true" data-mat-prop="offcuts">
+    <li
+      className={cx(styles.prop, className)}
+      aria-hidden="true"
+      data-mat-prop="offcuts"
+      {...placeData(place)}
+    >
       <svg className={styles.offcuts} viewBox="0 0 244 196" focusable="false">
         <path className={paint.tang} d={SCRAP} fillRule="evenodd" transform="rotate(8 122 98)" />
         <path className={paint.hi} d={SCRAP} fillRule="evenodd" />
