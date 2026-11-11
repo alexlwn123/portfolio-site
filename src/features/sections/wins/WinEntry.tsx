@@ -86,11 +86,13 @@ function Links({ win }: { readonly win: WinFacts }): ReactElement | null {
 
 /**
  * One win on the sheet: its sticker, or the outline it left, and beside it
- * what the record says, printed where it can be read without touching anything.
+ * what the record says, printed where it can be read without touching
+ * anything. It says what it was cut from, because the sheet gives a first
+ * place more room than a second or a prize.
  */
 export function WinEntry({ win, look }: WinEntryProps): ReactElement {
   return (
-    <li className={styles.entry} data-win={win.id} data-shape={look.shape}>
+    <li className={styles.entry} data-win={win.id} data-shape={look.shape} data-finish={win.finish}>
       <div className={styles.slot}>
         {win.peeled ? (
           <EmptySlot shape={look.shape} note={winsCopy.hand.peeled} />

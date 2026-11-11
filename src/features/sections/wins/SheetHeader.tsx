@@ -32,7 +32,7 @@ export function SheetHeader({ total, tally, span }: SheetHeaderProps): ReactElem
   ]
 
   return (
-    <div className={styles.strip}>
+    <div className={styles.strip} data-strip="">
       <span className={styles.hole} data-hang-hole="" aria-hidden="true" />
       <div className={styles.set}>
         <p className={cx(voice.display, styles.name)}>{sheet.name}</p>

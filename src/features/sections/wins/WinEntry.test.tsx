@@ -40,6 +40,18 @@ describe('WinEntry', () => {
     expect(within(entry).getByRole('heading', { level: 3 })).toHaveTextContent('Pleb FM')
   })
 
+  it('says what it was cut from, so the sheet can give a first place more room', () => {
+    expect(renderEntry('pleb-fm')).toHaveAttribute('data-finish', 'first')
+  })
+
+  it('says so for a second and for the prize too', () => {
+    expect(renderEntry('last-pay-wins')).toHaveAttribute('data-finish', 'second')
+  })
+
+  it('keeps the finish of the one that was peeled off', () => {
+    expect(renderEntry('stringer-safety')).toHaveAttribute('data-finish', 'first')
+  })
+
   it('prints the result, the event and the year on one line', () => {
     const entry = renderEntry('pleb-fm')
 

@@ -4,8 +4,10 @@ import type { WinFacts } from './winFacts'
  * The shape each prize sticker is cut in. What a sticker is cut from is not
  * decided here: a first is holographic foil, a second is brushed silver, and
  * that follows from the result (see winFacts.ts). The shape is a design
- * decision, written here win by win, with one rule: a prize that was not a
- * place takes a shape that no place has.
+ * decision, written here win by win, with two rules: a prize that was not a
+ * place takes a shape that no place has, and a first place is never cut low
+ * and wide, because a first is the largest sticker on the sheet and a slab or
+ * a ticket covers the least of it.
  */
 
 export type StickerShape =
@@ -33,8 +35,8 @@ export const HAND_SET_LOOKS: Readonly<Record<string, StickerLook>> = Object.free
   'auntie-ln': flat('round'),
   'last-pay-wins': lifting('ticket'),
   'pleb-fm': flat('burst'),
-  'arion-parking': lifting('slab'),
-  'treepay-ux': flat('shield'),
+  'arion-parking': flat('shield'),
+  'treepay-ux': lifting('slab'),
   'ncr-global-hackathon-2021': flat('medal'),
 })
 
