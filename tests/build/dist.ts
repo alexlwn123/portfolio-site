@@ -1,12 +1,12 @@
-import { readFile } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { readdir, readFile } from 'node:fs/promises'
+import { join, relative, resolve } from 'node:path'
 
 export const DIST = resolve(import.meta.dirname, '../../dist')
 
 /** Maps a URL path to the file a static host serves for it. */
 export function fileForRoute(route: string): string {
-  const relative = route.replace(/^\//, '')
-  return relative === '' || relative.endsWith('/') ? `${relative}index.html` : relative
+  const path = route.replace(/^\//, '')
+  return path === '' || path.endsWith('/') ? `${path}index.html` : path
 }
 
 export async function readDistFile(relativePath: string): Promise<string> {
@@ -20,4 +20,20 @@ export async function readDistFile(relativePath: string): Promise<string> {
 export async function readPage(route: string): Promise<Document> {
   const html = await readDistFile(fileForRoute(route))
   return new DOMParser().parseFromString(html, 'text/html')
+}
+
+/** Every file in dist, as paths relative to it. */
+export async function listDistFiles(): Promise<readonly string[]> {
+  const entries = await readdir(DIST, { recursive: true, withFileTypes: true })
+  return entries
+    .filter((entry) => entry.isFile())
+    .map((entry) => relative(DIST, join(entry.parentPath, entry.name)))
+    .sort()
+}
+
+/** Scripts that a browser would run: everything except JSON-LD data blocks. */
+export function executableScripts(page: Document): readonly HTMLScriptElement[] {
+  return [...page.querySelectorAll('script')].filter(
+    (script) => script.type !== 'application/ld+json',
+  )
 }
