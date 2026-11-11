@@ -87,7 +87,9 @@ describe('winSchema', () => {
   })
 
   it('rejects a win without an event', () => {
-    const { event: _event, ...withoutEvent } = validWin
+    const withoutEvent = Object.fromEntries(
+      Object.entries(validWin).filter(([key]) => key !== 'event'),
+    )
 
     expect(winSchema.safeParse(withoutEvent).success).toBe(false)
     expect(winSchema.safeParse({ ...validWin, event: '   ' }).success).toBe(false)
@@ -173,7 +175,12 @@ describe('pressSchema', () => {
     title: 'A headline',
     reporter: null,
     url: 'https://example.com/story',
-    subject: { kind: 'organizedEvent', organizedId: 'example-held', namesEvent: false, namesOwner: false },
+    subject: {
+      kind: 'organizedEvent',
+      organizedId: 'example-held',
+      namesEvent: false,
+      namesOwner: false,
+    },
   }
 
   it('accepts coverage of an organized event', () => {

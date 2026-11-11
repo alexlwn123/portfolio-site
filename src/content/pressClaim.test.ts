@@ -76,7 +76,12 @@ describe('pressClaim', () => {
   it('fails loudly when a reference does not resolve', () => {
     const broken: Press = {
       ...npr,
-      subject: { kind: 'organizedEvent', organizedId: 'nope', namesEvent: false, namesOwner: false },
+      subject: {
+        kind: 'organizedEvent',
+        organizedId: 'nope',
+        namesEvent: false,
+        namesOwner: false,
+      },
     }
 
     expect(() => pressClaim(broken, content)).toThrow(/organized.*"nope"/)

@@ -29,7 +29,9 @@ describe('copy', () => {
   })
 
   it('holds no links or addresses', () => {
-    const withAddresses = collectStrings(copy).filter((text) => /https?:|@|\.(com|lol|dev)\b/.test(text))
+    const withAddresses = collectStrings(copy).filter((text) =>
+      /https?:|@|\.(com|lol|dev)\b/.test(text),
+    )
 
     expect(withAddresses).toEqual([])
   })

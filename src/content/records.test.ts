@@ -134,7 +134,10 @@ describe('organized', () => {
   it('lists held events newest first', () => {
     const starts = organized
       .filter((event) => event.status === 'held')
-      .map(({ date }) => date.start.year * 10000 + (date.start.month ?? 0) * 100 + (date.start.day ?? 0))
+      .map(
+        ({ date }) =>
+          date.start.year * 10000 + (date.start.month ?? 0) * 100 + (date.start.day ?? 0),
+      )
 
     expect(starts).toEqual([...starts].sort((a, b) => b - a))
   })
