@@ -34,6 +34,8 @@ export interface Env {
   readonly reducedMotion: boolean
   /** True on a device whose main pointer is a finger. */
   readonly touch: boolean
+  /** True once the browser has painted the page. */
+  readonly painted: () => boolean
   readonly frames: Frames
   readonly timers: Timers
   /** localStorage, or null where it is closed. Only reading and writing a key is asked of it. */
@@ -121,6 +123,7 @@ export function browserEnv(win: Win): Env {
   return {
     reducedMotion: matches('(prefers-reduced-motion: reduce)'),
     touch: matches('(hover: none) and (pointer: coarse)'),
+    painted: () => win.performance.getEntriesByName('first-contentful-paint').length > 0,
     frames: {
       request: (callback) => win.requestAnimationFrame(callback),
       cancel: (handle) => {

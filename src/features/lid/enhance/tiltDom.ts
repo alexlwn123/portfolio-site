@@ -2,6 +2,7 @@ import type { Env, Orientation } from './env'
 import type { LightLoop } from './lightLoop'
 import { createStore, type Store } from './store'
 import { type Reading, seen, tilt, TILT_START, type TiltState } from './tilt'
+import { RAD_PER_DEG } from './vector'
 
 /*
  * The "tilt me" sticker. It shows only where tilting can do something: on a
@@ -16,7 +17,13 @@ interface Model {
   readonly stop: (() => void) | null
 }
 
+export interface TiltHooks {
+  /** The phone leans across by this many radians, clockwise, from how it was held: 0 when tilt stops. */
+  readonly onLean?: (radians: number) => void
+}
+
 interface Context {
+  readonly hooks: TiltHooks
   readonly button: HTMLElement
   readonly doc: Document
   readonly loop: LightLoop
@@ -31,7 +38,8 @@ function hide(button: HTMLElement): void {
 }
 
 /** Stops listening to the phone and gives the lamp back to its drift. */
-function end({ button, doc, loop, model, onVisibility }: Context): void {
+function end({ button, doc, loop, model, onVisibility, hooks }: Context): void {
+  hooks.onLean?.(0)
   model.get().stop?.()
   model.set({ ...model.get(), stop: null })
   doc.removeEventListener('visibilitychange', onVisibility)
@@ -50,6 +58,7 @@ function onReading(context: Context, reading: Reading): void {
     return
   }
   loop.follow(next.lamp)
+  context.hooks.onLean?.(next.lean * RAD_PER_DEG)
 }
 
 function begin(context: Context): void {
@@ -88,6 +97,7 @@ export function installTilt(
   lid: HTMLElement,
   env: Env,
   loop: LightLoop | null,
+  hooks: TiltHooks = {},
   doc: Document = lid.ownerDocument,
 ): void {
   const button = lid.querySelector<HTMLElement>('[data-control="tilt"]')
@@ -99,7 +109,7 @@ export function installTilt(
   const onVisibility = (): void => {
     model.set({ ...model.get(), tilt: seen(model.get().tilt, doc.visibilityState) })
   }
-  const context: Context = { button, doc, loop, orientation, model, onVisibility }
+  const context: Context = { hooks, button, doc, loop, orientation, model, onVisibility }
 
   button.addEventListener('click', () => {
     onPress(context)

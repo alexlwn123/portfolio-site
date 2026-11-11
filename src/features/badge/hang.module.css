@@ -28,3 +28,22 @@
     animation: none;
   }
 }
+
+/*
+ * Hung by the page's script (see enhance/badgeDom.ts), which takes over from
+ * the sway. While the badge moves, the script sets where it hangs from
+ * (--hang-ox, --hang-oy), how far it has moved (--hang-dx, --hang-dy) and its
+ * turn (--hang-turn). The perspective is for the card's small turn in depth
+ * (see Badge.module.css), seen from the card's own middle. Asleep where it
+ * hangs, every one of these is gone and the badge is the static page.
+ */
+.hang[data-hang] {
+  animation: none;
+}
+
+.hang[data-hang-moving] {
+  transform-origin: var(--hang-ox) var(--hang-oy);
+  transform: translate(var(--hang-dx), var(--hang-dy)) rotate(var(--hang-turn));
+  perspective: 160em;
+  perspective-origin: var(--hang-ox) var(--hang-oy);
+}
