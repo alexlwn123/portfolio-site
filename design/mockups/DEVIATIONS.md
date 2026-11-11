@@ -1,8 +1,8 @@
 # Where the lid departs from the mockup
 
 The home page is a port of `01-first-screen.html`. At the mockup's own width of 728px the two
-differ in 1.64% of the pixels compared (`e2e/lid-visual.spec.ts` measures it on every run and fails
-above 2.7%). The comparison leaves out 7.9% of the page: the places taken by what was stuck on
+differ in 1.66% of the pixels compared (`e2e/lid-visual.spec.ts` measures it on every run and fails
+above 2.7%). The comparison leaves out 8.9% of the page: the places taken by what was stuck on
 after the mockup was approved, which are listed at the end under "Additions since the mockup".
 Three city pills moved to make room for those. Every other sticker's box is in the same place to
 the hundredth of a pixel. The pixels that differ are the ones listed here.
@@ -141,9 +141,10 @@ font the browser found (on this Mac: SF, Lucida Grande and Zapf Dingbats).
   stickers open in the same tab, as links on the CV do. The mockup opened them in a new one.
 - **Rounded corners show the desk.** The four 12px corners of the lid are ink where the mockup's
   were white.
-- **Not ported yet.** The foil that follows the pointer and peel-and-restick dragging are the next
-  phase. The foil rests where the mockup's script started it (`--hx: 0.35`, `--hy: 0.3`). The grab
-  cursor and the ban on selecting text are left out until dragging exists.
+- **The mockup's script was not ported: it was rebuilt.** The foil that follows the pointer and the
+  peel-and-restick dragging are now part of a larger interaction layer, described at the end under
+  "The interaction layer". The light rests where the mockup's script started it (0.35 across, 0.3
+  down). The grab cursor and the ban on selecting text apply only once the page's script is running.
 
 ## Kept as it was, but worth a look
 
@@ -152,7 +153,9 @@ font the browser found (on this Mac: SF, Lucida Grande and Zapf Dingbats).
 ## Additions since the mockup
 
 Three things were stuck on after the mockup was approved, and a ninth win was added to the record.
-None of this is in `01-first-screen.html`, so none of it can be checked against it.
+None of this is in `01-first-screen.html`, so none of it can be checked against it. After those came
+the script that makes the lid move, with two buttons of its own: it is the last part of this
+section, "The interaction layer".
 
 ### What was added
 
@@ -256,16 +259,113 @@ never by coordinates, and the test fails if one of them is missing:
 Each sticker's box is grown by 3px above, 6px either side and 12px below, which is where its shadow
 falls. The two counts are grown by 2px.
 
-|                                    | Before the additions | Now                      |
-| ---------------------------------- | -------------------- | ------------------------ |
-| Share of the page compared         | 100%                 | 92.1%                    |
-| Difference, of what is compared    | 1.95%                | 1.64%                    |
-| Tolerance                          | 3%                   | 2.7%                     |
-| Limit on what may be left out      | none needed          | 9% (7.9% is left out)    |
-| Limit for a sticker that must match | 0.1% of the page    | 0.1% of the page         |
+|                                    | Before the additions | With the first three     | With the two buttons     |
+| ---------------------------------- | -------------------- | ------------------------ | ------------------------ |
+| Share of the page compared         | 100%                 | 92.1%                    | 91.1%                    |
+| Difference, of what is compared    | 1.95%                | 1.64%                    | 1.66%                    |
+| Tolerance                          | 3%                   | 2.7%                     | 2.7%                     |
+| Limit on what may be left out      | none needed          | 9% (7.9% is left out)    | 9% (8.9% is left out)    |
+| Limit for a sticker that must match | 0.1% of the page    | 0.1% of the page         | 0.1% of the page         |
+
+The last column is the lid with its script running, which shows two buttons the mockup does not
+have (see "The interaction layer"). Their places are left out as the other additions' are. No limit
+moved. The difference went from 1.64% to 1.66% because the same differing pixels are now a share of
+a slightly smaller area. The left-out share is within a tenth of a point of its limit: one more
+sticker will not fit under it.
 
 The tolerance came down, not up. The seal's figure was already a recorded departure (ink where the
 mockup has white), so leaving its place out took 0.3 points of known difference out of the
 measurement, and the tolerance followed it down. The room between what is measured and what is
 allowed is one point, as it was. Every sticker that had to match the mockup before still has to,
 to the same 0.1%. The three pills that moved are the exception: both of their places are left out.
+
+### The interaction layer
+
+The home page now loads one script, `src/features/lid/enhance/lid.client.ts`: plain TypeScript
+modules, no framework and no library, 9.5 kB gzipped against a budget of 12 kB that
+`tests/build/dist.test.ts` enforces. `/cv/` loads none. None of this is in the mockup beyond the two
+ideas its own script had: foil that follows the pointer, and stickers that can be dragged.
+
+#### Without the script
+
+The lid is what it was. With JavaScript disabled the page was compared once, by hand, with the
+commit before this work: at 1280, 728 and 390 wide not one pixel differs. On every run
+`e2e/lid.spec.ts` compares the page with the script to the page without it and fails if any pixel
+outside the two buttons differs by more than the comparison's threshold (32 levels in a channel).
+Three things changed in the markup, and none of them shows:
+
+- **Seven stickers have a note under them**, so each is now a `div` holding its link, a hidden
+  button and the note, where it used to be the link itself. They are the three wins (Stringer
+  Safety, the NCR medal, Lightning Welder) and the four projects.
+- **The notes are in the page from the start.** Without the script a note is tucked away: it takes
+  no room and shows nothing, a screen reader reads it, and it slides out below its sticker when the
+  Tab key reaches one of its links. It is not laid out for print. Every fact in a note is also in
+  the CV, which prints the same records in full: `tests/build/dist.test.ts` checks that each
+  description appears there word for word.
+- **Three stickers are buttons**, hidden until the script shows them.
+
+#### What the script adds
+
+| Behaviour | What it does | Where it is decided |
+| --------- | ------------ | ------------------- |
+| One lamp | The script writes two custom properties on the lid, `--lamp-x` and `--lamp-y`, and nothing else on the lid. Every sticker's shadow falls away from the lamp and lengthens with distance, the silver flap of a peeling corner catches it, and the foil turns with it. The pointer moves the lamp. With no pointer it drifts. | `lightMath.ts`, `lightLoop.ts`, `lightDom.ts`, and the stylesheets of the stickers |
+| Tilt | On a touch screen that reports its orientation, a "TILT ME" sticker asks for motion and then a tilted phone moves the same lamp. | `tilt.ts`, `tiltDom.ts` |
+| Pick up, throw, re-stick | With a mouse or a pen a sticker can be picked up. It hangs from where it was pinched, swings as it is carried, keeps half its speed when let go, bounces off the lid's edges and sticks with a squash. "TIDY THE LID" puts everything back. | `dragMachine.ts`, `dragDom.ts`, `resetControl.ts` |
+| Peel to reveal | Each of the seven stickers peels back to show the note under it: by its corner (a button), by dragging the corner past halfway, or with the arrow keys on the corner. One is open at a time. | `peelMachine.ts`, `peelDom.ts`, `src/features/lid/notes.ts` |
+| Sound | A speaker sticker turns on three synthesised sounds: a crackle for a peel, a slap for a drop, a tick for the badge's ribbons. Off until asked. | `sound.ts`, `soundDom.ts`, `preference.ts` |
+
+#### The light
+
+- **Shadows** were `0 0.5em 0.5em` and are now `var(--cast-x) var(--cast-y) 0.5em`. At rest that is
+  the same shadow. With the lamp in a corner the shadow reaches 1.2em to the side.
+- **The peeling corners have their flap.** The mockup's CSS drew a silver flap in each peeled corner
+  and a mistake in it kept the flap from ever showing (see "What else differs"). It is drawn now, on
+  the hello tag, the bumper and the foil win, but only while the corner is lifting under the pointer
+  or the keyboard, and only with the script running: at rest the corner is the plain cut it was.
+- **The SVG foil is the one exception to "two properties".** The gradient of the name and the hex
+  badge, and the name's hot spot, are SVG attributes, which a stylesheet cannot set in every
+  browser. The script writes those three attributes from the same lamp.
+- **Only what is on screen is lit.** A sticker follows the lamp while it carries `data-lit`, which
+  an IntersectionObserver sets. Off-screen stickers keep the resting light and do not repaint.
+- **The drift is slow and cheap.** The lamp wanders 0.15 either side of its resting place over 47
+  and 61 seconds. It takes one frame every 200ms, not sixty a second.
+- **When it stops.** The loop asks for no frame once the lamp has settled on the pointer, none
+  while the lid is off screen, and it is never started under reduced motion.
+
+#### The three buttons
+
+| Sticker | What it is | Desktop (x, y, width) | Phone (x, y, width) |
+| ------- | ---------- | --------------------- | ------------------- |
+| `sound` | A round ink speaker: a cross when sound is off, waves when it is on | 470, 108, 46 | 336, 1052, 46 |
+| `tidy` | A small white label, `TIDY THE LID` | 14, 806, 66 | 16, 1010, 66 |
+| `tilt` | A small highlighter label, `TILT ME`. Touch screens with an orientation sensor only | 478, 196, 58 | 330, 3, 54 |
+
+Each sits where the lid was bare and covers no link, which `e2e/lid.spec.ts` and
+`e2e/lid-interactions.spec.ts` probe on a grid of points. They are last in the markup, so the Tab
+key reaches them after everything there is to read. Their smallest lettering is 11.1px at 360 wide.
+
+#### Peeling, and what a note says
+
+A peeled sticker swings up from the lid about its top left corner, its bottom right corner coming
+towards you, and stays a link. The note lies where it lifted from: the name of the thing, what it
+is, the result with the event and the year, the size of the field or the first week's takings where
+the record has them, and the record's links. A project that never competed (Clawthing Store) has
+no result or year to give. A note that would hang over the lid's edge is moved back onto it.
+
+A note can lie over a neighbour's link while it is out. It re-sticks on Escape, on a press anywhere
+outside its sticker, when another is opened, and when the Tab key moves on past its last link.
+
+The Tab order with the script running is: each link, then, for a sticker with a note, its corner,
+then the links of its note while the note is out.
+
+#### Reduced motion
+
+Nothing moves by itself: the lamp stays at rest, a note opens and closes at once, and a sticker
+that is let go sticks where it is with no swing, throw or squash. Carrying a sticker still follows
+the pointer, because the visitor is moving it. Sound is off unless it was turned on while reduced
+motion was set.
+
+#### What could not be checked here
+
+The tests run in headless Chromium on a desktop. A real phone's tilt (the tests send the readings a
+sensor would), the sounds as heard, Safari and Firefox, and a pen on a tablet have not been tried.

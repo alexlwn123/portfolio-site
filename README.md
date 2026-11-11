@@ -9,13 +9,24 @@ mockups are in `design/mockups/` and the facts the site states come from
 
 Each sticker on the lid is listed once, in reading order, in `src/features/lid/stickers.ts`. Where
 it sits is data in `src/features/lid/placement/`: one hand-set arrangement for wide screens and one
-for phones, compiled into a stylesheet at build time. No element carries an inline style.
+for phones, compiled into a stylesheet at build time. No element carries an inline style in the
+markup.
+
+The home page's script makes the lid move: one lamp that follows the pointer or a tilted phone,
+stickers that can be picked up, thrown and peeled back to read the note under them, and three quiet
+sounds that are off until asked for. Each behaviour is a state machine that returns new state
+(`lightMath`, `tilt`, `dragMachine`, `peelMachine`) beside a thin file that feeds it events and
+writes custom properties (`lightDom`, `tiltDom`, `dragDom`, `peelDom`). `design/mockups/DEVIATIONS.md`
+describes all of it under "The interaction layer".
 
 ## Stack
 
 - [Astro](https://astro.build) with static output. Every page is HTML at build time.
-- React and TypeScript components, rendered on the server only. Nothing hydrates, so pages ship no
-  JavaScript unless a component opts in with a `client:*` directive.
+- React and TypeScript components, rendered on the server only. Nothing hydrates: no page ships a
+  framework.
+- One script, on the home page only: the lid's interaction layer in `src/features/lid/enhance/`.
+  It is plain TypeScript with no dependencies, under 12 kB gzipped, and the lid is whole without
+  it. `/cv/` ships no JavaScript at all.
 - Plain CSS: design tokens as custom properties in `src/design/tokens.css`, and a CSS Module per
   component. No Tailwind, no component library, no CSS-in-JS.
 - Content as typed data in `src/content/`, validated with [zod](https://zod.dev) when the build

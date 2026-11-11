@@ -16,3 +16,8 @@ const photo = await resolveBadgePhoto(getImage, portrait)
 <Base meta={buildMeta('home', content, stats)}>
   <Lid content={content} stats={stats} photo={photo} />
 </Base>
+
+<script>
+  // The home page's one script. The lid above is whole without it.
+  import '../features/lid/enhance/lid.client'
+</script>
