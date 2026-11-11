@@ -50,6 +50,24 @@ describe('Sticker', () => {
     expect(screen.getByRole('navigation', { name: 'Elsewhere' })).toBeInTheDocument()
   })
 
+  it('can be a second-level heading with an id of its own, for whatever it names', () => {
+    render(
+      <Sticker id="pile-title" as="h2" anchor="pile-title-id">
+        Stuck on so far
+      </Sticker>,
+    )
+
+    const heading = screen.getByRole('heading', { level: 2 })
+    expect(heading).toHaveAttribute('data-sticker', 'pile-title')
+    expect(heading.id).toBe('pile-title-id')
+  })
+
+  it('has no id in the page unless it is given one', () => {
+    const { container } = render(<Sticker id="hello">Hello</Sticker>)
+
+    expect(container.firstElementChild).not.toHaveAttribute('id')
+  })
+
   it('hides a decorative sticker from assistive technology', () => {
     const { container } = render(
       <Sticker id="bolt-top" decorative>

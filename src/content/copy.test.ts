@@ -82,13 +82,18 @@ describe('copy', () => {
     )
   })
 
-  it('words the whole-career first screen: the introduction, the employers’ tags, the sixth ribbon', () => {
+  it('words the cover and the pile under it: a cue in his hand, a heading over two lines', () => {
+    expect(copy.lid.cue.text).toBe('scroll, it gets stickier')
+    expect(copy.lid.pile.title).toEqual(['Stuck on', 'so far'])
+    expect(copy.lid.pile.kicker).toMatch(/^jobs, wins, projects, cities\./)
+    // Voice only: no figure a reader could check is typed into either.
+    expect(`${copy.lid.cue.text} ${copy.lid.pile.kicker}`).not.toMatch(/\d/)
+  })
+
+  it('words the short hello, the employers’ tags and the sixth ribbon', () => {
     expect(copy.lid.hello.now('Finite Computer')).toBe('I build AI agents at Finite Computer.')
     expect(copy.lid.hello.now('Finite Computer')).toContain(copy.lid.hello.highlight)
-    expect(copy.lid.hello.alongTheWay('two', 'granted patents')).toBe(
-      'Along the way: two granted patents, and hackathons around the world.',
-    )
-    expect(copy.lid.hello.patents).toEqual({ one: 'granted patent', many: 'granted patents' })
+    expect(Object.keys(copy.lid.hello)).toEqual(['greeting', 'lead', 'highlight', 'now'])
     expect(copy.lid.employers.issued(2024)).toBe('Issued 2024')
     expect(copy.lid.employers).toMatchObject({
       label: 'Where I have worked',

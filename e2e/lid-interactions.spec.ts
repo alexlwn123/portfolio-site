@@ -278,20 +278,43 @@ test.describe('pick up, throw, re-stick', () => {
     const cv = sticker(page, 'cv')
     const before = await boxOf(cv)
     const url = page.url()
-    // The badge's own box is where it hangs from; its card, and the photo on it, hang below.
-    const badge = await boxOf(sticker(page, 'badge').getByRole('img'))
 
-    // Dropped on the badge's photo, wherever the arrangement hangs it.
-    await carry(page, 'cv', {
-      x: badge.x + badge.width / 2 - (before.x + before.width / 2),
-      y: badge.y + badge.height / 2 - (before.y + before.height / 2),
-    })
+    // Across the pile, onto the employers' tags.
+    await carry(page, 'cv', { x: 440, y: -60 })
 
     const after = await boxOf(cv)
     expect(after.x - before.x).toBeGreaterThan(400)
     expect(page.url()).toBe(url)
-    // It was dropped on the badge, which lies above every sticker. It now lies above the badge.
+    // Where it was dropped it lies on top of whatever was there.
     const onTop = await cv.evaluate((element) => {
+      const { left, top, width, height } = element.getBoundingClientRect()
+      const stack = document.elementsFromPoint(left + width / 2, top + height / 2)
+      return {
+        first: element.contains(stack[0] ?? null),
+        overAnother: stack.some((under) => {
+          const other = under.closest('[data-sticker]')
+          return other !== null && other !== element
+        }),
+      }
+    })
+    expect(onTop).toEqual({ first: true, overAnother: true })
+  })
+
+  test('a sticker dropped on the badge lies above it, though the badge lies above every sticker', async ({
+    page,
+  }) => {
+    await openLivelyLid(page, 1280)
+    const hello = sticker(page, 'hello')
+    const before = await boxOf(hello)
+    // The badge's own box is where it hangs from; its card, and the photo on it, hang below.
+    const photo = await boxOf(sticker(page, 'badge').locator('picture').locator('xpath=..'))
+
+    await carry(page, 'hello', {
+      x: photo.x + photo.width / 2 - (before.x + before.width / 2),
+      y: photo.y + photo.height / 2 - (before.y + before.height / 2),
+    })
+
+    const onTop = await hello.evaluate((element) => {
       const { left, top, width, height } = element.getBoundingClientRect()
       const stack = document.elementsFromPoint(left + width / 2, top + height / 2)
       const badge = document.querySelector('[data-sticker="badge"]')
@@ -305,6 +328,8 @@ test.describe('pick up, throw, re-stick', () => {
 
   test('a plain click still navigates', async ({ page }) => {
     await openLivelyLid(page, 1280)
+    // The plain CV is in the pile, one scroll down.
+    await sticker(page, 'cv').scrollIntoViewIfNeeded()
     const box = await boxOf(sticker(page, 'cv'))
     const middle = { x: box.x + box.width / 2, y: box.y + box.height / 2 }
 
@@ -324,8 +349,10 @@ test.describe('pick up, throw, re-stick', () => {
 
   test('a sticker cannot leave the lid', async ({ page }) => {
     await openLivelyLid(page, 1280)
-    const lid = await boxOf(page.locator('[data-lid]'))
     const seal = sticker(page, 'wins-count')
+    // The seal is in the pile, one scroll down. Everything is measured once it is in view.
+    await seal.scrollIntoViewIfNeeded()
+    const lid = await boxOf(page.locator('[data-lid]'))
     const start = await boxOf(seal)
 
     // Held, with the pointer far off the lid: it stops at the edge.

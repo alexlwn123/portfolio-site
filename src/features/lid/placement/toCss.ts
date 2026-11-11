@@ -2,12 +2,13 @@ import { type Artboard, type Frame, UNITS_PER_EM } from './artboards'
 import { HIDDEN, type Layout, type PhoneLayout, type PhonePlacement } from './schema'
 
 /*
- * Compiles the placements into one stylesheet. Stickers carry no inline
+ * Compiles the pile's placements into a stylesheet. Stickers carry no inline
  * styles: each is found by its data-sticker attribute, and the phone and wide
- * arrangements are the same set of rules inside a container query each.
+ * arrangements are the same set of rules inside a container query each. The
+ * cover's rules are compiled beside these, in coverCss.ts.
  */
 
-export interface LidLayouts {
+export interface PileLayouts {
   /** Sticker ids in reading order, which is also the order they slap down in. */
   readonly order: readonly string[]
   readonly wide: Layout
@@ -25,7 +26,8 @@ export interface LidLayouts {
 const SLAP_STEPS = 20
 const EM_DECIMALS = 3
 
-function em(units: number): string {
+/** A length in design units, written in em. */
+export function em(units: number): string {
   const value = Number((units / UNITS_PER_EM).toFixed(EM_DECIMALS))
   return `${String(value === 0 ? 0 : value)}em`
 }
@@ -44,7 +46,7 @@ function declarations(placement: PhonePlacement): readonly string[] {
   ]
 }
 
-function rule(selector: string, lines: readonly string[]): string {
+export function rule(selector: string, lines: readonly string[]): string {
   return `${selector}{${lines.join(';')}}`
 }
 
@@ -69,18 +71,18 @@ function slapStep(index: number, count: number): number {
   return count > 1 ? Math.round((index * SLAP_STEPS) / (count - 1)) : 0
 }
 
-/** The stage as wide as the lid: its font size is the design unit, whatever the width. */
-function stageRule({ width, height }: Artboard): string {
-  return rule('[data-lid-stage]', [
+/** The pile as wide as the lid: its font size is the design unit, whatever the width. */
+function pileRule({ width, height }: Artboard): string {
+  return rule('[data-lid-pile]', [
     `font-size:calc(100cqw / ${String(width / UNITS_PER_EM)})`,
     `height:${em(height)}`,
   ])
 }
 
 /** The same, for an artboard that stops growing at a cap and then sits in the middle of the lid. */
-function cappedStageRule({ width, height }: Artboard, capPx: number): string {
+function cappedPileRule({ width, height }: Artboard, capPx: number): string {
   const ems = String(width / UNITS_PER_EM)
-  return rule('[data-lid-stage]', [
+  return rule('[data-lid-pile]', [
     `font-size:min(calc(100cqw / ${ems}),calc(${String(capPx)}px / ${ems}))`,
     `height:${em(height)}`,
     `max-width:${String(capPx)}px`,
@@ -96,7 +98,7 @@ function query(frame: Frame, condition: string, rules: readonly string[]): reado
  * The desktop arrangement is the plain rules. The phone's and the wide one's
  * each sit in a container query, and the two queries never match at once.
  */
-export function toCss(layouts: LidLayouts, frame: Frame): string {
+export function toCss(layouts: PileLayouts, frame: Frame): string {
   const { order, wide, desktop, phone, late = [] } = layouts
   const lidRule = rule('[data-lid]', [`container:${frame.containerName} / inline-size`])
   const prompt = order.filter((id) => !late.includes(id))
@@ -107,14 +109,14 @@ export function toCss(layouts: LidLayouts, frame: Frame): string {
 
   return [
     lidRule,
-    stageRule(frame.desktop),
+    pileRule(frame.desktop),
     ...order.map((id) => stickerRule(id, desktop[id], [`--i:${String(step(id))}`])),
     ...query(frame, `max-width:${String(frame.phoneMaxWidthPx)}px`, [
-      stageRule(frame.phone),
+      pileRule(frame.phone),
       ...rulesOf(phone),
     ]),
     ...query(frame, `min-width:${String(frame.wideMinWidthPx)}px`, [
-      cappedStageRule(frame.wide, frame.maxArtboardWidthPx),
+      cappedPileRule(frame.wide, frame.maxArtboardWidthPx),
       ...rulesOf(wide),
     ]),
     '',

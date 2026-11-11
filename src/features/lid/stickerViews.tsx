@@ -8,6 +8,7 @@ import type { BadgePhotoImage } from '../badge/photoSources'
 import { AssetTag } from '../stickers/AssetTag'
 import { Bumper } from '../stickers/Bumper'
 import { ComplianceLabel } from '../stickers/ComplianceLabel'
+import { Cue } from '../stickers/Cue'
 import { SoundFace } from '../stickers/controls/SoundFace'
 import { WordsFace } from '../stickers/controls/WordsFace'
 import { DieCutText } from '../stickers/DieCutText'
@@ -18,6 +19,7 @@ import { HexBadge } from '../stickers/HexBadge'
 import { ArcadeButton } from '../stickers/illustrations/ArcadeButton'
 import { Bolt } from '../stickers/illustrations/Bolt'
 import { Crab } from '../stickers/illustrations/Crab'
+import { Scrawl } from '../stickers/Scrawl'
 import { Jukebox } from '../stickers/Jukebox'
 import { Medal } from '../stickers/Medal'
 import { ParkingSign } from '../stickers/ParkingSign'
@@ -31,6 +33,8 @@ import { Sticker, type StickerProps } from '../stickers/Sticker'
 import { Tally } from '../stickers/Tally'
 import { Wristband } from '../stickers/Wristband'
 import { copy } from '../../content/copy'
+import { HeadingLabel } from '../sections/HeadingLabel'
+import { PILE_TITLE_ID } from './anchor'
 import styles from './Lid.module.css'
 import type { NoteSpec, StickerKind, StickerSpec } from './stickerSpecs'
 
@@ -49,7 +53,7 @@ export interface StickerViewProps {
 
 type Frame = Pick<
   StickerProps,
-  'as' | 'flat' | 'decorative' | 'selfSized' | 'className' | 'control' | 'toggle'
+  'as' | 'anchor' | 'flat' | 'decorative' | 'selfSized' | 'className' | 'control' | 'toggle'
 >
 
 /** Inside a link everything must be phrasing content, so those stickers are spans. */
@@ -63,6 +67,9 @@ const FRAMES: Readonly<Record<StickerKind, Frame>> = {
   lanyard: { flat: true, decorative: true, className: cx(hang.hang, strapsClass) },
   badge: { flat: true, className: hang.hang },
   hello: {},
+  cue: { flat: true },
+  heading: { as: 'h2', anchor: PILE_TITLE_ID, selfSized: true, className: styles.heading },
+  scrawl: { as: 'p', flat: true, className: styles.scrawl },
   assetTag: INLINE,
   propertyTag: { as: 'span', selfSized: true },
   starburst: INLINE,
@@ -95,8 +102,17 @@ function peelShape(kind: StickerKind): PeelShape {
 }
 
 type OpeningSpec = Extract<StickerSpec, { kind: 'name' | 'lanyard' | 'badge' | 'hello' }>
+type WrittenSpec = Extract<StickerSpec, { kind: 'cue' | 'heading' | 'scrawl' }>
 type MetalSpec = Extract<StickerSpec, { kind: 'assetTag' | 'propertyTag' | 'complianceLabel' }>
 type ControlSpec = Extract<StickerSpec, { kind: 'sound' | 'tidy' | 'tilt' }>
+type AwardSpec = Extract<
+  StickerSpec,
+  { kind: 'starburst' | 'roundBadge' | 'foilWin' | 'medal' | 'hexBadge' | 'tally' }
+>
+type ProjectSpec = Extract<
+  StickerSpec,
+  { kind: 'bumper' | 'arcadeButton' | 'parkingSign' | 'crab' | 'jukebox' | 'record' }
+>
 
 /** What the lid opens with: his name, his badge on its lanyard and his introduction. */
 function openingFace(spec: OpeningSpec, photo: BadgePhotoImage): ReactElement {
@@ -110,6 +126,18 @@ function openingFace(spec: OpeningSpec, photo: BadgePhotoImage): ReactElement {
       return <Badge {...spec} photo={photo} />
     case 'hello':
       return <HelloTag {...spec} />
+  }
+}
+
+/** What tells a visitor where they are and where to go: the cue, the pile's heading and the line under it. */
+function writtenFace(spec: WrittenSpec): ReactElement {
+  switch (spec.kind) {
+    case 'cue':
+      return <Cue text={spec.text} />
+    case 'heading':
+      return <HeadingLabel lines={spec.lines} />
+    case 'scrawl':
+      return <Scrawl text={spec.text} />
   }
 }
 
@@ -137,17 +165,9 @@ function controlFace(spec: ControlSpec): ReactElement {
   }
 }
 
-function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
+/** The stickers that count something or mark a win. */
+function awardFace(spec: AwardSpec): ReactElement {
   switch (spec.kind) {
-    case 'name':
-    case 'lanyard':
-    case 'badge':
-    case 'hello':
-      return openingFace(spec, photo)
-    case 'assetTag':
-    case 'propertyTag':
-    case 'complianceLabel':
-      return metalFace(spec)
     case 'starburst':
       return <Starburst {...spec} />
     case 'roundBadge':
@@ -156,10 +176,16 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
       return <FoilWin {...spec} />
     case 'medal':
       return <Medal {...spec} />
-    case 'bolt':
-      return <Bolt />
-    case 'pill':
-      return <Pill {...spec} />
+    case 'hexBadge':
+      return <HexBadge {...spec} />
+    case 'tally':
+      return <Tally {...spec} />
+  }
+}
+
+/** The stickers for things he made, and the talk he gives about making them. */
+function projectFace(spec: ProjectSpec): ReactElement {
+  switch (spec.kind) {
     case 'bumper':
       return <Bumper {...spec} />
     case 'arcadeButton':
@@ -172,12 +198,44 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
       return <Jukebox {...spec} />
     case 'record':
       return <RecordSticker {...spec} />
+  }
+}
+
+function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
+  switch (spec.kind) {
+    case 'name':
+    case 'lanyard':
+    case 'badge':
+    case 'hello':
+      return openingFace(spec, photo)
+    case 'cue':
+    case 'heading':
+    case 'scrawl':
+      return writtenFace(spec)
+    case 'assetTag':
+    case 'propertyTag':
+    case 'complianceLabel':
+      return metalFace(spec)
+    case 'starburst':
+    case 'roundBadge':
+    case 'foilWin':
+    case 'medal':
     case 'hexBadge':
-      return <HexBadge {...spec} />
+    case 'tally':
+      return awardFace(spec)
+    case 'bumper':
+    case 'arcadeButton':
+    case 'parkingSign':
+    case 'crab':
+    case 'jukebox':
+    case 'record':
+      return projectFace(spec)
+    case 'bolt':
+      return <Bolt />
+    case 'pill':
+      return <Pill {...spec} />
     case 'ghost':
       return <Ghost {...spec} />
-    case 'tally':
-      return <Tally {...spec} />
     case 'wristband':
       return <Wristband {...spec} />
     case 'sound':

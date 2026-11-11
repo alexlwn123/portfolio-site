@@ -105,8 +105,9 @@
 }
 
 /* Highlighter ring with an ink edge on both sides: visible on the cobalt lid
-   and on any sticker it overlaps. */
-.sticker:focus-visible {
+   and on any sticker it overlaps. What is written straight onto the lid does
+   not lift, but a link among it shows the same ring. */
+.placed:focus-visible {
   outline: 0.3em solid var(--hi);
   outline-offset: 0.3em;
   border-radius: 0;
@@ -168,7 +169,7 @@
   -webkit-user-select: none;
 }
 
-:global([data-enhanced]) :is(div, span, h1, nav).sticker[data-grab] {
+:global([data-enhanced]) :is(div, span, h1, h2, nav).sticker[data-grab] {
   cursor: grab;
 }
 

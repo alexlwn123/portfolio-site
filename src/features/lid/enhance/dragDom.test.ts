@@ -124,6 +124,25 @@ describe('picking stickers up on the page', () => {
     expect(share(cv, '--dy')).toBeCloseTo((50 - 450) / 1000, 4)
   })
 
+  it('keeps a sticker of the pile on the lid, measured from the lid and not from its own block', () => {
+    const { env } = setUp()
+    const cv = fixture.sticker('cv')
+    // The pile starts 900px down the lid, and the sticker is placed against the pile.
+    const pile = document.createElement('div')
+    place(pile, { left: 0, top: 900, width: 1000, height: 900 })
+    Object.defineProperty(pile, 'offsetParent', { configurable: true, value: fixture.lid })
+    Object.defineProperty(cv, 'offsetParent', { configurable: true, value: pile })
+
+    dragFrom(cv, [200, 1350], [200, 5000])
+    env.frames.flush(240)
+    pointer(window, 'pointerup', { x: 200, y: 5000 })
+    env.frames.flush(600)
+
+    // Its middle is 1350px down the lid, and may go as far as half its height from the foot.
+    expect(share(cv, '--dy')).toBeCloseTo((LID_BOX.height - 50 - 1350) / 1000, 4)
+    expect(share(cv, '--dx')).toBeCloseTo(0, 4)
+  })
+
   it('never drags under a finger: a touch is for scrolling', () => {
     const { env } = setUp()
     const cv = fixture.sticker('cv')

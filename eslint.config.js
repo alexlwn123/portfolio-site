@@ -109,6 +109,8 @@ export default defineConfig([
     // Components may not join this list: they read these modules instead.
     files: [
       'src/features/lid/placement/artboards.ts',
+      // The cover's four compositions: placements, as the pile's three files are.
+      'src/features/lid/placement/cover.ts',
       'src/features/lid/placement/wide.ts',
       'src/features/lid/placement/desktop.ts',
       'src/features/lid/placement/phone.ts',

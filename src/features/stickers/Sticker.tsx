@@ -3,7 +3,7 @@ import { createElement, type ReactElement, type ReactNode } from 'react'
 import { cx } from '../../lib/classNames'
 import styles from './Sticker.module.css'
 
-type StickerTag = 'div' | 'h1' | 'nav' | 'span'
+type StickerTag = 'div' | 'h1' | 'h2' | 'nav' | 'p' | 'span'
 
 /** What a sticker that is a button does to the lid. The page's script finds it by this. */
 export type StickerControl = 'sound' | 'tidy' | 'tilt'
@@ -11,6 +11,8 @@ export type StickerControl = 'sound' | 'tidy' | 'tilt'
 export interface StickerProps {
   /** The sticker's id. The placement stylesheet finds the element by it. */
   readonly id: string
+  /** An id in the page, for a sticker that something else is labelled by. */
+  readonly anchor?: string | undefined
   /** The element to use when the sticker is neither a link nor a button. */
   readonly as?: StickerTag
   /** Where the sticker leads. A sticker with an address is always a link. */
@@ -52,6 +54,7 @@ function buttonProps(control: StickerControl, toggle: boolean): Record<string, u
  */
 export function Sticker({
   id,
+  anchor,
   as = 'div',
   href,
   control,
@@ -68,6 +71,7 @@ export function Sticker({
   return createElement(
     tag,
     {
+      id: anchor,
       'data-sticker': id,
       'data-grab': flat ? undefined : '',
       className: cx(

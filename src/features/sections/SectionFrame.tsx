@@ -1,9 +1,8 @@
 import type { ReactElement, ReactNode } from 'react'
 
 import { cx } from '../../lib/classNames'
-import { Lines } from '../stickers/Lines'
-import { Vinyl } from '../stickers/Vinyl'
 import voice from '../stickers/voice.module.css'
+import { HeadingLabel } from './HeadingLabel'
 import styles from './SectionFrame.module.css'
 import { type HomeSectionId, type Surface, titleId } from './sectionIds'
 import { Stuck } from './Stuck'
@@ -39,11 +38,7 @@ export function SectionFrame(props: SectionFrameProps): ReactElement {
         <header className={styles.header}>
           <h2 id={titleId(id)} className={styles.title}>
             <Stuck as="span">
-              <Vinyl tone="hi" className={styles.label}>
-                <span className={cx(voice.display, styles.words)}>
-                  <Lines lines={title} />
-                </span>
-              </Vinyl>
+              <HeadingLabel lines={title} />
             </Stuck>
           </h2>
           {kicker !== undefined && <p className={cx(voice.marker, styles.kicker)}>{kicker}</p>}

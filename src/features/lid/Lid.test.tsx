@@ -8,7 +8,14 @@ import { SECTION_IDS } from '../sections/sectionIds'
 import { Lid } from './Lid'
 import { isNoted, lidNotes, NOTED_IDS } from './notes'
 import { flattenStickers, isControl, isDecoration, linksOf } from './stickerSpecs'
-import { CONTROL_IDS, EMPLOYER_IDS, lidStickers, STICKER_IDS } from './stickers'
+import {
+  CONTROL_IDS,
+  COVER_IDS,
+  EMPLOYER_IDS,
+  lidStickers,
+  PILE_IDS,
+  STICKER_IDS,
+} from './stickers'
 
 const photo: BadgePhotoImage = {
   sources: [{ type: 'image/avif', srcSet: '/_astro/portrait.avif 424w' }],
@@ -43,14 +50,57 @@ function stickerIds(container: HTMLElement): readonly (string | null)[] {
 }
 
 describe('Lid', () => {
-  it('has exactly one h1, and it is his name', () => {
+  it('has exactly one h1, his name, and under it one h2: the pile’s title', () => {
     renderLid()
 
     const headings = screen.getAllByRole('heading')
-    expect(headings).toHaveLength(1)
-    expect(headings[0]?.tagName).toBe('H1')
+    expect(headings.map(({ tagName }) => tagName)).toEqual(['H1', 'H2'])
     expect(headings[0]).toHaveAccessibleName(content.profile.name)
     expect(headings[0]?.textContent).toBe(content.profile.name)
+    expect(headings[1]?.textContent).toBe('Stuck on so far ')
+    expect(headings[1]?.querySelector('br')).toBeNull()
+  })
+
+  it('is two blocks on one stage: the cover, and the pile under it', () => {
+    const container = renderLid()
+    const stage = container.querySelector('[data-lid] > [data-lid-stage]')
+    const blocks = [...(stage?.children ?? [])].filter((block) => block.tagName !== 'svg')
+    const idsIn = (selector: string): readonly (string | null)[] =>
+      [...container.querySelectorAll(`${selector} [data-sticker]`)].map((sticker) =>
+        sticker.getAttribute('data-sticker'),
+      )
+
+    expect(blocks.map((block) => block.hasAttribute('data-lid-cover'))).toEqual([true, false])
+    expect(blocks[1]).toHaveAttribute('data-lid-pile')
+    expect(idsIn('[data-lid-cover] > [data-lid-board]')).toEqual(COVER_IDS)
+    expect(idsIn('[data-lid-pile]')).toEqual(PILE_IDS)
+    expect(container.querySelectorAll('[data-lid]')).toHaveLength(1)
+  })
+
+  it('makes the pile a region of its own, named by its heading, where the cue leads', () => {
+    renderLid()
+
+    // jsdom's name computation drops the space that ends each line of the title.
+    const pile = screen.getByRole('region', { name: /^Stuck on\s*so far$/ })
+    expect(pile.tagName).toBe('SECTION')
+    expect(pile.id).toBe('pile')
+    expect(pile).toHaveAttribute('data-lid-pile')
+    expect(screen.getByRole('heading', { level: 2 }).id).toBe(pile.getAttribute('aria-labelledby'))
+    expect(screen.getByRole('link', { name: 'scroll, it gets stickier' })).toHaveAttribute(
+      'href',
+      '/#pile',
+    )
+  })
+
+  it('keeps the cover to the name, the badge, the hello tag and the cue', () => {
+    const container = renderLid()
+    const cover = container.querySelector<HTMLElement>('[data-lid-cover]')
+
+    expect(cover?.querySelectorAll('button')).toHaveLength(0)
+    expect(cover?.querySelector('[data-sticker="cv"]')).toBeNull()
+    expect(cover?.querySelectorAll('ul[aria-label]')).toHaveLength(0)
+    // Its only links are the six ribbons and the cue.
+    expect(within(cover ?? container).getAllByRole('link')).toHaveLength(7)
   })
 
   it('does not make the name a link', () => {
@@ -228,7 +278,7 @@ describe('Lid', () => {
     const hrefs = [...container.querySelectorAll('a[href*="#"]')].map(
       (link) => link.getAttribute('href') ?? '',
     )
-    const onThisPage: readonly string[] = SECTION_IDS.map((id) => `/#${id}`)
+    const onThisPage: readonly string[] = ['pile', ...SECTION_IDS].map((id) => `/#${id}`)
     const onTheCv: readonly string[] = SECTIONS.map(({ id }) => `/cv/#${id}`)
 
     expect(hrefs.length).toBeGreaterThan(0)
@@ -269,12 +319,15 @@ describe('Lid', () => {
     )
   })
 
-  it('introduces the whole career on the hello tag, with one phrase highlighted', () => {
+  it('says hello in two short lines, with one phrase highlighted', () => {
     const container = renderLid()
     const hello = container.querySelector('[data-sticker="hello"]')
 
-    expect(hello).toHaveTextContent(content.profile.role.organization)
-    expect(hello).toHaveTextContent(/two granted patents/)
+    expect(hello).toHaveTextContent(
+      `HELLO I’m a software engineer from ${content.profile.location.city}, ` +
+        `${content.profile.location.regionCode}. I build AI agents at ` +
+        `${content.profile.role.organization}.`,
+    )
     expect(hello?.querySelectorAll('mark')).toHaveLength(1)
   })
 
@@ -392,7 +445,7 @@ describe('Lid', () => {
       (sticker) => sticker.getAttribute('data-sticker'),
     )
 
-    expect(fixed).toEqual(['lanyard', 'badge', 'next-spot', 'tally'])
+    expect(fixed).toEqual(['lanyard', 'badge', 'cue', 'pile-kicker', 'next-spot', 'tally'])
   })
 
   it('types no arrow or star: each is drawn', () => {

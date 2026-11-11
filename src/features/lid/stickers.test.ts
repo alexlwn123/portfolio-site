@@ -4,7 +4,17 @@ import { content, stats } from '../../content'
 import { deriveStats } from '../../content/derive'
 import { SECTION_IDS } from '../sections/sectionIds'
 import { flattenStickers, isControl, isDecoration, linksOf, type StickerSpec } from './stickerSpecs'
-import { CONTROL_IDS, EMPLOYER_IDS, lidStickers, STICKER_IDS, type StickerId } from './stickers'
+import {
+  CONTROL_IDS,
+  COVER_IDS,
+  coverStickers,
+  EMPLOYER_IDS,
+  lidStickers,
+  PILE_IDS,
+  pileStickers,
+  STICKER_IDS,
+  type StickerId,
+} from './stickers'
 
 const items = lidStickers(content, stats)
 const stickers = flattenStickers(items)
@@ -25,12 +35,43 @@ describe('lidStickers', () => {
     expect(stickers.map(({ id }) => id)).toEqual(STICKER_IDS)
   })
 
-  it('reads name, badge and ribbons, then the intro, then content, then contact links', () => {
+  it('reads name, badge and ribbons, then the intro and the cue, then the pile under its heading', () => {
     const kinds = stickers.map(({ kind }) => kind)
 
-    expect(kinds.slice(0, 4)).toEqual(['name', 'lanyard', 'badge', 'hello'])
+    expect(kinds.slice(0, 5)).toEqual(['name', 'lanyard', 'badge', 'hello', 'cue'])
+    expect(kinds.slice(5, 8)).toEqual(['heading', 'scrawl', 'assetTag'])
     expect(kinds.slice(-5)).toEqual(['wristband', 'wristband', 'tilt', 'sound', 'tidy'])
-    expect(kinds.indexOf('assetTag')).toBe(4)
+  })
+
+  it('is the cover and then the pile: nothing is on both, and nothing is on neither', () => {
+    const idsOf = (list: typeof items): readonly string[] =>
+      flattenStickers(list).map(({ id }) => id)
+
+    expect(idsOf(coverStickers(content, stats))).toEqual(COVER_IDS)
+    expect(idsOf(pileStickers(content, stats))).toEqual(PILE_IDS)
+    expect(STICKER_IDS).toEqual([...COVER_IDS, ...PILE_IDS])
+    expect(new Set(STICKER_IDS).size).toBe(STICKER_IDS.length)
+  })
+
+  it('puts nothing on the cover but the name, the badge on its lanyard, the hello tag and the cue', () => {
+    expect(COVER_IDS).toEqual(['name', 'lanyard', 'badge', 'hello', 'cue'])
+    expect(Object.isFrozen(coverStickers(content, stats))).toBe(true)
+    expect(Object.isFrozen(pileStickers(content, stats))).toBe(true)
+  })
+
+  it('heads the pile with a title over two lines and a line in his hand under it', () => {
+    expect(sticker('pile-title', 'heading').lines).toEqual(['Stuck on', 'so far'])
+    expect(sticker('pile-kicker', 'scrawl').text).toMatch(/further down\.$/)
+    expect(PILE_IDS.slice(0, 2)).toEqual(['pile-title', 'pile-kicker'])
+  })
+
+  it('writes a cue to scroll that leads to the pile', () => {
+    expect(sticker('cue', 'cue')).toEqual({
+      id: 'cue',
+      kind: 'cue',
+      text: 'scroll, it gets stickier',
+      href: '/#pile',
+    })
   })
 
   it('adds the NCR medal after the other wins and the patent label as the last of the small print', () => {
@@ -38,7 +79,7 @@ describe('lidStickers', () => {
 
     expect(ids.indexOf('ncr-win')).toBe(ids.indexOf('latest-win') + 1)
     expect(ids.indexOf('patents')).toBe(ids.indexOf('elsewhere') - 1)
-    expect(STICKER_IDS).toHaveLength(40)
+    expect(STICKER_IDS).toHaveLength(43)
   })
 
   it('puts the three buttons last, after everything there is to read', () => {
@@ -70,35 +111,34 @@ describe('lidStickers', () => {
     expect(sticker('lanyard', 'lanyard').left).toEqual(['alex.lwn.lol', 'ATL'])
   })
 
-  it('introduces the whole person: where he is from, his work now, what came before', () => {
+  it('says hello in two short lines: who he is and where, and what he does today', () => {
     const hello = sticker('hello', 'hello')
 
-    expect(hello.text).toBe(
-      'software engineer from Atlanta, GA. I build AI agents at Finite Computer. ' +
-        'Before that: bitcoin and Lightning apps. ' +
-        'Along the way: two granted patents, and hackathons around the world.',
-    )
-    expect(hello.text).toContain(hello.highlight)
+    expect(hello.lines).toEqual([
+      'software engineer from Atlanta, GA.',
+      'I build AI agents at Finite Computer.',
+    ])
+    expect(hello.lines.filter((line) => line.includes(hello.highlight))).toHaveLength(1)
     expect(hello.highlight).not.toMatch(/hackathon/i)
   })
 
-  it('takes the employer and the patent count in the introduction from the records', () => {
+  it('takes who he is from his own first line and the employer from the job he holds now', () => {
     const moved = {
       ...content,
+      profile: {
+        ...content.profile,
+        selfDescription: ['An engineer from Decatur, GA.', ...content.profile.selfDescription],
+      },
       experience: content.experience.map((job) =>
         job.id === 'finite-computer' ? { ...job, organization: 'Somewhere Else' } : job,
       ),
-      patents: content.patents.filter((patent) => patent.id !== 'us-12536579'),
     }
     const hello = flattenStickers(lidStickers(moved, deriveStats(moved))).find(
       ({ id }) => id === 'hello',
     )
 
     expect(hello).toMatchObject({
-      text: expect.stringContaining('I build AI agents at Somewhere Else.') as unknown,
-    })
-    expect(hello).toMatchObject({
-      text: expect.stringContaining('one granted patent, and') as unknown,
+      lines: ['engineer from Decatur, GA.', 'I build AI agents at Somewhere Else.'],
     })
   })
 
@@ -437,7 +477,16 @@ describe('lidStickers', () => {
     const internal = stickers.flatMap(linksOf).filter((href) => href.startsWith('/'))
 
     expect(new Set(internal)).toEqual(
-      new Set(['/cv/', '/#work', '/#wins', '/#projects', '/#organized', '/#talks', '/#patents']),
+      new Set([
+        '/cv/',
+        '/#pile',
+        '/#work',
+        '/#wins',
+        '/#projects',
+        '/#organized',
+        '/#talks',
+        '/#patents',
+      ]),
     )
     expect(internal.filter((href) => href.startsWith('/cv/'))).toEqual(['/cv/'])
   })

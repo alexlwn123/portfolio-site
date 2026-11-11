@@ -1,0 +1,32 @@
+/*
+ * The cue to scroll: handwriting on the bare lid, in highlighter, with the
+ * marker's arrow after its last word. It is a link, and two lines of it are
+ * taller than a fingertip needs.
+ */
+.cue {
+  display: block;
+  color: var(--hi);
+  font-size: 2.2em;
+  line-height: 1.1;
+}
+
+.arrow {
+  width: 0.72em;
+  height: 0.9em;
+  margin-left: 0.15em;
+  vertical-align: -0.12em;
+}
+
+/* Beside the badge on a phone there is a finger's width of lid: the words are set a little smaller. */
+@container lid (max-width: 560px) {
+  .cue {
+    font-size: 1.9em;
+  }
+}
+
+/* Under the pointer or the keyboard the words are underlined, as handwriting is: with one stroke. */
+:is(a:hover, a:focus-visible) > .cue {
+  text-decoration: underline;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.16em;
+}

@@ -22,19 +22,22 @@ export const copy = deepFreeze({
    */
   lid: {
     /**
-     * The hello tag. His own first line opens it (see introOpening in
-     * src/features/lid/facts.ts) and these follow: the employer and the patent
-     * count are passed in from the records.
+     * The hello tag: two short lines. His own first line opens it (see
+     * introOpening in src/features/lid/facts.ts) and this follows, with the
+     * employer passed in from the records.
      */
     hello: {
       greeting: 'HELLO',
       lead: 'I’m a',
       highlight: 'AI agents',
       now: (employer: string) => `I build AI agents at ${employer}.`,
-      before: 'Before that: bitcoin and Lightning apps.',
-      alongTheWay: (count: Figure, patents: string) =>
-        `Along the way: ${String(count)} ${patents}, and hackathons around the world.`,
-      patents: { one: 'granted patent', many: 'granted patents' },
+    },
+    /** The cover's cue to scroll, in his handwriting. Its arrow is drawn. */
+    cue: { text: 'scroll, it gets stickier' },
+    /** The pile under the cover: its heading sticker and the line under it. */
+    pile: {
+      title: ['Stuck on', 'so far'],
+      kicker: 'jobs, wins, projects, cities. the long versions are further down.',
     },
     /** The asset tags his employers left on the lid. Names and years come from the records. */
     employers: {

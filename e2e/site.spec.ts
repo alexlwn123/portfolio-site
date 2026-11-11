@@ -136,14 +136,17 @@ for (const width of [1440, 728, 390] as const) {
   })
 }
 
-test('the hello tag introduces the whole career, from the records', async ({ page }) => {
+test('the hello tag says who he is and what he does today, from the records', async ({ page }) => {
   await openLid(page, 1440)
   const hello = page.locator('[data-sticker="hello"]')
+  const { city, regionCode } = content.profile.location
 
+  await expect(hello).toContainText(`software engineer from ${city}, ${regionCode}.`)
   await expect(hello).toContainText(`I build AI agents at ${content.profile.role.organization}.`)
-  await expect(hello).toContainText('two granted patents')
   await expect(hello.locator('mark')).toHaveText('AI agents')
-  expect(stats.patents.granted).toBe(2)
+  // The short hello: the whole career is the pile's business now, and the sections'.
+  await expect(hello).not.toContainText('patent')
+  expect(content.experience[0]?.organization).toBe(content.profile.role.organization)
 })
 
 test('the home page describes the whole career to a search engine', async ({ page }) => {

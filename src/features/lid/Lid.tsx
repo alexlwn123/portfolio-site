@@ -7,7 +7,7 @@ import { LID_ID } from './anchor'
 import styles from './Lid.module.css'
 import { LidSurface } from './LidSurface'
 import { lidNotes } from './notes'
-import { lidStickers } from './stickers'
+import { coverStickers, pileStickers } from './stickers'
 
 interface LidProps {
   readonly content: Content
@@ -18,18 +18,25 @@ interface LidProps {
 
 /**
  * The top of the home page: the lid of a laptop that has been everywhere he
- * has worked and to every hackathon, with his conference badge hanging from a
- * lanyard. It is the surface itself, edge to edge: nothing wraps it, so there
- * is nothing around it to show. Static HTML and CSS: the page loads a script
- * that makes it move (src/features/lid/enhance), and the lid is whole without
- * it. The main landmark belongs to the page (src/features/home/HomePage.tsx),
- * which puts the sections under the lid.
+ * has worked and to every hackathon. It opens on a cover, one screen tall,
+ * with his name and his conference badge hanging from a lanyard, and under
+ * that is the pile: everything else that has been stuck on. It is the surface
+ * itself, edge to edge: nothing wraps it, so there is nothing around it to
+ * show. Static HTML and CSS: the page loads a script that makes it move
+ * (src/features/lid/enhance), and the lid is whole without it. The main
+ * landmark belongs to the page (src/features/home/HomePage.tsx), which puts
+ * the sections under the lid.
  */
 export function Lid({ content, stats, photo }: LidProps): ReactElement {
   return (
     <div id={LID_ID} className={styles.lid} data-lid="">
       <SharedDefs />
-      <LidSurface items={lidStickers(content, stats)} notes={lidNotes(content)} photo={photo} />
+      <LidSurface
+        cover={coverStickers(content, stats)}
+        pile={pileStickers(content, stats)}
+        notes={lidNotes(content)}
+        photo={photo}
+      />
     </div>
   )
 }

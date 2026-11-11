@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { ContentError } from '../../../content/parse'
-import { HIDDEN, parseLayout, parsePhoneLayout } from './schema'
+import { COVER_RISE } from './artboards'
+import { HIDDEN, parseCoverLayout, parseLayout, parsePhoneLayout } from './schema'
 
 const IDS = ['name', 'pill'] as const
 const ARTBOARD = { width: 400, height: 600 }
@@ -65,21 +66,6 @@ describe('parseLayout', () => {
     expect(parse({ ...valid, name: hanging }).name).toEqual(hanging)
   })
 
-  it('lets an artboard say how far above its top edge a placement may start', () => {
-    const raised = { ...ARTBOARD, rise: 120 }
-    const hung = { x: 10, y: -120, w: 260, r: 0, z: 3 }
-
-    expect(parseLayout('wide', IDS, raised, { ...valid, name: hung }).name).toEqual(hung)
-    expect(() => parse({ ...valid, name: hung })).toThrow(/artboard/)
-    expect(() =>
-      parseLayout('wide', IDS, raised, { ...valid, name: { ...hung, y: -121 } }),
-    ).toThrow(/lid\.placement\.wide\.name/)
-    // The rise is for the top edge only: the sides keep the bleed.
-    expect(() =>
-      parseLayout('wide', IDS, raised, { ...valid, name: { ...hung, x: -(BLEED + 1) } }),
-    ).toThrow(/artboard/)
-  })
-
   it('does not accept "hidden" on the desktop', () => {
     expect(() => parse({ ...valid, pill: HIDDEN })).toThrow(ContentError)
   })
@@ -99,5 +85,59 @@ describe('parsePhoneLayout', () => {
     expect(() => parsePhoneLayout('phone', IDS, ARTBOARD, raw)).toThrow(
       /lid\.placement\.phone\.pill/,
     )
+  })
+})
+
+describe('parseCoverLayout', () => {
+  const FIELD = { width: 400, height: 600 }
+  const cover = {
+    name: { from: 'left', against: 'middle', x: 0, y: -200, w: 300, r: -4, z: 6 },
+    pill: { from: 'right', against: 'bottom', x: 20, y: 30, r: 5, z: 3 },
+  }
+
+  function parseCover(raw: unknown) {
+    return parseCoverLayout('cover.wide', IDS, FIELD, raw)
+  }
+
+  it('returns the placements, frozen, each with the edge and the line it is measured from', () => {
+    const layout = parseCover(cover)
+
+    expect(layout).toEqual(cover)
+    expect(Object.isFrozen(layout.name)).toBe(true)
+    expect(layout.pill).toMatchObject({ from: 'right', against: 'bottom' })
+  })
+
+  it('names the sticker that has no placement, or one that says nothing of where it is measured from', () => {
+    expect(() => parseCover({ name: cover.name })).toThrow(/lid\.placement\.cover\.wide\.pill/)
+    expect(() => parseCover({ ...cover, pill: valid.pill })).toThrow(
+      /lid\.placement\.cover\.wide\.pill/,
+    )
+    expect(() => parseCover({ ...cover, pill: { ...cover.pill, from: 'centre' } })).toThrow(
+      ContentError,
+    )
+  })
+
+  it.each([
+    ['left of the column', { ...cover.pill, x: -(BLEED + 1) }],
+    ['wider than the column', { ...cover.name, x: 200 }],
+    ['below the bottom of the screen', { ...cover.pill, y: -1 }],
+    ['higher than the screen is tall', { ...cover.pill, y: FIELD.height + 1 }],
+    ['further above the middle than the top is', { ...cover.name, y: -(FIELD.height / 2) - 1 }],
+    ['further below the middle than the bottom is', { ...cover.name, y: FIELD.height / 2 + 1 }],
+  ])('refuses a sticker placed %s', (_, placement) => {
+    expect(() => parseCover({ ...cover, pill: placement })).toThrow(/cover/)
+  })
+
+  it('lets what hangs from the top of the screen start above it, by the rise and no more', () => {
+    const hung = { from: 'right', against: 'top', x: -12, y: -COVER_RISE, w: 260, r: 0, z: 9 }
+
+    expect(parseCover({ ...cover, pill: hung }).pill).toEqual(hung)
+    expect(() => parseCover({ ...cover, pill: { ...hung, y: -COVER_RISE - 1 } })).toThrow(/cover/)
+  })
+
+  it('measures the bleed from whichever edge the placement is measured from', () => {
+    const hanging = { ...cover.pill, x: -BLEED, w: FIELD.width + BLEED + BLEED }
+
+    expect(parseCover({ ...cover, pill: hanging }).pill).toEqual(hanging)
   })
 })

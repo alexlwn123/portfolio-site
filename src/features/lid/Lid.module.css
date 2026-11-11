@@ -1,9 +1,9 @@
 /*
  * The lid of the laptop. It is the page's first surface and runs from one
  * edge of the screen to the other at every width: no desk under it, no frame
- * round it, no corners. The stickers are placed on the stage inside it, which
- * the placement stylesheet sizes from artboards.ts and, on a very wide
- * screen, stops growing and centres. The lid carries on past it.
+ * round it, no corners. The stickers are placed on the stage inside it, in
+ * two blocks: the cover, one screen tall, and the pile under it. The
+ * placement stylesheet sizes both from artboards.ts.
  */
 
 /* More lid shows when the page is pulled past its top. */
@@ -82,8 +82,47 @@
   content: '';
 }
 
-/* Every sticker is placed against the stage. Its font size is the design unit. */
+/* The two blocks, one under the other, and the scuffs drawn across both. */
 .stage {
+  position: relative;
+}
+
+/*
+ * The cover: exactly one screen. Its font size is its own design unit, which
+ * the placement stylesheet takes from the smaller of the screen's width and
+ * height, so its composition always fits. It is never a stacking context,
+ * and neither is the pile: a sticker carried from one to the other stays on
+ * top of what it passes over.
+ */
+.cover {
+  position: relative;
+  height: 100svh;
+}
+
+/*
+ * A browser that does not know the small viewport height gets the large one.
+ * It is a rule of its own because the build keeps only the last of two
+ * declarations of one property.
+ */
+@supports not (height: 100svh) {
+  .cover {
+    height: 100vh;
+  }
+}
+
+/*
+ * The page's column on the cover. The stickers are placed against it: the
+ * name from its left edge, the badge from its right, and both from the top,
+ * the middle or the bottom of the screen.
+ */
+.board {
+  position: absolute;
+  inset: 0;
+  margin-inline: auto;
+}
+
+/* The pile: every sticker is placed against it. Its font size is the page's design unit. */
+.pile {
   position: relative;
 }
 
@@ -120,8 +159,13 @@
   list-style: none;
 }
 
-/* The name is a heading, but it is sized as a sticker, not as a heading. */
+/* The name and the pile's title are headings, but each is sized as a sticker, not as a heading. */
 .heading {
   margin: 0;
   font: inherit;
+}
+
+/* The line under the pile's title is a paragraph, set as handwriting on the lid. */
+.scrawl {
+  margin: 0;
 }

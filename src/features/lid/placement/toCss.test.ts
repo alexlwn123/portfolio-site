@@ -7,11 +7,19 @@ const FRAME = {
   containerName: 'lid',
   phoneMaxWidthPx: 560,
   wideMinWidthPx: 1100,
-  maxArtboardWidthPx: 1920,
+  maxArtboardWidthPx: 1440,
+  portraitMaxAspect: '9/10',
+  gutters: { wide: 50, desktop: 30, phone: 16 },
   wide: { width: 1100, height: 1080 },
   desktop: { width: 728, height: 1300 },
   phone: { width: 390, height: 1870 },
-}
+  covers: {
+    wide: { board: 'wide', height: 620, floorPx: 10 },
+    landscape: { board: 'desktop', height: 546, floorPx: 10 },
+    portrait: { board: 'desktop', height: 880, floorPx: 10 },
+    phone: { board: 'phone', height: 693, floorPx: 9.23 },
+  },
+} as const
 
 const ORDER = ['name', 'pill', 'bolt'] as const
 
@@ -130,14 +138,15 @@ describe('toCss', () => {
     expect(css).not.toContain('--lid-max-width')
   })
 
-  it('sizes the stage from the artboards: one em is ten units at any width', () => {
-    expect(desktopCss).toContain('[data-lid-stage]{font-size:calc(100cqw / 72.8);height:130em}')
-    expect(phoneCss).toContain('[data-lid-stage]{font-size:calc(100cqw / 39);height:187em}')
+  it('sizes the pile from the artboards: one em is ten units at any width', () => {
+    expect(desktopCss).toContain('[data-lid-pile]{font-size:calc(100cqw / 72.8);height:130em}')
+    expect(phoneCss).toContain('[data-lid-pile]{font-size:calc(100cqw / 39);height:187em}')
+    expect(css).not.toContain('[data-lid-stage]{')
   })
 
-  it('stops the wide artboard growing at its cap, and centres it on the lid', () => {
+  it('stops the wide artboard growing where the sections stop, and centres it on the lid', () => {
     expect(wideCss).toContain(
-      '[data-lid-stage]{font-size:min(calc(100cqw / 110),calc(1920px / 110));height:108em;max-width:1920px;margin-inline:auto}',
+      '[data-lid-pile]{font-size:min(calc(100cqw / 110),calc(1440px / 110));height:108em;max-width:1440px;margin-inline:auto}',
     )
     expect(desktopCss).not.toContain('max-width')
     expect(phoneCss).not.toContain('margin-inline')

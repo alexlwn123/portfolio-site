@@ -1,0 +1,28 @@
+/*
+ * A heading sticker's face. It is sized in the design unit, and set smaller
+ * on the phone's artboard, in a section and on the lid alike: the two
+ * containers are named separately, so the rule is written once for each.
+ */
+.label {
+  padding: 1.5em 2.4em 1.3em;
+  border-radius: 1em;
+}
+
+.words {
+  display: block;
+  color: var(--ink);
+  font-size: 5.6em;
+  line-height: 0.95;
+}
+
+@container section (max-width: 560px) {
+  .words {
+    font-size: 4.4em;
+  }
+}
+
+@container lid (max-width: 560px) {
+  .words {
+    font-size: 4.4em;
+  }
+}

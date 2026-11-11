@@ -25,21 +25,6 @@ import type { SectionId } from '../cv/labels'
 export type PodiumWin = Win & { readonly result: Extract<WinResult, { kind: 'place' }> }
 
 const SITE_LINK_LABEL = 'Site'
-const COUNT_WORDS: readonly string[] = [
-  'zero',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-  'ten',
-  'eleven',
-  'twelve',
-]
 const YEAR_DIGITS = 2
 
 export function findById<T extends { readonly id: string }>(
@@ -117,11 +102,6 @@ export function currentJob(experience: readonly Experience[]): Experience {
     throw new Error('No job in the record is marked as current')
   }
   return job
-}
-
-/** A small count as handwriting has it: 2 is "two". Past twelve, the figure. */
-export function countWord(count: number): string {
-  return COUNT_WORDS[count] ?? formatNumber(count)
 }
 
 /** "SatsxSW hackathon" is "SatsxSW" on a sticker: every event here is one. */
