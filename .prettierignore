@@ -1,0 +1,13 @@
+# generated
+dist/
+.astro/
+coverage/
+playwright-report/
+test-results/
+pnpm-lock.yaml
+
+# approved mockups and source material are kept byte-for-byte
+design/mockups/
+docs/
+
+LICENSE
