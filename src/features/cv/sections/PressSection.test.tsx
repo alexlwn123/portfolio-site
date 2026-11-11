@@ -15,12 +15,9 @@ describe('PressSection', () => {
 
     const items = section.getAllByRole('listitem')
     expect(items).toHaveLength(content.press.length)
-    for (const item of content.press) {
-      expect(section.getByRole('link', { name: item.title })).toHaveAttribute('href', item.url)
-    }
     content.press.forEach((item, index) => {
       expect(items[index]).toHaveTextContent(item.outlet)
-      expect(items[index]).toHaveTextContent(item.title)
+      expect(items[index]?.querySelector('a')).toHaveAttribute('href', item.url)
     })
   })
 
@@ -39,7 +36,32 @@ describe('PressSection', () => {
     expect(npr).not.toHaveTextContent(/featur|profil|interview/i)
   })
 
-  it('renders nothing for a missing programme, reporter, date or claim', () => {
+  it('links the headline when the file records one, and the derived claim when it does not', () => {
+    const section = renderSection()
+
+    expect(
+      section.getByRole('link', {
+        name: 'Human rights activists look to harness AI for the greater good',
+      }),
+    ).toBeVisible()
+    expect(
+      section.getByRole('link', {
+        name: 'Announcement of the AI Hack for Freedom I winners, with Stringer Safety placed 1st.',
+      }),
+    ).toBeVisible()
+    expect(section.getByText('The announcement does not name him.')).toBeVisible()
+  })
+
+  it('never repeats the claim when the claim is already the link', () => {
+    const section = renderSection()
+
+    expect(section.getAllByText(/^Announcement of the AI Hack for Freedom I winners/)).toHaveLength(
+      1,
+    )
+    expect(section.getAllByText('Winners of all three editions')).toHaveLength(1)
+  })
+
+  it('renders nothing for a missing programme, reporter, date or headline', () => {
     const section = renderSection()
     const reference = section.getAllByRole('listitem').at(-1)
 

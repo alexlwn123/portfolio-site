@@ -193,6 +193,11 @@ describe('pressSchema', () => {
     )
   })
 
+  it('lets the headline be unknown, but not empty', () => {
+    expect(pressSchema.safeParse({ ...item, title: null }).success).toBe(true)
+    expect(pressSchema.safeParse({ ...item, title: '' }).success).toBe(false)
+  })
+
   it('must say whether the piece names the event and the owner', () => {
     const vague = { ...item, subject: { kind: 'organizedEvent', organizedId: 'example-held' } }
 

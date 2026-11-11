@@ -27,7 +27,7 @@ describe('pressClaim', () => {
   it('never says he was featured, profiled, interviewed or named', () => {
     const { claim, naming } = pressClaim(npr, content)
 
-    expect(`${claim ?? ''} ${naming ?? ''}`).not.toMatch(
+    expect(`${claim} ${naming ?? ''}`).not.toMatch(
       /featur|profil|interview|quoted|appear|names him\b/i,
     )
   })
@@ -90,9 +90,9 @@ describe('pressClaim', () => {
     expect(pressClaim(item, content).naming).toBeNull()
   })
 
-  it('makes no claim about a plain reference list', () => {
+  it('says only what a plain reference page lists', () => {
     expect(pressClaim(pressItem('ai-hack-for-freedom-winners'), content)).toEqual({
-      claim: null,
+      claim: 'Winners of all three editions',
       naming: null,
     })
   })

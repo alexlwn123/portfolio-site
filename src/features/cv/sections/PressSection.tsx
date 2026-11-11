@@ -19,6 +19,7 @@ interface PressEntryProps {
 function PressEntry({ item, sources }: PressEntryProps): ReactElement {
   // The claim is derived from the record, so it cannot say more than is true.
   const { claim, naming } = pressClaim(item, sources)
+  const hasHeadline = item.title !== null
 
   return (
     <Entry when={null}>
@@ -27,7 +28,7 @@ function PressEntry({ item, sources }: PressEntryProps): ReactElement {
         {item.programme !== null && `, ${item.programme}`}
       </p>
       <p>
-        <a href={item.url}>{item.title}</a>
+        <a href={item.url}>{item.title ?? claim}</a>
       </p>
       <MetaLine
         parts={[
@@ -35,12 +36,8 @@ function PressEntry({ item, sources }: PressEntryProps): ReactElement {
           item.date !== null ? <DateText date={item.date} month="long" /> : null,
         ]}
       />
-      {claim !== null && (
-        <p>
-          {claim}
-          {naming !== null && ` ${naming}`}
-        </p>
-      )}
+      {hasHeadline && <p>{claim}</p>}
+      {naming !== null && <p className={styles.note}>{naming}</p>}
     </Entry>
   )
 }

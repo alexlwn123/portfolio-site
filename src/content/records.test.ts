@@ -226,4 +226,12 @@ describe('press', () => {
       namesOwner: false,
     })
   })
+
+  it('records a headline only where the file quotes one', () => {
+    expect(press.map((item) => item.title)).toEqual([
+      'Human rights activists look to harness AI for the greater good',
+      null,
+      null,
+    ])
+  })
 })

@@ -26,7 +26,7 @@ const records: readonly z.input<typeof pressSchema>[] = [
     outlet: 'Human Rights Foundation',
     programme: null,
     date: { year: 2026, month: 1, day: 21 },
-    title: 'Announcing the AI Hack for Freedom hackathon winners',
+    title: null,
     reporter: null,
     url: 'https://hrf.org/latest/announcing-the-ai-hack-for-freedom-hackathon-winners/',
     // The official pages name only the team captain.
@@ -37,10 +37,10 @@ const records: readonly z.input<typeof pressSchema>[] = [
     outlet: 'AI Hack for Freedom',
     programme: null,
     date: null,
-    title: 'Winners of all three editions',
+    title: null,
     reporter: null,
     url: 'https://www.aihackforfreedom.org/winners.html',
-    subject: { kind: 'reference' },
+    subject: { kind: 'reference', label: 'Winners of all three editions' },
   },
 ]
 

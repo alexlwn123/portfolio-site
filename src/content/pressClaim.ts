@@ -3,13 +3,12 @@ import type { Content, Organized, Press, Win } from './schema'
 
 /** What a page may say about a press item: the claim, and who the piece names. */
 export interface PressClaim {
-  readonly claim: string | null
+  readonly claim: string
+  /** Null when there is nothing to add about who is named. */
   readonly naming: string | null
 }
 
 type Sources = Pick<Content, 'organized' | 'wins'>
-
-const NO_CLAIM: PressClaim = Object.freeze({ claim: null, naming: null })
 
 function findById<T extends { readonly id: string }>(
   records: readonly T[],
@@ -73,6 +72,6 @@ export function pressClaim(item: Press, sources: Sources): PressClaim {
       }
     }
     case 'reference':
-      return NO_CLAIM
+      return { claim: subject.label, naming: null }
   }
 }

@@ -246,7 +246,8 @@ const pressSubjectSchema = z.discriminatedUnion('kind', [
     namesOwner: z.boolean(),
   }),
   z.strictObject({ kind: z.literal('win'), winId: slug, namesOwner: z.boolean() }),
-  z.strictObject({ kind: z.literal('reference') }),
+  /** A plain reference page. `label` says what it lists and claims nothing about him. */
+  z.strictObject({ kind: z.literal('reference'), label: text }),
 ])
 
 export const pressSchema = z.strictObject({
@@ -254,7 +255,8 @@ export const pressSchema = z.strictObject({
   outlet: text,
   programme: text.nullable(),
   date: partialDateSchema.nullable(),
-  title: text,
+  /** The headline as published. Null when the file does not record one. */
+  title: text.nullable(),
   reporter: text.nullable(),
   url: httpsUrlSchema,
   subject: pressSubjectSchema,

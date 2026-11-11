@@ -85,13 +85,21 @@ describe('CvPage', () => {
       ...content.organized.map((event) => event.name),
       ...content.talks.map((talk) => talk.title),
       ...publishableProjects(content.projects).map((project) => project.name),
-      ...content.press.flatMap((item) => [item.outlet, item.title]),
+      ...content.press.flatMap((item) => [item.outlet, item.title ?? '']),
       ...content.education.map((entry) => entry.institution),
       content.profile.email,
       ...content.profile.links.map((link) => link.label),
     ]
     for (const value of expected) {
       expect(text).toContain(value)
+    }
+  })
+
+  it('links to every press item', () => {
+    const { container } = renderPage()
+
+    for (const item of content.press) {
+      expect(container.querySelector(`#press a[href="${item.url}"]`)).not.toBeNull()
     }
   })
 
