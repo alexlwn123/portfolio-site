@@ -4,18 +4,19 @@
  */
 
 .page {
-  --when-width: 9.5rem;
+  --when-width: 11rem;
 
   max-width: 50rem;
   margin: 0 auto;
   padding: var(--space-5) var(--space-5) var(--space-8);
 }
 
-.page p {
+/* :where keeps these resets weaker than any class below. */
+:where(.page) p {
   margin: 0;
 }
 
-.page ul {
+:where(.page) ul {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -81,7 +82,7 @@
   font-weight: var(--weight-medium);
 }
 
-.page .words {
+.words {
   margin-top: var(--space-2);
   max-width: var(--measure);
 }
@@ -130,12 +131,12 @@
   line-height: var(--leading-tight);
 }
 
-.page .summary {
+.summary {
   max-width: var(--measure);
   margin-bottom: var(--space-2);
 }
 
-.page .summary:last-of-type {
+.summary:last-of-type {
   margin-bottom: var(--space-5);
 }
 
@@ -272,7 +273,7 @@
 
 @media print {
   .page {
-    --when-width: 30mm;
+    --when-width: 38mm;
 
     max-width: none;
     padding: 0;

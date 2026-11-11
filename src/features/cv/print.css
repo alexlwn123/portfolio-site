@@ -22,7 +22,8 @@
     display: none !important;
   }
 
-  a {
+  /* :root lifts this above the screen link colour, whatever the bundle order. */
+  :root a {
     color: inherit;
     text-decoration: none;
   }

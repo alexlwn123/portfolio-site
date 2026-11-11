@@ -50,6 +50,30 @@ describe('pressClaim', () => {
     expect(pressClaim(item, content).naming).toBe(expected)
   })
 
+  it.each([
+    ['btcpp-nairobi-2026', 'Coverage of bitcoin++ open source edition in Nairobi, a hackathon'],
+    ['auburnhacks-2021', 'Coverage of AuburnHacks 2021, a hackathon'],
+    ['ai-hack-for-freedom-iv', 'Coverage of AI Hack for Freedom IV, a hackathon'],
+  ])('names the place only when the event had one (%s)', (organizedId, expected) => {
+    const item: Press = {
+      ...npr,
+      subject: { kind: 'organizedEvent', organizedId, namesEvent: false, namesOwner: false },
+    }
+
+    expect(pressClaim(item, content).claim).toContain(expected)
+  })
+
+  it('never gives a prize a placement in a winners announcement', () => {
+    const item: Press = {
+      ...npr,
+      subject: { kind: 'win', winId: 'bitdevs-upgrade', namesOwner: false },
+    }
+
+    expect(pressClaim(item, content).claim).toBe(
+      'Announcement of the AI4All winners, with BitDevs Upgrade among the prize winners.',
+    )
+  })
+
   it('describes a winners announcement by event, project and result', () => {
     expect(pressClaim(pressItem('hrf-winners-announcement'), content)).toEqual({
       claim: 'Announcement of the AI Hack for Freedom I winners, with Stringer Safety placed 1st.',

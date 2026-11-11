@@ -21,6 +21,11 @@ const bannedSyntax = [
   },
 ]
 
+// The owner's limits: small files, small functions, shallow nesting.
+const MAX_FILE_LINES = 800
+const MAX_FUNCTION_LINES = 50
+const MAX_NESTING = 4
+
 export default defineConfig([
   globalIgnores([
     'dist/',
@@ -66,10 +71,35 @@ export default defineConfig([
   },
   {
     rules: {
+      'max-depth': ['error', MAX_NESTING],
+      'max-lines': ['error', { max: MAX_FILE_LINES, skipBlankLines: true, skipComments: true }],
       'no-console': 'error',
       'no-param-reassign': ['error', { props: true }],
       'no-restricted-syntax': ['error', ...bannedSyntax],
       'prefer-const': 'error',
+    },
+  },
+  {
+    // Test files are one long describe() callback by design.
+    files: ['**/*.{js,ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}', '**/*.spec.ts'],
+    rules: {
+      'max-lines-per-function': [
+        'error',
+        { max: MAX_FUNCTION_LINES, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
+  {
+    // Components print what the content module gives them. A bare number in
+    // one is either a fact that belongs in src/content or a missing constant.
+    files: ['src/features/**/*.{ts,tsx}', 'src/lib/**/*.ts'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': [
+        'error',
+        { ignore: [-1, 0, 1, 2], ignoreArrayIndexes: true, enforceConst: true },
+      ],
     },
   },
 ])

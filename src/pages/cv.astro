@@ -1,0 +1,10 @@
+---
+import { content, stats } from '../content'
+import { CvPage } from '../features/cv/CvPage'
+import { buildMeta } from '../features/seo/meta'
+import Base from '../layouts/Base.astro'
+---
+
+<Base meta={buildMeta('cv', content, stats)}>
+  <CvPage content={content} stats={stats} />
+</Base>

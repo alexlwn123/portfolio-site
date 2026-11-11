@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 
 import type { Experience } from '../../../content'
 import styles from '../cv.module.css'
@@ -7,7 +7,7 @@ import { DateText } from '../parts/DateText'
 import { Entry } from '../parts/Entry'
 import { Section } from '../parts/Section'
 
-function RoleWhen({ role }: { readonly role: Experience }): ReactElement | null {
+function roleWhen(role: Experience): ReactNode {
   const when = experienceWhen(role)
   if (when === null) {
     return null
@@ -26,10 +26,8 @@ function RoleWhen({ role }: { readonly role: Experience }): ReactElement | null 
 }
 
 function Role({ role }: { readonly role: Experience }): ReactElement {
-  const hasWhen = experienceWhen(role) !== null
-
   return (
-    <Entry when={hasWhen ? <RoleWhen role={role} /> : null}>
+    <Entry when={roleWhen(role)}>
       <p className={styles.entryTitle}>{role.title}</p>
       <p className={styles.org}>
         {role.organization}
