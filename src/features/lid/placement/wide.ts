@@ -39,7 +39,7 @@ const placements: Record<PileId, Placement> = {
   'bitcoin-plus-plus': { x: 704, y: 648, w: 126, r: 7, z: 7 },
   'lightning-welder': { x: 862, y: 484, w: 182, r: -6, z: 6 },
   phrase: { x: 256, y: 712, r: -3, z: 8 },
-  'next-spot': { x: 496, y: 654, w: 196, r: 3, z: 1 },
+  'next-spot': { x: 496, y: 668, w: 196, r: 3, z: 1 },
   tally: { x: 784, y: 492, w: 44, r: 7, z: 1 },
   'bolt-bottom': { x: 966, y: 700, w: 50, r: -16, z: 8 },
   patents: { x: 492, y: 564, w: 150, r: -2.5, z: 4 },
