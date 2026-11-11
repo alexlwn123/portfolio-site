@@ -1,0 +1,9 @@
+---
+import { copy } from '../content/copy'
+import { NotFound } from '../features/notFound/NotFound'
+import Base from '../layouts/Base.astro'
+---
+
+<Base title={copy.notFound.title} description={copy.notFound.body}>
+  <NotFound />
+</Base>

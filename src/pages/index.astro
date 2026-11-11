@@ -1,0 +1,9 @@
+---
+import { copy } from '../content/copy'
+import { ComingSoon } from '../features/home/ComingSoon'
+import Base from '../layouts/Base.astro'
+---
+
+<Base title={copy.placeholder.title} description={copy.placeholder.body}>
+  <ComingSoon />
+</Base>

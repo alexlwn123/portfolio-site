@@ -1,0 +1,22 @@
+.page {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+}
+
+.title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-heavy);
+  line-height: var(--leading-tight);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+  font-weight: var(--weight-bold);
+}
