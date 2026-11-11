@@ -65,7 +65,7 @@ describe('lidStickers', () => {
     const record = sticker('bitcoin-plus-plus', 'record')
 
     expect(wins.figure).toBe(`${String(stats.wins.total)}×`)
-    expect(wins.label).toBe('8 hackathon wins')
+    expect(wins.label).toBe('9 hackathon wins')
     expect(organized.figure).toBe(String(stats.organized.count))
     expect(organized.ring).toEqual(['HACKATHONS ORGANIZED', '8 COUNTRIES + ONLINE'])
     expect(organized.label).toBe('16 hackathons organized in 8 countries plus online')
@@ -91,7 +91,7 @@ describe('lidStickers', () => {
     const changed = flattenStickers(lidStickers(fewer, deriveStats(fewer)))
     const find = (id: StickerId) => changed.find((candidate) => candidate.id === id)
 
-    expect(find('wins-count')).toMatchObject({ figure: '7×', label: '7 hackathon wins' })
+    expect(find('wins-count')).toMatchObject({ figure: '8×', label: '8 hackathon wins' })
     expect(find('organized-count')).toMatchObject({
       figure: '14',
       ring: ['HACKATHONS ORGANIZED', '8 COUNTRIES'],
@@ -107,7 +107,7 @@ describe('lidStickers', () => {
   it('puts the same counts on the section ribbons', () => {
     expect(sticker('badge', 'badge').ribbons).toEqual([
       { label: 'ORGANIZER', count: '×16', href: '/cv/#organized', tone: 'tang' },
-      { label: 'WINNER', count: '×8', href: '/cv/#wins', tone: 'hi' },
+      { label: 'WINNER', count: '×9', href: '/cv/#wins', tone: 'hi' },
       { label: 'SPEAKER', count: null, href: '/cv/#talks', tone: 'mint' },
       { label: 'BUILDER', count: null, href: '/cv/#projects', tone: 'gum' },
     ])
@@ -120,6 +120,18 @@ describe('lidStickers', () => {
       lines: ['AI Hack for Freedom I', 'Austin, 2026'],
       href: '/cv/#wins',
     })
+  })
+
+  it('takes the city from the win’s own field, however its venue is written', () => {
+    const [latest, ...older] = content.wins
+    if (!latest) {
+      throw new Error('Expected at least one win')
+    }
+    const eventPlace = { venue: 'The Annex, Old Town, ZZ', city: 'Lisbon', region: null }
+    const moved = { ...content, wins: [{ ...latest, eventPlace }, ...older] }
+    const foil = flattenStickers(lidStickers(moved, stats)).find(({ id }) => id === 'latest-win')
+
+    expect(foil).toMatchObject({ lines: ['AI Hack for Freedom I', 'Lisbon, 2026'] })
   })
 
   it('prints the year alone when the record does not say which city', () => {
@@ -168,6 +180,25 @@ describe('lidStickers', () => {
     expect(sticker('clawthing-store', 'crab').href).toBe(urlOf('clawthing-store'))
     expect(sticker('pleb-fm', 'jukebox').href).toBe(urlOf('pleb-fm'))
     expect(sticker('bitcoin-plus-plus', 'record').href).toBe(content.bitcoinPlusPlus.profileUrl)
+  })
+
+  it('prints the Last Pay Wins figure from the number in its record', () => {
+    const quieter = {
+      ...content,
+      wins: content.wins.map((win) =>
+        win.id === 'last-pay-wins'
+          ? { ...win, firstWeekSats: { sats: 1_200_000, atLeast: false } }
+          : win,
+      ),
+    }
+    const button = flattenStickers(lidStickers(quieter, stats)).find(
+      ({ id }) => id === 'last-pay-wins',
+    )
+
+    expect(button).toMatchObject({
+      bottom: '1.2M SATS IN WEEK ONE',
+      label: 'Last Pay Wins: Collected and paid out 1.2 million sats in its first week.',
+    })
   })
 
   it('names each project as the record does', () => {

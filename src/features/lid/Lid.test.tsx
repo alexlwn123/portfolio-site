@@ -130,7 +130,7 @@ describe('Lid', () => {
   it('names the count stickers and the project drawings in words', () => {
     renderLid()
 
-    expect(screen.getByRole('link', { name: '8 hackathon wins' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '9 hackathon wins' })).toHaveAttribute(
       'href',
       '/cv/#wins',
     )

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatNumber, formatUsd, ordinal } from './formatNumber'
+import { formatMillions, formatNumber, formatUsd, ordinal } from './formatNumber'
 
 describe('formatNumber', () => {
   it('groups thousands', () => {
@@ -14,6 +14,18 @@ describe('formatUsd', () => {
   it('writes whole dollars with a dollar sign and grouped thousands', () => {
     expect(formatUsd(163525)).toBe('$163,525')
     expect(formatUsd(6180)).toBe('$6,180')
+  })
+})
+
+describe('formatMillions', () => {
+  it('writes a number in millions, to as many places as it has', () => {
+    expect(formatMillions(2_500_000)).toBe('2.5')
+    expect(formatMillions(17_542_000)).toBe('17.542')
+    expect(formatMillions(2_000_000)).toBe('2')
+  })
+
+  it('rounds past the third place instead of printing a long tail', () => {
+    expect(formatMillions(1_234_567)).toBe('1.235')
   })
 })
 

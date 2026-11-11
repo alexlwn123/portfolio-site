@@ -3,13 +3,14 @@ import { describe, expect, it } from 'vitest'
 import { LABELS, SECTIONS, type SectionId, sectionTitle } from './labels'
 
 describe('CV labels', () => {
-  it('lists the eight sections with stable ids, in page order', () => {
+  it('lists the nine sections with stable ids, in page order', () => {
     expect(SECTIONS.map(({ id }) => id)).toEqual([
       'experience',
       'wins',
       'organized',
       'talks',
       'projects',
+      'patents',
       'press',
       'education',
       'contact',
@@ -18,6 +19,7 @@ describe('CV labels', () => {
 
   it('finds the title of a section', () => {
     expect(sectionTitle('organized')).toBe('Hackathons organized')
+    expect(sectionTitle('patents')).toBe('Patents')
   })
 
   it('refuses a section that does not exist', () => {

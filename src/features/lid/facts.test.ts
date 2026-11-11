@@ -4,10 +4,10 @@ import { content } from '../../content'
 import type { Organized, Project, Win } from '../../content'
 import {
   balanceLines,
-  cityFromPlace,
+  compactSats,
   cvSection,
   findById,
-  firstWeekMillions,
+  firstWeekFigure,
   inPersonCity,
   introText,
   latestPodiumWin,
@@ -97,10 +97,11 @@ describe('latestPodiumWin', () => {
   })
 
   it('keeps the first of two wins from the same year, and skips prizes', () => {
-    const wins = content.wins.filter(({ year }) => year === 2024)
+    const wins = content.wins.filter(({ year }) => year === 2023)
 
-    expect(wins.map(({ id }) => id)).toEqual(['lightning-welder', 'bitdevs-upgrade'])
-    expect(latestPodiumWin(wins.toReversed()).id).toBe('lightning-welder')
+    expect(wins.map(({ id }) => id)).toEqual(['bitdevs-upgrade', 'auntie-ln', 'last-pay-wins'])
+    expect(latestPodiumWin(wins).id).toBe('auntie-ln')
+    expect(latestPodiumWin(wins.toReversed()).id).toBe('last-pay-wins')
   })
 
   it('stops the build when no win has a place', () => {
@@ -143,24 +144,28 @@ describe('labels shortened to fit a sticker', () => {
   })
 })
 
-describe('facts the record only states in prose', () => {
-  it('reads the first-week sats figure from the win’s note', () => {
-    expect(firstWeekMillions(win('last-pay-wins'))).toBe('2.5')
+describe('figures the record states as numbers', () => {
+  it('writes sats in millions, with a plus when the record says "more than"', () => {
+    expect(compactSats({ sats: 2_500_000, atLeast: true })).toBe('2.5M+')
+    expect(compactSats({ sats: 3_000_000, atLeast: false })).toBe('3M')
   })
 
-  it('stops the build when the note no longer states it', () => {
-    expect(() => firstWeekMillions(win('pleb-fm'))).toThrow(/pleb-fm/)
+  it('reads the first-week figure from the win’s own field', () => {
+    expect(firstWeekFigure(win('last-pay-wins'))).toBe('2.5M+')
   })
 
-  it('reads a city from a place written "Venue, City, ST"', () => {
-    expect(cityFromPlace(win('stringer-safety').eventPlace)).toBe('Austin')
-    expect(cityFromPlace('Austin, TX')).toBe('Austin')
+  it('follows the number, not the wording of any note', () => {
+    const busier = {
+      ...win('last-pay-wins'),
+      firstWeekSats: { sats: 4_250_000, atLeast: false },
+      notes: ['Collected and paid out more than 2.5 million sats in its first week.'],
+    }
+
+    expect(firstWeekFigure(busier)).toBe('4.25M')
   })
 
-  it('reads nothing from a place written any other way', () => {
-    expect(cityFromPlace(null)).toBeNull()
-    expect(cityFromPlace('Bitcoin Park')).toBeNull()
-    expect(cityFromPlace('PubKey, New York City')).toBeNull()
+  it('stops the build when the win records no such figure', () => {
+    expect(() => firstWeekFigure(win('pleb-fm'))).toThrow(/pleb-fm/)
   })
 })
 
@@ -172,6 +177,12 @@ describe('links', () => {
   it('says a win in one line, as the CV does', () => {
     expect(winSummary(win('lightning-welder'))).toBe(
       'Lightning Welder: 1st overall, bitcoin++ Berlin, ecash edition, 2024',
+    )
+  })
+
+  it('says a win by its team when the project has no known name', () => {
+    expect(winSummary(win('ncr-global-hackathon-2021'))).toBe(
+      'Eth Heads: 1st, NCR Global Hackathon, 2021',
     )
   })
 })

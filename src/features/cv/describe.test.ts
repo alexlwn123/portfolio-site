@@ -3,18 +3,36 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../content'
 import {
   bitcoinPlusPlusSummary,
+  coInventorsLabel,
   displayUrl,
+  eventLabel,
   experienceWhen,
+  fieldLabel,
+  firstWeekNote,
   locationLabel,
   organizedSummary,
   participantsLabel,
+  patentNumber,
+  patentsSummary,
+  placeLabel,
   plural,
   placeLine,
   prizesLabel,
+  projectsLabel,
   resultLabel,
   roleLine,
+  teammatesLine,
   winsSummary,
+  winTitle,
 } from './describe'
+
+function win(id: string) {
+  const found = content.wins.find((candidate) => candidate.id === id)
+  if (!found) {
+    throw new Error(`No win with id "${id}"`)
+  }
+  return found
+}
 
 describe('resultLabel', () => {
   it('writes podium places as ordinals', () => {
@@ -35,6 +53,103 @@ describe('resultLabel', () => {
     expect(unnamed).toBe('Prize winner')
     expect(named).toBe('Prize winner: Education Prize')
     expect(`${unnamed} ${named}`).not.toMatch(/1st|2nd|3rd|first|second|third|place/i)
+  })
+
+  it('names the AI4All prize by its track, still without a placement', () => {
+    const label = resultLabel(win('bitdevs-upgrade').result)
+
+    expect(label).toBe('Prize winner: Bitcoin Education Track')
+    expect(label).not.toMatch(/1st|2nd|3rd|first|second|third|place/i)
+  })
+})
+
+describe('what a win prints', () => {
+  it('titles a win with its project, or with its team when the project has no known name', () => {
+    expect(winTitle(win('pleb-fm'))).toBe('Pleb FM')
+    expect(winTitle(win('ncr-global-hackathon-2021'))).toBe('Team Eth Heads')
+  })
+
+  it('adds the edition to the name of an event that numbers them', () => {
+    expect(eventLabel(win('ncr-global-hackathon-2021'))).toBe('NCR Global Hackathon, 3rd annual')
+    expect(eventLabel(win('bitdevs-upgrade'))).toBe('AI4All')
+  })
+
+  it('writes a place from its venue, city and region', () => {
+    expect(placeLabel({ venue: 'Bitcoin Park', city: 'Austin', region: 'TX' })).toBe(
+      'Bitcoin Park, Austin, TX',
+    )
+    expect(placeLabel({ venue: null, city: 'Miami', region: null })).toBe('Miami')
+  })
+
+  it('says how large the field was, with a plus only when the record says "more than"', () => {
+    expect(fieldLabel({ unit: 'teams', count: 300, atLeast: true })).toBe('Out of 300+ teams')
+    expect(fieldLabel({ unit: 'teams', count: 1200, atLeast: false })).toBe('Out of 1,200 teams')
+    expect(fieldLabel({ unit: 'teams', count: 1, atLeast: false })).toBe('Out of 1 team')
+  })
+
+  it('lists the teammates a source names', () => {
+    expect(teammatesLine(win('ncr-global-hackathon-2021'))).toBe(
+      'With Bryan W. Nonni, Sam (Abdulwahab) Jarkas, Christian McDaniel, Stefan Bjelcevic and Jay Arcement.',
+    )
+    expect(teammatesLine(win('pleb-fm'))).toBeNull()
+  })
+
+  it('names the team as well when the win has a project of its own', () => {
+    const named = { ...win('pleb-fm'), team: { name: 'Plebs', teammates: ['A', 'B'] } }
+    const alone = { ...win('pleb-fm'), team: { name: 'Plebs', teammates: [] } }
+    const unnamed = { ...win('ncr-global-hackathon-2021'), team: { name: 'Solo', teammates: [] } }
+
+    expect(teammatesLine(named)).toBe('Team Plebs, with A and B.')
+    expect(teammatesLine(alone)).toBe('Team Plebs.')
+    expect(teammatesLine(unnamed)).toBeNull()
+  })
+
+  it('writes the first-week figure as a sentence, from the number', () => {
+    expect(firstWeekNote({ sats: 2_500_000, atLeast: true })).toBe(
+      'Collected and paid out more than 2.5 million sats in its first week.',
+    )
+    expect(firstWeekNote({ sats: 3_000_000, atLeast: false })).toBe(
+      'Collected and paid out 3 million sats in its first week.',
+    )
+  })
+})
+
+describe('what a patent prints', () => {
+  it('writes a number the way the patent office does', () => {
+    expect(patentNumber({ office: 'US', serial: '12,536,579', kindCode: 'B2' })).toBe(
+      'US 12,536,579 B2',
+    )
+    expect(patentNumber({ office: 'US', serial: '2023/0032782', kindCode: 'A1' })).toBe(
+      'US 2023/0032782 A1',
+    )
+  })
+
+  it('names the other inventors', () => {
+    expect(coInventorsLabel(['Bryan Walser Nonni'])).toBe('With Bryan Walser Nonni')
+    expect(coInventorsLabel(['Bryan Walser Nonni', 'Brent Vance Zucker'])).toBe(
+      'With Bryan Walser Nonni and Brent Vance Zucker',
+    )
+    expect(coInventorsLabel([])).toBeNull()
+  })
+
+  it('summarizes granted patents and pending applications apart, from the derived stats', () => {
+    expect(patentsSummary(stats.patents)).toBe('2 patents granted and 1 application pending.')
+  })
+
+  it('never folds applications into the count of patents', () => {
+    const summary = patentsSummary(stats.patents)
+
+    expect(summary).not.toMatch(/\b[34] patents\b|four|three/i)
+    expect(summary).not.toContain(String(stats.patents.filings))
+  })
+
+  it('leaves out what there is none of, and uses singulars', () => {
+    const base = { granted: 1, pending: 0, filings: 1, anyPending: false }
+
+    expect(patentsSummary(base)).toBe('1 patent granted.')
+    expect(patentsSummary({ ...base, granted: 0, pending: 2, anyPending: true })).toBe(
+      '2 applications pending.',
+    )
   })
 })
 
@@ -64,16 +179,26 @@ describe('participantsLabel and prizesLabel', () => {
     expect(participantsLabel({ unit: 'teams', count: 1 })).toBe('1 team')
   })
 
-  it('formats dollar prizes and names the other kinds without inventing an amount', () => {
+  it('says so when a head count is approximate', () => {
+    expect(participantsLabel({ unit: 'aboutPeople', count: 60 })).toBe('About 60 participants')
+  })
+
+  it('formats dollar prizes and prizes in sats, each in its own unit', () => {
     expect(prizesLabel({ kind: 'usd', amount: 58750 })).toBe('$58,750 in prizes')
+    expect(prizesLabel({ kind: 'sats', amount: 17_542_000 })).toBe('17.542M sats in prizes')
     expect(prizesLabel({ kind: 'nonMonetary' })).toBe('Non-monetary prizes')
-    expect(prizesLabel({ kind: 'bitcoin', amountPublic: false })).toBe('Prizes paid in bitcoin')
+    expect(prizesLabel({ kind: 'sats', amount: 17_542_000 })).not.toContain('$')
+  })
+
+  it('counts the projects a hackathon produced', () => {
+    expect(projectsLabel(21)).toBe('21 projects')
+    expect(projectsLabel(1)).toBe('1 project')
   })
 })
 
 describe('summaries', () => {
   it('summarizes the wins from the derived stats', () => {
-    expect(winsSummary(stats.wins)).toBe('8 wins: 5 first places, 2 second places and 1 prize.')
+    expect(winsSummary(stats.wins)).toBe('9 wins: 6 first places, 2 second places and 1 prize.')
   })
 
   it('leaves out kinds of result with no wins and uses singulars', () => {
@@ -88,8 +213,17 @@ describe('summaries', () => {
   it('summarizes the organized hackathons from the derived stats', () => {
     expect(organizedSummary(stats.organized)).toEqual([
       '16 hackathons in 8 countries (USA, Canada, Kenya, Brazil, Taiwan, Germany, Türkiye, Latvia) plus online.',
-      'The 12 events with public figures add up to 1,471 participants and $163,525 in prizes.',
+      'The 12 events with a public head count add up to 1,471 participants.',
+      'The 14 events with a public prize figure add up to $263,525 in prizes.',
     ])
+  })
+
+  it('names the right number of events for each total, never one for both', () => {
+    const sentences = organizedSummary({ ...stats.organized, headCountEvents: 5, prizeEvents: 7 })
+
+    expect(sentences[1]).toMatch(/^The 5 events with a public head count/)
+    expect(sentences[2]).toMatch(/^The 7 events with a public prize figure/)
+    expect(sentences.join(' ')).not.toMatch(/public figures/)
   })
 
   it('does not mention online when nothing was held online', () => {

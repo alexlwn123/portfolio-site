@@ -74,6 +74,17 @@ describe('pressClaim', () => {
     )
   })
 
+  it('names the team when the winning project’s name is not known', () => {
+    const item: Press = {
+      ...npr,
+      subject: { kind: 'win', winId: 'ncr-global-hackathon-2021', namesOwner: true },
+    }
+
+    expect(pressClaim(item, content).claim).toBe(
+      'Announcement of the NCR Global Hackathon winners, with Eth Heads placed 1st.',
+    )
+  })
+
   it('describes a winners announcement by event, project and result', () => {
     expect(pressClaim(pressItem('hrf-winners-announcement'), content)).toEqual({
       claim: 'Announcement of the AI Hack for Freedom I winners, with Stringer Safety placed 1st.',

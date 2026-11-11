@@ -40,15 +40,21 @@ describe('copy', () => {
     expect(copy.lid.ghost.saved(17)).toBe('this spot saved for hackathon #17')
     expect(copy.lid.organizedSeal.countries(8)).toBe('8 COUNTRIES + ONLINE')
     expect(copy.lid.ribbons.times(16)).toBe('×16')
-    expect(copy.wristbands.footnote(12)).toBe('12 events with public figures')
+    expect(copy.wristbands.participantsFootnote(12)).toBe('12 events with a public head count')
+    expect(copy.wristbands.prizesFootnote(14)).toBe('14 events with a public prize figure')
     expect(copy.wristbands.stamp(2020)).toBe('ORGANIZER ✦ SINCE 2020')
     expect(copy.wristbands.coveredBy('NPR')).toBe('covered by NPR')
-    expect(copy.wristbands.next(8)).toBe('NEXT: 8 WINS')
-    expect(copy.lid.winsSeal.times(8)).toBe('8×')
+    expect(copy.wristbands.next(9)).toBe('NEXT: 9 WINS')
+    expect(copy.lid.winsSeal.times(9)).toBe('9×')
+  })
+
+  it('gives each total its own footnote: no line speaks for both', () => {
+    expect(copy.wristbands).not.toHaveProperty('footnote')
+    expect(copy.wristbands.participantsFootnote(12)).not.toBe(copy.wristbands.prizesFootnote(12))
   })
 
   it('fills the lid’s accessible names and small print the same way', () => {
-    expect(copy.lid.winsSeal.summary(8)).toBe('8 hackathon wins')
+    expect(copy.lid.winsSeal.summary(9)).toBe('9 hackathon wins')
     expect(copy.lid.organizedSeal.summary(16, 8)).toBe(
       '16 hackathons organized in 8 countries plus online',
     )
@@ -57,7 +63,7 @@ describe('copy', () => {
     )
     expect(copy.lid.organizedSeal.countriesInPerson(2)).toBe('2 COUNTRIES')
     expect(copy.lid.badge.photoAlt('Alex Lewin')).toBe('Alex Lewin, smiling, in a cap')
-    expect(copy.lid.button.firstWeek('2.5')).toBe('2.5M+ SATS IN WEEK ONE')
+    expect(copy.lid.button.firstWeek('2.5M+')).toBe('2.5M+ SATS IN WEEK ONE')
     expect(copy.lid.record.editions(13)).toBe('13 editions')
     expect(copy.lid.record.sessions(51)).toBe('51 stage sessions')
   })

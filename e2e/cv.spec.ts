@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { saveScreenshot } from './mockup'
 import { collectRequests } from './support'
 
 const SECTION_IDS = [
@@ -8,12 +9,17 @@ const SECTION_IDS = [
   'organized',
   'talks',
   'projects',
+  'patents',
   'press',
   'education',
   'contact',
 ] as const
 
 const MIN_BODY_FONT_PX = 16
+
+/** The width the CV's review screenshot is taken at. */
+const REVIEW_WIDTH = 1280
+const REVIEW_HEIGHT = 900
 
 test.describe('/cv/', () => {
   test('makes zero script requests and runs no scripts', async ({ page }) => {
@@ -59,6 +65,68 @@ test.describe('/cv/', () => {
       await expect(page.locator(`section#${id}`)).toBeInViewport()
     })
   }
+
+  test('lists the granted patents, then the pending application, and no abandoned one', async ({
+    page,
+  }) => {
+    await page.goto('/cv/#patents')
+    const patents = page.locator('section#patents')
+
+    await expect(patents).toBeInViewport()
+    await expect(
+      patents.getByRole('list', { name: 'Patents granted' }).getByRole('listitem'),
+    ).toHaveText([/US 12,536,579 B2/, /US 12,354,083 B2/])
+    await expect(
+      patents.getByRole('list', { name: 'Applications' }).getByRole('listitem'),
+    ).toHaveText([/Application US 2023\/0032782 A1/])
+    await expect(
+      patents.getByRole('link', { name: /Google Patents: Methods and a system for in-store/ }),
+    ).toHaveAttribute('href', 'https://patents.google.com/patent/US12536579B2/en')
+    await expect(page.getByText(/abandoned|non-fungible/i)).toHaveCount(0)
+  })
+
+  test('shows the ninth win, the corrected AI4All row and the merged talk', async ({ page }) => {
+    await page.goto('/cv/')
+    const wins = page.locator('section#wins')
+    const talks = page.locator('section#talks')
+
+    await expect(
+      wins.getByText('9 wins: 6 first places, 2 second places and 1 prize.'),
+    ).toBeVisible()
+    await expect(
+      wins.getByRole('listitem').filter({ hasText: 'NCR Global Hackathon' }),
+    ).toContainText('Team Eth Heads')
+    await expect(wins.getByRole('listitem').filter({ hasText: 'AI4All' })).toContainText(
+      'Prize winner: Bitcoin Education Track',
+    )
+    await expect(talks.getByRole('listitem').filter({ hasText: 'Sovereign Banks' })).toHaveCount(1)
+    await expect(
+      talks.getByRole('listitem').filter({ hasText: 'The Alex Lewin Experience' }),
+    ).toBeVisible()
+  })
+
+  test('names a different number of events beside each total', async ({ page }) => {
+    await page.goto('/cv/')
+    const organized = page.locator('section#organized')
+
+    await expect(
+      organized.getByText('The 12 events with a public head count add up to 1,471 participants.'),
+    ).toBeVisible()
+    await expect(
+      organized.getByText('The 14 events with a public prize figure add up to $263,525 in prizes.'),
+    ).toBeVisible()
+  })
+
+  test(`saves cv-${String(REVIEW_WIDTH)}.png`, async ({ page }) => {
+    await page.setViewportSize({ width: REVIEW_WIDTH, height: REVIEW_HEIGHT })
+    await page.goto('/cv/')
+    await page.evaluate(() => document.fonts.ready)
+
+    const image = await saveScreenshot(page, `cv-${String(REVIEW_WIDTH)}.png`)
+
+    expect(image.byteLength).toBeGreaterThan(0)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(REVIEW_WIDTH)
+  })
 
   test('the first Tab stop is a visible skip link', async ({ page }) => {
     await page.goto('/cv/')
