@@ -3,14 +3,15 @@
  * stamped in the label face. It is the lid's compliance label grown up, so
  * it is cut from the same metal (metal.module.css). A plate is not a
  * sticker: it has no white die-cut edge, only the bevel of its own thickness.
+ * Its tilt is the underside's (PatentsSection.module.css).
+ *
+ * Three stretches of it are left bare for the inspection stickers
+ * (InspectionStickers.module.css): the right end of its head, and its foot
+ * to either side of the footnote.
  */
-.stuck {
-  rotate: -0.8deg;
-}
-
 .plate {
   position: relative;
-  padding: 3.6em 6.4em 3.2em 4.6em;
+  padding: 3.6em 4.6em 4.2em;
   border-radius: 1.3em;
   background:
     repeating-linear-gradient(
@@ -71,9 +72,8 @@
 
 .head {
   display: flex;
-  gap: 2em 3em;
+  gap: 2em 6em;
   align-items: flex-end;
-  justify-content: space-between;
   padding-bottom: 2.2em;
   border-bottom: 0.3em solid var(--ink);
 }
@@ -259,14 +259,25 @@
 }
 
 .footnote {
-  margin: 1.5em 0 0;
+  margin: 1.7em 0 0;
   font-size: 1.3em;
   letter-spacing: 0.08em;
+  text-align: center;
 }
 
 @container section (max-width: 1099px) {
+  /* The foot is left bare, for the stickers stuck across it. */
   .plate {
-    padding: 3.8em 3.4em 5.4em;
+    padding: 3.8em 3.4em 9.4em;
+  }
+
+  .head {
+    gap: 2em 3em;
+    justify-content: space-between;
+  }
+
+  .footnote {
+    text-align: left;
   }
 
   .heading {
@@ -297,12 +308,8 @@
 }
 
 @container section (max-width: 560px) {
-  .stuck {
-    rotate: -0.5deg;
-  }
-
   .plate {
-    padding: 3.9em 1.8em 3.8em;
+    padding: 3.9em 1.8em 7.4em;
   }
 
   .rivet {

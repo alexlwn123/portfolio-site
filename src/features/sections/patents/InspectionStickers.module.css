@@ -2,25 +2,28 @@
  * Three made-up stickers from the end of an assembly line: a seal, a quality
  * check signed off in marker, and a caution strip. None of them copies a
  * real regulatory mark.
+ *
+ * They are stuck on the plate, each over an edge of it, where the plate is
+ * bare: the seal over the top edge beside the right-hand rivet, the caution
+ * strip and the quality check over the foot, one toward each corner. The
+ * list is laid over the plate and lets the pointer through to its links.
  */
 .stickers {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2.4em;
-  align-items: flex-start;
-  align-self: stretch;
-  justify-content: space-around;
-  margin: 0 0 0 -4.8em;
-  padding: 3em 0 4em;
+  margin: 0;
+  padding: 0;
   list-style: none;
+  pointer-events: none;
 }
 
 /* ---------- "named inventor": a round seal ---------- */
 
-.seal {
-  margin-left: 2em;
+.stickers > .seal {
+  position: absolute;
+  top: -5em;
+  right: 7em;
   rotate: 8deg;
 }
 
@@ -52,7 +55,10 @@
 
 /* ---------- "QC passed": an oval, filled in by hand ---------- */
 
-.quality {
+.stickers > .quality {
+  position: absolute;
+  right: 5.4em;
+  bottom: -4.8em;
   rotate: -7deg;
 }
 
@@ -103,9 +109,11 @@
 
 /* ---------- "caution": a hazard strip ---------- */
 
-.caution {
-  margin-left: 1em;
-  rotate: 4deg;
+.stickers > .caution {
+  position: absolute;
+  bottom: -5em;
+  left: 5.4em;
+  rotate: 3deg;
 }
 
 .cautionFace {
@@ -143,20 +151,22 @@
 }
 
 @container section (max-width: 1099px) {
-  /* Across the foot of the plate, overlapping its bottom edge. */
+  /* In a row across the foot of the plate, each half on it and half off. */
   .stickers {
-    flex-direction: row;
+    position: relative;
+    inset: auto;
+    display: flex;
     flex-wrap: wrap;
     gap: 1.6em 2em;
     align-items: center;
-    justify-content: center;
-    margin: -3.4em 0 0;
-    padding: 0 5em;
+    justify-content: space-between;
+    margin: -7.6em 0 0;
+    padding: 0 4.8em;
   }
 
-  .seal,
-  .caution {
-    margin-left: 0;
+  .stickers > :is(.seal, .quality, .caution) {
+    position: relative;
+    inset: auto;
   }
 
   .sealFace {
@@ -165,11 +175,34 @@
   }
 }
 
+/*
+ * A phone has no room for three across the foot. The seal and the caution
+ * strip keep it, and the quality check goes over the top edge, in the bare
+ * corner beside the first line of the plate's heading.
+ */
 @container section (max-width: 560px) {
   .stickers {
-    gap: 1.2em 0.8em;
-    margin-top: -2.4em;
-    padding: 0 3.2em;
+    position: static;
+    gap: 0;
+    justify-content: center;
+    margin-top: -5.8em;
+    padding: 0 3em;
+  }
+
+  /* The seal is stuck over the end of the caution strip, so the two fit between the rivets. */
+  .stickers > .seal {
+    z-index: 1;
+  }
+
+  .stickers > .caution {
+    margin-left: -1.4em;
+  }
+
+  .stickers > .quality {
+    position: absolute;
+    top: -3.2em;
+    right: 4.4em;
+    rotate: 6deg;
   }
 
   .sealFace {
@@ -204,6 +237,6 @@
   }
 
   .cautionFace {
-    width: 21em;
+    width: 19.6em;
   }
 }

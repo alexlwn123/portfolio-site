@@ -127,7 +127,7 @@ export function RatingPlate({ patents, stats, holder }: RatingPlateProps): React
   const source = recordSource(filings)
 
   return (
-    <Stuck className={styles.stuck}>
+    <Stuck>
       <div className={cx(metal.brushed, styles.plate)} data-plate="">
         {RIVETS.map((corner) => (
           <span
