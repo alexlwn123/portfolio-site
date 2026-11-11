@@ -20,6 +20,8 @@ const SOURCES = [
   './wide.ts',
   './desktop.ts',
   './phone.ts',
+  './cover.ts',
+  './coverCss.ts',
   './schema.ts',
   './toCss.ts',
   '../stickers.ts',

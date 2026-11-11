@@ -199,20 +199,34 @@ function frame(context: Context, dtMs: number): boolean {
 }
 
 /**
+ * Where a sticker's layout box starts, measured from the lid. A sticker is
+ * placed against its own block (the cover's column, or the pile), which is
+ * itself somewhere down the lid, so the offsets are added up from the sticker
+ * out to the lid. Layout boxes, not screen boxes: no transform moves them.
+ */
+function placeOnLid(sticker: HTMLElement, lid: HTMLElement): Point {
+  const steps = (element: Element | null, at: Point): Point =>
+    element instanceof HTMLElement && element !== lid
+      ? steps(element.offsetParent, add(at, { x: element.offsetLeft, y: element.offsetTop }))
+      : at
+  return steps(sticker, ZERO)
+}
+
+/**
  * The sticker as the physics sees it now: caught in flight, or lying where it
  * was left. Its home is read from its layout box, which no transform moves.
  */
-function bodyOf({ flying, lying, lidBox }: Model, sticker: HTMLElement): Body {
+function bodyOf({ flying, lying, lidBox }: Model, sticker: HTMLElement, lid: HTMLElement): Body {
   const caught = flying.get(sticker)
   if (caught !== undefined && caught.phase !== 'idle') {
     return { ...caught.body, velocity: ZERO }
   }
   const box = sticker.getBoundingClientRect()
   const offset = scale(lying.get(sticker) ?? ZERO, lidBox.width)
-  const home = {
-    x: sticker.offsetLeft + sticker.offsetWidth / 2,
-    y: sticker.offsetTop + sticker.offsetHeight / 2,
-  }
+  const home = add(placeOnLid(sticker, lid), {
+    x: sticker.offsetWidth / 2,
+    y: sticker.offsetHeight / 2,
+  })
   return restingBody(add(home, offset), { x: box.width / 2, y: box.height / 2 }, offset)
 }
 
@@ -231,7 +245,7 @@ function pressDown(context: Context, event: PointerEvent): void {
     button: event.button,
     at: onLid(model.pointer, model.lidBox),
   }
-  const state = press(IDLE, pressed, bodyOf(model, sticker))
+  const state = press(IDLE, pressed, bodyOf(model, sticker, context.lid))
   if (state.phase !== 'pressed') {
     return
   }

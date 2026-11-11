@@ -47,8 +47,14 @@
     translate var(--duration-hover) var(--ease-slap),
     scale var(--duration-hover) var(--ease-slap),
     filter var(--duration-hover);
-  animation: slap var(--duration-slap) cubic-bezier(0.2, 1.4, 0.35, 1) backwards;
-  animation-delay: calc(var(--i, 0) * 45ms);
+
+  /*
+   * How the sticker arrives, when it does: the cover says when the hello tag
+   * is slapped down (Lid.module.css), and the pile's stickers are given their
+   * turn as they scroll into view (below). Left alone, a sticker is simply
+   * there.
+   */
+  animation: var(--entrance, none);
 }
 
 /* A sticker with no width of its own in the placement data sizes itself. */
@@ -105,8 +111,9 @@
 }
 
 /* Highlighter ring with an ink edge on both sides: visible on the cobalt lid
-   and on any sticker it overlaps. */
-.sticker:focus-visible {
+   and on any sticker it overlaps. What is written straight onto the lid does
+   not lift, but a link among it shows the same ring. */
+.placed:focus-visible {
   outline: 0.3em solid var(--hi);
   outline-offset: 0.3em;
   border-radius: 0;
@@ -157,9 +164,38 @@
  */
 .sticker[data-carry='stuck'] {
   animation:
-    slap var(--duration-slap) cubic-bezier(0.2, 1.4, 0.35, 1) backwards,
+    var(--entrance, none),
     restick var(--duration-slap) cubic-bezier(0.2, 1.4, 0.35, 1);
-  animation-delay: calc(var(--i, 0) * 45ms), 0s;
+}
+
+/*
+ * The pile arriving. The page's script holds back each sticker that is off
+ * screen when it starts, and slaps it down when it scrolls into view, with a
+ * delay of its own so that neighbours never land on one frame. Only that
+ * script sets these marks, and only where motion is welcome: nothing here
+ * can hide a sticker by itself. What is drawn straight onto the lid is not
+ * slapped: it comes up as ink does.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .placed[data-land='wait'] {
+    opacity: 0;
+  }
+
+  .sticker[data-land='slap'] {
+    --entrance: lid-slap 0.5s cubic-bezier(0.2, 1.4, 0.35, 1) var(--land-delay, 0s) backwards;
+  }
+
+  .placed:not(.sticker)[data-land='slap'] {
+    animation: ink 0.32s ease-out var(--land-delay, 0s) backwards;
+  }
+}
+
+/* On paper everything is on. */
+@media print {
+  .placed[data-land] {
+    opacity: 1;
+    animation: none;
+  }
 }
 
 /* Once the script is running, a sticker can be picked up, and says so. */
@@ -168,7 +204,7 @@
   -webkit-user-select: none;
 }
 
-:global([data-enhanced]) :is(div, span, h1, nav).sticker[data-grab] {
+:global([data-enhanced]) :is(div, span, h1, h2, nav).sticker[data-grab] {
   cursor: grab;
 }
 
@@ -177,19 +213,37 @@
   cursor: grabbing;
 }
 
-@keyframes slap {
+/*
+ * A sticker slapped down: it comes in from just above, a little large, lands
+ * flat and springs back. It does not fade in: it is seen from the first
+ * frames. The name is global so that an entrance can be set from another
+ * stylesheet, as a custom property.
+ */
+@keyframes :global(lid-slap) {
   0% {
-    translate: 0 -0.5em;
-    scale: 1.09;
+    translate: 0 -0.9em;
+    scale: 1.14;
+    opacity: 0;
+  }
+
+  16% {
+    opacity: 1;
   }
 
   55% {
     translate: 0 0;
-    scale: 0.975;
+    scale: 1.03 0.955;
   }
 
   100% {
     scale: 1;
+  }
+}
+
+/* Ink coming up on the lid. */
+@keyframes ink {
+  from {
+    opacity: 0;
   }
 }
 

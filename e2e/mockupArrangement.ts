@@ -4,10 +4,11 @@ import { STICKER_IDS, type StickerId } from '../src/features/lid/stickers'
 /*
  * Where design/mockups/01-first-screen.html stuck each sticker: its own --x,
  * --y, --w, --r and --z, on an artboard 728 by 1300. The lid's arrangement
- * has moved on since (see "Round 2" in design/mockups/DEVIATIONS.md), so the
- * comparison with the mockup first puts the lid's stickers back where the
- * mockup had them. What is compared is how each sticker is drawn, not where
- * it is stuck.
+ * has moved on since: it is a cover and a pile now, each with artboards of
+ * its own (see "Round 3" in design/mockups/DEVIATIONS.md). So the comparison
+ * with the mockup first takes the two blocks away and puts the lid's stickers
+ * back on one stage, where the mockup had them. What is compared is how each
+ * sticker is drawn, not where it is stuck.
  */
 
 interface Place {
@@ -69,6 +70,31 @@ function px(value: number): string {
 }
 
 /**
+ * The lid as one stage again: the cover, its column and the pile stop being
+ * blocks that stickers are placed against, take no room, and count one unit
+ * to the pixel, as the mockup does at its own width.
+ */
+function oneStageCss(): string {
+  const blocks = ['[data-lid-cover]', '[data-lid-board]', '[data-lid-pile]']
+    .map((block) => `[data-lid-stage] ${block}`)
+    .join(',')
+  const flat = [
+    'position:static',
+    'width:auto',
+    'max-width:none',
+    'height:0',
+    'min-height:0',
+    'margin:0',
+    'font-size:10px',
+  ]
+
+  return [
+    `[data-lid-stage]{height:${px(MOCKUP_SIZE.height)}}`,
+    `${blocks}{${flat.join(';')}}`,
+  ].join('\n')
+}
+
+/**
  * A stylesheet that lays the lid out as the mockup is laid out: every sticker
  * the mockup has goes back to the mockup's place, and what has been added
  * since is taken off. It is written for the mockup's own width only.
@@ -78,6 +104,9 @@ export function mockupArrangementCss(): string {
     const lines = [
       `left:${px(x)}`,
       `top:${px(y)}`,
+      // The cover measures some of its stickers from the right or from the bottom.
+      'right:auto',
+      'bottom:auto',
       ...(w === undefined ? [] : [`width:${px(w)}`]),
       `rotate:${String(r)}deg`,
       `z-index:${String(z)}`,
@@ -86,5 +115,5 @@ export function mockupArrangementCss(): string {
   })
   const removed = ADDED_SINCE.map((id) => `[data-lid-stage] [data-sticker="${id}"]{display:none}`)
 
-  return [`[data-lid-stage]{height:${px(MOCKUP_SIZE.height)}}`, ...placed, ...removed].join('\n')
+  return [oneStageCss(), ...placed, ...removed].join('\n')
 }

@@ -38,4 +38,24 @@ describe('Stuck', () => {
     expect(item).toHaveClass(styles.stuck ?? '', 'tilted')
     expect(item).not.toHaveClass(styles.lifts ?? '')
   })
+
+  it('says it is pressed on, so the page’s script can press it on as it scrolls into view', () => {
+    render(
+      <>
+        <Stuck>Asset tag</Stuck>
+        <Stuck href="https://pleb.fm">Pleb FM</Stuck>
+      </>,
+    )
+
+    expect(screen.getByText('Asset tag')).toHaveAttribute('data-stuck', '')
+    expect(screen.getByRole('link', { name: 'Pleb FM' })).toHaveAttribute('data-stuck', '')
+  })
+
+  it('is never held back by its own markup: only the script, once it runs, hides it for a moment', () => {
+    render(<Stuck>Asset tag</Stuck>)
+
+    expect(screen.getByText('Asset tag')).not.toHaveAttribute('data-land')
+    expect(screen.getByText('Asset tag')).not.toHaveAttribute('hidden')
+    expect(screen.getByText('Asset tag')).not.toHaveAttribute('style')
+  })
 })

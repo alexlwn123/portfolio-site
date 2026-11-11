@@ -35,7 +35,7 @@ describe('lidPlacement', () => {
     void setup?.({ updateConfig, addWatchFile } as unknown as Parameters<typeof setup>[0])
 
     const watched = addWatchFile.mock.calls.map(([file]) => fileURLToPath(file))
-    for (const layout of ['wide', 'desktop', 'phone']) {
+    for (const layout of ['wide', 'desktop', 'phone', 'cover']) {
       expect(watched.some((file) => file.endsWith(`placement/${layout}.ts`))).toBe(true)
     }
     expect(watched.some((file) => file.endsWith('lid/stickers.ts'))).toBe(true)

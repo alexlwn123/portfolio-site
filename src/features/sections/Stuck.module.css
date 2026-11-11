@@ -51,6 +51,39 @@
   box-shadow: 0 0 0 0.85em var(--ink);
 }
 
+/*
+ * Pressed on as it scrolls into view. The page's script holds back what is
+ * off screen when it starts, and lets each thing go when it comes into view:
+ * a quick press, for rhythm and not for show. Only that script sets these
+ * marks, and only where motion is welcome, so nothing here can hide a sticker
+ * by itself.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .stuck[data-land='wait'] {
+    opacity: 0;
+  }
+
+  .stuck[data-land='press'] {
+    animation: press 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.25) var(--land-delay, 0s) backwards;
+  }
+}
+
+@keyframes press {
+  from {
+    translate: 0 -0.5em;
+    scale: 1.06;
+    opacity: 0;
+  }
+}
+
+/* On paper everything is on. */
+@media print {
+  .stuck[data-land] {
+    opacity: 1;
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lifts {
     transition: none;

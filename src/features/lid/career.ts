@@ -1,7 +1,7 @@
-import type { Content, Stats } from '../../content'
+import type { Content } from '../../content'
 import { copy } from '../../content/copy'
 import { sectionAnchor } from '../sections/sectionIds'
-import { countWord, currentJob, findById, introOpening } from './facts'
+import { currentJob, findById, introOpening } from './facts'
 import type { GroupSpec, PropertyTagCut, PropertyTagSpec } from './stickerSpecs'
 import type { StickerId } from './stickers'
 
@@ -9,7 +9,7 @@ import type { StickerId } from './stickers'
  * The part of the lid that is about the whole career and not about
  * hackathons: the introduction on the hello tag and the asset tags his
  * employers left behind. Like every sticker, they state nothing of their own:
- * the employer, the years and the patent count are read from the records.
+ * the employer and the years are read from the records.
  */
 
 /**
@@ -31,21 +31,12 @@ export const EMPLOYER_IDS = EMPLOYER_TAGS.map(([id]) => id)
 const SMALL_PRINT_SEPARATOR = ' · '
 
 /**
- * The hello tag's handwriting: who he is in his own first line, what he does
- * now, what came before and what happened along the way. The employer is the
- * job the record marks as current, and the patents are the granted ones.
+ * The hello tag's handwriting, a sentence to a line: who he is and where, in
+ * his own first line, and what he does today. The employer is the job the
+ * record marks as current.
  */
-export function introduction({ profile, experience }: Content, stats: Stats): string {
-  const { hello } = copy.lid
-  const { granted } = stats.patents
-  const patents = granted === 1 ? hello.patents.one : hello.patents.many
-
-  return [
-    introOpening(profile),
-    hello.now(currentJob(experience).organization),
-    hello.before,
-    hello.alongTheWay(countWord(granted), patents),
-  ].join(' ')
+export function introduction({ profile, experience }: Content): readonly [string, string] {
+  return [introOpening(profile), copy.lid.hello.now(currentJob(experience).organization)]
 }
 
 /** What goes under the name on an employer's tag: the year he started, and whether he is still there. */

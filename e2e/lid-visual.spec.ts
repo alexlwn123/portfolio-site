@@ -21,18 +21,18 @@ import { fitWindowToLid, openLid } from './support'
  * The lid's own screenshots for review, and the comparison with the approved
  * mockup.
  *
- * The lid is no longer arranged as the mockup is: it runs edge to edge, it
- * has a third arrangement, and on every arrangement the stickers moved to
- * make room for what has been stuck on since. So the comparison does not
- * hold the page to the mockup's layout any more. It dresses the lid as the
- * mockup: each sticker goes back where the mockup had it, what the mockup
- * never had is taken off, and the two stickers that now say something else
- * are given the mockup's words back. Then it compares the two pictures. What
- * it guards is how each sticker is drawn. Both pages are rendered at the
+ * The lid is no longer arranged as the mockup is: it runs edge to edge, and
+ * it is a cover one screen tall with a pile under it, each on artboards of
+ * its own. So the comparison does not hold the page to the mockup's layout
+ * any more. It dresses the lid as the mockup: the two blocks are taken away
+ * and each sticker goes back where the mockup had it, on one stage; what the
+ * mockup never had is taken off; and the two stickers that now say something
+ * else are given the mockup's words back. Then it compares the two pictures.
+ * What it guards is how each sticker is drawn. Both pages are rendered at the
  * mockup's 728px with motion reduced.
  */
 
-/** One for each arrangement, and one where the wide artboard stops growing. */
+/** One for each arrangement, and one past where the page's unit stops growing. */
 const REVIEW_WIDTHS = [1920, 1440, 728, 390] as const
 const COMPARED_WIDTH = MOCKUP_SIZE.width
 
@@ -47,9 +47,10 @@ const MAX_DIFFERENCE = 0.027
 
 /** The stickers the recorded departures touch. Every other sticker must match. */
 const DEPARTED = [
+  'name', // each letter a piece of its own, set without kerning: the E sits two units to the right
   'lanyard', // lettering in ink, stars drawn
   'badge', // photo through the image pipeline, "real title" in the darker pink, arrow drawn
-  'hello', // HELLO in ink
+  'hello', // HELLO in ink, the highlighter a stroke of its own
   'cv', // arrow drawn
   'wins-count', // figure in ink
   'organized-count', // stars drawn
@@ -175,8 +176,11 @@ async function printAsMockup(page: Page): Promise<void> {
       if (!marked?.parentElement || !list) {
         throw new Error('The hello tag or the ribbons are not where the comparison looks for them')
       }
+      // The tag writes a sentence to a line now. The mockup's one sentence goes on one line.
+      const line = marked.parentElement
       marked.textContent = hello.marked
-      marked.parentElement.replaceChildren(hello.before, marked, hello.after)
+      line.replaceChildren(hello.before, marked, hello.after)
+      line.parentElement?.replaceChildren(line)
       const hung = ribbons.map((href) =>
         [...list.children].find((item) => item.querySelector(`a[href="${href}"]`) !== null),
       )
@@ -220,6 +224,9 @@ test('accounts for every sticker: on the mockup, or added since', () => {
 
   expect([...compared, ...ADDED_SINCE].toSorted()).toEqual([...STICKER_IDS].toSorted())
   expect(ADDED_SINCE).toEqual([
+    'cue',
+    'pile-title',
+    'pile-kicker',
     'job-finite-computer',
     'job-fedi',
     'job-zion',

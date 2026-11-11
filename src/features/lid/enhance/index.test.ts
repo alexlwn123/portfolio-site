@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { dragFrom, fakeEnv, lidFixture, type LidFixture, pointer } from '../../../test/lidFixture'
+import {
+  dragFrom,
+  fakeEnv,
+  lidFixture,
+  type LidFixture,
+  pointer,
+  seen,
+} from '../../../test/lidFixture'
 import { enhanceLid } from './index'
 
 let fixture: LidFixture
@@ -25,6 +32,27 @@ describe('enhancing the lid', () => {
     expect(fixture.control('tidy')).not.toHaveAttribute('hidden')
     expect(fixture.control('tilt')).toHaveAttribute('hidden')
     expect(fixture.tab('pleb-fm')).not.toHaveAttribute('hidden')
+  })
+
+  it('holds the pile back until it scrolls into view, then slaps it down', () => {
+    const env = fakeEnv()
+    enhanceLid(document, env)
+    const cv = fixture.sticker('cv')
+
+    env.sight([seen(cv, false)])
+    expect(cv).toHaveAttribute('data-land', 'wait')
+    env.sight([seen(cv, true)])
+
+    expect(cv).toHaveAttribute('data-land', 'slap')
+    expect(fixture.sticker('name')).not.toHaveAttribute('data-land')
+  })
+
+  it('holds nothing back when less motion was asked for', () => {
+    const env = fakeEnv({ reducedMotion: true })
+    enhanceLid(document, env)
+
+    expect(env.sighted()).toEqual([])
+    expect(document.querySelector('[data-land]')).toBeNull()
   })
 
   it('tidies everything with one press: stickers go home and the open note closes', () => {

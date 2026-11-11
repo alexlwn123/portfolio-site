@@ -1,4 +1,4 @@
-/* A "HELLO I'm a" name tag, filled in by hand. One sentence, set in two parts. */
+/* A "HELLO I'm a" name tag, filled in by hand: two short sentences. */
 .intro {
   margin: 0;
 }
@@ -32,8 +32,43 @@
   line-height: 1.2;
 }
 
-/* A pass of the highlighter. */
+/* A sentence to a line where the tag is wide enough for that, as it is on a laptop. Elsewhere they run on. */
+@container lid (min-width: 1100px) {
+  .line {
+    display: block;
+  }
+}
+
+/*
+ * A pass of the highlighter: a stroke under the phrase, behind its letters.
+ * It is a piece of its own so that it can be drawn, from left to right, once
+ * the tag has landed.
+ */
 .highlight {
-  background: linear-gradient(transparent 55%, var(--hi) 55% 92%, transparent 92%);
+  position: relative;
+  isolation: isolate;
+  background: none;
   color: inherit;
+  white-space: nowrap;
+}
+
+.highlight::before {
+  position: absolute;
+  inset: 55% 0 8%;
+  z-index: -1;
+  background: var(--hi);
+  transform-origin: 0 50%;
+  content: '';
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .highlight::before {
+    animation: stroke 0.32s cubic-bezier(0.3, 0.7, 0.2, 1) 0.98s backwards;
+  }
+}
+
+@keyframes stroke {
+  from {
+    scale: 0 1;
+  }
 }

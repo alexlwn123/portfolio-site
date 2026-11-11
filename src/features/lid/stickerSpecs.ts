@@ -56,9 +56,25 @@ export interface BadgeSpec<Id extends string> extends Spec<'badge', Id> {
 export interface HelloSpec<Id extends string> extends Spec<'hello', Id> {
   readonly greeting: string
   readonly lead: string
-  readonly text: string
-  /** A word of `text` run over with the highlighter. */
+  /** The handwriting, a sentence to a line. */
+  readonly lines: readonly string[]
+  /** A phrase of the handwriting run over with the highlighter. */
   readonly highlight: string
+}
+
+/** The cover's cue to scroll: a line in his hand that leads down to the pile. */
+export interface CueSpec<Id extends string> extends LinkSpec<'cue', Id> {
+  readonly text: string
+}
+
+/** A heading that is a sticker, shouted over two lines, as every section's is. */
+export interface HeadingSpec<Id extends string> extends Spec<'heading', Id> {
+  readonly lines: readonly [string, string]
+}
+
+/** A line in his handwriting, written straight onto the lid. */
+export interface ScrawlSpec<Id extends string> extends Spec<'scrawl', Id> {
+  readonly text: string
 }
 
 export interface AssetTagSpec<Id extends string> extends LinkSpec<'assetTag', Id> {
@@ -205,6 +221,9 @@ export type StickerSpec<Id extends string = string> =
   | LanyardSpec<Id>
   | BadgeSpec<Id>
   | HelloSpec<Id>
+  | CueSpec<Id>
+  | HeadingSpec<Id>
+  | ScrawlSpec<Id>
   | AssetTagSpec<Id>
   | PropertyTagSpec<Id>
   | StarburstSpec<Id>

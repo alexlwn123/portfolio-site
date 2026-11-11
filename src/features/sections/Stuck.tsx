@@ -20,7 +20,10 @@ export interface StuckProps {
 /**
  * A sticker stuck down in the flow of a section. It is the lid's Sticker
  * without the placement: the section's own layout says where it goes, and
- * this gives it the shadow, and the lift when it is a link.
+ * this gives it the shadow, and the lift when it is a link. It is marked as
+ * pressed on: the page's script finds it by that, and presses it on the first
+ * time it scrolls into view (src/features/lid/enhance/arriveDom.ts). Without
+ * the script it is simply there.
  */
 export function Stuck({ as = 'div', href, label, className, children }: StuckProps): ReactElement {
   const linked = href !== undefined
@@ -29,6 +32,7 @@ export function Stuck({ as = 'div', href, label, className, children }: StuckPro
     linked ? 'a' : as,
     {
       className: cx(styles.stuck, linked && styles.lifts, className),
+      'data-stuck': '',
       href,
       'aria-label': label,
     },

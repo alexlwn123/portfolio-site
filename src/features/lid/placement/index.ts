@@ -1,11 +1,16 @@
-import { CONTROL_IDS, STICKER_IDS } from '../stickers'
+import { COVER_IDS, PILE_IDS } from '../stickers'
 import { FRAME } from './artboards'
+import { covers } from './cover'
+import { coverCss } from './coverCss'
 import { desktop } from './desktop'
 import { phone } from './phone'
 import { toCss } from './toCss'
 import { wide } from './wide'
 
-/** The stylesheet that puts every sticker in its place on all three artboards. */
+/** The stylesheet that puts every sticker in its place: the pile's three artboards, then the cover's four compositions. */
 export function lidPlacementCss(): string {
-  return toCss({ order: STICKER_IDS, wide, desktop, phone, late: CONTROL_IDS }, FRAME)
+  return [
+    toCss({ order: PILE_IDS, wide, desktop, phone }, FRAME),
+    coverCss({ order: COVER_IDS, layouts: covers }, FRAME),
+  ].join('')
 }

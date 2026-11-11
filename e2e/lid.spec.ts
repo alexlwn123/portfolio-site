@@ -3,23 +3,25 @@ import { expect, type Page, test } from '@playwright/test'
 import { content, stats } from '../src/content'
 import { lidNotes, NOTED_IDS } from '../src/features/lid/notes'
 import {
-  ARTBOARDS,
   MAX_ARTBOARD_WIDTH_PX,
   MIN_TEXT_PX,
   NARROW_PHONE_PX,
   PHONE_MAX_WIDTH_PX,
   WIDE_MIN_WIDTH_PX,
 } from '../src/features/lid/placement/artboards'
+import { pileAnchor } from '../src/features/lid/anchor'
 import { flattenStickers, linksOf } from '../src/features/lid/stickerSpecs'
-import { EMPLOYER_IDS, lidStickers, STICKER_IDS } from '../src/features/lid/stickers'
+import { lidStickers, STICKER_IDS } from '../src/features/lid/stickers'
 import { sectionAnchor } from '../src/features/sections/sectionIds'
+import { NAME_ADVANCES } from '../src/features/stickers/geometry/nameFace'
 import { diffScreenshots, type Region } from './pixelDiff'
 import {
+  boxOf,
   collectRequests,
-  fitWindowToLid,
   lidLinks,
   linksCoveredBy,
   linksNotUnderTheirOwnCentre,
+  openCover,
   openLid,
   sticker,
 } from './support'
@@ -39,47 +41,29 @@ const EVERY_WIDTH = [
   728,
   WIDE_MIN_WIDTH_PX - 1,
   WIDE_MIN_WIDTH_PX,
-  1440,
   MAX_ARTBOARD_WIDTH_PX,
+  1920,
   2560,
 ] as const
 /** Where the wide artboard's unit is smallest, where it stops growing, and well past that. */
 const WIDE_WIDTHS = [WIDE_MIN_WIDTH_PX, MAX_ARTBOARD_WIDTH_PX, 2560] as const
+/** The shortest phone the cover is drawn for: there its unit comes from the height. */
+const SHORT_PHONE = { width: NARROW_PHONE_PX, height: 640 } as const
 const LAPTOP = { width: 1440, height: 900 } as const
 const MIN_TARGET_PX = 24
 const MIN_OUTLINE_PX = 2
 const WEB_FONTS = ['Bowlby One', 'Bricolage Grotesque', 'Permanent Marker'] as const
 
-/**
- * What was stuck on after the mockup: the medal, the compliance label, the
- * employers' tags, the two ribbons the mockup did not have, and the two
- * buttons the page's script shows on every device.
- */
-const ADDITIONS = [
-  '[data-sticker="ncr-win"]',
-  '[data-sticker="patents"]',
-  ...EMPLOYER_IDS.map((id) => `[data-sticker="${id}"]`),
-  // Of the ribbons, the last: each of the others is meant to lie over the one below it.
-  `nav a[href="${sectionAnchor('patents')}"]`,
-  '[data-sticker="sound"]',
-  '[data-sticker="tidy"]',
-] as const
-/** What a laptop's first screen must show whole: who he is and where he has worked. */
-const FIRST_SCREEN_WHOLE = ['name', 'hello', 'cv', ...EMPLOYER_IDS] as const
-/** The headline counts. Their figures are on the first screen. A rim may run under the fold. */
-const FIRST_SCREEN_COUNTS = ['wins-count', 'organized-count'] as const
-/** How much bare lid the badge is given to swing in, in design units. */
-const CLEAR = { side: 60, below: 120 } as const
-/**
- * A tilted sticker's corners poke a hair past its own box, and a sticker at
- * the lid's edge hangs over it a little. "Whole" allows for that much.
- */
-const WHOLE = 0.97
 /** The buttons the script shows on a desktop. "Tilt me" is for touch screens only. */
 const SHOWN_CONTROLS = ['sound', 'tidy'] as const
+/**
+ * The last of the badge's ribbons. Each of the others is meant to lie over
+ * the one below it, so only this one is held to covering no link at all.
+ */
+const LAST_RIBBON = `nav a[href="${sectionAnchor('patents')}"]`
 /** A sticker's shadow falls this far outside its box: see e2e/lid-visual.spec.ts. */
 const SHADOW = { top: 3, side: 6, bottom: 12 } as const
-/** Each addition is probed on a grid of this many points a side. */
+/** The ribbon is probed on a grid of this many points a side. */
 const SAMPLES_PER_SIDE = 12
 
 const stickers = flattenStickers(lidStickers(content, stats))
@@ -115,10 +99,10 @@ test.describe('the lid', () => {
       expect(await linksNotUnderTheirOwnCentre(page)).toEqual([])
     })
 
-    test(`the additions cover no other link at ${String(width)} wide`, async ({ page }) => {
+    test(`the last ribbon covers no other link at ${String(width)} wide`, async ({ page }) => {
       await openLid(page, width)
 
-      const covered = await linksCoveredBy(page, ADDITIONS, SAMPLES_PER_SIDE)
+      const covered = await linksCoveredBy(page, [LAST_RIBBON], SAMPLES_PER_SIDE)
       expect(covered).toEqual([])
     })
   }
@@ -172,33 +156,6 @@ test.describe('the lid', () => {
     }
   })
 
-  test('the stickers’ artboard stops growing at its cap and is centred on the lid', async ({
-    page,
-  }) => {
-    const unitAt = async (
-      width: number,
-    ): Promise<{ unit: number; left: number; width: number }> => {
-      await openLid(page, width)
-      return page.locator('[data-lid-stage]').evaluate((stage) => {
-        const { left, width: stageWidth } = stage.getBoundingClientRect()
-        return {
-          unit: Number.parseFloat(getComputedStyle(stage).fontSize),
-          left,
-          width: stageWidth,
-        }
-      })
-    }
-    const units = ARTBOARDS.wide.width / 10
-
-    expect((await unitAt(WIDE_MIN_WIDTH_PX)).unit).toBeCloseTo(WIDE_MIN_WIDTH_PX / units, 2)
-    expect((await unitAt(LAPTOP.width)).unit).toBeCloseTo(LAPTOP.width / units, 2)
-    expect(await unitAt(MAX_ARTBOARD_WIDTH_PX)).toMatchObject({ left: 0 })
-    const beyond = await unitAt(2560)
-    expect(beyond.unit).toBeCloseTo(MAX_ARTBOARD_WIDTH_PX / units, 2)
-    expect(beyond.width).toBe(MAX_ARTBOARD_WIDTH_PX)
-    expect(beyond.left).toBe((2560 - MAX_ARTBOARD_WIDTH_PX) / 2)
-  })
-
   test('bringing a sticker into view scrolls the page, never the lid itself', async ({ page }) => {
     for (const width of WIDTHS) {
       await openLid(page, width)
@@ -213,93 +170,6 @@ test.describe('the lid', () => {
       )
       expect(shifted, `${String(width)}px`).toEqual([])
     }
-  })
-
-  test('uses the arrangement that belongs to each width', async ({ page }) => {
-    const heightAt = async (width: number): Promise<number> => {
-      await openLid(page, width)
-      return page.locator('[data-lid-stage]').evaluate((stage) => {
-        const { fontSize, height } = getComputedStyle(stage)
-        return Math.round((Number.parseFloat(height) / Number.parseFloat(fontSize)) * 10)
-      })
-    }
-
-    expect(await heightAt(PHONE_MAX_WIDTH_PX)).toBe(ARTBOARDS.phone.height)
-    expect(await heightAt(PHONE_MAX_WIDTH_PX + 1)).toBe(ARTBOARDS.desktop.height)
-    expect(await heightAt(WIDE_MIN_WIDTH_PX - 1)).toBe(ARTBOARDS.desktop.height)
-    expect(await heightAt(WIDE_MIN_WIDTH_PX)).toBe(ARTBOARDS.wide.height)
-  })
-
-  test('a laptop’s first screen shows the whole career: name, introduction, employers, counts, badge', async ({
-    page,
-  }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.setViewportSize(LAPTOP)
-    await page.goto('/')
-    await page.evaluate(() => document.fonts.ready)
-
-    for (const id of FIRST_SCREEN_WHOLE) {
-      await expect(sticker(page, id), id).toBeInViewport({ ratio: WHOLE })
-    }
-    for (const id of FIRST_SCREEN_COUNTS) {
-      await expect(sticker(page, id).locator('text').first(), id).toBeInViewport()
-      await expect(sticker(page, id), id).toBeInViewport({ ratio: 0.85 })
-    }
-    // The badge down to the foot of its card: the title and the line under it. On the lid,
-    // because the career path further down prints the same title on its own tag.
-    const lid = page.locator('[data-lid]')
-    await expect(lid.getByText(content.profile.role.title)).toBeInViewport({ ratio: WHOLE })
-    await expect(
-      lid.getByText(new RegExp(`^${content.profile.role.organization} ·`)),
-    ).toBeInViewport({ ratio: WHOLE })
-    const ribbons = page.getByRole('navigation', { name: 'Sections' }).getByRole('link')
-    await expect(ribbons.first()).toBeInViewport({ ratio: WHOLE })
-    await expect(ribbons.nth(1)).toBeInViewport({ ratio: WHOLE })
-    await expect(ribbons).toHaveCount(6)
-  })
-
-  test('the badge hangs right of centre on a laptop, with bare lid around and below it', async ({
-    page,
-  }) => {
-    await openLid(page, LAPTOP.width)
-
-    const crowding = await page.evaluate((clear) => {
-      const stage = document.querySelector('[data-lid-stage]')
-      const ribbons = document.querySelector('[data-sticker="badge"] nav')
-      // The clear sleeve is what the ribbons are stuck under.
-      const sleeve = ribbons?.previousElementSibling
-      if (!stage || !ribbons || !sleeve) {
-        return ['the badge is not where it was expected']
-      }
-      const unit = Number.parseFloat(getComputedStyle(stage).fontSize) / 10
-      const card = sleeve.getBoundingClientRect()
-      const zone = {
-        left: card.left - clear.side * unit,
-        right: card.right + clear.side * unit,
-        top: card.top,
-        bottom: ribbons.getBoundingClientRect().bottom + clear.below * unit,
-      }
-      const middle = (card.left + card.right) / 2
-      const lid = stage.getBoundingClientRect()
-      const offCentre =
-        middle > lid.left + lid.width / 2 ? [] : ['the badge is not right of centre']
-      const inTheWay = [...document.querySelectorAll('[data-sticker]')]
-        .filter((other) => !['badge', 'lanyard'].includes(other.getAttribute('data-sticker') ?? ''))
-        .filter((other) => other.getClientRects().length > 0)
-        .filter((other) => {
-          const box = other.getBoundingClientRect()
-          return (
-            box.left < zone.right &&
-            box.right > zone.left &&
-            box.top < zone.bottom &&
-            box.bottom > zone.top
-          )
-        })
-        .map((other) => `${other.getAttribute('data-sticker') ?? ''} is in the badge's room`)
-      return [...offCentre, ...inTheWay]
-    }, CLEAR)
-
-    expect(crowding).toEqual([])
   })
 
   test('tab order follows reading order', async ({ page, baseURL }) => {
@@ -319,14 +189,16 @@ test.describe('the lid', () => {
     const links = visited.filter((stop) => !stop.startsWith('button: '))
 
     expect(links).toEqual(hrefs.map((href) => resolved(href, baseURL)))
-    // The ribbons in the order of the page, then the plain CV, then the employers' tags.
-    expect(links.slice(0, 8).map((href) => new URL(href).hash)).toEqual([
+    // The ribbons in the order of the page, the cue down to the pile, then the plain CV and
+    // the employers' tags.
+    expect(links.slice(0, 9).map((href) => new URL(href).hash)).toEqual([
       '#work',
       '#wins',
       '#projects',
       '#organized',
       '#talks',
       '#patents',
+      '#pile',
       '',
       '#work',
     ])
@@ -395,14 +267,12 @@ test.describe('the lid', () => {
     browser,
     page,
   }) => {
-    await openLid(page, 728)
-    // The lid alone, both times: the sections under it are the same markup either way.
-    const withScripts = await (await fitWindowToLid(page)).screenshot({ animations: 'disabled' })
-    const buttons = await Promise.all(SHOWN_CONTROLS.map((id) => shadowedBox(page, id)))
-
+    const screen = { width: 728, height: 900 }
+    await openCover(page, screen)
+    const pileHeight = Math.ceil((await boxOf(page.locator('[data-lid-pile]'))).height)
     const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce' })
     const plain = await context.newPage()
-    await plain.setViewportSize({ width: 728, height: 900 })
+    await plain.setViewportSize(screen)
     await plain.goto('/')
 
     await expect(plain.getByRole('heading', { level: 1 })).toHaveText(content.profile.name)
@@ -421,20 +291,34 @@ test.describe('the lid', () => {
       notes['pleb-fm'].lines[0] ?? '',
     )
 
-    const withoutScripts = await (
-      await fitWindowToLid(plain)
-    ).screenshot({
-      animations: 'disabled',
-    })
-    const { ratio, excluded } = await diffScreenshots(
+    // The cover is the first screen: photographed as each window shows it.
+    const covers = await diffScreenshots(
       page,
-      withScripts,
-      withoutScripts,
+      await page.screenshot({ animations: 'disabled' }),
+      await plain.screenshot({ animations: 'disabled' }),
+      [],
+      [],
+    )
+    expect(covers.ratio).toBe(0)
+
+    // The pile: each page is opened at it, in a window as tall as it is, so it fills the screen.
+    const window = { width: screen.width, height: pileHeight }
+    for (const each of [page, plain]) {
+      await each.setViewportSize(window)
+      await each.goto(pileAnchor())
+    }
+    await page.evaluate(() => document.fonts.ready)
+    const buttons = await Promise.all(SHOWN_CONTROLS.map((id) => shadowedBox(page, id)))
+    const piles = await diffScreenshots(
+      page,
+      await page.screenshot({ animations: 'disabled' }),
+      await plain.screenshot({ animations: 'disabled' }),
       [],
       buttons,
     )
-    expect(ratio).toBe(0)
-    expect(excluded).toBeGreaterThan(0)
+    expect(piles.height).toBe(pileHeight)
+    expect(piles.ratio).toBe(0)
+    expect(piles.excluded).toBeGreaterThan(0)
     await context.close()
   })
 
@@ -498,6 +382,17 @@ test.describe('the lid', () => {
     })
   }
 
+  test(`no rendered text under ${String(MIN_TEXT_PX)}px on a phone as short as it is narrow`, async ({
+    page,
+  }) => {
+    await openCover(page, SHORT_PHONE)
+
+    const sizes = await smallestText(page)
+
+    expect(sizes.length).toBeGreaterThan(stickers.length)
+    expect(sizes.filter(({ px }) => px < MIN_TEXT_PX)).toEqual([])
+  })
+
   test(`every link is a target of ${String(MIN_TARGET_PX)}px or more on a phone`, async ({
     page,
   }) => {
@@ -522,6 +417,25 @@ test.describe('the lid', () => {
     expect(families.length).toBeGreaterThan(0)
     for (const family of families) {
       expect(WEB_FONTS.some((font) => family.startsWith(font))).toBe(true)
+    }
+  })
+
+  test('sets each letter of the name as wide as the browser draws it', async ({ page }) => {
+    await openLid(page, 1280)
+
+    const drawn = await page.locator('h1 defs text').evaluateAll((letters) =>
+      letters.map((letter) => ({
+        letter: letter.textContent.trim().toUpperCase(),
+        size: Number(letter.getAttribute('font-size')),
+        length: (letter as SVGTextElement).getComputedTextLength(),
+      })),
+    )
+
+    expect(drawn.map(({ letter }) => letter).join('')).toBe(
+      content.profile.name.replaceAll(' ', '').toUpperCase(),
+    )
+    for (const { letter, size, length } of drawn) {
+      expect(length / size, letter).toBeCloseTo(NAME_ADVANCES[letter] ?? Number.NaN, 2)
     }
   })
 
@@ -591,7 +505,7 @@ async function frameOf(page: Page, selector: string): Promise<Frame> {
   })
 }
 
-/** A sticker's box on the page with the room its shadow takes, as a region to leave out. */
+/** A sticker's box on the screen with the room its shadow takes, as a region to leave out of a picture of the screen. */
 async function shadowedBox(page: Page, id: string): Promise<Region> {
   return sticker(page, id).evaluate(
     (element, { name, shadow }) => {
@@ -599,9 +513,9 @@ async function shadowedBox(page: Page, id: string): Promise<Region> {
       return {
         name,
         left: left - shadow.side,
-        top: top + window.scrollY - shadow.top,
+        top: top - shadow.top,
         right: right + shadow.side,
-        bottom: bottom + window.scrollY + shadow.bottom,
+        bottom: bottom + shadow.bottom,
       }
     },
     { name: id, shadow: SHADOW },

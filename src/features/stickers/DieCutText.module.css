@@ -1,16 +1,28 @@
 /*
  * The name: holographic letters with an ink edge, an ink shadow and a white
- * die-cut border, each a copy of the same two lines of text.
+ * die-cut border. Every letter is a piece of its own, and each of those is a
+ * copy of that one letter, so the name can be stuck down a letter at a time.
  *
  * The letters are Bricolage Grotesque Regular, thickened by the ink edge. The
  * mockup's stylesheet asks for Bowlby One, but its rule (.name svg text) cannot
  * reach text that is drawn through <use>, so the approved render never showed
- * it. The face is set outright here, and is the same in every browser.
+ * it. The face is set outright here, and is the same in every browser: each
+ * letter is placed from geometry/nameFace.ts, which measured the face at the
+ * optical size pinned here and with no kerning, so neither is left to the
+ * browser.
  */
 .letters {
   font-family: var(--font-body);
   font-weight: var(--weight-regular);
+  font-kerning: none;
+  font-variation-settings: 'opsz' 96;
   text-transform: uppercase;
+}
+
+/* A letter turns and squashes about its own foot, wherever it stands in the name. */
+.letter {
+  transform-box: fill-box;
+  transform-origin: 50% 82%;
 }
 
 .cut {
@@ -42,6 +54,22 @@
   stop-opacity: 0;
 }
 
+.shineEdge {
+  stop-color: var(--white);
+  stop-opacity: 0;
+}
+
+.shineCentre {
+  stop-color: var(--white);
+  stop-opacity: 0.85;
+}
+
+/* The band of light, leaning as the foil's stripes lean. At rest it is off the edge and unseen. */
+.light {
+  transform: skewX(-24deg);
+  opacity: 0;
+}
+
 .sparks {
   fill: var(--white);
 }
@@ -49,32 +77,156 @@
 .spark {
   transform-box: fill-box;
   transform-origin: center;
-  animation: twinkle 2.6s ease-in-out infinite;
 }
 
-.spark:nth-of-type(2) {
-  animation-delay: -0.9s;
+/*
+ * The name arriving, when motion is welcome. Each letter is slapped down in
+ * its turn, 55ms after the one before: it comes in large and from above,
+ * lands a little flat and wide, and springs back. All six copies of a letter
+ * share its turn, so they land as one piece. Then one pass of light crosses
+ * the foil, and the three sparks come on, twinkle twice and are still: nothing
+ * here loops for ever.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .letter {
+    animation: letter-on 0.42s cubic-bezier(0.2, 1.4, 0.35, 1) backwards;
+    animation-delay: calc(var(--turn, 0) * 55ms);
+  }
+
+  .light {
+    animation: light-pass 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.9s both;
+  }
+
+  .spark {
+    animation:
+      spark-on 0.3s cubic-bezier(0.2, 1.5, 0.4, 1) 1.05s backwards,
+      twinkle 2.2s ease-in-out 1.5s 2;
+  }
+
+  .spark:nth-of-type(2) {
+    animation-delay: 1.2s, 1.75s;
+  }
+
+  .spark:nth-of-type(3) {
+    animation-delay: 1.35s, 2s;
+  }
+
+  .letter[data-turn='1'] {
+    --turn: 1;
+  }
+
+  .letter[data-turn='2'] {
+    --turn: 2;
+  }
+
+  .letter[data-turn='3'] {
+    --turn: 3;
+  }
+
+  .letter[data-turn='4'] {
+    --turn: 4;
+  }
+
+  .letter[data-turn='5'] {
+    --turn: 5;
+  }
+
+  .letter[data-turn='6'] {
+    --turn: 6;
+  }
+
+  .letter[data-turn='7'] {
+    --turn: 7;
+  }
+
+  .letter[data-turn='8'] {
+    --turn: 8;
+  }
+
+  .letter[data-turn='9'] {
+    --turn: 9;
+  }
+
+  .letter[data-turn='10'] {
+    --turn: 10;
+  }
+
+  .letter[data-turn='11'] {
+    --turn: 11;
+  }
+
+  .letter[data-turn='12'] {
+    --turn: 12;
+  }
+
+  .letter[data-turn='13'] {
+    --turn: 13;
+  }
+
+  .letter[data-turn='14'] {
+    --turn: 14;
+  }
+
+  .letter[data-turn='15'] {
+    --turn: 15;
+  }
 }
 
-.spark:nth-of-type(3) {
-  animation-delay: -1.7s;
+@keyframes letter-on {
+  0% {
+    translate: 0 -26px;
+    scale: 1.32;
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  58% {
+    translate: 0 0;
+    scale: 1.07 0.9;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes light-pass {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+
+  12%,
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    translate: 760px 0;
+    opacity: 0;
+  }
+}
+
+/* A spark comes on once the light has crossed the letter it sits by. */
+@keyframes spark-on {
+  from {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
 }
 
 @keyframes twinkle {
   0%,
   100% {
-    transform: scale(0.45) rotate(0deg);
-    opacity: 0.5;
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
   }
 
   50% {
-    transform: scale(1.1) rotate(45deg);
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .spark {
-    animation: none;
+    transform: scale(0.45) rotate(45deg);
+    opacity: 0.5;
   }
 }

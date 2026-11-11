@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   ARTBOARDS,
-  MAX_ARTBOARD_WIDTH_PX,
+  COVERS,
   PHONE_MAX_WIDTH_PX,
   UNITS_PER_EM,
   WIDE_MIN_WIDTH_PX,
@@ -50,9 +50,8 @@ describe('the badge photo’s crop', () => {
     const share = (artboard: { width: number }): number =>
       Math.ceil((FRAME_WIDTH_EM * UNITS_PER_EM * 100) / artboard.width)
 
-    const capped = Math.ceil(
-      (MAX_ARTBOARD_WIDTH_PX * FRAME_WIDTH_EM * UNITS_PER_EM) / ARTBOARDS.wide.width,
-    )
+    // The badge is on the cover, whose unit stops growing at a cap of its own.
+    const capped = Math.ceil(COVERS.wide.capPx * FRAME_WIDTH_EM)
 
     expect(PHOTO_SIZES).toBe(
       `(max-width: ${String(PHONE_MAX_WIDTH_PX)}px) ${String(share(ARTBOARDS.phone))}vw, ` +

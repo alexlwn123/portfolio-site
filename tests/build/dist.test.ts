@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { content } from '../../src/content'
 import { PERSONAL_MAIL_DOMAINS } from '../../src/content/schema'
 import { SECTIONS } from '../../src/features/cv/labels'
-import { STICKER_IDS } from '../../src/features/lid/stickers'
+import { COVER_IDS, PILE_IDS, STICKER_IDS } from '../../src/features/lid/stickers'
 import { SECTION_IDS } from '../../src/features/sections/sectionIds'
 import { executableScripts, listDistFiles, readDistFile, readPage } from './dist'
 import { INDEXABLE_ROUTES, ROUTES } from './routes'
@@ -15,9 +15,10 @@ const HOME = '/'
 const KILOBYTE = 1024
 /**
  * The whole of the home page's script, gzipped, may weigh this much and no
- * more. Raised from 12 kB when the badge was given its own physics.
+ * more. Raised from 12 kB when the badge was given its own physics, and from
+ * 16 kB when the page learnt to stick things down as they scroll into view.
  */
-const SCRIPT_BUDGET_BYTES = 16 * KILOBYTE
+const SCRIPT_BUDGET_BYTES = 20 * KILOBYTE
 
 describe('the built site', () => {
   it.each(ROUTES)('emits static HTML for every route: %s', async (route) => {
@@ -119,17 +120,18 @@ describe('/cv/', () => {
   })
 })
 
-describe('/', () => {
-  async function homeCss(): Promise<string> {
-    const page = await readPage('/')
-    const sheets = await Promise.all(
-      [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) =>
-        readDistFile((link.getAttribute('href') ?? '').replace(/^\//, '')),
-      ),
-    )
-    return sheets.join('\n')
-  }
+/** Every stylesheet the home page links to, as one. */
+async function homeCss(): Promise<string> {
+  const page = await readPage('/')
+  const sheets = await Promise.all(
+    [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) =>
+      readDistFile((link.getAttribute('href') ?? '').replace(/^\//, '')),
+    ),
+  )
+  return sheets.join('\n')
+}
 
+describe('/', () => {
   it('places every sticker from a stylesheet, with the phone and wide layouts in container queries', async () => {
     const page = await readPage('/')
     const css = await homeCss()
@@ -166,11 +168,12 @@ describe('/', () => {
       (link) => link.getAttribute('href')?.split('#')[1] ?? '',
     )
 
-    expect(new Set(anchors)).toEqual(new Set(['top', ...SECTION_IDS]))
+    expect(new Set(anchors)).toEqual(new Set(['top', 'pile', ...SECTION_IDS]))
     for (const anchor of anchors) {
       expect(home.getElementById(anchor), anchor).not.toBeNull()
     }
     expect(home.getElementById('top')?.hasAttribute('data-lid')).toBe(true)
+    expect(home.getElementById('pile')?.hasAttribute('data-lid-pile')).toBe(true)
   })
 
   it('pins a strap to the top with CSS alone, in a landmark of its own', async () => {
@@ -294,6 +297,61 @@ describe('the home page’s script', () => {
     for (const line of lines.filter((text) => text.length > 60)) {
       expect(cv, line).toContain(line)
     }
+  })
+})
+
+describe('the lid’s two parts', () => {
+  it('opens on a cover that holds the name, the badge on its lanyard, the hello tag and the cue', async () => {
+    const page = await readPage('/')
+    const ids = [...page.querySelectorAll('[data-lid-cover] [data-sticker]')].map((sticker) =>
+      sticker.getAttribute('data-sticker'),
+    )
+
+    expect(ids).toEqual(COVER_IDS)
+    expect(page.querySelectorAll('[data-lid-cover] h1')).toHaveLength(1)
+    expect(page.querySelectorAll('[data-lid-cover] button')).toHaveLength(0)
+    expect(page.querySelector('[data-lid-cover] a[data-sticker="cue"]')?.getAttribute('href')).toBe(
+      '/#pile',
+    )
+  })
+
+  it('puts every other sticker in the pile, a region named by its own heading', async () => {
+    const page = await readPage('/')
+    const pile = page.querySelector('section[data-lid-pile]')
+    const ids = [...(pile?.querySelectorAll('[data-sticker]') ?? [])].map((sticker) =>
+      sticker.getAttribute('data-sticker'),
+    )
+    const title = pile?.querySelector('h2')
+
+    expect(ids).toEqual(PILE_IDS)
+    expect(pile?.getAttribute('aria-labelledby')).toBe(title?.id)
+    expect(title?.textContent.trim()).toBe('Stuck on so far')
+    expect(pile?.firstElementChild).toBe(title)
+  })
+
+  it('heads the page in order: the name, the pile, then a heading to a section', async () => {
+    const page = await readPage('/')
+    const headings = [...page.querySelectorAll('h1, h2')]
+
+    expect(headings.map(({ tagName }) => tagName)).toEqual([
+      'H1',
+      'H2',
+      ...SECTION_IDS.map(() => 'H2'),
+    ])
+    expect(headings[1]?.closest('[data-lid-pile]')).not.toBeNull()
+    expect(headings.slice(2).map((heading) => heading.closest('section')?.id)).toEqual(SECTION_IDS)
+  })
+
+  it('sizes the cover from the screen and the pile from the page, in the stylesheet', async () => {
+    const css = await homeCss()
+
+    // The build works the divisions out, so the unit is written as a share of the screen's height.
+    expect(css).toMatch(/\[data-lid-cover\]\{[^}]*[\d.]+svh/)
+    expect(css).toMatch(/\[data-lid-pile\]\{[^}]*1440px/)
+    // One screen tall, with the older height for a browser that has no small viewport.
+    expect(css).toMatch(/\{[^{}]*height:\s*100svh[^{}]*\}/)
+    expect(css).toMatch(/@supports not \(height:\s*100svh\)\{[^}]*height:\s*100vh/)
+    expect(css).toMatch(/@supports not \(height:\s*100svh\)\{\[data-lid-cover\]\{font-size:[^}]*vh/)
   })
 })
 

@@ -6,6 +6,7 @@ import { clearHang, drawHang } from './badgeDraw'
 import {
   findHang,
   type HangParts,
+  liftOf,
   type Measured,
   measureHang,
   sameRig,
@@ -85,6 +86,8 @@ interface Context {
 const SLOP_PX = 6
 /** Units the badge falls from, above where it hangs, when nothing has been painted. */
 const DROP_HEIGHT = 700
+/** Held this many units above its place or more, the badge has not arrived yet. */
+const HELD_ABOVE = 1
 const MS_PER_S = 1000
 /** How much of each new reading of the hand's speed is taken: the rest is the old one. */
 const SPEED_BLEND = 0.5
@@ -306,10 +309,19 @@ function leanTo(context: Context, radians: number): void {
   rouse(context, { lean: radians, easing: false })
 }
 
-/** How the badge arrives: still under reduced motion, else dropped in, or tossed if already shown. */
-function arrival(env: Env, hang: Hang, sway: number): Sim {
+/**
+ * How the badge arrives. Under reduced motion it is simply there. If the
+ * stylesheet is still holding it above the lid, it drops in from where it is
+ * held. Otherwise the page has shown it hanging, and it cannot vanish and
+ * fall: it is tossed from where it is. Before anything is painted it drops in
+ * from above.
+ */
+function arrival(env: Env, hang: Hang, sway: number, lift: number): Sim {
   if (env.reducedMotion) {
     return resting(hang)
+  }
+  if (lift > HELD_ABOVE) {
+    return dropped(hang, lift)
   }
   return env.painted() ? tossed(hang, sway) : dropped(hang, DROP_HEIGHT)
 }
@@ -390,10 +402,11 @@ export function installBadge(
     return null
   }
   const sway = turnOf(parts.badge)
+  const lift = liftOf(parts.badge) / measured.unitPx
   for (const element of [parts.lanyard, parts.badge]) {
     element.setAttribute('data-hang', '')
   }
-  const sim = arrival(env, hang, sway)
+  const sim = arrival(env, hang, sway, lift)
   const model = createStore<Model>({
     hang,
     measured,

@@ -7,6 +7,7 @@ import { ordinal } from '../../lib/formatNumber'
 import { PATHS } from '../../lib/paths'
 import { firstWeekNote, resultLabel } from '../cv/describe'
 import { sectionAnchor } from '../sections/sectionIds'
+import { pileAnchor } from './anchor'
 import { employers, introduction } from './career'
 import {
   balanceLines,
@@ -43,18 +44,21 @@ import type {
 /*
  * The lid's stickers in reading order. The DOM follows this order, so a
  * screen reader and the Tab key meet the name first, then the badge and its
- * ribbons, the introduction, where he has worked, the content and last the
+ * ribbons, the introduction and the way down; and then the pile under its
+ * own heading: where he has worked, the counts, the content and last the
  * contact links. Where each sticker lands is decided by placement/ alone.
  *
  * Which stickers exist is a design decision and is written here. What they
  * say is not: every name, count, city and address is read from the content.
  */
 
-export const STICKER_IDS = [
-  'name',
-  'lanyard',
-  'badge',
-  'hello',
+/** The cover: the first screen, and nothing but. */
+export const COVER_IDS = ['name', 'lanyard', 'badge', 'hello', 'cue'] as const
+
+/** The pile: everything else that has been stuck on, one scroll down. */
+export const PILE_IDS = [
+  'pile-title',
+  'pile-kicker',
   'cv',
   'job-finite-computer',
   'job-fedi',
@@ -93,6 +97,10 @@ export const STICKER_IDS = [
   'tidy',
 ] as const
 
+export const STICKER_IDS = [...COVER_IDS, ...PILE_IDS] as const
+
+export type CoverId = (typeof COVER_IDS)[number]
+export type PileId = (typeof PILE_IDS)[number]
 export type StickerId = (typeof STICKER_IDS)[number]
 
 export { EMPLOYER_IDS } from './career'
@@ -160,9 +168,10 @@ function sectionRibbons(stats: Stats): readonly RibbonSpec[] {
   ]
 }
 
-function opening(content: Content, stats: Stats): readonly Spec[] {
+/** The first screen: who he is, his badge, two lines of introduction and the way down. */
+function cover(content: Content, stats: Stats): readonly Spec[] {
   const { profile } = content
-  const { hello, lanyard } = copy.lid
+  const { hello, lanyard, cue } = copy.lid
 
   return [
     {
@@ -184,9 +193,21 @@ function opening(content: Content, stats: Stats): readonly Spec[] {
       greeting: hello.greeting,
       lead: hello.lead,
       highlight: hello.highlight,
-      text: introduction(content, stats),
+      lines: introduction(content),
     },
-    { id: 'cv', kind: 'assetTag', ...copy.lid.cvSticker, href: PATHS.cv },
+    { id: 'cue', kind: 'cue', text: cue.text, href: pileAnchor() },
+  ]
+}
+
+/** What the pile opens with: its heading, a line under it, and the way to the plain CV. */
+function pileOpening(): readonly Spec[] {
+  const { pile, cvSticker } = copy.lid
+  const [first = '', second = ''] = pile.title
+
+  return [
+    { id: 'pile-title', kind: 'heading', lines: [first, second] },
+    { id: 'pile-kicker', kind: 'scrawl', text: pile.kicker },
+    { id: 'cv', kind: 'assetTag', ...cvSticker, href: PATHS.cv },
   ]
 }
 
@@ -436,11 +457,16 @@ function controls(): readonly Spec[] {
   ]
 }
 
-/** Every sticker on the lid, filled in from the content and its derived numbers. */
-export function lidStickers(content: Content, stats: Stats): readonly Item[] {
+/** The cover's stickers, in reading order. */
+export function coverStickers(content: Content, stats: Stats): readonly Item[] {
+  return deepFreeze([...cover(content, stats)]) as readonly Item[]
+}
+
+/** The pile's stickers, in reading order: its heading first, the buttons last. */
+export function pileStickers(content: Content, stats: Stats): readonly Item[] {
   const { nav } = copy.lid
   const items: readonly Item[] = [
-    ...opening(content, stats),
+    ...pileOpening(),
     employers(content),
     ...counts(content, stats),
     cities(content),
@@ -452,4 +478,12 @@ export function lidStickers(content: Content, stats: Stats): readonly Item[] {
     ...controls(),
   ]
   return deepFreeze(items) as readonly Item[]
+}
+
+/** Every sticker on the lid, the cover's and then the pile's, filled in from the content. */
+export function lidStickers(content: Content, stats: Stats): readonly Item[] {
+  return deepFreeze([
+    ...coverStickers(content, stats),
+    ...pileStickers(content, stats),
+  ]) as readonly Item[]
 }

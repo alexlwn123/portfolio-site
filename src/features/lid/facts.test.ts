@@ -5,7 +5,6 @@ import type { Organized, Project, Win } from '../../content'
 import {
   balanceLines,
   compactSats,
-  countWord,
   currentJob,
   cvSection,
   fieldFigure,
@@ -139,24 +138,6 @@ describe('currentJob', () => {
     const past = content.experience.map((job) => ({ ...job, current: false }))
 
     expect(() => currentJob(past)).toThrow(/current/)
-  })
-})
-
-describe('countWord', () => {
-  it('writes a small count as a word', () => {
-    expect([0, 1, 2, 3, 9, 12].map(countWord)).toEqual([
-      'zero',
-      'one',
-      'two',
-      'three',
-      'nine',
-      'twelve',
-    ])
-  })
-
-  it('leaves a larger count as a figure', () => {
-    expect(countWord(13)).toBe('13')
-    expect(countWord(1471)).toBe('1,471')
   })
 })
 

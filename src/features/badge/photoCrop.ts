@@ -27,10 +27,11 @@ export const BADGE_CROP: Region = Object.freeze({ x: 265, y: 321.2, width: 420, 
 export const PHOTO_SCALES: readonly number[] = Object.freeze([0.5, 0.75, 1])
 
 /**
- * The photo's frame is 21.5em wide: 56% of the phone artboard, 30% of the
- * desktop one, 20% of the wide one, and 376px once that stops growing.
+ * The photo's frame is 21.5em wide, of the cover's unit: at most 56% of a
+ * phone's width, 30% of a tablet's, 20% of a laptop's, and 310px once the
+ * cover's unit stops growing. A short screen draws it smaller, never larger.
  */
-export const PHOTO_SIZES = '(max-width: 560px) 56vw, (max-width: 1099px) 30vw, min(20vw, 376px)'
+export const PHOTO_SIZES = '(max-width: 560px) 56vw, (max-width: 1099px) 30vw, min(20vw, 310px)'
 
 const PERCENT = 100
 const PERCENT_DECIMALS = 2

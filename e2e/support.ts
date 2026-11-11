@@ -45,18 +45,80 @@ export async function openLid(page: Page, width: number): Promise<void> {
 }
 
 /**
+ * Holds the cover at the size it has now. The cover is one screen tall and
+ * its unit comes from the screen's height, so it would grow with the window:
+ * held, it stays one screen of the window as it was opened, whatever the
+ * window becomes. The gap the pile leaves under a phone's ribbons is held too.
+ */
+async function holdCover(page: Page): Promise<void> {
+  const held = await page.locator('[data-lid-cover]').evaluate((cover) => {
+    const pile = cover.nextElementSibling
+    return {
+      height: getComputedStyle(cover).height,
+      unit: getComputedStyle(cover).fontSize,
+      gap: pile ? getComputedStyle(pile).marginTop : '0px',
+    }
+  })
+  await page.addStyleTag({
+    content:
+      `[data-lid-stage] [data-lid-cover]{height:${held.height};min-height:0;font-size:${held.unit}}` +
+      `[data-lid-stage] [data-lid-pile]{margin-top:${held.gap}}`,
+  })
+}
+
+/**
  * Makes the window as tall as the lid and hands the lid back, ready to be
- * photographed. Cut out of a shorter window, the lid costs Chromium a painting
- * of the whole long page under it, which a busy machine does not finish in time.
+ * photographed: the cover as one screen of the window it was opened in, and
+ * the pile under it. Cut out of a shorter window, the lid costs Chromium a
+ * painting of the whole long page under it, which a busy machine does not
+ * finish in time.
  */
 export async function fitWindowToLid(page: Page): Promise<Locator> {
   const lid = page.locator('[data-lid]')
+  await holdCover(page)
   const { width, height } = await boxOf(lid)
   await page.setViewportSize({
     width: page.viewportSize()?.width ?? Math.round(width),
     height: Math.ceil(height),
   })
   return lid
+}
+
+/** A screen to open the home page at. */
+export interface Screen {
+  readonly width: number
+  readonly height: number
+}
+
+/**
+ * Opens the home page on a screen of a given size with motion reduced, and
+ * waits for its fonts and its photo. The cover is as tall as the screen, so
+ * anything about the first screen is checked through this.
+ */
+export async function openCover(page: Page, screen: Screen): Promise<void> {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize(screen)
+  await page.goto('/')
+  await page.evaluate(async () => {
+    await document.fonts.ready
+    await Promise.all([...document.images].map((image) => image.decode()))
+  })
+}
+
+/** Where something is on the screen, as the page reports it. */
+export interface Edges {
+  readonly left: number
+  readonly top: number
+  readonly right: number
+  readonly bottom: number
+}
+
+/** The box around an element as it is drawn, turned and all. */
+export async function edgesOf(locator: Locator): Promise<Edges> {
+  return locator.evaluate((element) => {
+    const { left, top, right, bottom } = element.getBoundingClientRect()
+    return { left, top, right, bottom }
+  })
 }
 
 /** Every link on the lid, in the order the markup has them. */
@@ -117,24 +179,53 @@ export async function stickerPlaces(page: Page): Promise<Readonly<Record<string,
   )
 }
 
+interface Offset {
+  readonly x: number
+  readonly y: number
+}
+
+/** How long a sticker is held still before it is set down, so that it is not thrown: in ms. */
+const HELD_STILL_MS = 250
+
 /**
- * Presses on a sticker at a point inside it, carries it by a distance and lets
- * go. The mouse moves in steps, as a hand does.
+ * Presses on a sticker at a point inside it and carries it by a distance,
+ * the mouse moving in steps as a hand does. The button is still down.
  */
-export async function carry(
-  page: Page,
-  id: string,
-  by: { readonly x: number; readonly y: number },
-  from: { readonly x: number; readonly y: number } = { x: 0.5, y: 0.5 },
-): Promise<void> {
+async function pickUp(page: Page, id: string, by: Offset, from: Offset): Promise<void> {
   await sticker(page, id).evaluate((element) => {
     element.scrollIntoView({ block: 'center', behavior: 'instant' })
   })
+  // A sticker of the pile is slapped down as it scrolls into view: it is taken once it has landed.
+  await sticker(page, id).and(page.locator(':not([data-land])')).waitFor()
   const box = await boxOf(sticker(page, id))
   const start = { x: box.x + box.width * from.x, y: box.y + box.height * from.y }
   await page.mouse.move(start.x, start.y)
   await page.mouse.down()
   await page.mouse.move(start.x + by.x, start.y + by.y, { steps: 12 })
+}
+
+/**
+ * Presses on a sticker at a point inside it, carries it by a distance and lets
+ * go on the move, so that it is thrown a little way and then sticks.
+ */
+export async function carry(
+  page: Page,
+  id: string,
+  by: Offset,
+  from: Offset = { x: 0.5, y: 0.5 },
+): Promise<void> {
+  await pickUp(page, id, by, from)
+  await page.mouse.up()
+  await sticker(page, id).and(page.locator('[data-carry="stuck"]')).waitFor()
+}
+
+/**
+ * The same, but held still before it is let go: the sticker is set down
+ * where the pointer is, not thrown past it.
+ */
+export async function setDown(page: Page, id: string, by: Offset): Promise<void> {
+  await pickUp(page, id, by, { x: 0.5, y: 0.5 })
+  await page.waitForTimeout(HELD_STILL_MS)
   await page.mouse.up()
   await sticker(page, id).and(page.locator('[data-carry="stuck"]')).waitFor()
 }
@@ -149,6 +240,42 @@ export async function linksNotUnderTheirOwnCentre(page: Page): Promise<readonly 
       return link.contains(hit) ? [] : [link.getAttribute('href')]
     }),
   )
+}
+
+/**
+ * Every sticker on the lid that lies over a link that is not its own, as
+ * "sticker covers address". Each sticker that is shown is brought into view
+ * and probed on a grid of points: whatever is painted at a point below the
+ * sticker, and belongs to another sticker's link, is covered by it.
+ */
+export async function stickersCoveringLinks(page: Page, steps: number): Promise<readonly string[]> {
+  return page.evaluate((side) => {
+    const links = [...document.querySelectorAll('[data-lid] a')]
+    const linkAt = (element: Element): Element | undefined =>
+      links.find((link) => link.contains(element))
+    const shown = [...document.querySelectorAll('[data-lid] [data-sticker]')].filter(
+      (sticker) => sticker.getClientRects().length > 0,
+    )
+    return shown.flatMap((sticker) => {
+      sticker.scrollIntoView({ block: 'center', behavior: 'instant' })
+      const box = sticker.getBoundingClientRect()
+      const points = Array.from({ length: side * side }, (_, index) => ({
+        x: box.left + ((index % side) + 0.5) * (box.width / side),
+        y: box.top + (Math.floor(index / side) + 0.5) * (box.height / side),
+      }))
+      const under = points.flatMap(({ x, y }) => {
+        const stack = document.elementsFromPoint(x, y)
+        const at = stack.findIndex((element) => sticker.contains(element))
+        return at < 0 ? [] : stack.slice(at + 1).flatMap((element) => linkAt(element) ?? [])
+      })
+      return [...new Set(under)]
+        .filter((link) => !link.contains(sticker) && !sticker.contains(link))
+        .map(
+          (link) =>
+            `${sticker.getAttribute('data-sticker') ?? ''} covers ${link.getAttribute('href') ?? ''}`,
+        )
+    })
+  }, steps)
 }
 
 /**

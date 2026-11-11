@@ -1,4 +1,10 @@
-import type { Env, Orientation, ScreenReport } from '../features/lid/enhance/env'
+import type {
+  Env,
+  Orientation,
+  ScreenReport,
+  SightReport,
+  Sighting,
+} from '../features/lid/enhance/env'
 import type { Reading } from '../features/lid/enhance/tilt'
 import { type FakeAudio, fakeAudio } from './fakeAudio'
 import { type FakeFrames, fakeFrames, type FakeTimers, fakeTimers } from './fakeClock'
@@ -49,32 +55,42 @@ const MARKUP = `
         <linearGradient id="lid-foil" gradientTransform="at rest"></linearGradient>
       </svg>
       <div data-lid-stage>
-        <h1 data-sticker="name" data-grab>
-          <svg>
-            <radialGradient id="name-glow" cx="168" cy="90"></radialGradient>
-            <use fill="url(#lid-foil)"></use>
-            <use fill="url(#name-glow)"></use>
-          </svg>
-        </h1>
-        ${LANYARD}
-        <div data-sticker="badge">
-          <div data-badge-card><img alt="" src="photo.jpg"><nav><a href="/cv/#wins">Winner</a></nav></div>
+        <div data-lid-cover>
+          <div data-lid-board>
+            <h1 data-sticker="name" data-grab>
+              <svg>
+                <radialGradient id="name-glow" cx="168" cy="90"></radialGradient>
+                <g fill="url(#lid-foil)"><use></use></g>
+                <g fill="url(#name-glow)"><use></use></g>
+              </svg>
+            </h1>
+            ${LANYARD}
+            <div data-sticker="badge">
+              <div data-badge-card><img alt="" src="photo.jpg"><nav><a href="/cv/#wins">Winner</a></nav></div>
+            </div>
+          </div>
         </div>
-        <a data-sticker="cv" data-grab href="/cv/">Plain CV</a>
-        ${NOTED.map(peelable).join('')}
-        <a data-sticker="lightning-welder" data-grab href="/cv/#wins">
-          <svg><polygon fill="url(#lid-foil)"></polygon></svg>
-        </a>
-        <div data-sticker="next-spot">saved</div>
-        <button type="button" hidden data-sticker="tilt" data-grab data-control="tilt"
-          aria-pressed="false">Tilt me</button>
-        <button type="button" hidden data-sticker="sound" data-grab data-control="sound"
-          aria-pressed="false" aria-label="Sound"></button>
-        <button type="button" hidden data-sticker="tidy" data-grab data-control="tidy">
-          Tidy the lid
-        </button>
+        <section data-lid-pile>
+          <a data-sticker="cv" data-grab href="/cv/">Plain CV</a>
+          ${NOTED.map(peelable).join('')}
+          <a data-sticker="lightning-welder" data-grab href="/cv/#wins">
+            <svg><polygon fill="url(#lid-foil)"></polygon></svg>
+          </a>
+          <div data-sticker="next-spot">saved</div>
+          <button type="button" hidden data-sticker="tilt" data-grab data-control="tilt"
+            aria-pressed="false">Tilt me</button>
+          <button type="button" hidden data-sticker="sound" data-grab data-control="sound"
+            aria-pressed="false" aria-label="Sound"></button>
+          <button type="button" hidden data-sticker="tidy" data-grab data-control="tidy">
+            Tidy the lid
+          </button>
+        </section>
       </div>
     </div>
+    <section data-section="work">
+      <h2><span data-stuck id="work-title">Career path</span></h2>
+      <a data-stuck id="work-tag" href="/#work">A job</a>
+    </section>
   </main>`
 
 export interface Box {
@@ -215,17 +231,68 @@ export interface FakeEnv extends Env {
   /** Says that a watched element has come on screen, or gone off it. */
   readonly report: ScreenReport
   readonly watched: () => readonly Element[]
+  /** Says what has come into view or gone out of it, a batch at a time. */
+  readonly sight: SightReport
+  /** What is being watched for coming into view. Something forgotten is no longer in it. */
+  readonly sighted: () => readonly Element[]
   /** Switches the lid between its two arrangements. */
   readonly rearrange: () => void
   /** How many audio contexts have been made. */
   readonly audioMade: () => number
 }
 
+/**
+ * A sighting of an element at the top left of the screen, unless a test says
+ * where: wholly on screen or wholly off it, unless a test says only an edge
+ * of it shows.
+ */
+export function seen(element: Element, onScreen: boolean, at: Partial<Sighting> = {}): Sighting {
+  return { element, showing: onScreen, onScreen, left: 0, top: 0, ...at }
+}
+
+/** The two watchers of the screen, each holding what it was asked to watch and whom to tell. */
+function fakeWatchers() {
+  let report: ScreenReport = () => undefined
+  let watched: readonly Element[] = []
+  let sight: SightReport = () => undefined
+  let sighted: readonly Element[] = []
+
+  return {
+    onScreen: (callback: ScreenReport) => {
+      report = callback
+      return {
+        watch: (element: Element) => {
+          watched = [...watched, element]
+        },
+      }
+    },
+    onSight: (callback: SightReport) => {
+      sight = callback
+      return {
+        watch: (element: Element) => {
+          sighted = [...sighted, element]
+        },
+        forget: (element: Element) => {
+          sighted = sighted.filter((other) => other !== element)
+        },
+      }
+    },
+    report: (element: Element, onScreen: boolean) => {
+      report(element, onScreen)
+    },
+    watched: () => watched,
+    sight: (batch: readonly Sighting[]) => {
+      sight(batch)
+    },
+    sighted: () => sighted,
+  }
+}
+
 /** A browser for tests. Motion is welcome and nothing is on screen until a test says so. */
 export function fakeEnv(overrides: Partial<Env> = {}): FakeEnv {
   const audio = fakeAudio()
-  let report: ScreenReport = () => undefined
-  let watched: readonly Element[] = []
+  const frames = fakeFrames()
+  const { onScreen, onSight, ...watchers } = fakeWatchers()
   let rearrangers: readonly (() => void)[] = []
   let audioMade = 0
 
@@ -233,31 +300,23 @@ export function fakeEnv(overrides: Partial<Env> = {}): FakeEnv {
     reducedMotion: false,
     touch: false,
     painted: () => false,
-    frames: fakeFrames(),
+    now: () => frames.now(),
+    frames,
     timers: fakeTimers(),
     storage: memoryStorage(),
     createAudio: () => {
       audioMade += 1
       return audio.context
     },
-    onScreen: (callback) => {
-      report = callback
-      return {
-        watch: (element) => {
-          watched = [...watched, element]
-        },
-      }
-    },
+    onScreen,
+    onSight,
     orientation: null,
     onRearrange: (callback) => {
       rearrangers = [...rearrangers, callback]
     },
     ...overrides,
     audio,
-    report: (element, onScreen) => {
-      report(element, onScreen)
-    },
-    watched: () => watched,
+    ...watchers,
     rearrange: () => {
       for (const callback of rearrangers) {
         callback()

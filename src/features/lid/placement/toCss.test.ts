@@ -7,11 +7,19 @@ const FRAME = {
   containerName: 'lid',
   phoneMaxWidthPx: 560,
   wideMinWidthPx: 1100,
-  maxArtboardWidthPx: 1920,
+  maxArtboardWidthPx: 1440,
+  portraitMaxAspect: '9/10',
+  gutters: { wide: 50, desktop: 30, phone: 16 },
   wide: { width: 1100, height: 1080 },
   desktop: { width: 728, height: 1300 },
   phone: { width: 390, height: 1870 },
-}
+  covers: {
+    wide: { board: 'wide', height: 620, floorPx: 10 },
+    landscape: { board: 'desktop', height: 546, floorPx: 10 },
+    portrait: { board: 'desktop', height: 880, floorPx: 10 },
+    phone: { board: 'phone', height: 693, floorPx: 9.23 },
+  },
+} as const
 
 const ORDER = ['name', 'pill', 'bolt'] as const
 
@@ -80,13 +88,13 @@ describe('toCss', () => {
 
   it('writes placements in em, ten design units to the em', () => {
     expect(rulesFor(desktopCss, 'name')).toEqual([
-      '[data-sticker="name"]{left:1.4em;top:3em;width:47em;rotate:-4deg;z-index:6;--i:0}',
+      '[data-sticker="name"]{left:1.4em;top:3em;width:47em;rotate:-4deg;z-index:6}',
     ])
   })
 
   it('leaves the width to the sticker when its placement has none', () => {
     expect(rulesFor(desktopCss, 'pill')).toEqual([
-      '[data-sticker="pill"]{left:0.8em;top:77em;rotate:-7deg;z-index:3;--i:10}',
+      '[data-sticker="pill"]{left:0.8em;top:77em;rotate:-7deg;z-index:3}',
     ])
     expect(rulesFor(phoneCss, 'pill')).toEqual([
       '[data-sticker="pill"]{left:-0.6em;top:83.85em;rotate:0deg;z-index:3}',
@@ -102,42 +110,21 @@ describe('toCss', () => {
     ])
   })
 
-  it('staggers the slap in reading order, over the same span however many stickers there are', () => {
-    const steps = ORDER.map((id) => /--i:(\d+)/.exec(rulesFor(desktopCss, id)[0] ?? '')?.[1])
-
-    expect(steps).toEqual(['0', '10', '20'])
-    expect(phoneCss).not.toContain('--i')
-    expect(wideCss).not.toContain('--i')
-  })
-
-  it('lands a late sticker after all the others, without moving when they land', () => {
-    const place = { x: 0, y: 0, r: 0, z: 1 }
-    const all = { name: place, pill: place, bolt: place, button: place }
-    const withLate = toCss(
-      { order: [...ORDER, 'button'], wide: all, desktop: all, phone: all, late: ['button'] },
-      FRAME,
-    )
-    const steps = [...ORDER, 'button'].map(
-      (id) => new RegExp(`\\[data-sticker="${id}"\\]\\{[^}]*--i:(\\d+)`).exec(withLate)?.[1],
-    )
-
-    expect(steps).toEqual(['0', '10', '20', '20'])
-  })
-
   it('makes the lid a named container, as wide as whatever holds it', () => {
     expect(desktopCss).toContain('[data-lid]{container:lid / inline-size}')
     expect(css).not.toContain('data-lid-desk')
     expect(css).not.toContain('--lid-max-width')
   })
 
-  it('sizes the stage from the artboards: one em is ten units at any width', () => {
-    expect(desktopCss).toContain('[data-lid-stage]{font-size:calc(100cqw / 72.8);height:130em}')
-    expect(phoneCss).toContain('[data-lid-stage]{font-size:calc(100cqw / 39);height:187em}')
+  it('sizes the pile from the artboards: one em is ten units at any width', () => {
+    expect(desktopCss).toContain('[data-lid-pile]{font-size:calc(100cqw / 72.8);height:130em}')
+    expect(phoneCss).toContain('[data-lid-pile]{font-size:calc(100cqw / 39);height:187em}')
+    expect(css).not.toContain('[data-lid-stage]{')
   })
 
-  it('stops the wide artboard growing at its cap, and centres it on the lid', () => {
+  it('stops the wide artboard growing where the sections stop, and centres it on the lid', () => {
     expect(wideCss).toContain(
-      '[data-lid-stage]{font-size:min(calc(100cqw / 110),calc(1920px / 110));height:108em;max-width:1920px;margin-inline:auto}',
+      '[data-lid-pile]{font-size:min(calc(100cqw / 110),calc(1440px / 110));height:108em;max-width:1440px;margin-inline:auto}',
     )
     expect(desktopCss).not.toContain('max-width')
     expect(phoneCss).not.toContain('margin-inline')
@@ -147,11 +134,16 @@ describe('toCss', () => {
     expect(css).not.toMatch(/<|style=/)
   })
 
-  it('gives one sticker a rule with no stagger to divide by', () => {
+  it('says where a sticker is and nothing of when it lands: the page’s script gives each its turn', () => {
+    expect(css).not.toContain('--i')
+    expect(css).not.toMatch(/animation|delay/)
+  })
+
+  it('gives one sticker a rule of its own', () => {
     const name = { name: { x: 0, y: 0, r: 0, z: 1 } }
     const single = toCss({ order: ['name'], wide: name, desktop: name, phone: name }, FRAME)
 
-    expect(single).toContain('[data-sticker="name"]{left:0em;top:0em;rotate:0deg;z-index:1;--i:0}')
+    expect(single).toContain('[data-sticker="name"]{left:0em;top:0em;rotate:0deg;z-index:1}')
   })
 
   it.each(['wide', 'desktop', 'phone'] as const)(

@@ -9,8 +9,9 @@ interface HelloTagProps {
   readonly greeting: string
   /** The printed lead-in the handwriting completes: "I'm a". */
   readonly lead: string
-  readonly text: string
-  /** A word of `text` to run the highlighter over, the first time it appears. */
+  /** The handwriting, a sentence to a line. */
+  readonly lines: readonly string[]
+  /** A phrase to run the highlighter over, the first time it appears. */
   readonly highlight: string
 }
 
@@ -20,8 +21,22 @@ function around(text: string, word: string): readonly [string, string | null, st
   return at < 0 ? [text, null, ''] : [text.slice(0, at), word, text.slice(at + word.length)]
 }
 
-export function HelloTag({ greeting, lead, text, highlight }: HelloTagProps): ReactElement {
+/** One sentence of the handwriting, with the highlighter over the phrase if it is in this one. */
+function Sentence({ text, highlight }: { readonly text: string; readonly highlight: string }) {
   const [before, marked, after] = around(text, highlight)
+
+  return (
+    <span className={styles.line}>
+      {before}
+      {marked !== null && <mark className={styles.highlight}>{marked}</mark>}
+      {after}{' '}
+    </span>
+  )
+}
+
+export function HelloTag({ greeting, lead, lines, highlight }: HelloTagProps): ReactElement {
+  /* The highlighter makes one pass: over the first sentence that has the phrase. */
+  const marked = lines.findIndex((line) => highlight !== '' && line.includes(highlight))
 
   return (
     <Vinyl as="div" peel="bottomRight">
@@ -31,9 +46,9 @@ export function HelloTag({ greeting, lead, text, highlight }: HelloTagProps): Re
           <span className={cx(voice.label, styles.lead)}>{lead}</span>
         </span>{' '}
         <span className={cx(voice.marker, styles.text)}>
-          {before}
-          {marked !== null && <mark className={styles.highlight}>{marked}</mark>}
-          {after}
+          {lines.map((line, index) => (
+            <Sentence key={line} text={line} highlight={index === marked ? highlight : ''} />
+          ))}
         </span>
       </p>
     </Vinyl>

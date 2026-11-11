@@ -1,19 +1,30 @@
 import type { ReactElement } from 'react'
 
 import type { BadgePhotoImage } from '../badge/photoSources'
+import { PILE_ID, PILE_TITLE_ID } from './anchor'
 import styles from './Lid.module.css'
 import type { LidItem, NoteSpec } from './stickerSpecs'
 import { StickerView } from './stickerViews'
 
+type Notes = Readonly<Partial<Record<string, NoteSpec>>>
+
 interface LidSurfaceProps {
-  /** The stickers, in reading order. The markup follows this order exactly. */
-  readonly items: readonly LidItem[]
+  /** The first screen's stickers, in reading order. */
+  readonly cover: readonly LidItem[]
+  /** Every other sticker, in reading order. The markup follows both orders exactly. */
+  readonly pile: readonly LidItem[]
   /** What is stuck underneath a sticker, by the sticker's id. */
-  readonly notes: Readonly<Partial<Record<string, NoteSpec>>>
+  readonly notes: Notes
   readonly photo: BadgePhotoImage
 }
 
-/** Scratches on the anodised lid, drawn across the desktop artboard. */
+interface StickersProps {
+  readonly items: readonly LidItem[]
+  readonly notes: Notes
+  readonly photo: BadgePhotoImage
+}
+
+/** Scratches on the anodised lid, drawn across the whole of it. */
 function Scuffs(): ReactElement {
   return (
     <svg
@@ -32,14 +43,10 @@ function Scuffs(): ReactElement {
   )
 }
 
-/**
- * The surface the stickers are stuck to. It only lists them: where each one
- * lands is the placement stylesheet's business.
- */
-export function LidSurface({ items, notes, photo }: LidSurfaceProps): ReactElement {
+/** Stickers in the order given. Where each one lands is the placement stylesheet's business. */
+function Stickers({ items, notes, photo }: StickersProps): ReactElement {
   return (
-    <div className={styles.stage} data-lid-stage="">
-      <Scuffs />
+    <>
       {items.map((item) =>
         item.kind === 'group' ? (
           <ul key={item.key} className={styles.group} aria-label={item.label} role="list">
@@ -53,6 +60,32 @@ export function LidSurface({ items, notes, photo }: LidSurfaceProps): ReactEleme
           <StickerView key={item.id} spec={item} photo={photo} note={notes[item.id]} />
         ),
       )}
+    </>
+  )
+}
+
+/**
+ * The surface the stickers are stuck to, in its two parts. The cover is the
+ * first screen: its stickers are placed against the page's column, which the
+ * board is. The pile is the rest, under a heading of its own.
+ */
+export function LidSurface({ cover, pile, notes, photo }: LidSurfaceProps): ReactElement {
+  return (
+    <div className={styles.stage} data-lid-stage="">
+      <Scuffs />
+      <div className={styles.cover} data-lid-cover="">
+        <div className={styles.board} data-lid-board="">
+          <Stickers items={cover} notes={notes} photo={photo} />
+        </div>
+      </div>
+      <section
+        id={PILE_ID}
+        className={styles.pile}
+        aria-labelledby={PILE_TITLE_ID}
+        data-lid-pile=""
+      >
+        <Stickers items={pile} notes={notes} photo={photo} />
+      </section>
     </div>
   )
 }
