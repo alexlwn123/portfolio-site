@@ -57,6 +57,7 @@ svg.clip {
 [data-hang] > .badge {
   cursor: grab;
   touch-action: pan-y pinch-zoom;
+  -webkit-user-select: none;
   user-select: none;
 }
 

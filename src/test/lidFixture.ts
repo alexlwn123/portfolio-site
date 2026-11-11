@@ -272,6 +272,8 @@ interface PointerInit {
   readonly y?: number
   readonly pointerType?: string
   readonly button?: number
+  /** The buttons held down. A move is sent with the first one down unless told otherwise. */
+  readonly buttons?: number
   readonly pointerId?: number
   readonly relatedTarget?: EventTarget | null
 }
@@ -312,6 +314,7 @@ function dispatchPointer(target: EventTarget, type: string, init: PointerInit): 
     clientX: init.x ?? 0,
     clientY: init.y ?? 0,
     button: init.button ?? 0,
+    buttons: init.buttons ?? (type === 'pointermove' ? 1 : 0),
     relatedTarget: init.relatedTarget ?? null,
   })
   Object.defineProperties(event, {

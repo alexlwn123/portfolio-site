@@ -13,7 +13,7 @@ import {
 } from './badgeMeasure'
 import type { Env } from './env'
 import { createStore, type Store } from './store'
-import type { Task, Ticker } from './ticker'
+import type { Task, Ticker, Timers } from './ticker'
 import { length, mix, type Point, scale, subtract, turn, ZERO } from './vector'
 
 /*
@@ -76,6 +76,7 @@ interface Context {
   readonly hooks: BadgeHooks
   readonly model: Store<Model>
   readonly ticker: Ticker
+  readonly timers: Timers
   readonly task: Task
   readonly followers: Readonly<Record<'move' | 'up' | 'cancel', (event: PointerEvent) => void>>
 }
@@ -92,6 +93,8 @@ const SNAP_HEARD = 0.2
 const SNAP_VOLUME = 0.6
 /** A change of lean smaller than this, in radians, is a trembling hand. */
 const LEAN_STEP = 0.004
+/** The click that ends a hold comes at once or not at all: after this long, in ms, none is owed. */
+const CLICK_FOLLOWS_MS = 100
 const PASSIVE = { passive: true } as const
 
 function originOf({ lanyard }: HangParts): Point {
@@ -210,6 +213,11 @@ function pointerMoved(context: Context, event: PointerEvent): void {
   if (hand?.pointerId !== event.pointerId) {
     return
   }
+  if (event.pointerType === 'mouse' && event.buttons === 0) {
+    // The button came up where the page could not see it, over a menu say: the press is over.
+    letGo(context, event, true)
+    return
+  }
   const pointer = pointOf(event)
   if (!hand.held && length(subtract(pointer, hand.start)) <= SLOP_PX) {
     return
@@ -230,6 +238,12 @@ function letGo(context: Context, event: PointerEvent, cancelled: boolean): void 
   }
   context.parts.badge.removeAttribute('data-hang-held')
   rouse(context, { hand: null, dragged: !cancelled, easing: context.calm })
+  if (!cancelled) {
+    // A finger's drag ends with no click at all: the one after it must not be the one eaten.
+    context.timers.set(() => {
+      context.model.set({ ...context.model.get(), dragged: false })
+    }, CLICK_FOLLOWS_MS)
+  }
 }
 
 /** The click a hold ends with is not a click: the ribbon under it is not followed. */
@@ -277,9 +291,16 @@ function remeasure(context: Context): void {
   }
 }
 
+/** True while any of the badge is on the screen. */
+function onScreen({ parts, win }: Context): boolean {
+  const { top, bottom } = parts.badge.getBoundingClientRect()
+  return bottom > 0 && top < win.innerHeight
+}
+
 function leanTo(context: Context, radians: number): void {
   const model = context.model.get()
-  if (context.calm || Math.abs(radians - model.lean) < LEAN_STEP) {
+  if (context.calm || Math.abs(radians - model.lean) < LEAN_STEP || !onScreen(context)) {
+    // Less motion was asked for, the hand only trembles, or nobody is looking.
     return
   }
   rouse(context, { lean: radians, easing: false })
@@ -333,6 +354,7 @@ function contextOf(
     hooks,
     model,
     ticker,
+    timers: env.timers,
     task: {
       measure: () => {
         model.set({ ...model.get(), origin: originOf(parts) })

@@ -45,8 +45,11 @@ export interface Measured {
 }
 
 const HALF = 0.5
-/** Two measures this close, in units, hang the same. */
-const SAME_WITHIN = 0.01
+/**
+ * Two measures this close, in units, hang the same. The page is measured in
+ * whole px, so one hang read at two scales comes out a unit or so apart.
+ */
+const SAME_WITHIN = 2
 
 function strapOf(group: SVGElement): StrapParts | null {
   const line = group.querySelector<SVGElement>('[data-strap-line]')

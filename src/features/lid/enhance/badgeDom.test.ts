@@ -215,6 +215,35 @@ describe('taking hold of the badge', () => {
     expect(env.frames.pending()).toBe(0)
   })
 
+  it('lets go when the mouse moves with no button down: the release was never seen', () => {
+    const { env } = setUp(fakeEnv({ reducedMotion: true }))
+
+    // A press that opened a menu: the button came up where the page could not see it.
+    pointer(link(), 'pointerdown', MIDDLE)
+    pointer(window, 'pointermove', { x: MIDDLE.x + 90, y: MIDDLE.y, buttons: 0 })
+    expect(fixture.sticker('badge')).not.toHaveAttribute('data-hang-held')
+    expect(env.frames.pending()).toBe(0)
+
+    // And one that had already taken hold.
+    grab({ x: MIDDLE.x + 40, y: MIDDLE.y })
+    pointer(window, 'pointermove', { x: MIDDLE.x + 90, y: MIDDLE.y, buttons: 0 })
+    expect(fixture.sticker('badge')).not.toHaveAttribute('data-hang-held')
+    expect(pointer(link(), 'click').stopped).toBe(false)
+    env.frames.flush(600)
+    expect(env.frames.pending()).toBe(0)
+  })
+
+  it('forgets a drag that no click follows, as after a finger: the next click is a click', () => {
+    const { env } = setUp(fakeEnv({ reducedMotion: true }))
+
+    grab({ x: MIDDLE.x + 40, y: MIDDLE.y }, { pointerType: 'touch' })
+    env.frames.flush(10)
+    pointer(window, 'pointerup', { ...MIDDLE, pointerType: 'touch' })
+    expect(env.timers.fire()).toBe(1)
+
+    expect(pointer(link(), 'click').stopped).toBe(false)
+  })
+
   it('ignores a second pointer, and a mouse’s other buttons', () => {
     const { env } = setUp(fakeEnv({ reducedMotion: true }))
 
@@ -319,6 +348,19 @@ describe('the badge and the rest of the lid', () => {
     badge.lean(0)
     env.frames.flush(1200)
     expect(fixture.sticker('badge')).not.toHaveAttribute('style')
+  })
+
+  it('does not lean while it is off the screen: nobody is looking', () => {
+    const { env, badge } = setUp()
+    env.frames.flush(1200)
+
+    place(fixture.sticker('badge'), { ...HANG_BOX, top: -(HANG_BOX.height + 1) })
+    badge.lean(0.3)
+    expect(env.frames.pending()).toBe(0)
+
+    place(fixture.sticker('badge'), HANG_BOX)
+    badge.lean(0.3)
+    expect(env.frames.pending()).toBe(1)
   })
 
   it('does not lean when less motion is asked for', () => {

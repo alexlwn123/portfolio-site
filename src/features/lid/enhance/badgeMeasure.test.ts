@@ -96,14 +96,15 @@ describe('measuring the hang', () => {
     expect(measureHang(parts())).toBeNull()
   })
 
-  it('says whether two measures hang the same, to a hundredth of a unit', () => {
+  it('says whether two measures hang the same, allowing for a page measured in whole px', () => {
     const measured = measureHang(parts())
     if (measured === null) {
       throw new Error('It measures')
     }
-    const nudged = { ...measured.rig, centre: { x: 130.001, y: 531 } }
+    // The page is measured in whole px, so the same hang at another scale reads a unit or so off.
+    const rounded = { ...measured.rig, centre: { x: 131.4, y: 530.2 } }
 
-    expect(sameRig(measured.rig, nudged)).toBe(true)
-    expect(sameRig(measured.rig, { ...measured.rig, centre: { x: 131, y: 531 } })).toBe(false)
+    expect(sameRig(measured.rig, rounded)).toBe(true)
+    expect(sameRig(measured.rig, { ...measured.rig, centre: { x: 136, y: 531 } })).toBe(false)
   })
 })
