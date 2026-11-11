@@ -1,0 +1,100 @@
+/*
+ * The shirt on the left, and down its right side the smaller stickers, each
+ * at its own lean. The column starts level with the section's heading, which
+ * is on the left, over the shirt.
+ */
+.stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 2.5em;
+  align-items: flex-start;
+}
+
+.around {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3.4em;
+  align-items: flex-start;
+  min-width: 0;
+  margin-top: -19em;
+}
+
+.around > :nth-child(1) {
+  align-self: flex-end;
+  rotate: 3deg;
+}
+
+.around > :nth-child(2) {
+  margin-left: 1em;
+  rotate: -4deg;
+}
+
+.around > :nth-child(3) {
+  align-self: flex-end;
+  rotate: 1.5deg;
+}
+
+.around > :nth-child(4) {
+  margin-top: 1.6em;
+  rotate: -2.5deg;
+}
+
+.around > :nth-child(5) {
+  align-self: flex-end;
+  margin-top: 1em;
+  rotate: 2deg;
+}
+
+.around > :nth-child(6) {
+  margin-left: 2em;
+}
+
+/* ---------- 728 units: the shirt, then the stickers two abreast ---------- */
+
+@container section (max-width: 1099px) {
+  .stage {
+    flex-direction: column;
+    gap: 5em;
+  }
+
+  .around {
+    flex-flow: row wrap;
+    gap: 4.5em 2.4em;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .around > :nth-child(n) {
+    align-self: auto;
+    margin-left: 0;
+  }
+}
+
+/* ---------- 390 units: one column, leaning left and right ---------- */
+
+@container section (max-width: 560px) {
+  .stage {
+    gap: 4.4em;
+  }
+
+  .around {
+    flex-flow: column;
+    gap: 4em;
+  }
+
+  .around > :nth-child(odd) {
+    align-self: flex-end;
+  }
+
+  .around > :nth-child(even) {
+    align-self: flex-start;
+  }
+
+  .around > :nth-child(n) {
+    margin-top: 0;
+  }
+}

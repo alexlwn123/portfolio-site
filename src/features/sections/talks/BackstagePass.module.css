@@ -1,0 +1,103 @@
+/* A laminated pass: a slot for the lanyard, a band across the top, a strip of foil. */
+.pass {
+  position: relative;
+  width: 27em;
+  max-width: 100%;
+}
+
+.body {
+  padding: 0 0 1.6em;
+  border-radius: 1.6em;
+  color: var(--ink);
+  text-align: center;
+}
+
+/* Where the clip goes through. */
+.slot {
+  position: absolute;
+  top: 1.25em;
+  left: 50%;
+  z-index: 1;
+  width: 6.4em;
+  height: 1.5em;
+  margin-left: -3.2em;
+  border: 0.22em solid var(--white);
+  border-radius: 0.8em;
+  background: var(--ink);
+}
+
+.band {
+  margin: 0;
+  padding: 3.5em 1em 0.8em;
+  background: var(--ink);
+  color: var(--white);
+}
+
+.backstage {
+  display: block;
+  color: var(--hi);
+  font-size: 3.1em;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.access {
+  display: block;
+  margin-top: 0.2em;
+  font-size: 1.36em;
+  letter-spacing: 0.3em;
+}
+
+.title {
+  margin: 0.55em 0.4em 0;
+  font-size: 2.5em;
+  line-height: 0.98;
+}
+
+/* The strip of foil that says what kind of thing it is. */
+.format {
+  margin: 0.8em 0 0;
+  padding: 0.4em 0 0.32em;
+  border-block: 0.16em solid var(--ink);
+  font-size: 1.7em;
+  letter-spacing: 0.3em;
+}
+
+.note {
+  margin: 0.7em 0.6em 0;
+  font-size: 1.85em;
+  line-height: 1.1;
+  rotate: -2deg;
+}
+
+.given {
+  margin: 0.45em 0 0;
+  font-size: 2.2em;
+  line-height: 1;
+}
+
+.runs {
+  display: grid;
+  gap: 0.2em;
+  margin: 0.6em 1em 0;
+  padding: 0;
+  list-style: none;
+}
+
+.run {
+  font-size: 1.36em;
+  line-height: 1.2;
+}
+
+.year {
+  padding: 0 0.3em;
+  background: var(--ink);
+  color: var(--white);
+}
+
+.links {
+  position: relative;
+  z-index: 1;
+  justify-content: center;
+  margin-top: -0.9em;
+}

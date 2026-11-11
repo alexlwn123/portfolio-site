@@ -1,0 +1,341 @@
+/*
+ * The tour shirt. Its shoulders are a drawing 620 units wide (the yoke), and
+ * everything else about it is measured in that drawing's unit, --u, so that
+ * the body's sides and its white die-cut edge run on from the drawing's at
+ * any size: the body starts where the yoke stops, 80 units in from each
+ * sleeve, with an edge 6 units thick.
+ */
+.tee {
+  --tee: 62em;
+  --u: calc(var(--tee) / 620);
+  --edge: calc(var(--u) * 6);
+  --sleeve: calc(var(--u) * 80);
+
+  position: relative;
+  flex: none;
+  width: var(--tee);
+  rotate: -1.2deg;
+}
+
+.cloth {
+  isolation: isolate;
+}
+
+.yoke {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.cut {
+  fill: var(--ink);
+  stroke: var(--white);
+}
+
+/* Stitching: the collar's rib and the hems of the sleeves. */
+.seam {
+  fill: none;
+  stroke: var(--white);
+  opacity: 0.22;
+}
+
+/* The body of the shirt, as long as the print needs. */
+.cloth::before {
+  position: absolute;
+  top: calc(var(--u) * 189);
+  right: var(--sleeve);
+  bottom: 0;
+  left: var(--sleeve);
+  z-index: -1;
+  border: solid var(--white);
+  border-width: 0 var(--edge) var(--edge);
+  border-radius: 0 0 1.6em 1.6em;
+  background: var(--ink);
+  content: '';
+}
+
+/* The hem, stitched. */
+.cloth::after {
+  position: absolute;
+  right: calc(var(--sleeve) + var(--edge));
+  bottom: 2.6em;
+  left: calc(var(--sleeve) + var(--edge));
+  z-index: -1;
+  border-top: 0.2em dashed rgba(255, 255, 255, 0.22);
+  content: '';
+}
+
+/* What is printed on it, down the middle of the back. */
+.print {
+  padding: calc(var(--u) * 70) calc(var(--sleeve) + var(--edge) + 2.6em) 5.6em;
+  color: var(--white);
+}
+
+.headline {
+  margin: 0;
+  font: inherit;
+  text-align: center;
+}
+
+.act {
+  display: block;
+  margin-right: -0.34em;
+  color: var(--mint);
+  font-size: 2.3em;
+  letter-spacing: 0.34em;
+}
+
+.tour {
+  display: block;
+  margin-top: 0.08em;
+  color: var(--hi);
+  font-size: 9em;
+  line-height: 0.86;
+}
+
+.years {
+  display: flex;
+  gap: 0.22em;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.12em;
+  color: var(--tang);
+  font-size: 5em;
+  line-height: 1;
+}
+
+.dash {
+  width: 0.6em;
+  height: 0.17em;
+  border-radius: 0.05em;
+  background: currentcolor;
+}
+
+.formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 0.55em;
+  align-items: center;
+  justify-content: center;
+  margin: 1.1em 0 0;
+  color: var(--gum);
+  font-size: 1.55em;
+  letter-spacing: 0.12em;
+}
+
+.star {
+  width: 0.7em;
+  height: 0.7em;
+  color: var(--white);
+}
+
+.legs,
+.dates {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legs {
+  display: grid;
+  gap: 2.4em;
+  margin-top: 3.2em;
+}
+
+/* The year, with a rule running out to each side of it. */
+.year {
+  display: flex;
+  gap: 0.45em;
+  align-items: center;
+  margin: 0 0 0.25em;
+  color: var(--tang);
+  font-size: 3.2em;
+  line-height: 1;
+}
+
+.year::before,
+.year::after {
+  flex: 1;
+  height: 0.07em;
+  background: rgba(255, 255, 255, 0.34);
+  content: '';
+}
+
+/* One date: the day down the left, then where and what. */
+.date {
+  display: grid;
+  grid-template-columns: 6.6em minmax(0, 1fr);
+  column-gap: 1.3em;
+  padding: 0.95em 0 0.9em;
+  border-top: 0.12em dashed rgba(255, 255, 255, 0.2);
+}
+
+.date:first-child {
+  border-top: 0;
+}
+
+.when {
+  grid-row: 1 / span 2;
+  grid-column: 1;
+  padding-top: 0.08em;
+  color: var(--hi);
+  font-size: 2.05em;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.where,
+.what {
+  grid-column: 2;
+  margin: 0;
+}
+
+.where {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.9em;
+  align-items: baseline;
+  font-size: 1.36em;
+  line-height: 1.2;
+}
+
+.venue {
+  color: var(--mint);
+}
+
+.parts {
+  color: var(--gum);
+}
+
+.what {
+  margin-top: 0.22em;
+}
+
+.title {
+  color: var(--white);
+  font-size: 2.2em;
+  line-height: 1.06;
+  letter-spacing: 0.02em;
+}
+
+.linked {
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.14em;
+}
+
+.linked:hover,
+.linked:focus-visible {
+  color: var(--hi);
+  text-decoration-color: var(--hi);
+  text-decoration-thickness: 0.1em;
+}
+
+/* The arrow points up and out: the link leaves the site. */
+.arrow {
+  width: 0.62em;
+  height: 0.62em;
+  margin-left: 0.28em;
+  color: var(--hi);
+  rotate: -45deg;
+}
+
+.more {
+  display: inline-block;
+  margin-left: 0.9em;
+  padding: 0.25em 0;
+  color: var(--mint);
+  font-size: 1.36em;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
+}
+
+.more:hover,
+.more:focus-visible {
+  color: var(--hi);
+}
+
+.linked:focus-visible,
+.more:focus-visible {
+  outline: 0.14em solid var(--hi);
+  outline-offset: 0.14em;
+  border-radius: 0.1em;
+}
+
+/* The size label, under the last date. */
+.size {
+  margin: 2.8em 0 0;
+  color: var(--white);
+  font-size: 1.3em;
+  letter-spacing: 0.28em;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* ---------- 728 units: the shirt fills the width ---------- */
+
+@container section (max-width: 1099px) {
+  .tee {
+    --tee: 66.8em;
+
+    rotate: -0.8deg;
+  }
+}
+
+/*
+ * ---------- 390 units: the shirt is bigger than the phone ----------
+ *
+ * Its body is exactly as wide as the screen, so the list of dates has the
+ * full width, and its sleeves run off both sides.
+ */
+@container section (max-width: 560px) {
+  .tee {
+    --tee: calc(39em * 620 / 460);
+
+    margin-left: calc(-1.6em - var(--sleeve));
+    rotate: none;
+  }
+
+  .print {
+    padding: calc(var(--u) * 74) calc(var(--sleeve) + var(--edge) + 1.1em) 5em;
+  }
+
+  .act {
+    font-size: 1.9em;
+  }
+
+  .tour {
+    font-size: 7.6em;
+  }
+
+  .years {
+    font-size: 4.2em;
+  }
+
+  .formats {
+    font-size: 1.36em;
+  }
+
+  .date {
+    grid-template-columns: 5.4em minmax(0, 1fr);
+    column-gap: 1em;
+  }
+
+  .when {
+    font-size: 1.75em;
+  }
+
+  .where {
+    font-size: 1.36em;
+  }
+
+  .title {
+    font-size: 2em;
+  }
+}

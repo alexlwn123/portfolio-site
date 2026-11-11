@@ -1,0 +1,69 @@
+/* A studio's "on air" sign: a lit box on a black case, with the show under it. */
+.onAir {
+  position: relative;
+  width: 31em;
+  max-width: 100%;
+}
+
+.case {
+  padding: 1.5em 1.7em 1.5em;
+  border-radius: 1.8em;
+  color: var(--white);
+}
+
+/* The lit part. Bubblegum on ink is 6:1, and the glow is only light. */
+.sign {
+  margin: 0;
+  padding: 0.16em 0 0.1em;
+  border: 0.05em solid var(--gum);
+  border-radius: 0.14em;
+  box-shadow:
+    0 0 0.22em rgba(255, 79, 163, 0.7),
+    inset 0 0 0.2em rgba(255, 79, 163, 0.45);
+  color: var(--gum);
+  font-size: 6.2em;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-shadow: 0 0 0.16em rgba(255, 79, 163, 0.75);
+  animation: hum 2.6s ease-in-out infinite;
+}
+
+@keyframes hum {
+  50% {
+    opacity: 0.86;
+  }
+}
+
+.show {
+  margin: 0.45em 0 0;
+  color: var(--hi);
+  font-size: 2.9em;
+  line-height: 0.98;
+}
+
+.parts {
+  margin: 0.5em 0 0;
+  color: var(--mint);
+  font-size: 1.4em;
+}
+
+.detail {
+  margin: 0.45em 0 0;
+  font-size: 1.5em;
+  font-weight: var(--weight-medium);
+  line-height: 1.25;
+}
+
+/* The links hang off the sign's bottom edge. */
+.links {
+  position: relative;
+  z-index: 1;
+  margin: -0.9em 0 0 1.6em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sign {
+    animation: none;
+  }
+}
