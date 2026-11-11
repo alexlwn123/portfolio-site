@@ -22,7 +22,8 @@
  * transition under reduced motion would give it one to shorten.
  */
 .note,
-.note * {
+.note *,
+.note::before {
   transition-property: none;
 }
 

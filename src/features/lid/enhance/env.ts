@@ -1,4 +1,4 @@
-import { PHONE_MAX_WIDTH_PX } from '../placement/artboards'
+import { PHONE_MAX_WIDTH_PX, WIDE_MIN_WIDTH_PX } from '../placement/artboards'
 import type { Frames, Timers } from './ticker'
 import type { Reading } from './tilt'
 
@@ -44,9 +44,15 @@ export interface Env {
   readonly onScreen: ((report: ScreenReport) => ScreenWatch) | null
   /** Null where the device reports no orientation. */
   readonly orientation: Orientation | null
-  /** Calls back when the lid changes between its two arrangements. */
+  /** Calls back when the lid changes between its arrangements. */
   readonly onRearrange: (callback: () => void) => void
 }
+
+/** The lid changes arrangement where either of these starts or stops matching. */
+const REARRANGE_QUERIES = [
+  `(max-width: ${String(PHONE_MAX_WIDTH_PX)}px)`,
+  `(min-width: ${String(WIDE_MIN_WIDTH_PX)}px)`,
+] as const
 
 /** How far outside the screen a sticker is still counted as on it. */
 const SCREEN_MARGIN = '80px'
@@ -138,9 +144,9 @@ export function browserEnv(win: Win): Env {
     onScreen: screenWatchOf(win),
     orientation: orientationOf(win),
     onRearrange: (callback) => {
-      win
-        .matchMedia(`(max-width: ${String(PHONE_MAX_WIDTH_PX)}px)`)
-        .addEventListener('change', callback)
+      for (const query of REARRANGE_QUERIES) {
+        win.matchMedia(query).addEventListener('change', callback)
+      }
     },
   }
 }

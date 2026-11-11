@@ -6,17 +6,17 @@ import { deepFreeze } from '../../lib/deepFreeze'
 import { ordinal } from '../../lib/formatNumber'
 import { PATHS } from '../../lib/paths'
 import { firstWeekNote, resultLabel } from '../cv/describe'
+import { sectionAnchor } from '../sections/sectionIds'
+import { employers, introduction } from './career'
 import {
   balanceLines,
   compactSats,
-  cvSection,
   fieldFigure,
   fieldWin,
   findById,
   firstWeekSats,
   grantedPatentNumbers,
   inPersonCity,
-  introText,
   latestPodiumWin,
   ownHackathon,
   projectHome,
@@ -33,6 +33,7 @@ import type {
   LidItem,
   MedalSpec,
   PillSpec,
+  RibbonSpec,
   StickerSpec,
   TextLink,
   Tone,
@@ -42,8 +43,8 @@ import type {
 /*
  * The lid's stickers in reading order. The DOM follows this order, so a
  * screen reader and the Tab key meet the name first, then the badge and its
- * ribbons, the introduction, the content and last the contact links. Where
- * each sticker lands is decided by placement/ alone.
+ * ribbons, the introduction, where he has worked, the content and last the
+ * contact links. Where each sticker lands is decided by placement/ alone.
  *
  * Which stickers exist is a design decision and is written here. What they
  * say is not: every name, count, city and address is read from the content.
@@ -55,6 +56,11 @@ export const STICKER_IDS = [
   'badge',
   'hello',
   'cv',
+  'job-finite-computer',
+  'job-fedi',
+  'job-zion',
+  'job-blockspaces',
+  'job-ncr',
   'wins-count',
   'organized-count',
   'latest-win',
@@ -89,6 +95,8 @@ export const STICKER_IDS = [
 
 export type StickerId = (typeof STICKER_IDS)[number]
 
+export { EMPLOYER_IDS } from './career'
+
 /**
  * The stickers that are buttons. They stay hidden until the page's script
  * shows them, so they are stuck down after everything else.
@@ -119,7 +127,7 @@ const MORE_ELSEWHERE: readonly ProfileLinkId[] = ['devpost', 'booking']
 
 function badge({ profile }: Content, stats: Stats): BadgeSpec<StickerId> {
   const { role, location } = profile
-  const { ribbons, badge: words, nav } = copy.lid
+  const { badge: words, nav } = copy.lid
 
   return {
     id: 'badge',
@@ -132,24 +140,24 @@ function badge({ profile }: Content, stats: Stats): BadgeSpec<StickerId> {
     titleNote: words.titleNote,
     organization: `${role.organization} · ${location.city}, ${location.regionCode}`,
     ribbonsLabel: nav.sections,
-    ribbons: [
-      {
-        label: ribbons.organizer,
-        count: ribbons.times(stats.organized.count),
-        href: cvSection('organized'),
-        tone: 'tang',
-      },
-      {
-        label: ribbons.winner,
-        count: ribbons.times(stats.wins.total),
-        href: cvSection('wins'),
-        tone: 'hi',
-      },
-      { label: ribbons.speaker, count: null, href: cvSection('talks'), tone: 'mint' },
-      { label: ribbons.builder, count: null, href: cvSection('projects'), tone: 'gum' },
-      { label: ribbons.inventor, count: null, href: cvSection('patents'), tone: 'white' },
-    ],
+    ribbons: sectionRibbons(stats),
   }
+}
+
+/** The badge's ribbons: what he is, one to a section, in the order the page has them. */
+function sectionRibbons(stats: Stats): readonly RibbonSpec[] {
+  const { ribbons } = copy.lid
+  const won = ribbons.times(stats.wins.total)
+  const ran = ribbons.times(stats.organized.count)
+
+  return [
+    { label: ribbons.engineer, count: null, href: sectionAnchor('work'), tone: 'ink' },
+    { label: ribbons.winner, count: won, href: sectionAnchor('wins'), tone: 'hi' },
+    { label: ribbons.builder, count: null, href: sectionAnchor('projects'), tone: 'gum' },
+    { label: ribbons.organizer, count: ran, href: sectionAnchor('organized'), tone: 'tang' },
+    { label: ribbons.speaker, count: null, href: sectionAnchor('talks'), tone: 'mint' },
+    { label: ribbons.inventor, count: null, href: sectionAnchor('patents'), tone: 'white' },
+  ]
 }
 
 function opening(content: Content, stats: Stats): readonly Spec[] {
@@ -170,19 +178,26 @@ function opening(content: Content, stats: Stats): readonly Spec[] {
       right: lanyard.loop,
     },
     badge(content, stats),
-    { id: 'hello', kind: 'hello', ...hello, text: introText(profile) },
+    {
+      id: 'hello',
+      kind: 'hello',
+      greeting: hello.greeting,
+      lead: hello.lead,
+      highlight: hello.highlight,
+      text: introduction(content, stats),
+    },
+    { id: 'cv', kind: 'assetTag', ...copy.lid.cvSticker, href: PATHS.cv },
   ]
 }
 
 function counts({ wins }: Content, stats: Stats): readonly Spec[] {
-  const { cvSticker, winsSeal, organizedSeal } = copy.lid
+  const { winsSeal, organizedSeal } = copy.lid
   const { count, countryCount, includesOnline } = stats.organized
   const latest = latestPodiumWin(wins)
   const city = latest.eventPlace?.city ?? null
   const year = String(latest.year)
 
   return [
-    { id: 'cv', kind: 'assetTag', ...cvSticker, href: PATHS.cv },
     {
       id: 'wins-count',
       kind: 'starburst',
@@ -190,7 +205,7 @@ function counts({ wins }: Content, stats: Stats): readonly Spec[] {
       top: winsSeal.top,
       figure: winsSeal.times(stats.wins.total),
       bottom: winsSeal.bottom,
-      href: cvSection('wins'),
+      href: sectionAnchor('wins'),
     },
     {
       id: 'organized-count',
@@ -205,7 +220,7 @@ function counts({ wins }: Content, stats: Stats): readonly Spec[] {
           : organizedSeal.countriesInPerson(countryCount),
       ],
       figure: String(count),
-      href: cvSection('organized'),
+      href: sectionAnchor('organized'),
     },
     {
       id: 'latest-win',
@@ -213,7 +228,7 @@ function counts({ wins }: Content, stats: Stats): readonly Spec[] {
       rank: ordinal(latest.result.place),
       title: winName(latest),
       lines: [latest.event, city === null ? year : `${city}, ${year}`],
-      href: cvSection('wins'),
+      href: sectionAnchor('wins'),
     },
     medal(wins),
     { id: 'bolt-top', kind: 'bolt' },
@@ -236,7 +251,7 @@ function medal(wins: Content['wins']): MedalSpec<StickerId> {
     lines: [words.outOf(field), words.teams],
     rim: [event, words.team(win.team.name)],
     tone: 'hi',
-    href: cvSection('wins'),
+    href: sectionAnchor('wins'),
   }
 }
 
@@ -251,7 +266,7 @@ function patentLabel({ patents }: Content, stats: Stats): ComplianceLabelSpec<St
     heading: numbers.length === 1 ? words.one : words.many,
     numbers,
     pending: stats.patents.anyPending ? words.pending : null,
-    href: cvSection('patents'),
+    href: sectionAnchor('patents'),
   }
 }
 
@@ -348,7 +363,7 @@ function records(content: Content, stats: Stats): readonly Spec[] {
       kicker: resultLabel(welder.result),
       title: winName(welder).split(' '),
       foot: `${hexWin.series} ${inPersonCity(ownHackathon(welder, content.organized))} ${shortYear(welder.year)}`,
-      href: cvSection('wins'),
+      href: sectionAnchor('wins'),
     },
     { id: 'phrase', kind: 'pill', text: copy.lid.phrase, tone: 'mint', big: true },
     nextSpot(content, stats),
@@ -378,7 +393,7 @@ function workshop({ talks }: Content): Spec {
     kind: 'bumper',
     lines: balanceLines(talk.title),
     note: copy.lid.bumper.note,
-    href: cvSection('talks'),
+    href: sectionAnchor('talks'),
   }
 }
 
@@ -417,6 +432,7 @@ export function lidStickers(content: Content, stats: Stats): readonly Item[] {
   const { nav } = copy.lid
   const items: readonly Item[] = [
     ...opening(content, stats),
+    employers(content),
     ...counts(content, stats),
     cities(content),
     workshop(content),

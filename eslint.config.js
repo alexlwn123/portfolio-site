@@ -109,6 +109,7 @@ export default defineConfig([
     // Components may not join this list: they read these modules instead.
     files: [
       'src/features/lid/placement/artboards.ts',
+      'src/features/lid/placement/wide.ts',
       'src/features/lid/placement/desktop.ts',
       'src/features/lid/placement/phone.ts',
       'src/features/stickers/geometry/*.ts',
