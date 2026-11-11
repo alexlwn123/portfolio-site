@@ -412,11 +412,17 @@ test.describe('pick up, throw, re-stick', () => {
       ;(document.activeElement as HTMLElement | null)?.blur()
     })
     const visited: string[] = []
-    for (let stop = 0; visited.length < hrefs.length && stop < hrefs.length * 2; stop += 1) {
+    // Tab on from the last button pressed, through the sections under the lid
+    // and round to the top of the page, keeping only the lid's own links.
+    const stops = hrefs.length * 2 + (await page.locator('main a, main button').count())
+    for (let stop = 0; visited.length < hrefs.length && stop < stops; stop += 1) {
       await page.keyboard.press('Tab')
-      const href = await page.evaluate(() =>
-        document.activeElement instanceof HTMLAnchorElement ? document.activeElement.href : null,
-      )
+      const href = await page.evaluate(() => {
+        const active = document.activeElement
+        return active instanceof HTMLAnchorElement && active.closest('[data-lid]')
+          ? active.href
+          : null
+      })
       if (href !== null) {
         visited.push(href)
       }
