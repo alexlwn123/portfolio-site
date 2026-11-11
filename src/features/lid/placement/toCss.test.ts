@@ -88,13 +88,13 @@ describe('toCss', () => {
 
   it('writes placements in em, ten design units to the em', () => {
     expect(rulesFor(desktopCss, 'name')).toEqual([
-      '[data-sticker="name"]{left:1.4em;top:3em;width:47em;rotate:-4deg;z-index:6;--i:0}',
+      '[data-sticker="name"]{left:1.4em;top:3em;width:47em;rotate:-4deg;z-index:6}',
     ])
   })
 
   it('leaves the width to the sticker when its placement has none', () => {
     expect(rulesFor(desktopCss, 'pill')).toEqual([
-      '[data-sticker="pill"]{left:0.8em;top:77em;rotate:-7deg;z-index:3;--i:10}',
+      '[data-sticker="pill"]{left:0.8em;top:77em;rotate:-7deg;z-index:3}',
     ])
     expect(rulesFor(phoneCss, 'pill')).toEqual([
       '[data-sticker="pill"]{left:-0.6em;top:83.85em;rotate:0deg;z-index:3}',
@@ -108,28 +108,6 @@ describe('toCss', () => {
     expect(rulesFor(phoneCss, 'bolt')).toEqual([
       '[data-lid-stage] [data-sticker="bolt"]{display:none}',
     ])
-  })
-
-  it('staggers the slap in reading order, over the same span however many stickers there are', () => {
-    const steps = ORDER.map((id) => /--i:(\d+)/.exec(rulesFor(desktopCss, id)[0] ?? '')?.[1])
-
-    expect(steps).toEqual(['0', '10', '20'])
-    expect(phoneCss).not.toContain('--i')
-    expect(wideCss).not.toContain('--i')
-  })
-
-  it('lands a late sticker after all the others, without moving when they land', () => {
-    const place = { x: 0, y: 0, r: 0, z: 1 }
-    const all = { name: place, pill: place, bolt: place, button: place }
-    const withLate = toCss(
-      { order: [...ORDER, 'button'], wide: all, desktop: all, phone: all, late: ['button'] },
-      FRAME,
-    )
-    const steps = [...ORDER, 'button'].map(
-      (id) => new RegExp(`\\[data-sticker="${id}"\\]\\{[^}]*--i:(\\d+)`).exec(withLate)?.[1],
-    )
-
-    expect(steps).toEqual(['0', '10', '20', '20'])
   })
 
   it('makes the lid a named container, as wide as whatever holds it', () => {
@@ -156,11 +134,16 @@ describe('toCss', () => {
     expect(css).not.toMatch(/<|style=/)
   })
 
-  it('gives one sticker a rule with no stagger to divide by', () => {
+  it('says where a sticker is and nothing of when it lands: the page’s script gives each its turn', () => {
+    expect(css).not.toContain('--i')
+    expect(css).not.toMatch(/animation|delay/)
+  })
+
+  it('gives one sticker a rule of its own', () => {
     const name = { name: { x: 0, y: 0, r: 0, z: 1 } }
     const single = toCss({ order: ['name'], wide: name, desktop: name, phone: name }, FRAME)
 
-    expect(single).toContain('[data-sticker="name"]{left:0em;top:0em;rotate:0deg;z-index:1;--i:0}')
+    expect(single).toContain('[data-sticker="name"]{left:0em;top:0em;rotate:0deg;z-index:1}')
   })
 
   it.each(['wide', 'desktop', 'phone'] as const)(

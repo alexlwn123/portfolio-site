@@ -179,24 +179,53 @@ export async function stickerPlaces(page: Page): Promise<Readonly<Record<string,
   )
 }
 
+interface Offset {
+  readonly x: number
+  readonly y: number
+}
+
+/** How long a sticker is held still before it is set down, so that it is not thrown: in ms. */
+const HELD_STILL_MS = 250
+
 /**
- * Presses on a sticker at a point inside it, carries it by a distance and lets
- * go. The mouse moves in steps, as a hand does.
+ * Presses on a sticker at a point inside it and carries it by a distance,
+ * the mouse moving in steps as a hand does. The button is still down.
  */
-export async function carry(
-  page: Page,
-  id: string,
-  by: { readonly x: number; readonly y: number },
-  from: { readonly x: number; readonly y: number } = { x: 0.5, y: 0.5 },
-): Promise<void> {
+async function pickUp(page: Page, id: string, by: Offset, from: Offset): Promise<void> {
   await sticker(page, id).evaluate((element) => {
     element.scrollIntoView({ block: 'center', behavior: 'instant' })
   })
+  // A sticker of the pile is slapped down as it scrolls into view: it is taken once it has landed.
+  await sticker(page, id).and(page.locator(':not([data-land])')).waitFor()
   const box = await boxOf(sticker(page, id))
   const start = { x: box.x + box.width * from.x, y: box.y + box.height * from.y }
   await page.mouse.move(start.x, start.y)
   await page.mouse.down()
   await page.mouse.move(start.x + by.x, start.y + by.y, { steps: 12 })
+}
+
+/**
+ * Presses on a sticker at a point inside it, carries it by a distance and lets
+ * go on the move, so that it is thrown a little way and then sticks.
+ */
+export async function carry(
+  page: Page,
+  id: string,
+  by: Offset,
+  from: Offset = { x: 0.5, y: 0.5 },
+): Promise<void> {
+  await pickUp(page, id, by, from)
+  await page.mouse.up()
+  await sticker(page, id).and(page.locator('[data-carry="stuck"]')).waitFor()
+}
+
+/**
+ * The same, but held still before it is let go: the sticker is set down
+ * where the pointer is, not thrown past it.
+ */
+export async function setDown(page: Page, id: string, by: Offset): Promise<void> {
+  await pickUp(page, id, by, { x: 0.5, y: 0.5 })
+  await page.waitForTimeout(HELD_STILL_MS)
   await page.mouse.up()
   await sticker(page, id).and(page.locator('[data-carry="stuck"]')).waitFor()
 }

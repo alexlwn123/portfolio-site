@@ -13,6 +13,7 @@ import {
   linksNotUnderTheirOwnCentre,
   openLid,
   openLivelyLid,
+  setDown,
   sticker,
   stickerPlaces,
 } from './support'
@@ -280,7 +281,7 @@ test.describe('pick up, throw, re-stick', () => {
     const url = page.url()
 
     // Across the pile, onto the employers' tags.
-    await carry(page, 'cv', { x: 440, y: -60 })
+    await setDown(page, 'cv', { x: 440, y: -60 })
 
     const after = await boxOf(cv)
     expect(after.x - before.x).toBeGreaterThan(400)
@@ -305,11 +306,13 @@ test.describe('pick up, throw, re-stick', () => {
   }) => {
     await openLivelyLid(page, 1280)
     const hello = sticker(page, 'hello')
+    // The badge drops in and swings: the photo is aimed at once it hangs still.
+    await expect(sticker(page, 'badge')).not.toHaveAttribute('data-hang-moving')
     const before = await boxOf(hello)
     // The badge's own box is where it hangs from; its card, and the photo on it, hang below.
     const photo = await boxOf(sticker(page, 'badge').locator('picture').locator('xpath=..'))
 
-    await carry(page, 'hello', {
+    await setDown(page, 'hello', {
       x: photo.x + photo.width / 2 - (before.x + before.width / 2),
       y: photo.y + photo.height / 2 - (before.y + before.height / 2),
     })
@@ -399,6 +402,9 @@ test.describe('pick up, throw, re-stick', () => {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(150)
     await expect(page.locator('[data-carry]')).toHaveCount(0)
     expect(page.url()).toBe(url)
+    // The scroll brought the top of the pile into view, and its stickers are slapped down as it
+    // does. They are measured once they have landed: where each is stuck has not changed.
+    await expect(page.locator('[data-land="slap"]')).toHaveCount(0)
     expect(withoutSwingers(await stickerPlaces(page))).toEqual(withoutSwingers(before))
     await context.close()
   })

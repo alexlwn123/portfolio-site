@@ -9,21 +9,13 @@ import { HIDDEN, type Layout, type PhoneLayout, type PhonePlacement } from './sc
  */
 
 export interface PileLayouts {
-  /** Sticker ids in reading order, which is also the order they slap down in. */
+  /** Sticker ids in reading order. */
   readonly order: readonly string[]
   readonly wide: Layout
   readonly desktop: Layout
   readonly phone: PhoneLayout
-  /**
-   * Stickers that are not there when the page loads and slap down after all
-   * the others. They take no turn of their own, so adding one never changes
-   * when the rest land.
-   */
-  readonly late?: readonly string[]
 }
 
-/** The slap animation is spread over this many steps, however many stickers there are. */
-const SLAP_STEPS = 20
 const EM_DECIMALS = 3
 
 /** A length in design units, written in em. */
@@ -50,11 +42,7 @@ export function rule(selector: string, lines: readonly string[]): string {
   return `${selector}{${lines.join(';')}}`
 }
 
-function stickerRule(
-  id: string,
-  placement: PhonePlacement | undefined,
-  extra: readonly string[],
-): string {
+function stickerRule(id: string, placement: PhonePlacement | undefined): string {
   if (placement === undefined) {
     throw new Error(`The sticker "${id}" has no placement`)
   }
@@ -64,11 +52,7 @@ function stickerRule(
   // selector, so that a lifted sticker's z-index can still outrank theirs.
   return placement === HIDDEN
     ? rule(`[data-lid-stage] ${selector}`, declarations(placement))
-    : rule(selector, [...declarations(placement), ...extra])
-}
-
-function slapStep(index: number, count: number): number {
-  return count > 1 ? Math.round((index * SLAP_STEPS) / (count - 1)) : 0
+    : rule(selector, declarations(placement))
 }
 
 /** The pile as wide as the lid: its font size is the design unit, whatever the width. */
@@ -99,18 +83,15 @@ function query(frame: Frame, condition: string, rules: readonly string[]): reado
  * each sit in a container query, and the two queries never match at once.
  */
 export function toCss(layouts: PileLayouts, frame: Frame): string {
-  const { order, wide, desktop, phone, late = [] } = layouts
+  const { order, wide, desktop, phone } = layouts
   const lidRule = rule('[data-lid]', [`container:${frame.containerName} / inline-size`])
-  const prompt = order.filter((id) => !late.includes(id))
-  const step = (id: string): number =>
-    late.includes(id) ? SLAP_STEPS : slapStep(prompt.indexOf(id), prompt.length)
   const rulesOf = (layout: PhoneLayout): readonly string[] =>
-    order.map((id) => stickerRule(id, layout[id], []))
+    order.map((id) => stickerRule(id, layout[id]))
 
   return [
     lidRule,
     pileRule(frame.desktop),
-    ...order.map((id) => stickerRule(id, desktop[id], [`--i:${String(step(id))}`])),
+    ...rulesOf(desktop),
     ...query(frame, `max-width:${String(frame.phoneMaxWidthPx)}px`, [
       pileRule(frame.phone),
       ...rulesOf(phone),

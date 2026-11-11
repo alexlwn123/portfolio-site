@@ -110,6 +110,25 @@ describe('the badge arriving', () => {
     expect(em('--hang-dy')).toBeGreaterThan(-15)
   })
 
+  it('drops in from where the stylesheet still holds it above the lid, painted or not', () => {
+    fixture.sticker('badge').style.setProperty('translate', '0px -750px')
+    const { env } = setUp(fakeEnv({ painted: () => true }))
+    env.frames.flush(3)
+
+    // From 750 units up: far higher than a toss ever goes.
+    expect(em('--hang-dy')).toBeLessThan(-40)
+    expect(fixture.sticker('badge')).toHaveAttribute('data-hang-moving')
+  })
+
+  it('carries on down from part of the way, when the stylesheet had begun to drop it', () => {
+    fixture.sticker('badge').style.setProperty('translate', '0px -200px')
+    const { env } = setUp(fakeEnv({ painted: () => true }))
+    env.frames.flush(1)
+
+    expect(em('--hang-dy')).toBeLessThan(-15)
+    expect(em('--hang-dy')).toBeGreaterThan(-21)
+  })
+
   it('does not drop in, nor ask for a frame, when less motion is asked for', () => {
     const { env } = setUp(fakeEnv({ reducedMotion: true }))
 

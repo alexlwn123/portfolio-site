@@ -363,17 +363,6 @@ describe('lidPlacementCss', () => {
     expect(STICKER_IDS).toEqual([...COVER_IDS, ...PILE_IDS])
   })
 
-  it('slaps the buttons down last, and leaves every other sticker of the pile its turn', () => {
-    const [desktopCss = ''] = css.split('@container')
-    const step = (id: string): string | undefined =>
-      new RegExp(`\\[data-sticker="${id}"\\]\\{[^}]*--i:(\\d+)`).exec(desktopCss)?.[1]
-
-    expect(CONTROL_IDS.map(step)).toEqual(['20', '20', '20'])
-    expect(step('pile-title')).toBe('0')
-    expect(step('more-elsewhere')).toBe('20')
-    expect(step('elsewhere')).toBe('19')
-  })
-
   it('opens the pile’s two container queries and then the cover’s three', () => {
     expect(css.match(/@container/g)).toHaveLength(5)
     expect(css).toContain(`@container lid (max-width:${String(FRAME.phoneMaxWidthPx)}px)`)

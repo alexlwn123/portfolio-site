@@ -120,6 +120,138 @@ describe('what the browser can do', () => {
     ])
   })
 
+  it('cannot watch for things coming into view without IntersectionObserver', () => {
+    stubMedia()
+
+    expect(browserEnv(window).onSight).toBeNull()
+  })
+
+  describe('watching for things coming into view', () => {
+    interface Entry {
+      readonly target: Element
+      readonly isIntersecting: boolean
+      readonly intersectionRatio: number
+      readonly intersectionRect: { readonly height: number }
+      readonly rootBounds: { readonly height: number } | null
+      readonly boundingClientRect: { readonly left: number; readonly top: number }
+    }
+    const SCREEN = { height: 800 }
+
+    function entry(target: Element, ratio: number, shown: number, at = { left: 0, top: 0 }): Entry {
+      return {
+        target,
+        isIntersecting: ratio > 0 || shown > 0,
+        intersectionRatio: ratio,
+        intersectionRect: { height: shown },
+        rootBounds: SCREEN,
+        boundingClientRect: at,
+      }
+    }
+
+    function stubObserver() {
+      let notify: (entries: readonly Entry[]) => void = () => undefined
+      const [observe, unobserve] = [vi.fn(), vi.fn()]
+      const options = vi.fn()
+      vi.stubGlobal(
+        'IntersectionObserver',
+        class {
+          constructor(callback: typeof notify, given: unknown) {
+            notify = callback
+            options(given)
+          }
+          observe = observe
+          unobserve = unobserve
+        },
+      )
+      return {
+        send: (entries: readonly Entry[]) => {
+          notify(entries)
+        },
+        observe,
+        unobserve,
+        options,
+      }
+    }
+
+    it('reports a batch at a time, with where each thing is, until it is forgotten', () => {
+      stubMedia()
+      const observer = stubObserver()
+      const report = vi.fn()
+      const [one, other] = [document.body, document.documentElement]
+
+      const watch = browserEnv(window).onSight?.(report)
+      watch?.watch(one)
+      observer.send([
+        entry(one, 1, 120, { left: 12, top: 340 }),
+        entry(other, 0, 0, { left: 0, top: 2000 }),
+      ])
+      watch?.forget(one)
+
+      expect(observer.observe).toHaveBeenCalledWith(one)
+      expect(observer.unobserve).toHaveBeenCalledWith(one)
+      expect(report.mock.calls).toEqual([
+        [
+          [
+            { element: one, showing: true, onScreen: true, left: 12, top: 340 },
+            { element: other, showing: false, onScreen: false, left: 0, top: 2000 },
+          ],
+        ],
+      ])
+    })
+
+    it('measures against the whole screen, and is told as a thing comes further into it', () => {
+      stubMedia()
+      const observer = stubObserver()
+
+      browserEnv(window).onSight?.(vi.fn())
+
+      const [given] = observer.options.mock.calls[0] as [
+        { rootMargin?: string; threshold: number[] },
+      ]
+      // No margin: something at the very foot of the page must still be able to count as seen.
+      expect(given.rootMargin).toBeUndefined()
+      expect(given.threshold[0]).toBe(0)
+      expect(given.threshold).toContain(0.25)
+      expect(given.threshold).toEqual(given.threshold.toSorted((one, other) => one - other))
+    })
+
+    it.each([
+      ['a quarter of it shows', 0.25, 30, true],
+      ['less than a quarter of it shows', 0.2, 30, false],
+      ['it is taller than the screen and a fifth of the screen is full of it', 0.05, 160, true],
+      ['it is taller than the screen and only an edge of it shows', 0.05, 100, false],
+      ['none of it shows', 0, 0, false],
+    ])('counts a thing as on screen when %s', (_, ratio, shown, onScreen) => {
+      stubMedia()
+      const observer = stubObserver()
+      const report = vi.fn<(seen: readonly { showing: boolean; onScreen: boolean }[]) => void>()
+
+      browserEnv(window).onSight?.(report)
+      observer.send([entry(document.body, ratio, shown)])
+
+      expect(report.mock.calls[0]?.[0][0]).toMatchObject({ showing: shown > 0, onScreen })
+    })
+
+    it('takes the window’s height where the browser does not say how tall the screen is', () => {
+      stubMedia()
+      const observer = stubObserver()
+      const report = vi.fn<(seen: readonly { onScreen: boolean }[]) => void>()
+      vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(500)
+
+      browserEnv(window).onSight?.(report)
+      observer.send([{ ...entry(document.body, 0.05, 100), rootBounds: null }])
+
+      expect(report.mock.calls[0]?.[0][0]).toMatchObject({ onScreen: true })
+    })
+  })
+
+  it('tells the time by the clock the frames keep', () => {
+    stubMedia()
+    vi.spyOn(window.performance, 'now').mockReturnValue(1234.5)
+
+    expect(browserEnv(window).now()).toBe(1234.5)
+  })
+
   it('has no orientation where the device reports none', () => {
     stubMedia()
     vi.stubGlobal('DeviceOrientationEvent', undefined)

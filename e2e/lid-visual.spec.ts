@@ -47,9 +47,10 @@ const MAX_DIFFERENCE = 0.027
 
 /** The stickers the recorded departures touch. Every other sticker must match. */
 const DEPARTED = [
+  'name', // each letter a piece of its own, set without kerning: the E sits two units to the right
   'lanyard', // lettering in ink, stars drawn
   'badge', // photo through the image pipeline, "real title" in the darker pink, arrow drawn
-  'hello', // HELLO in ink
+  'hello', // HELLO in ink, the highlighter a stroke of its own
   'cv', // arrow drawn
   'wins-count', // figure in ink
   'organized-count', // stars drawn

@@ -20,7 +20,9 @@ export function clearVars(
   for (const name of names) {
     element.style.removeProperty(name)
   }
-  if (element.style.length === 0) {
+  // The attribute is asked for before it is taken away. Chromium writes a style attribute that
+  // was only ever set through the CSSOM late, and one removed before it is written comes back empty.
+  if (element.style.length === 0 && element.hasAttribute('style')) {
     element.removeAttribute('style')
   }
 }

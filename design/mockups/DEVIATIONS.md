@@ -463,3 +463,107 @@ shadow), at the mockup's width. What it no longer guards: where the stickers are
 wording of the hello tag, and the ribbons beyond the mockup's four. Those are covered by
 `e2e/lid.spec.ts` instead, at 390, 728 and 1440 wide, with 1100, 1920 and 2560 checked for
 overflow and for the 11px floor. The review screenshots are now taken at 1920, 1440, 728 and 390.
+
+## Round 3: a cover, a pile and motion
+
+Alex's feedback on the deployed site: the art direction is right, the landing screen is "too busy",
+and the margins are "kind of funky". He asked for "a larger, more minimalist landing page with my
+name, the badge, and maybe the short hello, I'm thing", the stats and most of the stickers moved
+"to another section, maybe after scrolling down", and "a bit more flourishing animation". The lid
+is the same surface with the same stickers, in two parts.
+
+### The lid is two blocks
+
+|                 | Before                                             | Now                                                                                           |
+| --------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| The lid         | One stage, about forty stickers on one artboard    | A cover and, under it, a pile: two blocks inside the one `[data-lid]`                         |
+| First screen    | Name, hello, badge, CV tag, five employers, counts | The cover: name, hello tag, badge on its lanyard, a cue to scroll. Nothing else               |
+| Cover's height  | Whatever the artboard came to                      | Exactly one screen (`100svh`, `100vh` where there is no small viewport)                       |
+| Cover's unit    | The page's, from the width                         | The smaller of width and height, so the composition fits as a picture set to "contain" does   |
+| Name            | 460 units of 1100 (42%)                            | 590 of the column's 1000 (59%) on a laptop, the column's whole width on a phone               |
+| Pile's unit     | Grew to 1920px                                     | Stops at 1440px, as the sections' does                                                        |
+| Pile artboards  | 1100 × 1090, 728 × 1510, 390 × 2526 (whole lid)    | 1100 × 856, 728 × 1296, 390 × 2212 (the pile alone)                                           |
+| Hello tag       | Four sentences: now, before, patents, hackathons   | Two short lines: who he is and where, and "I build AI agents at" his current employer         |
+
+- **The cover has four compositions** (`src/features/lid/placement/cover.ts`): a laptop's, a
+  tablet's on its side, a tablet's upright (narrower than nine tenths of its height) and a phone's.
+  A placement on it is measured in from one edge of the page's column and down from the top of the
+  screen, its middle or its bottom. So the name's left edge is the edge every section's heading
+  sits on at any width, the badge's card ends on the column's right edge, and what a wider or
+  taller screen adds is bare lid between and around them.
+- **It is centred down the screen, not across it.** A composition centred across would leave the
+  name off the column's edge on every screen that is not the artboard's own shape, which is most
+  laptops. The spare width goes between the name and the badge instead.
+- **Past 1440px the cover's unit grows a tenth more and stops** (`COVERS.wide.capPx`). The column
+  stops growing at 1440px, and a name any larger would run into the badge.
+- **It never shrinks its type under 11px.** On a screen too short for the composition at the
+  smallest legible unit (a phone on its side, a very short window) the cover grows taller than the
+  screen instead. That is the one case in which it is not exactly one screen.
+- **The pile has a heading**, "Stuck on / so far", an `h2` drawn as the sections' headings are
+  (`src/features/sections/HeadingLabel.tsx`, now shared) on the same left edge, with a line in his
+  hand under it. The cover's cue, "scroll, it gets stickier", is a link to it (`/#pile`).
+- **The ribbons trail off the cover and land on the pile.** On a laptop and a tablet the pile
+  keeps its top right corner bare for them (`LANDINGS` in `artboards.ts`). On a phone the badge is
+  most of the screen's width, so the pile starts under the last ribbon, by a gap the stylesheet
+  works out from the screen's height.
+- **No sticker covers another's link**, at any width: `e2e/lid-cover.spec.ts` probes every sticker
+  on a grid. The first two rounds held only what was added after the mockup to that.
+- **Three stickers are new** (the cue, the pile's heading and the line under it), so the lid has
+  43. The sentences that left the hello tag ("Before that: bitcoin and Lightning apps. Along the
+  way: two granted patents, and hackathons around the world.") were dropped: the employers' tags,
+  the patents label and the counts in the pile say the same from the records.
+
+### Motion
+
+All of it runs only where motion is welcome, animates only `transform`, `translate`, `rotate`,
+`scale` and `opacity`, and adds to a page that is whole without it.
+
+- **The name is drawn a letter at a time.** Each letter is a piece of its own
+  (`src/features/stickers/DieCutText.tsx`), placed from a table of the face's advances
+  (`geometry/nameFace.ts`), so the letters can be slapped down one after another, 55ms apart. The
+  mockup set each line as one piece of text, stretched to the measure and kerned by the browser.
+  Set letter by letter there is no kerning: on the 480-unit drawing the E of ALEX sits 1.9 units
+  to the right of the mockup's and the L 1 unit. The optical size is pinned to 96, which is what
+  browsers chose themselves at that size.
+- **One pass of light** crosses the name's foil once it is on. **The three sparks no longer
+  twinkle for ever**: they come on after the light, twinkle twice and are still.
+- **The hello tag** is slapped down as the name finishes, and its highlighter is a stroke of its
+  own (a pseudo-element where the mockup had a background), drawn from left to right once the tag
+  has landed.
+- **The badge drops in.** The stylesheet holds it above the lid for a quarter of a second and
+  drops it; the page's script, if it has run by then, drops it by its physics from where it is
+  held. Before, it dropped only when the script ran before the first paint, and was otherwise
+  tossed from where it hung.
+- **The pile lands as it scrolls into view**, each sticker slapped down in its turn, 60ms after
+  its neighbour and never more than half a second after it came into view
+  (`src/features/lid/enhance/arrive.ts`). The first sticker to land and every fifth after it are
+  heard when sound is on, five at most.
+- **Each section's heading and stickers are pressed on** the first time they scroll into view: a
+  quarter of a second, 35ms apart.
+- **Nothing is hidden by the stylesheet alone.** A sticker is held back only by the script, only
+  after the browser has said it is off the screen, and is shown at once if anything goes wrong.
+  What is on screen when the page opens is never touched.
+- **Nothing loops for ever** but the nod of the cue's arrow, and, until the script runs, the sway
+  of the badge.
+
+### How the comparison with the mockup changed
+
+`e2e/lid-visual.spec.ts` still dresses the lid as the mockup and compares the pictures, to the same
+2.7% and 0.1%. To put each sticker back at the mockup's place it now first takes the two blocks
+away (`oneStageCss` in `e2e/mockupArrangement.ts`): the cover, its column and the pile stop being
+what stickers are placed against, so all of them are placed on one stage again. Three stickers
+joined the list of what the mockup never had (the cue, the pile's heading, the line under it), and
+the name joined the list of recorded departures, for the two letters above.
+
+What guards the first screen now is `e2e/lid-cover.spec.ts`, at 1440 × 900, 1920 × 1080,
+1280 × 720, 1024 × 768, 768 × 1024, 390 × 844 and 360 × 640: the cover exactly one screen tall, the
+name, the hello tag and the cue wholly on it, the badge's photo and name on it, and no sticker of
+the pile showing. `e2e/lid-arrival.spec.ts` guards the motion, and that nothing stays hidden with
+the script, without it, or with motion reduced.
+
+### What could not be checked here
+
+Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard
+have not been tried. The lid's own review screenshots (`design/screenshots/lid-*.png`) show the
+cover as one screen of a 900px-tall window with the pile under it.
+

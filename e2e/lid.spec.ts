@@ -13,6 +13,7 @@ import { pileAnchor } from '../src/features/lid/anchor'
 import { flattenStickers, linksOf } from '../src/features/lid/stickerSpecs'
 import { lidStickers, STICKER_IDS } from '../src/features/lid/stickers'
 import { sectionAnchor } from '../src/features/sections/sectionIds'
+import { NAME_ADVANCES } from '../src/features/stickers/geometry/nameFace'
 import { diffScreenshots, type Region } from './pixelDiff'
 import {
   boxOf,
@@ -416,6 +417,25 @@ test.describe('the lid', () => {
     expect(families.length).toBeGreaterThan(0)
     for (const family of families) {
       expect(WEB_FONTS.some((font) => family.startsWith(font))).toBe(true)
+    }
+  })
+
+  test('sets each letter of the name as wide as the browser draws it', async ({ page }) => {
+    await openLid(page, 1280)
+
+    const drawn = await page.locator('h1 defs text').evaluateAll((letters) =>
+      letters.map((letter) => ({
+        letter: letter.textContent.trim().toUpperCase(),
+        size: Number(letter.getAttribute('font-size')),
+        length: (letter as SVGTextElement).getComputedTextLength(),
+      })),
+    )
+
+    expect(drawn.map(({ letter }) => letter).join('')).toBe(
+      content.profile.name.replaceAll(' ', '').toUpperCase(),
+    )
+    for (const { letter, size, length } of drawn) {
+      expect(length / size, letter).toBeCloseTo(NAME_ADVANCES[letter] ?? Number.NaN, 2)
     }
   })
 

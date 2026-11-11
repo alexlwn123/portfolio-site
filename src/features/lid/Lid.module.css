@@ -121,6 +121,21 @@
   margin-inline: auto;
 }
 
+/*
+ * The cover arriving, when motion is welcome. The name goes on a letter at a
+ * time and a pass of light crosses it (DieCutText.module.css); the badge
+ * drops in on its lanyard (hang.module.css, then the page's script); the
+ * hello tag is slapped down here, once most of the name is on, and its
+ * highlighter is drawn after it lands (HelloTag.module.css); the cue comes
+ * last (Cue.module.css). All of it is over in about a second and a half, and
+ * the name can be read in under one.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .cover :global([data-sticker='hello']) {
+    --entrance: lid-slap 0.45s cubic-bezier(0.2, 1.4, 0.35, 1) 0.5s backwards;
+  }
+}
+
 /* The pile: every sticker is placed against it. Its font size is the page's design unit. */
 .pile {
   position: relative;

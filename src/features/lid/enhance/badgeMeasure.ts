@@ -117,6 +117,18 @@ export function turnOf(element: HTMLElement): number {
   return Number.isFinite(degrees) ? degrees * RAD_PER_DEG : 0
 }
 
+/**
+ * How far above its place the stylesheet is still holding an element, in px:
+ * the hold a badge that has not dropped in yet is under (hang.module.css).
+ * Nothing once the stylesheet has let it go, or where the browser cannot say.
+ */
+export function liftOf(element: HTMLElement): number {
+  const view = element.ownerDocument.defaultView
+  const [, down = ''] = (view?.getComputedStyle(element).translate ?? '').split(' ')
+  const y = Number.parseFloat(down)
+  return Number.isFinite(y) && y < 0 ? -y : 0
+}
+
 /** The card's middle, from its top edge's middle, which is where the stylesheet turns it about. */
 function cardOf({ card }: HangParts, badgeAt: Point, unitPx: number): Pick<Rig, 'centre' | 'size'> {
   const size = { width: card.offsetWidth / unitPx, height: card.offsetHeight / unitPx }

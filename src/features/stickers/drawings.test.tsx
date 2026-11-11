@@ -58,16 +58,79 @@ describe('every drawing', () => {
 })
 
 describe('DieCutText', () => {
-  it('sets two lines and stacks six copies of them: cut, shadow, edge and three fills', () => {
-    const { container } = render(<DieCutText id="name" lines={['Alex', 'Lewin']} />)
+  const LETTERS = ['A', 'l', 'e', 'x', 'L', 'e', 'w', 'i', 'n']
 
-    expect([...container.querySelectorAll('defs text')].map((line) => line.textContent)).toEqual([
-      'Alex',
-      'Lewin',
+  it('sets two lines a letter at a time, each letter a piece of its own', () => {
+    const { container } = render(<DieCutText id="name" lines={['Alex', 'Lewin']} />)
+    const letters = [...container.querySelectorAll('defs text')]
+
+    // The first line's last letter carries the space that parts the two lines when read out.
+    expect(letters.map((letter) => letter.textContent.trim())).toEqual(LETTERS)
+    expect(letters.map((letter) => letter.textContent).join('')).toBe('Alex Lewin')
+    expect(letters.map(({ id }) => id)).toEqual([
+      'name-letter-0-0',
+      'name-letter-0-1',
+      'name-letter-0-2',
+      'name-letter-0-3',
+      'name-letter-1-0',
+      'name-letter-1-1',
+      'name-letter-1-2',
+      'name-letter-1-3',
+      'name-letter-1-4',
     ])
-    const uses = [...container.querySelectorAll('use')]
-    expect(uses).toHaveLength(6)
-    expect(new Set(uses.map((use) => use.getAttribute('href')))).toEqual(new Set(['#name-letters']))
+    // The first line is set larger than the second, and each on its own baseline.
+    expect(new Set(letters.slice(0, 4).map((letter) => letter.getAttribute('font-size')))).toEqual(
+      new Set(['174']),
+    )
+    expect(new Set(letters.slice(4).map((letter) => letter.getAttribute('y')))).toEqual(
+      new Set(['264']),
+    )
+  })
+
+  it('places each letter itself, across the same measure on both lines', () => {
+    const { container } = render(<DieCutText id="name" lines={['Alex', 'Lewin']} />)
+    const letters = [...container.querySelectorAll('defs text')]
+    const starts = letters.map((letter) => Number(letter.getAttribute('x')))
+
+    expect(starts[0]).toBe(27)
+    expect(starts[4]).toBe(27)
+    expect(starts.slice(0, 4)).toEqual(starts.slice(0, 4).toSorted((one, other) => one - other))
+    expect(container.querySelector('[textLength]')).toBeNull()
+  })
+
+  it('stacks six copies of every letter: cut, shadow, edge and three fills', () => {
+    const { container } = render(<DieCutText id="name" lines={['Alex', 'Lewin']} />)
+    const layers = [...container.querySelectorAll('svg > g[data-layer]')]
+
+    expect(layers.map((layer) => layer.getAttribute('data-layer'))).toEqual([
+      'cut',
+      'shadow',
+      'edge',
+      'foil',
+      'stripes',
+      'glow',
+    ])
+    for (const layer of layers) {
+      const uses = [...layer.querySelectorAll('use')]
+      expect(uses.map((use) => use.getAttribute('href'))).toEqual(
+        LETTERS.map(
+          (_, index) =>
+            `#name-letter-${index < 4 ? `0-${String(index)}` : `1-${String(index - 4)}`}`,
+        ),
+      )
+    }
+  })
+
+  it('gives each letter its turn, the same turn in every layer, so its copies land as one', () => {
+    const { container } = render(<DieCutText id="name" lines={['Alex', 'Lewin']} />)
+    const turnsOf = (layer: Element): readonly (string | null)[] =>
+      [...layer.querySelectorAll('use')].map((use) => use.getAttribute('data-turn'))
+    const [first, ...others] = [...container.querySelectorAll('svg > g[data-layer]')]
+
+    expect(first && turnsOf(first)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8'])
+    for (const layer of others) {
+      expect(turnsOf(layer)).toEqual(first && turnsOf(first))
+    }
   })
 
   it('is an image named for what it says, when it is given a label', () => {
@@ -84,12 +147,27 @@ describe('DieCutText', () => {
 
   it('names its definitions after the sticker and fills from the shared foil', () => {
     const { container } = render(<DieCutText id="name" lines={['Alex', 'Lewin']} />)
-    const fills = [...container.querySelectorAll('use[fill]')].map((use) =>
-      use.getAttribute('fill'),
+    const fills = [...container.querySelectorAll('g[fill]')].map((layer) =>
+      layer.getAttribute('fill'),
     )
 
-    expect(ids(container)).toEqual(['name-stripes', 'name-glow', 'name-letters'])
+    expect(ids(container).filter((id) => !id.startsWith('name-letter-'))).toEqual([
+      'name-stripes',
+      'name-glow',
+      'name-shine',
+      'name-outline',
+    ])
     expect(fills).toEqual([`url(#${SHARED_IDS.foil})`, 'url(#name-stripes)', 'url(#name-glow)'])
+  })
+
+  it('has one pass of light ready to cross the foil, cut to the letters', () => {
+    const { container } = render(<DieCutText id="name" lines={['Alex', 'Lewin']} />)
+    const light = container.querySelector('[data-light]')
+    const outline = container.querySelector('clipPath')
+
+    expect(light?.parentElement).toHaveAttribute('clip-path', 'url(#name-outline)')
+    expect(light).toHaveAttribute('fill', 'url(#name-shine)')
+    expect(outline?.querySelectorAll('use')).toHaveLength(LETTERS.length)
   })
 
   it('puts the hot spot where the foil rests', () => {

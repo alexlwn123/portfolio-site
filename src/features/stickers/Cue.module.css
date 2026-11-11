@@ -30,3 +30,30 @@
   text-decoration-thickness: 0.09em;
   text-underline-offset: 0.16em;
 }
+
+/*
+ * The cue is the last thing on: it comes up as ink does, once the name and
+ * the tag are down, and then its arrow idles, a nod towards the pile.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .cue {
+    animation: cue-on 0.4s ease-out 1.2s backwards;
+  }
+
+  .arrow {
+    animation: cue-nod 1.6s ease-in-out 1.7s infinite alternate;
+  }
+}
+
+@keyframes cue-on {
+  from {
+    translate: 0 -0.35em;
+    opacity: 0;
+  }
+}
+
+@keyframes cue-nod {
+  to {
+    translate: 0 0.3em;
+  }
+}
