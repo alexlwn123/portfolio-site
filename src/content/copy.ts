@@ -85,6 +85,19 @@ export const copy = deepFreeze({
       status: 'upcoming',
     },
     nav: { sections: 'Sections', elsewhere: 'Elsewhere', moreElsewhere: 'More elsewhere' },
+    /** The note stuck under a project or a win. Its facts come from the records. */
+    note: {
+      peel: (name: string) => `Peel back ${name}`,
+      result: (result: string, event: string, year: Figure) =>
+        `${result} at ${event}, ${String(year)}.`,
+      more: 'More in the CV',
+    },
+    /** The three stickers that are buttons. They appear once the page's script runs. */
+    controls: {
+      sound: 'Sound',
+      tidy: ['Tidy', 'the lid'],
+      tilt: ['Tilt', 'me'],
+    },
   },
 
   /** design/mockups/02-wristbands.html */

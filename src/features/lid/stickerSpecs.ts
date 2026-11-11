@@ -163,6 +163,33 @@ export interface WristbandSpec<Id extends string> extends Spec<'wristband', Id> 
   readonly links: readonly TextLink[]
 }
 
+/** The speaker: a button that turns the lid's sounds on and off. */
+export interface SoundSpec<Id extends string> extends Spec<'sound', Id> {
+  readonly label: string
+}
+
+/** A button that puts every sticker back where it was stuck. */
+export interface TidySpec<Id extends string> extends Spec<'tidy', Id> {
+  readonly lines: readonly string[]
+}
+
+/** A button, on a phone, that lets tilting it move the light. */
+export interface TiltSpec<Id extends string> extends Spec<'tilt', Id> {
+  readonly lines: readonly string[]
+}
+
+/**
+ * What is stuck underneath a sticker: a short note in his own hand. A note is
+ * not part of a sticker's spec. notes.ts builds them, keyed by sticker id.
+ */
+export interface NoteSpec {
+  /** What the note is about. Read out with each link, so "Code" is never ambiguous. */
+  readonly title: string
+  /** What it is, the result and the year, one sentence to a line. */
+  readonly lines: readonly string[]
+  readonly links: readonly TextLink[]
+}
+
 export type StickerSpec<Id extends string = string> =
   | NameSpec<Id>
   | LanyardSpec<Id>
@@ -186,6 +213,9 @@ export type StickerSpec<Id extends string = string> =
   | GhostSpec<Id>
   | TallySpec<Id>
   | WristbandSpec<Id>
+  | SoundSpec<Id>
+  | TidySpec<Id>
+  | TiltSpec<Id>
 
 export type StickerKind = StickerSpec['kind']
 
@@ -204,6 +234,13 @@ const DECORATION: readonly StickerKind[] = ['lanyard', 'bolt', 'tally']
 
 export function isDecoration(spec: StickerSpec): boolean {
   return DECORATION.includes(spec.kind)
+}
+
+/** Kinds that are buttons, not content: they do something to the lid itself. */
+const CONTROLS: readonly StickerKind[] = ['sound', 'tidy', 'tilt']
+
+export function isControl(spec: StickerSpec): boolean {
+  return CONTROLS.includes(spec.kind)
 }
 
 /** Every address a sticker links to, in the order it presents them. */

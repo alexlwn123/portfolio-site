@@ -2,12 +2,14 @@ import type { ReactElement } from 'react'
 
 import type { BadgePhotoImage } from '../badge/photoSources'
 import styles from './Lid.module.css'
-import type { LidItem } from './stickerSpecs'
+import type { LidItem, NoteSpec } from './stickerSpecs'
 import { StickerView } from './stickerViews'
 
 interface LidSurfaceProps {
   /** The stickers, in reading order. The markup follows this order exactly. */
   readonly items: readonly LidItem[]
+  /** What is stuck underneath a sticker, by the sticker's id. */
+  readonly notes: Readonly<Partial<Record<string, NoteSpec>>>
   readonly photo: BadgePhotoImage
 }
 
@@ -34,7 +36,7 @@ function Scuffs(): ReactElement {
  * The surface the stickers are stuck to. It only lists them: where each one
  * lands is the placement stylesheet's business.
  */
-export function LidSurface({ items, photo }: LidSurfaceProps): ReactElement {
+export function LidSurface({ items, notes, photo }: LidSurfaceProps): ReactElement {
   return (
     <div className={styles.stage} data-lid-stage="">
       <Scuffs />
@@ -43,12 +45,12 @@ export function LidSurface({ items, photo }: LidSurfaceProps): ReactElement {
           <ul key={item.key} className={styles.group} aria-label={item.label} role="list">
             {item.stickers.map((spec) => (
               <li key={spec.id} className={styles.slot}>
-                <StickerView spec={spec} photo={photo} />
+                <StickerView spec={spec} photo={photo} note={notes[spec.id]} />
               </li>
             ))}
           </ul>
         ) : (
-          <StickerView key={item.id} spec={item} photo={photo} />
+          <StickerView key={item.id} spec={item} photo={photo} note={notes[item.id]} />
         ),
       )}
     </div>

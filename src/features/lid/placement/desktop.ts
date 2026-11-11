@@ -14,6 +14,10 @@ import { parseLayout, type Placement } from './schema'
  * below both. The fifth ribbon hangs 35 units lower than the fourth, so the
  * Berlin, Toronto and Austin pills moved down to clear it: they are the only
  * stickers of the mockup that are not where it put them.
+ *
+ * The three buttons came with the interaction layer and sit where the lid was
+ * bare: the speaker and "tilt me" between the name and the strap, and "tidy
+ * the lid" in the gap above the bumper. None of them is over another sticker.
  */
 const placements: Record<StickerId, Placement> = {
   name: { x: 14, y: 30, w: 470, r: -4, z: 6 },
@@ -48,6 +52,9 @@ const placements: Record<StickerId, Placement> = {
   patents: { x: 238, y: 957, w: 150, r: -2.5, z: 4 },
   elsewhere: { x: -26, y: 1222, w: 412, r: -2.5, z: 9 },
   'more-elsewhere': { x: 372, y: 1236, w: 384, r: 1.5, z: 8 },
+  tilt: { x: 478, y: 196, w: 58, r: -6, z: 8 },
+  sound: { x: 470, y: 108, w: 46, r: 8, z: 8 },
+  tidy: { x: 14, y: 806, w: 66, r: -5, z: 8 },
 }
 
 export const desktop = parseLayout('desktop', STICKER_IDS, ARTBOARDS.desktop, placements)

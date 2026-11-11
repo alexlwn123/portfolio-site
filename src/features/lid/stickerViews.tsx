@@ -8,6 +8,8 @@ import type { BadgePhotoImage } from '../badge/photoSources'
 import { AssetTag } from '../stickers/AssetTag'
 import { Bumper } from '../stickers/Bumper'
 import { ComplianceLabel } from '../stickers/ComplianceLabel'
+import { SoundFace } from '../stickers/controls/SoundFace'
+import { WordsFace } from '../stickers/controls/WordsFace'
 import { DieCutText } from '../stickers/DieCutText'
 import { FoilWin } from '../stickers/FoilWin'
 import { Ghost } from '../stickers/Ghost'
@@ -19,6 +21,7 @@ import { Crab } from '../stickers/illustrations/Crab'
 import { Jukebox } from '../stickers/Jukebox'
 import { Medal } from '../stickers/Medal'
 import { ParkingSign } from '../stickers/ParkingSign'
+import { PeelSticker, type PeelShape } from '../stickers/PeelSticker'
 import { Pill } from '../stickers/Pill'
 import { RecordSticker } from '../stickers/RecordSticker'
 import { RoundBadge } from '../stickers/RoundBadge'
@@ -26,8 +29,9 @@ import { Starburst } from '../stickers/Starburst'
 import { Sticker, type StickerProps } from '../stickers/Sticker'
 import { Tally } from '../stickers/Tally'
 import { Wristband } from '../stickers/Wristband'
+import { copy } from '../../content/copy'
 import styles from './Lid.module.css'
-import type { StickerKind, StickerSpec } from './stickerSpecs'
+import type { NoteSpec, StickerKind, StickerSpec } from './stickerSpecs'
 
 /*
  * One sticker on the lid: the face its spec describes, inside the placed
@@ -38,9 +42,14 @@ export interface StickerViewProps {
   readonly spec: StickerSpec
   /** The badge's portrait, resolved by the page through the image pipeline. */
   readonly photo: BadgePhotoImage
+  /** What is stuck underneath the sticker, when something is. */
+  readonly note?: NoteSpec | undefined
 }
 
-type Frame = Pick<StickerProps, 'as' | 'flat' | 'decorative' | 'selfSized' | 'className'>
+type Frame = Pick<
+  StickerProps,
+  'as' | 'flat' | 'decorative' | 'selfSized' | 'className' | 'control' | 'toggle'
+>
 
 /** Inside a link everything must be phrasing content, so those stickers are spans. */
 const INLINE: Frame = { as: 'span' }
@@ -71,9 +80,23 @@ const FRAMES: Readonly<Record<StickerKind, Frame>> = {
   ghost: ON_THE_LID,
   tally: { as: 'span', flat: true, decorative: true },
   wristband: { as: 'nav' },
+  sound: { control: 'sound', toggle: true },
+  tidy: { control: 'tidy' },
+  tilt: { control: 'tilt', toggle: true },
 }
 
-function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
+/** Round drawings peel from their rim, not from the empty corner of their box. */
+const ROUND: readonly StickerKind[] = ['medal', 'arcadeButton', 'hexBadge', 'crab']
+
+function peelShape(kind: StickerKind): PeelShape {
+  return ROUND.includes(kind) ? 'round' : 'card'
+}
+
+type OpeningSpec = Extract<StickerSpec, { kind: 'name' | 'lanyard' | 'badge' | 'hello' }>
+type ControlSpec = Extract<StickerSpec, { kind: 'sound' | 'tidy' | 'tilt' }>
+
+/** What the lid opens with: his name, his badge on its lanyard and his introduction. */
+function openingFace(spec: OpeningSpec, photo: BadgePhotoImage): ReactElement {
   switch (spec.kind) {
     case 'name':
       // The heading's only content: the lettering is an image named for him.
@@ -84,6 +107,28 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
       return <Badge {...spec} photo={photo} />
     case 'hello':
       return <HelloTag {...spec} />
+  }
+}
+
+/** The faces of the three buttons. */
+function controlFace(spec: ControlSpec): ReactElement {
+  switch (spec.kind) {
+    case 'sound':
+      return <SoundFace />
+    case 'tidy':
+      return <WordsFace lines={spec.lines} tone="white" />
+    case 'tilt':
+      return <WordsFace lines={spec.lines} tone="hi" />
+  }
+}
+
+function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
+  switch (spec.kind) {
+    case 'name':
+    case 'lanyard':
+    case 'badge':
+    case 'hello':
+      return openingFace(spec, photo)
     case 'assetTag':
       return <AssetTag {...spec} />
     case 'starburst':
@@ -120,14 +165,33 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
       return <Tally {...spec} />
     case 'wristband':
       return <Wristband {...spec} />
+    case 'sound':
+    case 'tidy':
+    case 'tilt':
+      return controlFace(spec)
   }
 }
 
 /**
  * A sticker with an address is a link, and one with a label takes it as its
- * accessible name: a drawing has no text of its own to be read.
+ * accessible name: a drawing has no text of its own to be read. A sticker
+ * with a note under it is a link too, with a corner that peels beside it.
  */
-export function StickerView({ spec, photo }: StickerViewProps): ReactElement {
+export function StickerView({ spec, photo, note }: StickerViewProps): ReactElement {
+  if (note !== undefined && 'href' in spec) {
+    return (
+      <PeelSticker
+        id={spec.id}
+        href={spec.href}
+        label={'label' in spec ? spec.label : undefined}
+        peelLabel={copy.lid.note.peel(note.title)}
+        shape={peelShape(spec.kind)}
+        note={note}
+      >
+        {face(spec, photo)}
+      </PeelSticker>
+    )
+  }
   return (
     <Sticker
       id={spec.id}

@@ -16,10 +16,20 @@
 }
 
 .lid {
-  /* Where the light sits on the foil, across and down, from 0 to 1. It rests
-     here. geometry/foil.ts holds the same two numbers for the SVG foil. */
-  --hx: 0.35;
-  --hy: 0.3;
+  /*
+   * The lamp: the one light the whole lid is lit by, across and down, from 0
+   * to 1. It rests here, where the mockup started it, and geometry/foil.ts
+   * holds the same two numbers. The page's script moves --lamp-x and --lamp-y
+   * and nothing else. Shadows, peeling corners and foil all follow from them,
+   * in the stylesheets of the things themselves.
+   */
+  --lamp-rest-x: 0.35;
+  --lamp-rest-y: 0.3;
+  --lamp-x: var(--lamp-rest-x);
+  --lamp-y: var(--lamp-rest-y);
+
+  /* How far a shadow swings as the lamp crosses the lid. */
+  --cast-reach: 1.8em;
 
   position: relative;
   isolation: isolate;

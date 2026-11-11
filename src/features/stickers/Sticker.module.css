@@ -6,18 +6,43 @@
  * straight onto the lid (the tally, the saved spot) is placed and no more.
  */
 .placed {
+  /*
+   * The lamp as this sticker sees it. It rests where the lid's lamp rests
+   * until the page's script marks the sticker as lit, which it does only
+   * while the sticker is on screen. Everything that reacts to light reads
+   * these two, so nothing off screen repaints when the lamp moves.
+   */
+  --lx: var(--lamp-rest-x);
+  --ly: var(--lamp-rest-y);
+
+  /* Where a shadow falls: straight down at rest, and away from the lamp. */
+  --cast-x: calc((var(--lamp-rest-x) - var(--lx)) * var(--cast-reach));
+  --cast-y: calc(0.5em + (var(--lamp-rest-y) - var(--ly)) * var(--cast-reach));
+
   position: absolute;
   display: block;
   color: var(--ink);
   text-decoration: none;
 }
 
+.placed[data-lit] {
+  --lx: var(--lamp-x);
+  --ly: var(--lamp-y);
+}
+
+/* A button waits, hidden, for the script that works it. */
+.placed[hidden] {
+  display: none;
+}
+
 .sticker {
   /* 0 at rest, 1 while hovered or focused. Peeling corners and arrows read it. */
   --lift: 0;
 
-  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
-    drop-shadow(0 0.5em 0.5em rgba(var(--shadow-rgb), 0.38));
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(var(--cast-x) var(--cast-y) 0.5em rgba(var(--shadow-rgb), 0.38));
   transition:
     translate var(--duration-hover) var(--ease-slap),
     scale var(--duration-hover) var(--ease-slap),
@@ -31,16 +56,36 @@
   width: max-content;
 }
 
-/* Lifted off the lid: under the pointer, or holding keyboard focus. */
+/* A sticker that is a button looks like a sticker, not like a button. */
+.control {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  line-height: inherit;
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+}
+
+/*
+ * Lifted off the lid: under the pointer, or holding keyboard focus. --at-x
+ * and --at-y are where the sticker has been carried to, when it has been.
+ */
 .sticker:hover,
 .sticker:focus-visible {
   --lift: 1;
 
   z-index: 40;
-  translate: 0 -0.35em;
+  translate: var(--at-x, 0) calc(var(--at-y, 0em) - 0.35em);
   scale: 1.035;
-  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
-    drop-shadow(0 1.3em 1em rgba(var(--shadow-rgb), 0.42));
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(
+      calc(var(--cast-x) * 2.6) calc(var(--cast-y) * 2.6) 1em rgba(var(--shadow-rgb), 0.42)
+    );
 }
 
 /* The same for a sticker whose links are inside it. Kept apart from the rule
@@ -49,10 +94,14 @@
   --lift: 1;
 
   z-index: 40;
-  translate: 0 -0.35em;
+  translate: var(--at-x, 0) calc(var(--at-y, 0em) - 0.35em);
   scale: 1.035;
-  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
-    drop-shadow(0 1.3em 1em rgba(var(--shadow-rgb), 0.42));
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(
+      calc(var(--cast-x) * 2.6) calc(var(--cast-y) * 2.6) 1em rgba(var(--shadow-rgb), 0.42)
+    );
 }
 
 /* Highlighter ring with an ink edge on both sides: visible on the cobalt lid
@@ -62,6 +111,70 @@
   outline-offset: 0.3em;
   border-radius: 0;
   box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+/*
+ * Picked up and carried. The page's script sets data-carry and four numbers:
+ * --dx and --dy, how far the sticker is from where it was stuck, as shares of
+ * the lid's width; --swing, how far it hangs from the pinch; and --front, its
+ * place in the pile. These rules come after the lifted ones so that a carried
+ * sticker under the pointer stays where it was carried to.
+ */
+.sticker[data-carry] {
+  --at-x: calc(var(--dx, 0) * 100cqw);
+  --at-y: calc(var(--dy, 0) * 100cqw);
+
+  z-index: var(--front, 50);
+  translate: var(--at-x) var(--at-y);
+  transform: rotate(var(--swing, 0deg));
+}
+
+.sticker[data-carry]:hover,
+.sticker[data-carry]:focus-visible,
+.sticker[data-carry]:has(:focus-visible) {
+  translate: var(--at-x) calc(var(--at-y) - 0.35em);
+}
+
+/* In the hand: it follows the pointer exactly, so nothing eases. */
+.sticker[data-carry='held'],
+.sticker[data-carry='thrown'] {
+  --lift: 1;
+
+  translate: var(--at-x) var(--at-y);
+  scale: 1.06;
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(
+      calc(var(--cast-x) * 2.6) calc(var(--cast-y) * 2.6) 1em rgba(var(--shadow-rgb), 0.42)
+    );
+  transition: none;
+}
+
+/*
+ * Stuck down again, with a squash. The first slap stays in the list, so that
+ * it is not played a second time when this one is added or taken away.
+ */
+.sticker[data-carry='stuck'] {
+  animation:
+    slap var(--duration-slap) cubic-bezier(0.2, 1.4, 0.35, 1) backwards,
+    restick var(--duration-slap) cubic-bezier(0.2, 1.4, 0.35, 1);
+  animation-delay: calc(var(--i, 0) * 45ms), 0s;
+}
+
+/* Once the script is running, a sticker can be picked up, and says so. */
+:global([data-enhanced]) .sticker[data-grab] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+:global([data-enhanced]) :is(div, span, h1, nav).sticker[data-grab] {
+  cursor: grab;
+}
+
+:global([data-enhanced]) .sticker[data-carry='held'],
+:global([data-enhanced]) .sticker[data-carry='held'] * {
+  cursor: grabbing;
 }
 
 @keyframes slap {
@@ -80,8 +193,23 @@
   }
 }
 
+@keyframes restick {
+  0% {
+    scale: 1.06;
+  }
+
+  55% {
+    scale: 1.03 0.955;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .sticker {
+  .sticker,
+  .sticker[data-carry='stuck'] {
     transition: none;
     animation: none;
   }

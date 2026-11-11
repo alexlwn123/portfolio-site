@@ -5,6 +5,7 @@ import type { BadgePhotoImage } from '../badge/photoSources'
 import { SharedDefs } from '../stickers/illustrations/SharedDefs'
 import styles from './Lid.module.css'
 import { LidSurface } from './LidSurface'
+import { lidNotes } from './notes'
 import { lidStickers } from './stickers'
 
 interface LidProps {
@@ -16,14 +17,16 @@ interface LidProps {
 
 /**
  * The home page: the lid of a laptop that has been to every hackathon, with
- * his conference badge hanging from a lanyard. Static HTML and CSS only.
+ * his conference badge hanging from a lanyard. Static HTML and CSS: the page
+ * loads a script that makes it move (src/features/lid/enhance), and the lid
+ * is whole without it.
  */
 export function Lid({ content, stats, photo }: LidProps): ReactElement {
   return (
     <main className={styles.desk} data-lid-desk="">
       <div className={styles.lid} data-lid="">
         <SharedDefs />
-        <LidSurface items={lidStickers(content, stats)} photo={photo} />
+        <LidSurface items={lidStickers(content, stats)} notes={lidNotes(content)} photo={photo} />
       </div>
     </main>
   )

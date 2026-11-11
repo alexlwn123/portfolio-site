@@ -12,6 +12,12 @@ export interface LidLayouts {
   readonly order: readonly string[]
   readonly desktop: Layout
   readonly phone: PhoneLayout
+  /**
+   * Stickers that are not there when the page loads and slap down after all
+   * the others. They take no turn of their own, so adding one never changes
+   * when the rest land.
+   */
+  readonly late?: readonly string[]
 }
 
 /** The slap animation is spread over this many steps, however many stickers there are. */
@@ -65,12 +71,13 @@ function stageRule({ width, height }: Frame['desktop']): string {
   ])
 }
 
-export function toCss({ order, desktop, phone }: LidLayouts, frame: Frame): string {
+export function toCss({ order, desktop, phone, late = [] }: LidLayouts, frame: Frame): string {
   const deskRule = rule('[data-lid-desk]', [`--lid-max-width:${String(frame.maxWidthPx)}px`])
   const lidRule = rule('[data-lid]', [`container:${frame.containerName} / inline-size`])
-  const desktopRules = order.map((id, index) =>
-    stickerRule(id, desktop[id], [`--i:${String(slapStep(index, order.length))}`]),
-  )
+  const prompt = order.filter((id) => !late.includes(id))
+  const step = (id: string): number =>
+    late.includes(id) ? SLAP_STEPS : slapStep(prompt.indexOf(id), prompt.length)
+  const desktopRules = order.map((id) => stickerRule(id, desktop[id], [`--i:${String(step(id))}`]))
   const phoneRules = order.map((id) => stickerRule(id, phone[id], []))
   const query = `@container ${frame.containerName} (max-width:${String(frame.phoneMaxWidthPx)}px)`
 

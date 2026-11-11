@@ -1,8 +1,9 @@
 /*
- * Where the light sits on the holographic foil. The mockup moved it with the
- * pointer; until a script takes that over, the foil rests where the mockup
- * started it. Lid.module.css carries the same two numbers as --hx and --hy,
- * which drive the CSS foil, and these functions place the SVG foil to match.
+ * Where the light sits on the holographic foil. It rests where the mockup
+ * started it: Lid.module.css carries the same two numbers as the lamp's
+ * resting place, which the CSS foil follows. An SVG gradient cannot read a
+ * custom property, so these functions place the SVG foil to match: at build
+ * time for the lamp at rest, and from the page's script when the lamp moves.
  */
 
 export interface FoilLight {

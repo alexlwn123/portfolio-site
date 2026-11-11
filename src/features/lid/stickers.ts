@@ -82,9 +82,18 @@ export const STICKER_IDS = [
   'patents',
   'elsewhere',
   'more-elsewhere',
+  'tilt',
+  'sound',
+  'tidy',
 ] as const
 
 export type StickerId = (typeof STICKER_IDS)[number]
+
+/**
+ * The stickers that are buttons. They stay hidden until the page's script
+ * shows them, so they are stuck down after everything else.
+ */
+export const CONTROL_IDS = ['tilt', 'sound', 'tidy'] as const satisfies readonly StickerId[]
 
 type Spec = StickerSpec<StickerId>
 type Item = LidItem<StickerId>
@@ -104,7 +113,7 @@ const CITY_PILLS: readonly (readonly [StickerId, string, Tone])[] = [
 
 const WORKSHOP_TALK = 'how-to-win-every-hackathon'
 /** The win that was chosen from a field of teams, and so gets a medal. */
-const FIELD_WIN = 'ncr-global-hackathon-2021'
+export const FIELD_WIN = 'ncr-global-hackathon-2021'
 const ELSEWHERE: readonly ProfileLinkId[] = ['github', 'x', 'linkedin']
 const MORE_ELSEWHERE: readonly ProfileLinkId[] = ['devpost', 'booking']
 
@@ -392,6 +401,17 @@ function wristband(
   }
 }
 
+/** The buttons, last in the markup: they are the lid's furniture, not its content. */
+function controls(): readonly Spec[] {
+  const words = copy.lid.controls
+
+  return [
+    { id: 'tilt', kind: 'tilt', lines: words.tilt },
+    { id: 'sound', kind: 'sound', label: words.sound },
+    { id: 'tidy', kind: 'tidy', lines: words.tidy },
+  ]
+}
+
 /** Every sticker on the lid, filled in from the content and its derived numbers. */
 export function lidStickers(content: Content, stats: Stats): readonly Item[] {
   const { nav } = copy.lid
@@ -404,6 +424,7 @@ export function lidStickers(content: Content, stats: Stats): readonly Item[] {
     ...records(content, stats),
     wristband('elsewhere', nav.elsewhere, 'gum', ELSEWHERE, content.profile),
     wristband('more-elsewhere', nav.moreElsewhere, 'hi', MORE_ELSEWHERE, content.profile),
+    ...controls(),
   ]
   return deepFreeze(items) as readonly Item[]
 }

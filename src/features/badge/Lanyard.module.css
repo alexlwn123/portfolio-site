@@ -4,7 +4,9 @@
  * at (124, 268) and (136, 268): 60.9em long, 68.8 degrees off the horizontal.
  */
 .straps {
-  filter: drop-shadow(0 0.4em 0.4em rgba(var(--shadow-rgb), 0.4));
+  filter: drop-shadow(
+    calc(var(--cast-x) * 0.8) calc(var(--cast-y) * 0.8) 0.4em rgba(var(--shadow-rgb), 0.4)
+  );
 }
 
 .strap {

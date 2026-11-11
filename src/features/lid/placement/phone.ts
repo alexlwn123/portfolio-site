@@ -11,6 +11,10 @@ import { HIDDEN, parsePhoneLayout, type PhonePlacement } from './schema'
  * moved 46 to 60 units lower to clear the fifth ribbon and let the medal sit
  * beside the foil win, and the compliance label has a row of its own above
  * the wristbands.
+ *
+ * The three buttons sit where the lid was bare: "tilt me" in the top corner,
+ * where a phone's owner will see it first, and the other two either side of
+ * the gap between the ribbons and the foil win.
  */
 const placements: Record<StickerId, PhonePlacement> = {
   name: { x: 6, y: 22, w: 344, r: -4, z: 6 },
@@ -45,6 +49,9 @@ const placements: Record<StickerId, PhonePlacement> = {
   patents: { x: 64, y: 2094, w: 262, r: 1.5, z: 8 },
   elsewhere: { x: -22, y: 2154, w: 400, r: -2.5, z: 9 },
   'more-elsewhere': { x: 8, y: 2200, w: 400, r: 1.5, z: 8 },
+  tilt: { x: 330, y: 3, w: 54, r: 6, z: 8 },
+  sound: { x: 336, y: 1052, w: 46, r: -8, z: 8 },
+  tidy: { x: 16, y: 1010, w: 66, r: -4, z: 8 },
 }
 
 export const phone = parsePhoneLayout('phone', STICKER_IDS, ARTBOARDS.phone, placements)

@@ -1,0 +1,153 @@
+/*
+ * A sticker with a note stuck underneath it. Three things sit in the placed
+ * element: the flap (the face, with the corner that peels), and the note.
+ *
+ * Without the page's script the corner is hidden and the flap never moves, so
+ * the sticker is the plain link it always was. With it, the script sets
+ * data-peel while the sticker is being peeled or is open, and --peel, from 0
+ * (stuck flat) to 1 (peeled back as far as it goes).
+ */
+.peelable {
+  /* The side of the corner that folds over. */
+  --tab: 4.2em;
+  --tab-inset: 0%;
+}
+
+/* A round drawing has nothing in the corner of its box: its edge is further in. */
+.round {
+  --tab: 3.4em;
+  --tab-inset: 11%;
+}
+
+/* The part that lifts. It hinges on the corner opposite the one that peels. */
+.flap {
+  position: relative;
+  z-index: 1;
+  display: block;
+  transform-origin: 0 0;
+}
+
+.face {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.face:focus-visible {
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.3em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+/*
+ * The corner that peels: a square button over the corner, whose inner half is
+ * drawn as the sticker's silver backing folded over. Its highlight slides and
+ * turns with the lamp.
+ */
+.tab {
+  position: absolute;
+  right: var(--tab-inset);
+  bottom: var(--tab-inset);
+  width: var(--tab);
+  height: var(--tab);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  opacity: 0;
+  cursor: grab;
+  transition: opacity 0.2s;
+  appearance: none;
+}
+
+.tab[hidden] {
+  display: none;
+}
+
+.tab::before {
+  position: absolute;
+  inset: 0;
+  border-top-left-radius: 0.5em;
+  background: linear-gradient(
+    calc(115deg + var(--lx) * 40deg),
+    var(--metal-mid) 0%,
+    var(--metal-light) calc(14% + var(--ly) * 22%),
+    #dfe1ec calc(34% + var(--ly) * 12%),
+    var(--metal-mid) 50%
+  );
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  content: '';
+}
+
+.tab:focus-visible {
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.2em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.75em var(--ink);
+}
+
+/* The corner shows, and the face is cut along its fold, while the sticker is
+   touched, focused or peeled. */
+.peelable:hover .tab,
+.peelable:has(:focus-visible) .tab,
+.peelable[data-peel] .tab {
+  opacity: 1;
+}
+
+:global([data-enhanced]) .peelable:hover .face,
+:global([data-enhanced]) .peelable:has(:focus-visible) .face,
+:global([data-enhanced]) .peelable[data-peel] .face {
+  /* Everything on the near side of the fold, however far the drawing spills. */
+  clip-path: polygon(
+    -600em -600em,
+    calc(100% - var(--tab-inset) + 200em) calc(100% - var(--tab-inset) - var(--tab) - 200em),
+    calc(100% - var(--tab-inset) - var(--tab) - 200em) calc(100% - var(--tab-inset) + 200em)
+  );
+}
+
+/* Nothing hovers on a touch screen, so there the corner always shows. */
+@media (hover: none) {
+  .tab {
+    opacity: 1;
+  }
+
+  :global([data-enhanced]) .peelable .face {
+    clip-path: polygon(
+      -600em -600em,
+      calc(100% - var(--tab-inset) + 200em) calc(100% - var(--tab-inset) - var(--tab) - 200em),
+      calc(100% - var(--tab-inset) - var(--tab) - 200em) calc(100% - var(--tab-inset) + 200em)
+    );
+  }
+}
+
+/*
+ * Peeled: the flap swings up from the lid about its far corner, the peeling
+ * corner coming towards you. The sticker stays where it was carried to, in
+ * front of everything, and does not also lift for the pointer.
+ */
+.peelable[data-peel] {
+  --lift: 1;
+
+  z-index: 900;
+  translate: var(--at-x, 0) var(--at-y, 0);
+  scale: 1;
+}
+
+.peelable[data-peel] .flap {
+  transform: perspective(140em) rotate3d(1, -1, 0, calc(var(--peel, 0) * 66deg));
+}
+
+.peelable[data-peel] .tab {
+  cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flap,
+  .face,
+  .tab,
+  .tab::before {
+    transition: none;
+  }
+}

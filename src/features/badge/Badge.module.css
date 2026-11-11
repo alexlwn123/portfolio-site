@@ -61,8 +61,12 @@ svg.clip {
     rgba(255, 255, 255, 0.25) 45%,
     rgba(255, 255, 255, 0.45)
   );
-  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
-    drop-shadow(0 0.9em 0.9em rgba(var(--shadow-rgb), 0.45));
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(
+      calc(var(--cast-x) * 1.8) calc(var(--cast-y) * 1.8) 0.9em rgba(var(--shadow-rgb), 0.45)
+    );
 }
 
 /* The slot the clip goes through. */

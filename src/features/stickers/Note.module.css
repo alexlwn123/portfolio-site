@@ -1,0 +1,138 @@
+/*
+ * The slip of paper stuck under a sticker.
+ *
+ * It is tucked away to begin with: in the page, read out by a screen reader,
+ * but taking no room and showing nothing. Without the page's script it comes
+ * out from under its sticker when one of its links takes keyboard focus. With
+ * the script it lies under the sticker's flap, out of reach until the sticker
+ * is peeled (data-peel and --peel: see PeelSticker.module.css).
+ */
+.note {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+/*
+ * A note is tucked or out, and how far out follows --peel. Nothing about it
+ * eases by itself: without this, the rule in base.css that shortens every
+ * transition under reduced motion would give it one to shorten.
+ */
+.note,
+.note * {
+  transition-property: none;
+}
+
+.note:focus-within,
+:global([data-enhanced]) .note {
+  width: 23em;
+  height: auto;
+  padding: 1.5em 1.5em 1.1em;
+  overflow: visible;
+  border-radius: 0.3em;
+  background: var(--white);
+  color: var(--ink);
+  line-height: 1.22;
+  text-align: left;
+  white-space: normal;
+  clip-path: none;
+  cursor: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* No script: the note slides out below its sticker while focus is inside it. */
+.note:focus-within {
+  top: 100%;
+  left: 0;
+  z-index: 2;
+  margin-top: 0.6em;
+}
+
+/* Script: it lies where the flap lifts from, and shows as the flap comes up.
+   --note-x and --note-y nudge it back inside the lid when it would overhang. */
+:global([data-enhanced]) .note {
+  top: 46%;
+  left: 30%;
+  z-index: 0;
+  margin-top: 0;
+  opacity: 0;
+  visibility: hidden;
+  translate: var(--note-x, 0) var(--note-y, 0);
+  rotate: 1.5deg;
+}
+
+:global([data-enhanced]) [data-peel] > .note {
+  opacity: calc(var(--peel, 0) * 3 - 0.6);
+  visibility: visible;
+}
+
+/* On its way back under the sticker, it is no longer in the way of a press. */
+:global([data-enhanced]) [data-peel='closing'] > .note {
+  pointer-events: none;
+}
+
+/* A strip of highlighter tape holds it down. */
+.note:focus-within::before,
+:global([data-enhanced]) .note::before {
+  position: absolute;
+  top: -0.7em;
+  left: 50%;
+  width: 6.5em;
+  height: 1.7em;
+  margin-left: -3.25em;
+  background: var(--hi);
+  opacity: 0.85;
+  rotate: -3deg;
+  content: '';
+}
+
+.title,
+.line {
+  margin: 0;
+}
+
+.title {
+  font-size: 1.95em;
+  line-height: 1.05;
+}
+
+.line {
+  margin-top: 0.4em;
+  font-size: 1.42em;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.1em;
+  margin: 0.5em 0 0;
+  padding: 0;
+  font-family: var(--font-body);
+  list-style: none;
+}
+
+/* The padding makes every link a target of 24px or more on a phone. */
+.link {
+  display: inline-block;
+  padding: 0.45em 0;
+  color: var(--deep);
+  font-size: 1.3em;
+  font-weight: var(--weight-bold);
+}
+
+/* The underline thickens under the pointer, as every link's does, and under the keyboard too. */
+.link:hover,
+.link:focus-visible {
+  text-decoration-thickness: 0.16em;
+}
+
+@container lid (max-width: 560px) {
+  .note:focus-within,
+  :global([data-enhanced]) .note {
+    width: 25em;
+  }
+}

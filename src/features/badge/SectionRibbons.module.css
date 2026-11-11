@@ -25,7 +25,9 @@
   height: 4.3em;
   color: var(--ink);
   text-decoration: none;
-  filter: drop-shadow(0 0.28em 0.22em rgba(var(--shadow-rgb), 0.45));
+  filter: drop-shadow(
+    calc(var(--cast-x) * 0.56) calc(var(--cast-y) * 0.56) 0.22em rgba(var(--shadow-rgb), 0.45)
+  );
   transition: translate 0.25s var(--ease-slap);
   translate: calc(var(--o, 0) * 0.1em) 0;
   rotate: var(--rr, 0deg);
