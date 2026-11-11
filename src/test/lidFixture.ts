@@ -23,6 +23,25 @@ function peelable(id: string): string {
     </div>`
 }
 
+/** A strap as the page draws it: its line, and the stars that ride it. */
+function strap(fixed: 'from' | 'to', id: string, line: string): string {
+  return `
+    <g data-strap="${fixed}">
+      <defs><path id="${id}" data-strap-line d="${line}"></path></defs>
+      <use href="#${id}"></use>
+      <path data-strap-stars="0.25 0.75" d="M0 0L1 1"></path>
+    </g>`
+}
+
+/** The lanyard, drawn on the same 260-unit square as the lid's, from the same points. */
+export const LANYARD = `
+  <div data-sticker="lanyard" aria-hidden="true">
+    <svg viewBox="0 0 260 300" data-lanyard>
+      ${strap('from', 'lanyard-left', 'M-96 -300L124 268')}
+      ${strap('to', 'lanyard-right', 'M136 268L356 -300')}
+    </svg>
+  </div>`
+
 const MARKUP = `
   <main data-lid-desk>
     <div data-lid>
@@ -37,7 +56,10 @@ const MARKUP = `
             <use fill="url(#name-glow)"></use>
           </svg>
         </h1>
-        <div data-sticker="badge"><nav><a href="/cv/#wins">Winner</a></nav></div>
+        ${LANYARD}
+        <div data-sticker="badge">
+          <div data-badge-card><img alt="" src="photo.jpg"><nav><a href="/cv/#wins">Winner</a></nav></div>
+        </div>
         <a data-sticker="cv" data-grab href="/cv/">Plain CV</a>
         ${NOTED.map(peelable).join('')}
         <a data-sticker="lightning-welder" data-grab href="/cv/#wins">
@@ -83,6 +105,24 @@ export function place(element: Element, box: Box): void {
   })
 }
 
+/**
+ * Where the lanyard and the badge hang in every fixture: from one anchor, at
+ * one px to the unit, with the card 236 by 470 below the clip.
+ */
+export const HANG_BOX: Box = { left: 400, top: 100, width: 260, height: 300 }
+export const CARD_BOX: Box = { left: 12, top: 296, width: 236, height: 470 }
+
+export function placeHang(lid: HTMLElement, box: Box = HANG_BOX): void {
+  const lanyard = lid.querySelector('[data-sticker="lanyard"]')
+  const badge = lid.querySelector('[data-sticker="badge"]')
+  const card = lid.querySelector('[data-badge-card]')
+  if (lanyard && badge && card) {
+    place(lanyard, box)
+    place(badge, box)
+    place(card, CARD_BOX)
+  }
+}
+
 export interface LidFixture {
   readonly lid: HTMLElement
   readonly sticker: (id: string) => HTMLElement
@@ -110,6 +150,7 @@ export function lidFixture(): LidFixture {
   place(sticker('pleb-fm'), { left: 400, top: 800, width: 200, height: 100 })
   place(sticker('ncr-win'), { left: 700, top: 100, width: 100, height: 100 })
   place(sticker('name'), { left: 0, top: 0, width: 400, height: 250 })
+  placeHang(lid)
 
   return {
     lid,
@@ -191,6 +232,7 @@ export function fakeEnv(overrides: Partial<Env> = {}): FakeEnv {
   return {
     reducedMotion: false,
     touch: false,
+    painted: () => false,
     frames: fakeFrames(),
     timers: fakeTimers(),
     storage: memoryStorage(),

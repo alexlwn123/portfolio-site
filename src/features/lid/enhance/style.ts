@@ -4,13 +4,19 @@
  * is taken away.
  */
 
-export function setVars(element: HTMLElement, vars: Readonly<Record<string, string>>): void {
+export function setVars(
+  element: ElementCSSInlineStyle,
+  vars: Readonly<Record<string, string>>,
+): void {
   for (const [name, value] of Object.entries(vars)) {
     element.style.setProperty(name, value)
   }
 }
 
-export function clearVars(element: HTMLElement, names: readonly string[]): void {
+export function clearVars(
+  element: ElementCSSInlineStyle & Element,
+  names: readonly string[],
+): void {
   for (const name of names) {
     element.style.removeProperty(name)
   }

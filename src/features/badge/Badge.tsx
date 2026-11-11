@@ -107,7 +107,7 @@ export function Badge({ id, ribbonsLabel, ribbons, ...card }: BadgeProps): React
   return (
     <>
       <Clip id={id} />
-      <div className={styles.badge}>
+      <div className={styles.badge} data-badge-card="">
         <div className={styles.sleeve}>
           <Card {...card} />
           <span className={cx(voice.marker, styles.titleNote)} aria-hidden="true">

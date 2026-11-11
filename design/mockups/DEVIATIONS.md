@@ -117,10 +117,20 @@ font the browser found (on this Mac: SF, Lucida Grande and Zapf Dingbats).
 | `→` on the asset tag           | typed             | inline SVG                                   |
 | `↓` after "real title"         | typed             | inline SVG                                   |
 | `✦` between wristband links    | typed             | inline SVG                                   |
-| `✦` along the lanyard          | typed in a `textPath` | inline SVG. The straps are now HTML bands, at the same place and angle |
+| `✦` along the lanyard          | typed in a `textPath` | the same drawn star, set as an SVG marker on a line that rides the strap (see below) |
 | `✦` around the organized seal  | typed in a `textPath` | SVG paths. Each phrase has its own arc, measured from the mockup |
 
 `×` and `·` are in the typefaces and are still typed.
+
+The straps are SVG again, as in the mockup, so that the badge's physics can bend and stretch them:
+each is a line with a wide stroke drawn twice (the darker edge, then the face), its words set
+along it in `textPath`s, and its stars drawn by a marker at each corner of a second line that the
+script moves along the strap with it. A marker is the drawn star, not a glyph, so no typeface needs
+`✦`. At rest the line is straight, from the mockup's own points, and the words and stars sit where
+the HTML bands had them, to within a px or two (the lid's comparison with the mockup passes).
+Each word is given its length from a table of the label face's widths
+(`src/features/stickers/geometry/labelFace.ts`, checked against the browser in
+`e2e/badge.spec.ts`), because a word on a path must be placed before the browser lays it out.
 
 ## What else differs, and why
 

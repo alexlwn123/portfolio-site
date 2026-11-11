@@ -49,6 +49,32 @@ svg.clip {
   rotate: 2.5deg;
 }
 
+/*
+ * Hung by the page's script, the card is something to take hold of: by a
+ * mouse or a pen in any direction, and by a finger that starts sideways (a
+ * finger that starts up or down scrolls the page, and a pinch still zooms).
+ */
+[data-hang] > .badge {
+  cursor: grab;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+}
+
+[data-hang-held] > .badge {
+  cursor: grabbing;
+}
+
+/*
+ * Moving, it turns a few degrees in depth with its motion (--tip-x degrees about
+ * its upright axis, --tip-y about its top edge) and lifts off the lid by --raise,
+ * from 0 to 1: it comes a little closer and its shadow falls further and
+ * softer (see .sleeve).
+ */
+[data-hang-moving] > .badge {
+  transform: rotateX(calc(var(--tip-y, 0) * -1deg)) rotateY(calc(var(--tip-x, 0) * 1deg))
+    translateZ(calc(var(--raise, 0) * 3em));
+}
+
 .sleeve {
   position: relative;
   width: 100%;
@@ -65,7 +91,9 @@ svg.clip {
       calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
     )
     drop-shadow(
-      calc(var(--cast-x) * 1.8) calc(var(--cast-y) * 1.8) 0.9em rgba(var(--shadow-rgb), 0.45)
+      calc(var(--cast-x) * (1.8 + var(--raise, 0) * 2.4))
+        calc(var(--cast-y) * (1.8 + var(--raise, 0) * 2.4)) calc(0.9em + var(--raise, 0) * 1.3em)
+        rgba(var(--shadow-rgb), calc(0.45 - var(--raise, 0) * 0.13))
     );
 }
 
@@ -98,6 +126,9 @@ svg.clip {
     rgba(255, 255, 255, 0.24) 60%,
     transparent 68%
   );
+
+  /* The glare slides across the plastic as the card turns. */
+  background-position: calc(var(--tip-x, 0) * -0.5em) 0;
   pointer-events: none;
   content: '';
 }

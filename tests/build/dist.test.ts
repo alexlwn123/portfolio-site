@@ -13,8 +13,11 @@ import { INDEXABLE_ROUTES, ROUTES } from './routes'
 const SITE_ORIGIN = new URL(content.profile.site).origin
 const HOME = '/'
 const KILOBYTE = 1024
-/** The whole of the home page's script, gzipped, may weigh this much and no more. */
-const SCRIPT_BUDGET_BYTES = 12 * KILOBYTE
+/**
+ * The whole of the home page's script, gzipped, may weigh this much and no
+ * more. Raised from 12 kB when the badge was given its own physics.
+ */
+const SCRIPT_BUDGET_BYTES = 16 * KILOBYTE
 
 describe('the built site', () => {
   it.each(ROUTES)('emits static HTML for every route: %s', async (route) => {

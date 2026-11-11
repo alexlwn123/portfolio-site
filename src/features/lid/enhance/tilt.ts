@@ -30,6 +30,8 @@ export interface Tilted {
   readonly state: TiltState
   /** Where the lamp should go, or null when the reading says nothing. */
   readonly lamp: Point | null
+  /** How far the phone leans across from the baseline, in degrees, clockwise, up to the range. */
+  readonly lean: number
 }
 
 export const TILT_START: TiltState = Object.freeze({ baseline: null })
@@ -75,17 +77,22 @@ function reach(degrees: number): number {
  */
 export function tilt(state: TiltState, { beta, gamma }: Reading, screenAngle = 0): Tilted {
   if (beta === null || gamma === null) {
-    return { state, lamp: null }
+    return { state, lamp: null, lean: 0 }
   }
   const lean = along(beta, gamma, screenAngle)
   if (state.baseline === null) {
-    return { state: { baseline: lean }, lamp: LAMP_REST }
+    return { state: { baseline: lean }, lamp: LAMP_REST, lean: 0 }
   }
+  const across = lean.across - state.baseline.across
   const lamp = clampToLid({
-    x: LAMP_REST.x + reach(lean.across - state.baseline.across),
+    x: LAMP_REST.x + reach(across),
     y: LAMP_REST.y + reach(lean.down - state.baseline.down),
   })
-  return { state, lamp: { x: steady(lamp.x), y: steady(lamp.y) } }
+  return {
+    state,
+    lamp: { x: steady(lamp.x), y: steady(lamp.y) },
+    lean: clamp(across, -TILT_RANGE_DEG, TILT_RANGE_DEG),
+  }
 }
 
 /**

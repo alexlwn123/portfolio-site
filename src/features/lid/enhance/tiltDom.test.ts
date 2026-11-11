@@ -150,6 +150,19 @@ describe('the tilt sticker', () => {
     expect(orientation.asked()).toBe(1)
   })
 
+  it('leans the badge with the phone, in radians, and levels it when it lets go', async () => {
+    const orientation = fakeOrientation(true)
+    const onLean = vi.fn<(radians: number) => void>()
+    installTilt(fixture.lid, fakeEnv({ touch: true, orientation }), fakeLoop(), { onLean })
+
+    await press(fixture.control('tilt'))
+    orientation.send({ beta: 40, gamma: 0 })
+    orientation.send({ beta: 40, gamma: 18 })
+    await press(fixture.control('tilt'))
+
+    expect(onLean.mock.calls.map(([radians]) => radians)).toEqual([0, (18 * Math.PI) / 180, 0])
+  })
+
   it('does nothing on a lid that has no tilt sticker', () => {
     fixture.control('tilt').remove()
 
