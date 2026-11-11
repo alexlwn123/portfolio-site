@@ -1,0 +1,63 @@
+/*
+ * The hand: bubblegum skin with an ink edge and a white die-cut border, each
+ * a copy of the same shape. It waves a little, from the wrist.
+ */
+.hand {
+  transform-origin: 50% 100%;
+  animation: wave 3.4s ease-in-out infinite alternate;
+}
+
+.cut {
+  fill: var(--white);
+  stroke: var(--white);
+  stroke-linejoin: round;
+  stroke-width: 32px;
+}
+
+.edge {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-linejoin: round;
+  stroke-width: 14px;
+}
+
+.creases {
+  fill: none;
+  stroke-linecap: round;
+}
+
+/* The mockup's lighter pink, as white laid thinly over the bubblegum. */
+.shine {
+  stroke: var(--white);
+  opacity: 0.36;
+}
+
+/* Stamp ink: the lid's own ink, a little worn. */
+.stamp {
+  opacity: 0.86;
+}
+
+.ring {
+  fill: none;
+  stroke: var(--ink);
+}
+
+.lettering {
+  fill: var(--ink);
+}
+
+@keyframes wave {
+  from {
+    rotate: -1.2deg;
+  }
+
+  to {
+    rotate: 1.2deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hand {
+    animation: none;
+  }
+}

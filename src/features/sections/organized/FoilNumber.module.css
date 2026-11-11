@@ -1,0 +1,17 @@
+/*
+ * The big number: foil letters with an ink edge, an ink shadow and a white
+ * die-cut border, each a copy of the same figure. The mockup's .sixteen.
+ */
+.cut {
+  fill: var(--white);
+  stroke: var(--white);
+  stroke-linejoin: round;
+  stroke-width: 36px;
+}
+
+.edge {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-linejoin: round;
+  stroke-width: 13px;
+}

@@ -1,0 +1,194 @@
+/*
+ * What is lettered on the lid beside a wristband. A port of the mockup's
+ * .note: the city in marker, when and where under it, the figures as small
+ * pills, and a scrawl in highlighter where there is a story. A label on the
+ * left of the arm is set flush right, toward its band.
+ */
+.note {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  color: var(--white);
+  text-align: left;
+}
+
+:global([data-side='left']) .note {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.city,
+.when,
+.about,
+.press,
+.scrawl {
+  margin: 0;
+}
+
+.city {
+  font-size: 2em;
+  line-height: 1.02;
+}
+
+.when {
+  max-width: 19em;
+  margin-top: 0.2em;
+  font-size: 1.2em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+}
+
+/* The line more: lighter than the date, so the two read apart. */
+.about {
+  max-width: 19em;
+  margin-top: 0.12em;
+  color: var(--hi);
+  font-size: 1.2em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  margin: 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+:global([data-side='left']) .chips {
+  justify-content: flex-end;
+}
+
+.chip {
+  display: block;
+  padding: 0.24em 0.72em 0.2em;
+  border-radius: 2em;
+  background: var(--white);
+  box-shadow: 0 0.16em 0 rgba(var(--shadow-rgb), 0.5);
+  color: var(--ink);
+  font-size: 1.08em;
+  rotate: -1.5deg;
+  white-space: nowrap;
+}
+
+.prize {
+  background: var(--hi);
+  rotate: 1.5deg;
+}
+
+/* A figure nobody published: an empty outline where the pill would be. */
+.unknown {
+  background: none;
+  box-shadow: none;
+  outline: 1px dashed rgba(255, 255, 255, 0.8);
+  color: var(--white);
+  rotate: 0deg;
+}
+
+/* ---------- the press piece ---------- */
+.press {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  align-items: inherit;
+  margin-top: 0.55em;
+}
+
+.pressLink {
+  display: inline-flex;
+  gap: 0.35em;
+  align-items: center;
+  background: var(--gum);
+  text-decoration: none;
+  rotate: 2deg;
+  transition: background-color 0.2s;
+}
+
+.pressLink:hover,
+.pressLink:focus-visible {
+  background: var(--hi);
+}
+
+.pressLink:focus-visible {
+  outline: 0.22em solid var(--hi);
+  outline-offset: 0.2em;
+  border-radius: 2em;
+  box-shadow: 0 0 0 0.62em var(--ink);
+}
+
+.arrow {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.naming {
+  max-width: 17em;
+  font-size: 1.1em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+}
+
+.scrawl {
+  max-width: 13em;
+  margin-top: 0.5em;
+  color: var(--hi);
+  font-size: 1.42em;
+  line-height: 1.1;
+  rotate: -2deg;
+}
+
+@container section (max-width: 1099px) {
+  .when,
+  .about {
+    max-width: 16em;
+  }
+}
+
+/* A phone: every label is to the right of the arm, set flush left. */
+@container section (max-width: 560px) {
+  .note,
+  :global([data-side='left']) .note {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  :global([data-side='left']) .chips {
+    justify-content: flex-start;
+  }
+
+  .city {
+    font-size: 1.8em;
+  }
+
+  .when,
+  .about {
+    max-width: none;
+  }
+
+  .chips {
+    gap: 0.4em 0.35em;
+  }
+
+  .chip {
+    padding: 0.24em 0.62em 0.2em;
+    font-size: 1.2em;
+  }
+
+  /* A target of 24px or more on a 360px phone, where a chip's type is about 11px. */
+  .pressLink {
+    min-height: 2.3em;
+  }
+
+  .naming {
+    font-size: 1.2em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pressLink {
+    transition: none;
+  }
+}
