@@ -7,7 +7,7 @@ import { stats } from '../src/content'
 import { copy } from '../src/content/copy'
 import { STICKER_IDS } from '../src/features/lid/stickers'
 import { sectionAnchor } from '../src/features/sections/sectionIds'
-import { MOCKUPS, openMockup, saveScreenshot, SCREENSHOT_DIR } from './mockup'
+import { MOCKUPS, openMockup, savePartScreenshot, SCREENSHOT_DIR } from './mockup'
 import {
   ADDED_SINCE,
   MOCKUP_ARRANGEMENT,
@@ -15,7 +15,7 @@ import {
   mockupArrangementCss,
 } from './mockupArrangement'
 import { diffScreenshots, OUTSIDE, type Region } from './pixelDiff'
-import { openLid } from './support'
+import { boxOf, openLid } from './support'
 
 /*
  * The lid's own screenshots for review, and the comparison with the approved
@@ -206,7 +206,11 @@ for (const width of REVIEW_WIDTHS) {
   test(`saves lid-${String(width)}.png`, async ({ page }) => {
     await openLid(page, width)
 
-    const image = await saveScreenshot(page, `lid-${String(width)}.png`)
+    // The lid alone, in a window as tall as it is: the sections under it have specs of their
+    // own, and painting the whole long page to cut the lid out of it takes a busy machine too long.
+    const lid = page.locator('[data-lid]')
+    await page.setViewportSize({ width, height: Math.ceil((await boxOf(lid)).height) })
+    const image = await savePartScreenshot(lid, `lid-${String(width)}.png`)
 
     expect(image.byteLength).toBeGreaterThan(0)
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)

@@ -244,10 +244,12 @@ test.describe('the lid', () => {
       await expect(sticker(page, id).locator('text').first(), id).toBeInViewport()
       await expect(sticker(page, id), id).toBeInViewport({ ratio: 0.85 })
     }
-    // The badge down to the foot of its card: the title and the line under it.
-    await expect(page.getByText(content.profile.role.title)).toBeInViewport({ ratio: WHOLE })
+    // The badge down to the foot of its card: the title and the line under it. On the lid,
+    // because the career path further down prints the same title on its own tag.
+    const lid = page.locator('[data-lid]')
+    await expect(lid.getByText(content.profile.role.title)).toBeInViewport({ ratio: WHOLE })
     await expect(
-      page.getByText(new RegExp(`^${content.profile.role.organization} ·`)),
+      lid.getByText(new RegExp(`^${content.profile.role.organization} ·`)),
     ).toBeInViewport({ ratio: WHOLE })
     const ribbons = page.getByRole('navigation', { name: 'Sections' }).getByRole('link')
     await expect(ribbons.first()).toBeInViewport({ ratio: WHOLE })

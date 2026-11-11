@@ -2,7 +2,7 @@ import { mkdir, readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-import type { Page, Route } from '@playwright/test'
+import type { Locator, Page, Route } from '@playwright/test'
 
 const ROOT = resolve(import.meta.dirname, '..')
 const MOCKUP_DIR = join(ROOT, 'design/mockups')
@@ -85,6 +85,15 @@ export async function settle(page: Page): Promise<void> {
     await document.fonts.ready
     await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))
   })
+}
+
+/**
+ * A screenshot of one part of the page with every animation stopped, also
+ * written to design/screenshots/. For a part of a page too long to review whole.
+ */
+export async function savePartScreenshot(part: Locator, name: string): Promise<Buffer> {
+  await mkdir(SCREENSHOT_DIR, { recursive: true })
+  return part.screenshot({ path: join(SCREENSHOT_DIR, name), animations: 'disabled' })
 }
 
 /** A full-page screenshot with every animation stopped, also written to design/screenshots/. */
