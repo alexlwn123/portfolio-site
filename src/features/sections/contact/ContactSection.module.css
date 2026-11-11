@@ -1,0 +1,86 @@
+/*
+ * The end of the page. On a laptop the label takes the left and the strips
+ * of wristband fan down the right, with the CV's asset tag under the label.
+ * On a tablet and a phone it is one column: the label, the strips, the tag.
+ */
+.contact {
+  display: grid;
+  grid-template-columns: minmax(0, 58em) minmax(0, 1fr);
+  grid-template-areas:
+    'label bands'
+    'cv bands';
+  gap: 3.4em 4em;
+  align-items: start;
+}
+
+.label {
+  grid-area: label;
+}
+
+.bands {
+  grid-area: bands;
+  padding-top: 1em;
+}
+
+.cv {
+  grid-area: cv;
+  justify-self: end;
+  margin-right: 3em;
+  rotate: 2.5deg;
+}
+
+/* The lid's asset tag, half as big again: this is the last thing a thumb reaches for. */
+.cvTag {
+  width: max-content;
+  font-size: 1.55em;
+}
+
+.smallPrint {
+  max-width: 34em;
+  margin: 5.5em auto 0;
+  color: var(--white);
+  font-size: 1.5em;
+  font-weight: var(--weight-medium);
+  line-height: 1.4;
+  text-align: center;
+  text-wrap: balance;
+  opacity: 0.86;
+}
+
+@container section (max-width: 1099px) {
+  .contact {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'label'
+      'bands'
+      'cv';
+    gap: 3.4em;
+  }
+
+  .bands {
+    padding-top: 0;
+  }
+
+  .cv {
+    justify-self: center;
+    margin-right: 0;
+  }
+
+  .cvTag {
+    font-size: 1.6em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .contact {
+    gap: 2.8em;
+  }
+
+  .cvTag {
+    font-size: 1.45em;
+  }
+
+  .smallPrint {
+    margin-top: 4.4em;
+  }
+}

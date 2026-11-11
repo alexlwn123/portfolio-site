@@ -1,0 +1,137 @@
+/*
+ * A strip of wristband to a link, cut from the lid's wristbands
+ * (Wristband.module.css) and made tall enough for a thumb. Each strip is as
+ * long as its lettering, so the pile is ragged, as torn-off wristbands are.
+ */
+.bands {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  max-width: 100%;
+  rotate: -2.2deg;
+}
+
+.item:nth-child(2n) {
+  margin-left: 3.2em;
+  rotate: 1.6deg;
+}
+
+.item:nth-child(3n) {
+  margin-left: 1.2em;
+  rotate: -0.8deg;
+}
+
+.item:nth-child(4n) {
+  margin-left: 5em;
+  rotate: 2.4deg;
+}
+
+.link {
+  max-width: 100%;
+}
+
+.band {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 6.6em;
+  padding: 0.6em 7.4em 0.5em 6em;
+  overflow: hidden;
+  border-radius: 3.3em 0.6em 0.6em 3.3em;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0 0.5em,
+      rgba(255, 255, 255, 0.13) 0.5em 0.56em
+    ),
+    var(--c);
+  box-shadow:
+    inset 0 0.4em 0 rgba(255, 255, 255, 0.35),
+    inset 0 -0.4em 0 rgba(0, 0, 0, 0.14);
+  color: var(--ink);
+}
+
+/* The two holes a wristband's snap goes through. */
+.snaps {
+  position: absolute;
+  top: 50%;
+  left: 1.9em;
+  width: 3.2em;
+  height: 1.3em;
+  margin-top: -0.65em;
+  background:
+    radial-gradient(circle at 0.65em 50%, var(--ink) 0 0.6em, transparent 0.64em),
+    radial-gradient(circle at 2.55em 50%, var(--ink) 0 0.6em, transparent 0.64em);
+}
+
+.label {
+  font-size: 2.7em;
+  line-height: 1.02;
+  letter-spacing: 0.07em;
+}
+
+.tab {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 5.4em;
+  border-left: 0.18em dashed rgba(23, 18, 43, 0.7);
+  background:
+    repeating-linear-gradient(-58deg, transparent 0 0.6em, rgba(23, 18, 43, 0.5) 0.6em 0.74em),
+    rgba(255, 255, 255, 0.72);
+}
+
+@container section (max-width: 1099px) {
+  /* A ragged pile across the page: the strips wrap where they will. */
+  .bands {
+    flex-flow: row wrap;
+    gap: 1.6em 1.4em;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .item:nth-child(n) {
+    margin-left: 0;
+  }
+}
+
+@container section (max-width: 560px) {
+  .bands {
+    flex-flow: column;
+    gap: 1.4em;
+    align-items: stretch;
+  }
+
+  .item:nth-child(2n) {
+    margin-left: 2.4em;
+  }
+
+  .item:nth-child(2n + 1) {
+    margin-right: 2.4em;
+  }
+
+  .band {
+    min-height: 6.2em;
+    padding: 0.6em 5.6em 0.5em 5.4em;
+  }
+
+  .snaps {
+    left: 1.6em;
+  }
+
+  .label {
+    font-size: 2.3em;
+  }
+
+  .tab {
+    width: 4em;
+  }
+}

@@ -1,0 +1,258 @@
+/*
+ * An asset tag, the size a job deserves: a band that says whose property he
+ * was, the title in the display face, when it began, his own line about it
+ * in marker, and a barcode with its number underneath. The lid's small asset
+ * tag (AssetTag.module.css) is the same object a size down.
+ */
+.job {
+  position: relative;
+  width: 41em;
+  max-width: 100%;
+}
+
+.tag {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 13em;
+  grid-template-areas:
+    'head head'
+    'body asset';
+  column-gap: 1.4em;
+  padding: 0.62em;
+  border-radius: 0.9em;
+  box-shadow:
+    inset 0 0 0 0.4em var(--white),
+    inset 0 0 0 0.62em var(--ink);
+}
+
+.head {
+  grid-area: head;
+  margin: 0;
+  font: inherit;
+}
+
+/* The band across the top: "property of", and under it, whose. */
+.owner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  padding: 0.75em 1.5em 0.6em;
+  border-radius: 0.3em 0.3em 0 0;
+  background: var(--c);
+  color: var(--t, var(--ink));
+}
+
+.ownerLabel {
+  font-size: 1.25em;
+  white-space: nowrap;
+}
+
+.org {
+  font-size: 3.7em;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+
+.title {
+  display: block;
+  padding: 0.5em 1.1em 0 0.7em;
+  color: var(--ink);
+  font-size: 2.1em;
+  line-height: 1.04;
+}
+
+.body {
+  grid-area: body;
+  padding: 0.55em 0 1.5em 1.5em;
+}
+
+.team,
+.when,
+.words,
+.number {
+  margin: 0;
+}
+
+.team {
+  font-size: 1.4em;
+}
+
+.when {
+  font-size: 1.5em;
+  letter-spacing: 0.07em;
+}
+
+/* His own words, written on the tag with a marker. */
+.words {
+  margin-top: 0.4em;
+  font-size: 1.62em;
+  line-height: 1.2;
+  text-wrap: pretty;
+}
+
+.asset {
+  grid-area: asset;
+  align-self: end;
+  padding: 0 2.2em 1.35em 0;
+}
+
+.bars {
+  height: 4.4em;
+}
+
+.number {
+  margin-top: 0.3em;
+  font-size: 1.25em;
+  letter-spacing: 0.12em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ---------- the tag still in service ---------- */
+
+.current {
+  width: 42.6em;
+}
+
+.current .org {
+  font-size: 3.6em;
+}
+
+.current .title {
+  font-size: 2.25em;
+}
+
+/* An inspection sticker over the corner: this one is live. */
+.seal {
+  position: absolute;
+  top: -3.3em;
+  right: 2.8em;
+  z-index: 1;
+  margin: 0;
+  rotate: 9deg;
+}
+
+.sealFace {
+  display: grid;
+  place-content: center;
+  width: 9.6em;
+  height: 9.6em;
+  border: 0.42em solid var(--white);
+  border-radius: 50%;
+  outline: 0.14em dashed var(--ink);
+  outline-offset: -1.05em;
+  background: var(--mint);
+  color: var(--ink);
+  text-align: center;
+}
+
+.sealWords {
+  display: block;
+  font-size: 1.95em;
+  line-height: 0.92;
+}
+
+.sealNote {
+  display: block;
+  margin-top: 0.3em;
+  font-size: 1.2em;
+  letter-spacing: 0.02em;
+}
+
+@container section (max-width: 1099px) {
+  .job,
+  .current {
+    width: 31.4em;
+  }
+
+  /* One column: the barcode goes along the foot, its number beside it. */
+  .tag {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'head'
+      'body'
+      'asset';
+  }
+
+  .owner {
+    padding: 0.7em 1.3em 0.55em;
+  }
+
+  .org,
+  .current .org {
+    font-size: 2.7em;
+  }
+
+  .title,
+  .current .title {
+    padding: 0.5em 0.62em 0;
+    font-size: 2.05em;
+  }
+
+  .body {
+    padding: 0.55em 1.3em 0.9em;
+  }
+
+  .asset {
+    display: flex;
+    gap: 1.2em;
+    align-items: center;
+    padding: 0 1.3em 1.2em;
+  }
+
+  .bars {
+    flex: 1;
+    height: 3.2em;
+  }
+
+  .number {
+    flex: none;
+    margin: 0;
+  }
+
+  .seal {
+    right: 1.2em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .job,
+  .current {
+    width: auto;
+  }
+
+  .ownerLabel {
+    font-size: 1.25em;
+  }
+
+  .org,
+  .current .org {
+    font-size: 2.55em;
+  }
+
+  .title,
+  .current .title {
+    font-size: 2em;
+  }
+
+  .team {
+    font-size: 1.35em;
+  }
+
+  .when {
+    font-size: 1.45em;
+  }
+
+  .words {
+    font-size: 1.6em;
+  }
+
+  .seal {
+    top: -4.1em;
+    right: 0.6em;
+  }
+
+  .sealFace {
+    width: 9em;
+    height: 9em;
+  }
+}

@@ -1,0 +1,403 @@
+/*
+ * The rating plate: one sheet of brushed metal, riveted at its corners and
+ * stamped in the label face. It is the lid's compliance label grown up, so
+ * it is cut from the same metal (metal.module.css). A plate is not a
+ * sticker: it has no white die-cut edge, only the bevel of its own thickness.
+ */
+.stuck {
+  rotate: -0.8deg;
+}
+
+.plate {
+  position: relative;
+  padding: 3.6em 6.4em 3.2em 4.6em;
+  border-radius: 1.3em;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.3) 0 0.06em,
+      rgba(23, 18, 43, 0.045) 0.06em 0.13em,
+      rgba(255, 255, 255, 0) 0.13em 0.22em
+    ),
+    var(--c);
+  box-shadow:
+    inset 0 0.22em 0 rgba(255, 255, 255, 0.95),
+    inset 0 -0.26em 0 rgba(23, 18, 43, 0.3),
+    inset 0.2em 0 0 rgba(255, 255, 255, 0.6),
+    inset -0.2em 0 0 rgba(23, 18, 43, 0.18);
+  color: var(--ink);
+}
+
+/* ---------- rivets ---------- */
+
+.rivet {
+  position: absolute;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 36% 30%,
+    var(--white) 0 10%,
+    var(--metal-light) 16% 38%,
+    var(--metal-mid) 68%,
+    var(--metal-dark) 100%
+  );
+  box-shadow:
+    0 0.14em 0.16em rgba(23, 18, 43, 0.55),
+    0 0 0 0.16em rgba(23, 18, 43, 0.16);
+}
+
+.topLeft {
+  top: 1.2em;
+  left: 1.2em;
+}
+
+.topRight {
+  top: 1.2em;
+  right: 1.2em;
+}
+
+.bottomLeft {
+  bottom: 1.2em;
+  left: 1.2em;
+}
+
+.bottomRight {
+  right: 1.2em;
+  bottom: 1.2em;
+}
+
+/* ---------- the head of the plate ---------- */
+
+.head {
+  display: flex;
+  gap: 2em 3em;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 2.2em;
+  border-bottom: 0.3em solid var(--ink);
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  align-items: flex-start;
+}
+
+/* Stamped lettering: ink, with the light catching the lower edge of each stroke. */
+.heading {
+  margin: 0;
+  font-size: 4.5em;
+  line-height: 0.92;
+  text-shadow: 0 0.035em 0 rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+.facts,
+.fields {
+  margin: 0;
+}
+
+.facts {
+  display: flex;
+  gap: 1em;
+  align-items: stretch;
+}
+
+/* A boxed field, as a rating plate has them: a label, and a stamped value. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  min-width: 0;
+  padding: 0.6em 0.9em 0.55em;
+  border: 0.16em solid var(--ink);
+  border-radius: 0.35em;
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.term {
+  font-size: 1.2em;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.value {
+  margin: 0;
+  font-size: 1.65em;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0.04em 0 rgba(255, 255, 255, 0.75);
+}
+
+/* A date is stamped whole, never broken across lines. */
+.value time {
+  white-space: nowrap;
+}
+
+.holder {
+  flex-direction: row;
+  gap: 1em;
+  align-items: baseline;
+  padding: 0.7em 1.1em 0.6em;
+}
+
+.holder .value {
+  font-size: 2.4em;
+  white-space: nowrap;
+}
+
+/* The two counts: big figures, each in a box of its own, never added together. */
+.count {
+  gap: 0.5em;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 13em;
+  padding: 0.9em 1.2em 0.7em;
+  text-align: center;
+}
+
+.count .value {
+  font-family: var(--font-display);
+  font-size: 7.4em;
+  font-weight: var(--weight-regular);
+  line-height: 0.82;
+}
+
+/* ---------- a row to a filing ---------- */
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  padding: 1.9em 0 2.1em;
+  border-bottom: 0.14em solid rgba(23, 18, 43, 0.55);
+}
+
+.title {
+  margin: 0 0 0.75em;
+  font-size: 2.3em;
+  font-weight: var(--weight-heavy);
+  line-height: 1.12;
+  letter-spacing: -0.005em;
+  text-shadow: 0 0.04em 0 rgba(255, 255, 255, 0.75);
+  text-wrap: balance;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  gap: 0.8em;
+  align-items: stretch;
+}
+
+/* The number is the row's nameplate, and its link: ink, lettered in highlighter. */
+.numberField {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.numberField .term {
+  padding: 0.6em 0.9em 0;
+}
+
+.numberField .value {
+  display: flex;
+  flex: 1;
+  font-size: 1em;
+  text-shadow: none;
+}
+
+.number {
+  display: flex;
+  flex: 1;
+  gap: 0.5em;
+  align-items: center;
+  min-height: 2.5em;
+  padding: 0.2em 0.75em 0.15em;
+  border-radius: 0.3em;
+  background: var(--ink);
+  color: var(--hi);
+  font-size: 1.95em;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    translate var(--duration-hover) var(--ease-slap),
+    box-shadow var(--duration-hover);
+}
+
+.arrow {
+  width: 0.8em;
+  height: 0.8em;
+  transition: translate 0.2s;
+}
+
+.number:hover,
+.number:focus-visible {
+  box-shadow: 0 0.2em 0 rgba(23, 18, 43, 0.35);
+  translate: 0 -0.1em;
+}
+
+.number:hover .arrow,
+.number:focus-visible .arrow {
+  translate: 0.2em 0;
+}
+
+/* The lid's ring: highlighter with an ink edge, visible on the metal too. */
+.number:focus-visible {
+  outline: 0.16em solid var(--hi);
+  outline-offset: 0.14em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.44em var(--ink);
+}
+
+.footnote {
+  margin: 1.5em 0 0;
+  font-size: 1.3em;
+  letter-spacing: 0.08em;
+}
+
+@container section (max-width: 1099px) {
+  .plate {
+    padding: 3.8em 3.4em 5.4em;
+  }
+
+  .heading {
+    font-size: 3.5em;
+  }
+
+  .count {
+    min-width: 10.4em;
+  }
+
+  .count .value {
+    font-size: 5.6em;
+  }
+
+  /* The number and the status lead; the rest fall in under them. */
+  .fields {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .fields .field {
+    grid-column: span 2;
+  }
+
+  .fields .numberField,
+  .fields .numberField + .field {
+    grid-column: span 3;
+  }
+}
+
+@container section (max-width: 560px) {
+  .stuck {
+    rotate: -0.5deg;
+  }
+
+  .plate {
+    padding: 3.9em 1.8em 3.8em;
+  }
+
+  .rivet {
+    width: 1.8em;
+    height: 1.8em;
+  }
+
+  .topLeft,
+  .topRight {
+    top: 1em;
+  }
+
+  .bottomLeft,
+  .bottomRight {
+    bottom: 1em;
+  }
+
+  .topLeft,
+  .bottomLeft {
+    left: 1em;
+  }
+
+  .topRight,
+  .bottomRight {
+    right: 1em;
+  }
+
+  .head {
+    flex-direction: column;
+    gap: 1.2em;
+    align-items: stretch;
+  }
+
+  .lead {
+    gap: 1.2em;
+    align-items: stretch;
+  }
+
+  .heading {
+    font-size: 3.6em;
+  }
+
+  .holder {
+    flex-direction: column;
+    gap: 0.35em;
+  }
+
+  .count {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .count .value {
+    font-size: 5.4em;
+  }
+
+  .fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fields .field {
+    grid-column: span 1;
+  }
+
+  .fields .numberField,
+  .fields .numberField + .field,
+  .fields .field:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+
+  .title {
+    font-size: 2.05em;
+  }
+
+  .value {
+    font-size: 1.7em;
+  }
+
+  .holder .value {
+    font-size: 2.3em;
+  }
+
+  .number {
+    min-height: 2.6em;
+    font-size: 1.9em;
+  }
+
+  .footnote {
+    font-size: 1.3em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .number,
+  .arrow {
+    transition: none;
+  }
+}

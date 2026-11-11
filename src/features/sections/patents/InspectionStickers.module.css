@@ -1,0 +1,209 @@
+/*
+ * Three made-up stickers from the end of an assembly line: a seal, a quality
+ * check signed off in marker, and a caution strip. None of them copies a
+ * real regulatory mark.
+ */
+.stickers {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4em;
+  align-items: flex-start;
+  align-self: stretch;
+  justify-content: space-around;
+  margin: 0 0 0 -4.8em;
+  padding: 3em 0 4em;
+  list-style: none;
+}
+
+/* ---------- "named inventor": a round seal ---------- */
+
+.seal {
+  margin-left: 2em;
+  rotate: 8deg;
+}
+
+.sealFace {
+  display: grid;
+  place-content: center;
+  width: 15.5em;
+  height: 15.5em;
+  border: 0.5em solid var(--white);
+  border-radius: 50%;
+  outline: 0.16em dashed var(--ink);
+  outline-offset: -1.05em;
+  background: var(--gum);
+  color: var(--ink);
+  text-align: center;
+}
+
+.sealOver {
+  display: block;
+  font-size: 1.5em;
+  letter-spacing: 0.2em;
+}
+
+.sealWord {
+  display: block;
+  font-size: 2.05em;
+  line-height: 1.05;
+}
+
+/* ---------- "QC passed": an oval, filled in by hand ---------- */
+
+.quality {
+  rotate: -7deg;
+}
+
+.qualityFace {
+  display: flex;
+  gap: 0.9em;
+  align-items: center;
+  justify-content: center;
+  width: 19em;
+  padding: 1.5em 1.4em 1.5em 1.8em;
+  border: 0.45em solid var(--white);
+  border-radius: 50%;
+  background: var(--mint);
+  color: var(--ink);
+}
+
+.stamp {
+  font-size: 3.6em;
+  line-height: 1;
+}
+
+.signedOff {
+  display: block;
+}
+
+.verdict {
+  display: flex;
+  gap: 0.25em;
+  align-items: center;
+  font-size: 2.2em;
+  line-height: 1;
+}
+
+.tick {
+  flex: none;
+  width: 1.15em;
+  height: auto;
+  margin-top: -0.25em;
+  overflow: visible;
+}
+
+.signed {
+  display: block;
+  margin: 0.15em 0 0 2.4em;
+  font-size: 1.8em;
+  line-height: 1;
+}
+
+/* ---------- "caution": a hazard strip ---------- */
+
+.caution {
+  margin-left: 1em;
+  rotate: 4deg;
+}
+
+.cautionFace {
+  display: flex;
+  width: 19em;
+  overflow: hidden;
+  border: 0.4em solid var(--white);
+  border-radius: 0.6em;
+  background: var(--hi);
+  color: var(--ink);
+}
+
+.hazard {
+  flex: none;
+  width: 3.4em;
+  background: repeating-linear-gradient(-45deg, var(--ink) 0 0.8em, var(--hi) 0.8em 1.6em);
+}
+
+.cautionWords {
+  display: block;
+  padding: 0.8em 1em 0.75em;
+}
+
+.cautionHead {
+  display: block;
+  font-size: 2.1em;
+  line-height: 1;
+}
+
+.cautionLines {
+  display: block;
+  margin-top: 0.35em;
+  font-size: 1.4em;
+  line-height: 1.15;
+}
+
+@container section (max-width: 1099px) {
+  /* Across the foot of the plate, overlapping its bottom edge. */
+  .stickers {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.6em 2em;
+    align-items: center;
+    justify-content: center;
+    margin: -3.4em 0 0;
+    padding: 0 5em;
+  }
+
+  .seal,
+  .caution {
+    margin-left: 0;
+  }
+
+  .sealFace {
+    width: 14em;
+    height: 14em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .stickers {
+    gap: 1.2em 0.8em;
+    margin-top: -2.4em;
+    padding: 0 3.2em;
+  }
+
+  .sealFace {
+    width: 11.6em;
+    height: 11.6em;
+    outline-offset: -0.9em;
+  }
+
+  .sealOver {
+    font-size: 1.25em;
+  }
+
+  .sealWord {
+    font-size: 1.5em;
+  }
+
+  .qualityFace {
+    width: 16.6em;
+    padding: 1.3em 1em 1.3em 1.3em;
+  }
+
+  .stamp {
+    font-size: 3.1em;
+  }
+
+  .verdict {
+    font-size: 1.9em;
+  }
+
+  .signed {
+    font-size: 1.6em;
+  }
+
+  .cautionFace {
+    width: 21em;
+  }
+}

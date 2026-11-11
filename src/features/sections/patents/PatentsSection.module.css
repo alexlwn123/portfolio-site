@@ -1,0 +1,17 @@
+/*
+ * The underside of the machine: the rating plate, and beside it the stickers
+ * it left the factory with. On a laptop they run down the plate's right
+ * edge, overlapping its bare metal; on a tablet and a phone they sit in a row
+ * across its foot.
+ */
+.underside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16em;
+  align-items: start;
+}
+
+@container section (max-width: 1099px) {
+  .underside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
