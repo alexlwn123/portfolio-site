@@ -26,6 +26,14 @@
   line-height: normal;
 }
 
+/*
+ * A link reached by keyboard is brought clear of the strap pinned over the
+ * section, with room for its focus ring, and not left underneath it.
+ */
+.frame :is(a, button, summary, [tabindex]) {
+  scroll-margin-top: calc(var(--pinned-height, 0px) + 0.75rem);
+}
+
 /* The lid again: brushed cobalt. */
 .lid {
   background:

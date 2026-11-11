@@ -7,6 +7,8 @@
  */
 .strap {
   --strap-edge: 0.1875rem;
+  /* The buckle's width and a little more: how far in a link is scrolled to, to be seen. */
+  --buckle-room: 6rem;
 
   position: sticky;
   top: 0;
@@ -37,6 +39,8 @@
  * inside the strap and the page itself never does. The buckle stays put.
  */
 .run {
+  /* A link the keyboard reaches stops clear of the buckle, which stays put over the run's start. */
+  scroll-padding-inline-start: var(--buckle-room);
   display: flex;
   flex: 0 1 auto;
   min-width: 0;

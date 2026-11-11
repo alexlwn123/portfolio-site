@@ -160,6 +160,55 @@ test('on a phone the links scroll sideways inside the strap, and the way back st
   expect((await top.boundingBox())?.x).toBe(0)
 })
 
+/** How many links back from the foot of the page the keyboard is walked. */
+const STOPS_WALKED = 30
+
+test('a link reached by keyboard is never left under the strap', async ({ page }) => {
+  await openLid(page, 728)
+  await page.locator('section#contact a').last().focus()
+
+  const hidden: string[] = []
+  for (let stop = 0; stop < STOPS_WALKED; stop += 1) {
+    await page.keyboard.press('Shift+Tab')
+    const under = await page.evaluate(() => {
+      const focused = document.activeElement
+      const pinned = document.querySelector('[data-pinned-strap]')
+      if (!focused?.closest('section[data-section]') || !pinned) {
+        return null
+      }
+      const top = focused.getBoundingClientRect().top
+      return top < pinned.getBoundingClientRect().bottom ? focused.textContent : null
+    })
+    if (under !== null) {
+      hidden.push(under)
+    }
+  }
+
+  expect(hidden).toEqual([])
+})
+
+test('on a phone, a strap link reached by keyboard is clear of the buckle', async ({ page }) => {
+  await openLid(page, NARROW_PHONE_PX)
+  await page.locator('section#work').evaluate((section) => {
+    section.scrollIntoView()
+  })
+  const buckle = await strap(page).getByRole('link', { name: navCopy.top }).boundingBox()
+  await strap(page).getByRole('link').last().focus()
+
+  const covered: string[] = []
+  for (const id of SECTION_IDS.toReversed().slice(1)) {
+    await page.keyboard.press('Shift+Tab')
+    const link = strap(page).locator(`a[data-to="${id}"]`)
+    await expect(link).toBeFocused()
+    const box = await link.boundingBox()
+    if ((box?.x ?? 0) < (buckle?.x ?? 0) + (buckle?.width ?? 0)) {
+      covered.push(id)
+    }
+  }
+
+  expect(covered).toEqual([])
+})
+
 test('every strap link is a full-height target, in type no smaller than the lid allows', async ({
   page,
 }) => {
