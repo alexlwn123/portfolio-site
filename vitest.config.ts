@@ -29,7 +29,7 @@ export default defineConfig({
         test: {
           name: 'build',
           include: ['tests/build/**/*.test.ts'],
-          environment: 'node',
+          environment: 'jsdom',
           globalSetup: ['./tests/build/globalSetup.ts'],
         },
       },
