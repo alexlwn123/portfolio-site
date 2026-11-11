@@ -10,6 +10,12 @@ const PORT = 4391
 const PREVIEW_FLAGS = `--host 127.0.0.1 --port ${String(PORT)} --ignore-lock`
 const BASE_URL = `http://127.0.0.1:${String(PORT)}`
 const SERVER_TIMEOUT_MS = 120_000
+/**
+ * How long an expectation waits. The lid's springs and its lamp take about
+ * half a second to settle, and headless Chromium draws slowly when other
+ * suites share the machine, so they are given time to.
+ */
+const EXPECT_TIMEOUT_MS = 10_000
 
 const isCi = Boolean(process.env.CI)
 
@@ -19,6 +25,7 @@ export default defineConfig({
   forbidOnly: isCi,
   retries: isCi ? 1 : 0,
   reporter: [['list']],
+  expect: { timeout: EXPECT_TIMEOUT_MS },
   use: {
     baseURL: BASE_URL,
     trace: 'retain-on-failure',

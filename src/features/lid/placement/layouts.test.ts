@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../../content'
 import { flattenStickers, isDecoration, linksOf } from '../stickerSpecs'
-import { lidStickers, STICKER_IDS } from '../stickers'
+import { CONTROL_IDS, lidStickers, STICKER_IDS } from '../stickers'
 import { ARTBOARDS, BLEED, FRAME, MAX_WIDTH_PX } from './artboards'
 import { desktop } from './desktop'
 import { lidPlacementCss } from './index'
@@ -70,6 +70,13 @@ describe('the lid’s placements', () => {
     expect(desktop['ncr-win'].z).toBeLessThan(desktop.badge.z)
   })
 
+  it.each(LAYOUTS)('places the three buttons, on the layer under the badge: %s', (_, layout) => {
+    for (const id of CONTROL_IDS) {
+      expect(layout[id], id).not.toBe(HIDDEN)
+      expect(layout[id], id).toMatchObject({ w: expect.any(Number) as unknown, z: 8 })
+    }
+  })
+
   it('gives a sticker a width on both layouts or on neither', () => {
     for (const { id, w } of placed(phone)) {
       expect(w === undefined, id).toBe(desktop[id as keyof typeof desktop].w === undefined)
@@ -109,6 +116,17 @@ describe('lidPlacementCss', () => {
     for (const id of STICKER_IDS) {
       expect(css.split(`[data-sticker="${id}"]{`), id).toHaveLength(3)
     }
+  })
+
+  it('slaps the buttons down last, and leaves every other sticker its turn', () => {
+    const [desktopCss = ''] = css.split('@container')
+    const step = (id: string): string | undefined =>
+      new RegExp(`\\[data-sticker="${id}"\\]\\{[^}]*--i:(\\d+)`).exec(desktopCss)?.[1]
+
+    expect(CONTROL_IDS.map(step)).toEqual(['20', '20', '20'])
+    expect(step('name')).toBe('0')
+    expect(step('more-elsewhere')).toBe('20')
+    expect(step('elsewhere')).toBe('19')
   })
 
   it('opens exactly one container query, for the phone', () => {

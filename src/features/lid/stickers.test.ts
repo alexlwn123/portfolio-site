@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../content'
 import { deriveStats } from '../../content/derive'
-import { flattenStickers, isDecoration, linksOf, type StickerSpec } from './stickerSpecs'
-import { lidStickers, STICKER_IDS, type StickerId } from './stickers'
+import { flattenStickers, isControl, isDecoration, linksOf, type StickerSpec } from './stickerSpecs'
+import { CONTROL_IDS, lidStickers, STICKER_IDS, type StickerId } from './stickers'
 
 const items = lidStickers(content, stats)
 const stickers = flattenStickers(items)
@@ -28,7 +28,7 @@ describe('lidStickers', () => {
     const kinds = stickers.map(({ kind }) => kind)
 
     expect(kinds.slice(0, 4)).toEqual(['name', 'lanyard', 'badge', 'hello'])
-    expect(kinds.slice(-2)).toEqual(['wristband', 'wristband'])
+    expect(kinds.slice(-5)).toEqual(['wristband', 'wristband', 'tilt', 'sound', 'tidy'])
     expect(kinds.indexOf('assetTag')).toBe(4)
   })
 
@@ -37,7 +37,16 @@ describe('lidStickers', () => {
 
     expect(ids.indexOf('ncr-win')).toBe(ids.indexOf('latest-win') + 1)
     expect(ids.indexOf('patents')).toBe(ids.indexOf('elsewhere') - 1)
-    expect(STICKER_IDS).toHaveLength(32)
+    expect(STICKER_IDS).toHaveLength(35)
+  })
+
+  it('puts the three buttons last, after everything there is to read', () => {
+    expect(STICKER_IDS.slice(-CONTROL_IDS.length)).toEqual(CONTROL_IDS)
+    expect(stickers.filter(isControl).map(({ id }) => id)).toEqual(['tilt', 'sound', 'tidy'])
+    expect(sticker('sound', 'sound')).toEqual({ id: 'sound', kind: 'sound', label: 'Sound' })
+    expect(sticker('tidy', 'tidy').lines).toEqual(['Tidy', 'the lid'])
+    expect(sticker('tilt', 'tilt').lines).toEqual(['Tilt', 'me'])
+    expect(stickers.filter(isControl).flatMap(linksOf)).toEqual([])
   })
 
   it('is frozen, like the content it is built from', () => {

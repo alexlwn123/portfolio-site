@@ -60,8 +60,11 @@ const MAX_UNTOUCHED_DIFFERENCE = 0.001
  * above, which have not moved.
  */
 
-/** Two stickers the mockup does not have: the medal and the compliance label. */
-const ADDED_STICKERS = ['ncr-win', 'patents'] as const
+/**
+ * Four stickers the mockup does not have: the medal, the compliance label, and
+ * the two buttons the page's script shows (the speaker and "tidy the lid").
+ */
+const ADDED_STICKERS = ['ncr-win', 'patents', 'sound', 'tidy'] as const
 
 /**
  * Three city pills moved down to make room for the fifth ribbon. Each is left
@@ -103,14 +106,16 @@ function pillText(id: string): string {
 }
 
 /**
- * One box around every matched element and everything inside them, grown by a
- * margin. Matching nothing is an error: an addition that has gone missing
- * should fail the comparison, not slip out of it.
+ * One box around every matched element and everything that shows inside them,
+ * grown by a margin. A note tucked under its sticker shows nothing, so it
+ * takes no room. Matching nothing is an error: an addition that has gone
+ * missing should fail the comparison, not slip out of it.
  */
 async function boxAround(elements: Locator, name: string, margin = NONE): Promise<Region> {
   const rects = await elements.evaluateAll((matched) =>
     matched
       .flatMap((element) => [element, ...element.querySelectorAll('*')])
+      .filter((part) => getComputedStyle(part).visibility !== 'hidden')
       .map((part) => part.getBoundingClientRect())
       .filter(({ width, height }) => width > 0 && height > 0)
       .map(({ left, top, right, bottom }) => ({

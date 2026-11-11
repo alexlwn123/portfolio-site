@@ -83,6 +83,29 @@ describe('toCss', () => {
     expect(phoneCss).not.toContain('--i')
   })
 
+  it('lands a late sticker after all the others, without moving when they land', () => {
+    const place = { x: 0, y: 0, r: 0, z: 1 }
+    const withLate = toCss(
+      {
+        order: [...ORDER, 'button'],
+        desktop: {
+          name: place,
+          pill: place,
+          bolt: place,
+          button: place,
+        },
+        phone: { name: place, pill: place, bolt: place, button: place },
+        late: ['button'],
+      },
+      FRAME,
+    )
+    const steps = [...ORDER, 'button'].map(
+      (id) => new RegExp(`\\[data-sticker="${id}"\\]\\{[^}]*--i:(\\d+)`).exec(withLate)?.[1],
+    )
+
+    expect(steps).toEqual(['0', '10', '20', '20'])
+  })
+
   it('makes the lid a named container and tells the desk its maximum width', () => {
     expect(desktopCss).toContain('[data-lid]{container:lid / inline-size}')
     expect(desktopCss).toContain('[data-lid-desk]{--lid-max-width:1001px}')

@@ -80,6 +80,56 @@ describe('Sticker', () => {
     expect(screen.getByText('stuck')).not.toHaveClass(styles.selfSized ?? '')
   })
 
+  it('says it can be picked up, unless it is drawn straight onto the lid', () => {
+    render(
+      <>
+        <Sticker id="hello">stuck</Sticker>
+        <Sticker id="tally" flat>
+          drawn
+        </Sticker>
+      </>,
+    )
+
+    expect(screen.getByText('stuck')).toHaveAttribute('data-grab')
+    expect(screen.getByText('drawn')).not.toHaveAttribute('data-grab')
+  })
+
+  it('is a button, hidden until the script that works it shows it, when it is a control', () => {
+    render(
+      <>
+        <Sticker id="tidy" control="tidy">
+          Tidy the lid
+        </Sticker>
+        <Sticker id="sound" control="sound" toggle label="Sound">
+          <svg aria-hidden="true" />
+        </Sticker>
+      </>,
+    )
+
+    const tidy = screen.getByText('Tidy the lid')
+    const sound = screen.getByLabelText('Sound')
+    expect(tidy.tagName).toBe('BUTTON')
+    expect(tidy).toHaveAttribute('type', 'button')
+    expect(tidy).toHaveAttribute('hidden')
+    expect(tidy).toHaveAttribute('data-control', 'tidy')
+    expect(tidy).toHaveAttribute('data-sticker', 'tidy')
+    expect(tidy).toHaveClass(styles.control ?? '', styles.sticker ?? '')
+    expect(tidy).not.toHaveAttribute('aria-pressed')
+    expect(sound).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.queryByRole('button')).toBeNull()
+  })
+
+  it('stays a link when it has an address, whatever else it is told', () => {
+    render(
+      <Sticker id="cv" href="/cv/" control="tidy">
+        Plain CV
+      </Sticker>,
+    )
+
+    expect(screen.getByRole('link', { name: 'Plain CV' })).not.toHaveAttribute('hidden')
+    expect(screen.getByRole('link', { name: 'Plain CV' })).not.toHaveAttribute('data-control')
+  })
+
   it('leaves aria-hidden off everything else', () => {
     const { container } = render(<Sticker id="phrase">text</Sticker>)
 

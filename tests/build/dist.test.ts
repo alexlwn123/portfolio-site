@@ -1,3 +1,5 @@
+import { gzipSync } from 'node:zlib'
+
 import { describe, expect, it } from 'vitest'
 
 import { content } from '../../src/content'
@@ -8,6 +10,10 @@ import { executableScripts, listDistFiles, readDistFile, readPage } from './dist
 import { INDEXABLE_ROUTES, ROUTES } from './routes'
 
 const SITE_ORIGIN = new URL(content.profile.site).origin
+const HOME = '/'
+const KILOBYTE = 1024
+/** The whole of the home page's script, gzipped, may weigh this much and no more. */
+const SCRIPT_BUDGET_BYTES = 12 * KILOBYTE
 
 describe('the built site', () => {
   it.each(ROUTES)('emits static HTML for every route: %s', async (route) => {
@@ -38,8 +44,15 @@ describe('the built site', () => {
     const page = await readPage(route)
 
     expect(page.querySelectorAll('astro-island')).toHaveLength(0)
-    expect(executableScripts(page)).toHaveLength(0)
     expect(page.querySelectorAll('[style]')).toHaveLength(0)
+    expect(page.querySelectorAll('style')).toHaveLength(0)
+  })
+
+  it.each(ROUTES.filter((route) => route !== HOME))('runs no script at all: %s', async (route) => {
+    const page = await readPage(route)
+
+    expect(executableScripts(page)).toHaveLength(0)
+    expect(page.querySelectorAll('link[rel="modulepreload"]')).toHaveLength(0)
   })
 
   it.each(ROUTES)('loads nothing from another host: %s', async (route) => {
@@ -166,6 +179,92 @@ describe('/', () => {
   })
 })
 
+describe('the home page’s script', () => {
+  /** The path of every script a browser fetches for the home page: the entry and what it imports. */
+  async function scriptsOf(page: Document): Promise<readonly string[]> {
+    const entries = executableScripts(page).map((script) => script.getAttribute('src') ?? '')
+    const follow = async (seen: readonly string[], path: string): Promise<readonly string[]> => {
+      if (seen.includes(path)) {
+        return seen
+      }
+      const source = await readDistFile(path.replace(/^\//, ''))
+      const imported = [...source.matchAll(/(?:from|import)\s*["'](\.[^"']+)["']/g)].map(
+        ([, specifier = '']) => new URL(specifier, `file://${path}`).pathname,
+      )
+      return imported.reduce<Promise<readonly string[]>>(
+        async (soFar, next) => follow(await soFar, next),
+        Promise.resolve([...seen, path]),
+      )
+    }
+    return entries.reduce<Promise<readonly string[]>>(
+      async (soFar, entry) => follow(await soFar, entry),
+      Promise.resolve([]),
+    )
+  }
+
+  it('is one module, served from the site itself, with nothing written into the page', async () => {
+    const page = await readPage(HOME)
+    const scripts = executableScripts(page)
+
+    expect(scripts).toHaveLength(1)
+    expect(scripts[0]?.getAttribute('type')).toBe('module')
+    expect(scripts[0]?.getAttribute('src')).toMatch(/^\/_astro\/[^/]+\.js$/)
+    expect(scripts[0]?.textContent).toBe('')
+  })
+
+  it(`weighs no more than ${String(SCRIPT_BUDGET_BYTES / KILOBYTE)} kB gzipped, everything it imports included`, async () => {
+    const paths = await scriptsOf(await readPage(HOME))
+    const sources = await Promise.all(paths.map((path) => readDistFile(path.replace(/^\//, ''))))
+    const gzipped = sources.map((source) => gzipSync(source, { level: 9 }).byteLength)
+    const total = gzipped.reduce((sum, bytes) => sum + bytes, 0)
+
+    expect(paths.length).toBeGreaterThan(0)
+    expect(total).toBeGreaterThan(KILOBYTE)
+    expect(total).toBeLessThanOrEqual(SCRIPT_BUDGET_BYTES)
+  })
+
+  it('carries no framework: it is the lid’s own modules and nothing else', async () => {
+    const paths = await scriptsOf(await readPage(HOME))
+    const sources = await Promise.all(paths.map((path) => readDistFile(path.replace(/^\//, ''))))
+
+    for (const source of sources) {
+      expect(source).not.toMatch(/react|__SECRET_INTERNALS|astro-island|hydrat/i)
+      expect(source).not.toMatch(/console\.(log|warn|error|info|debug)/)
+      expect(source).not.toMatch(/https?:\/\//)
+    }
+  })
+
+  it('ships the lid whole without it: every note and every button is in the markup', async () => {
+    const page = await readPage(HOME)
+    const notes = [...page.querySelectorAll('[data-note]')]
+    const buttons = [...page.querySelectorAll('main button')]
+
+    expect(notes).toHaveLength(page.querySelectorAll('[data-peelable]').length)
+    expect(notes.length).toBeGreaterThan(0)
+    for (const note of notes) {
+      expect(note.textContent.trim()).not.toBe('')
+      expect(note.querySelector('a[href]')).not.toBeNull()
+    }
+    expect(buttons.length).toBeGreaterThan(notes.length)
+    expect(buttons.every((button) => button.hasAttribute('hidden'))).toBe(true)
+    expect(page.querySelector('[data-lid]')?.hasAttribute('data-enhanced')).toBe(false)
+  })
+
+  it('says in the note what the CV says: nothing is on the lid alone', async () => {
+    const home = await readPage(HOME)
+    const cv = (await readPage('/cv/')).querySelector('main')?.textContent ?? ''
+    const lines = [...home.querySelectorAll('[data-note] p')].map((line) => line.textContent)
+
+    expect(lines.length).toBeGreaterThan(0)
+    for (const description of content.wins.flatMap((win) => win.description ?? [])) {
+      expect(cv).toContain(description)
+    }
+    for (const line of lines.filter((text) => text.length > 60)) {
+      expect(cv, line).toContain(line)
+    }
+  })
+})
+
 describe('the additions to the lid', () => {
   it('prints the granted patent numbers from the content, and no application’s', async () => {
     const page = await readPage('/')
@@ -197,7 +296,7 @@ describe('the additions to the lid', () => {
 
   it('links the NCR medal to the wins, named in words', async () => {
     const page = await readPage('/')
-    const medal = page.querySelector('a[data-sticker="ncr-win"]')
+    const medal = page.querySelector('[data-sticker="ncr-win"] a')
 
     expect(medal?.getAttribute('href')).toBe('/cv/#wins')
     expect(medal?.getAttribute('aria-label')).toBe(

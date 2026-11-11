@@ -2,28 +2,50 @@ import { expect, type Page, test } from '@playwright/test'
 
 import { content, stats } from '../src/content'
 import { cvSection } from '../src/features/lid/facts'
+import { lidNotes, NOTED_IDS } from '../src/features/lid/notes'
 import { MAX_WIDTH_PX, MIN_TEXT_PX, NARROW_PHONE_PX } from '../src/features/lid/placement/artboards'
 import { flattenStickers, linksOf } from '../src/features/lid/stickerSpecs'
 import { lidStickers, STICKER_IDS } from '../src/features/lid/stickers'
-import { diffScreenshots } from './pixelDiff'
-import { collectRequests, lidLinks, openLid } from './support'
+import { diffScreenshots, type Region } from './pixelDiff'
+import {
+  collectRequests,
+  lidLinks,
+  linksCoveredBy,
+  linksNotUnderTheirOwnCentre,
+  openLid,
+  sticker,
+} from './support'
 
 const WIDTHS = [1280, 728, 390] as const
 const MIN_TARGET_PX = 24
 const MIN_OUTLINE_PX = 2
 const WEB_FONTS = ['Bowlby One', 'Bricolage Grotesque', 'Permanent Marker'] as const
 
-/** What was stuck on after the mockup: two stickers and the fifth ribbon. */
+/**
+ * What was stuck on after the mockup: two stickers, the fifth ribbon, and the
+ * two buttons the page's script shows on every device.
+ */
 const ADDITIONS = [
   '[data-sticker="ncr-win"]',
   '[data-sticker="patents"]',
   `nav a[href="${cvSection('patents')}"]`,
+  '[data-sticker="sound"]',
+  '[data-sticker="tidy"]',
 ] as const
+/** The buttons the script shows on a desktop. "Tilt me" is for touch screens only. */
+const SHOWN_CONTROLS = ['sound', 'tidy'] as const
+/** A sticker's shadow falls this far outside its box: see e2e/lid-visual.spec.ts. */
+const SHADOW = { top: 3, side: 6, bottom: 12 } as const
 /** Each addition is probed on a grid of this many points a side. */
 const SAMPLES_PER_SIDE = 12
 
 const stickers = flattenStickers(lidStickers(content, stats))
 const hrefs = stickers.flatMap(linksOf)
+const notes = lidNotes(content)
+/** The links inside the notes. They can be reached only while their note is out. */
+const noteHrefs = NOTED_IDS.flatMap((id) => notes[id].links.map(({ href }) => href))
+/** Every stop of the Tab key with the script running: each link, each peeling corner, each button. */
+const TAB_STOPS = hrefs.length + NOTED_IDS.length + SHOWN_CONTROLS.length
 
 /** The address the browser reports for an href as written in the markup. */
 function resolved(href: string, baseURL: string | undefined): string {
@@ -47,49 +69,13 @@ test.describe('the lid', () => {
       const links = lidLinks(page)
 
       await expect(links).toHaveCount(hrefs.length)
-      const missed = await links.evaluateAll((elements) =>
-        elements.flatMap((link) => {
-          link.scrollIntoView({ block: 'center' })
-          const box = link.getBoundingClientRect()
-          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
-          return link.contains(hit) ? [] : [link.getAttribute('href')]
-        }),
-      )
-      expect(missed).toEqual([])
+      expect(await linksNotUnderTheirOwnCentre(page)).toEqual([])
     })
 
     test(`the additions cover no other link at ${String(width)} wide`, async ({ page }) => {
       await openLid(page, width)
 
-      const covered = await page.evaluate(
-        ({ selectors, steps }) => {
-          const links = [...document.querySelectorAll('main a')]
-          const linkAt = (element: Element): Element | undefined =>
-            links.find((link) => link.contains(element))
-          return selectors.flatMap((selector) => {
-            const added = document.querySelector(selector)
-            if (!added) {
-              return [`${selector} is missing`]
-            }
-            added.scrollIntoView({ block: 'center' })
-            const box = added.getBoundingClientRect()
-            const points = Array.from({ length: steps * steps }, (_, index) => ({
-              x: box.left + ((index % steps) + 0.5) * (box.width / steps),
-              y: box.top + (Math.floor(index / steps) + 0.5) * (box.height / steps),
-            }))
-            // Everything painted at a point, topmost first: a link under the addition is covered.
-            const under = points.flatMap(({ x, y }) => {
-              const stack = document.elementsFromPoint(x, y)
-              const at = stack.findIndex((element) => added.contains(element))
-              return at < 0 ? [] : stack.slice(at + 1).flatMap((element) => linkAt(element) ?? [])
-            })
-            return [...new Set(under)]
-              .filter((link) => link !== added && !link.contains(added))
-              .map((link) => `${selector} covers ${link.getAttribute('href') ?? ''}`)
-          })
-        },
-        { selectors: ADDITIONS, steps: SAMPLES_PER_SIDE },
-      )
+      const covered = await linksCoveredBy(page, ADDITIONS, SAMPLES_PER_SIDE)
       expect(covered).toEqual([])
     })
 
@@ -107,13 +93,20 @@ test.describe('the lid', () => {
     await openLid(page, 728)
 
     const visited: string[] = []
-    while (visited.length < hrefs.length) {
+    while (visited.length < TAB_STOPS) {
       await page.keyboard.press('Tab')
-      visited.push(await page.evaluate(() => (document.activeElement as HTMLAnchorElement).href))
+      visited.push(
+        await page.evaluate(() => {
+          const stop = document.activeElement
+          const name = stop?.getAttribute('aria-label') ?? stop?.textContent.trim() ?? ''
+          return stop instanceof HTMLAnchorElement ? stop.href : `button: ${name}`
+        }),
+      )
     }
+    const links = visited.filter((stop) => !stop.startsWith('button: '))
 
-    expect(visited).toEqual(hrefs.map((href) => resolved(href, baseURL)))
-    expect(visited.slice(0, 6).map((href) => new URL(href).hash)).toEqual([
+    expect(links).toEqual(hrefs.map((href) => resolved(href, baseURL)))
+    expect(links.slice(0, 6).map((href) => new URL(href).hash)).toEqual([
       '#organized',
       '#wins',
       '#talks',
@@ -121,27 +114,41 @@ test.describe('the lid', () => {
       '#patents',
       '',
     ])
+    // Each peeling corner comes straight after the face of its own sticker.
+    for (const id of NOTED_IDS) {
+      const corner = visited.indexOf(`button: Peel back ${notes[id].title}`)
+      const face = await sticker(page, id)
+        .locator('a')
+        .first()
+        .evaluate((link: HTMLAnchorElement) => link.href)
+      expect(visited[corner - 1], id).toBe(face)
+    }
+    // The buttons that work the lid come last, after everything there is to read.
+    expect(visited.slice(-SHOWN_CONTROLS.length)).toEqual(['button: Sound', 'button: Tidy the lid'])
   })
 
-  test('focus ring is visible on every link, in a colour that shows', async ({ page }) => {
+  test('focus ring is visible on every link and button, in a colour that shows', async ({
+    page,
+  }) => {
     await openLid(page, 728)
 
-    for (const href of hrefs) {
+    for (let stop = 0; stop < TAB_STOPS; stop += 1) {
       await page.keyboard.press('Tab')
       const focused = page.locator(':focus')
       const outline = await focused.evaluate((element) => {
         const style = getComputedStyle(element)
         return {
+          name: element.getAttribute('href') ?? element.getAttribute('aria-label') ?? '',
           width: Number.parseFloat(style.outlineWidth),
           style: style.outlineStyle,
           colour: style.outlineColor,
           lid: getComputedStyle(element.closest('[data-lid]') ?? element).backgroundColor,
         }
       })
-      expect(outline.width, href).toBeGreaterThanOrEqual(MIN_OUTLINE_PX)
-      expect(outline.style, href).toBe('solid')
-      expect(outline.colour, href).not.toBe(outline.lid)
-      await expect(focused, href).toBeInViewport()
+      expect(outline.width, outline.name).toBeGreaterThanOrEqual(MIN_OUTLINE_PX)
+      expect(outline.style, outline.name).toBe('solid')
+      expect(outline.colour, outline.name).not.toBe(outline.lid)
+      await expect(focused, outline.name).toBeInViewport()
     }
   })
 
@@ -168,9 +175,13 @@ test.describe('the lid', () => {
     expect(focused).toEqual(hovered)
   })
 
-  test('all content is present with JavaScript disabled', async ({ browser, page }) => {
+  test('is the same lid with JavaScript disabled, the two buttons aside', async ({
+    browser,
+    page,
+  }) => {
     await openLid(page, 728)
     const withScripts = await page.screenshot({ fullPage: true, animations: 'disabled' })
+    const buttons = await Promise.all(SHOWN_CONTROLS.map((id) => shadowedBox(page, id)))
 
     const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce' })
     const plain = await context.newPage()
@@ -179,13 +190,54 @@ test.describe('the lid', () => {
 
     await expect(plain.getByRole('heading', { level: 1 })).toHaveText(content.profile.name)
     await expect(plain.locator('[data-sticker]')).toHaveCount(STICKER_IDS.length)
-    await expect(plain.getByRole('main').getByRole('link')).toHaveCount(hrefs.length)
     await expect(plain.getByText(content.profile.role.title)).toBeVisible()
     await expect(plain.getByRole('img', { name: /smiling/ })).toBeVisible()
+    // Nothing that needs the script is offered without it.
+    await expect(plain.getByRole('button')).toHaveCount(0)
+    await expect(plain.locator('[data-lid][data-enhanced]')).toHaveCount(0)
+    // The notes are in the page all the same: tucked out of sight, and read out.
+    await expect(plain.getByRole('main').getByRole('link')).toHaveCount(
+      hrefs.length + noteHrefs.length,
+    )
+    await expect(plain.locator('[data-note]')).toHaveCount(NOTED_IDS.length)
+    await expect(sticker(plain, 'pleb-fm').locator('[data-note]')).toContainText(
+      notes['pleb-fm'].lines[0] ?? '',
+    )
 
     const withoutScripts = await plain.screenshot({ fullPage: true, animations: 'disabled' })
-    const { ratio } = await diffScreenshots(page, withScripts, withoutScripts)
+    const { ratio, excluded } = await diffScreenshots(
+      page,
+      withScripts,
+      withoutScripts,
+      [],
+      buttons,
+    )
     expect(ratio).toBe(0)
+    expect(excluded).toBeGreaterThan(0)
+    await context.close()
+  })
+
+  test('without JavaScript, a note comes out when the keyboard reaches one of its links', async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce' })
+    const plain = await context.newPage()
+    await plain.setViewportSize({ width: 728, height: 900 })
+    await plain.goto('/')
+    const note = sticker(plain, 'pleb-fm').locator('[data-note]')
+    const tucked = await note.boundingBox()
+
+    await sticker(plain, 'pleb-fm').locator('a').first().focus()
+    await plain.keyboard.press('Tab')
+
+    await expect(note.locator(':focus')).toHaveCount(1)
+    await expect(note).toBeInViewport()
+    const out = await note.boundingBox()
+    // Tucked, it is a single pixel, turned with its sticker.
+    expect(tucked?.width).toBeLessThan(2)
+    expect(out?.width).toBeGreaterThan(150)
+    expect(out?.height).toBeGreaterThan(80)
+    await expect(note.getByText(notes['pleb-fm'].title, { exact: true })).toBeVisible()
     await context.close()
   })
 
@@ -259,7 +311,7 @@ test.describe('the lid', () => {
     }
   })
 
-  test('makes zero script requests and no third-party requests', async ({ page, baseURL }) => {
+  test('loads one script of its own, and nothing from anyone else', async ({ page, baseURL }) => {
     const requests = collectRequests(page)
 
     await page.goto('/')
@@ -268,10 +320,19 @@ test.describe('the lid', () => {
     const origin = new URL(baseURL ?? '').origin
     const scripts = requests().filter((request) => request.resourceType() === 'script')
     const foreign = requests().filter((request) => new URL(request.url()).origin !== origin)
-    expect(scripts.map((request) => request.url())).toEqual([])
+    expect(scripts).toHaveLength(1)
+    expect(new URL(scripts[0]?.url() ?? '').pathname).toMatch(/^\/_astro\/.+\.js$/)
     expect(foreign.map((request) => request.url())).toEqual([])
-    await expect(page.locator('script:not([type="application/ld+json"])')).toHaveCount(0)
-    await expect(page.locator('[style]')).toHaveCount(0)
+    await expect(page.locator('script[src]')).toHaveCount(1)
+    await expect(page.locator('script[src]')).toHaveAttribute('type', 'module')
+    await expect(page.locator('script:not([src]):not([type="application/ld+json"])')).toHaveCount(0)
+    // The markup carries no style attribute. The script writes custom properties, and only those.
+    const markup = await (await page.request.get('/')).text()
+    expect(markup).not.toMatch(/\sstyle=/)
+    const written = await page
+      .locator('[style]')
+      .evaluateAll((elements) => elements.flatMap((element) => [...(element as HTMLElement).style]))
+    expect(written.filter((name) => !name.startsWith('--'))).toEqual([])
   })
 
   test('serves the photo as AVIF or WebP, never as an inline blob', async ({ page }) => {
@@ -284,6 +345,23 @@ test.describe('the lid', () => {
     expect(await page.content()).not.toContain('data:image')
   })
 })
+
+/** A sticker's box on the page with the room its shadow takes, as a region to leave out. */
+async function shadowedBox(page: Page, id: string): Promise<Region> {
+  return sticker(page, id).evaluate(
+    (element, { name, shadow }) => {
+      const { left, top, right, bottom } = element.getBoundingClientRect()
+      return {
+        name,
+        left: left - shadow.side,
+        top: top + window.scrollY - shadow.top,
+        right: right + shadow.side,
+        bottom: bottom + window.scrollY + shadow.bottom,
+      }
+    },
+    { name: id, shadow: SHADOW },
+  )
+}
 
 /** Every piece of rendered text with the size it is actually drawn at. */
 async function smallestText(page: Page): Promise<readonly { text: string; px: number }[]> {

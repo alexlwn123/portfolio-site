@@ -5,8 +5,9 @@ import { content, stats } from '../../content'
 import type { BadgePhotoImage } from '../badge/photoSources'
 import { SECTIONS } from '../cv/labels'
 import { Lid } from './Lid'
-import { flattenStickers, isDecoration, linksOf } from './stickerSpecs'
-import { lidStickers, STICKER_IDS } from './stickers'
+import { isNoted, lidNotes, NOTED_IDS } from './notes'
+import { flattenStickers, isControl, isDecoration, linksOf } from './stickerSpecs'
+import { CONTROL_IDS, lidStickers, STICKER_IDS } from './stickers'
 
 const photo: BadgePhotoImage = {
   sources: [{ type: 'image/avif', srcSet: '/_astro/portrait.avif 424w' }],
@@ -17,6 +18,18 @@ const photo: BadgePhotoImage = {
 }
 
 const specs = flattenStickers(lidStickers(content, stats))
+const notes = lidNotes(content)
+
+/** The links printed on the stickers themselves, without the ones in the notes under them. */
+function onTheFace(links: readonly HTMLElement[]): readonly HTMLElement[] {
+  return links.filter((link) => link.closest('[data-note]') === null)
+}
+
+/** Every address a sticker presents: its own, then those of the note under it. */
+function everyLinkOf(spec: (typeof specs)[number]): readonly string[] {
+  const under = isNoted(spec.id) ? notes[spec.id].links.map(({ href }) => href) : []
+  return [...linksOf(spec), ...under]
+}
 
 function renderLid(): HTMLElement {
   return render(<Lid content={content} stats={stats} photo={photo} />).container
@@ -79,8 +92,8 @@ describe('Lid', () => {
     const cities = screen.getByRole('list', { name: 'Cities I have run hackathons in' })
     const projects = screen.getByRole('list', { name: 'Projects' })
     expect(within(cities).getAllByRole('listitem')).toHaveLength(8)
-    expect(within(projects).getAllByRole('listitem')).toHaveLength(4)
-    expect(within(projects).getAllByRole('link')).toHaveLength(4)
+    expect(projects.querySelectorAll(':scope > li')).toHaveLength(4)
+    expect(onTheFace(within(projects).getAllByRole('link'))).toHaveLength(4)
   })
 
   it('gives the photo real alt text', () => {
@@ -121,7 +134,10 @@ describe('Lid', () => {
     renderLid()
 
     const links = screen.getAllByRole('link')
-    expect(links.map((link) => link.getAttribute('href'))).toEqual(specs.flatMap(linksOf))
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(specs.flatMap(everyLinkOf))
+    expect(onTheFace(links).map((link) => link.getAttribute('href'))).toEqual(
+      specs.flatMap(linksOf),
+    )
     for (const link of links) {
       expect(link).toHaveAccessibleName()
     }
@@ -147,7 +163,7 @@ describe('Lid', () => {
     renderLid()
 
     const projects = within(screen.getByRole('list', { name: 'Projects' }))
-    const hrefs = projects.getAllByRole('link').map((link) => link.getAttribute('href'))
+    const hrefs = onTheFace(projects.getAllByRole('link')).map((link) => link.getAttribute('href'))
     const owned = content.projects.flatMap(({ links }) => links.map(({ url }) => url))
 
     expect(hrefs).toEqual([
@@ -181,7 +197,7 @@ describe('Lid', () => {
       name: '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads',
     })
     expect(medal).toHaveAttribute('href', '/cv/#wins')
-    expect(medal).toHaveAttribute('data-sticker', 'ncr-win')
+    expect(medal.closest('[data-sticker]')).toHaveAttribute('data-sticker', 'ncr-win')
     expect(medal.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
   })
 
@@ -241,6 +257,91 @@ describe('Lid', () => {
     for (const reference of [...urls, ...hrefs]) {
       expect(ids, reference).toContain(reference)
     }
+  })
+
+  it('tucks a note under every project and win sticker, after the face and its peeling corner', () => {
+    const container = renderLid()
+    const noted = [...container.querySelectorAll('[data-peelable]')]
+
+    expect(noted.map((sticker) => sticker.getAttribute('data-sticker'))).toEqual(
+      STICKER_IDS.filter(isNoted),
+    )
+    expect(container.querySelectorAll('[data-note]')).toHaveLength(NOTED_IDS.length)
+    for (const sticker of noted) {
+      const id = sticker.getAttribute('data-sticker') ?? ''
+      const [face, corner, ...inTheNote] = sticker.querySelectorAll('a, button')
+      const note = sticker.querySelector('[data-note]')
+
+      expect(isNoted(id)).toBe(true)
+      expect(face?.tagName, id).toBe('A')
+      expect(corner, id).toHaveAttribute('data-peel-tab')
+      expect(corner, id).toHaveAttribute('aria-controls', note?.id)
+      expect(note, id).toHaveTextContent(isNoted(id) ? notes[id].title : '')
+      expect(
+        inTheNote.every((link) => note?.contains(link)),
+        id,
+      ).toBe(true)
+    }
+  })
+
+  it('writes each note from the record: what it is, the result and the year, and its links', () => {
+    const container = renderLid()
+    const note = container.querySelector<HTMLElement>('[data-sticker="pleb-fm"] [data-note]')
+    const inTheNote = [...(note?.querySelectorAll('a') ?? [])]
+
+    expect(note).toHaveTextContent(
+      'Lightning-powered jukebox and radio station: a running auction for the next song.',
+    )
+    expect(note).toHaveTextContent('1st at SatsxSW hackathon, 2022.')
+    expect(inTheNote.map((link) => link.getAttribute('href'))).toEqual(
+      notes['pleb-fm'].links.map(({ href }) => href),
+    )
+    expect(screen.getByRole('link', { name: 'Code: Pleb FM' })).toHaveAttribute(
+      'href',
+      'https://github.com/PlebFM/PlebFM',
+    )
+  })
+
+  it('keeps every button hidden until the page’s script shows it', () => {
+    const container = renderLid()
+    const buttons = [...container.querySelectorAll('button')]
+
+    expect(buttons).toHaveLength(CONTROL_IDS.length + NOTED_IDS.length)
+    expect(screen.queryAllByRole('button')).toEqual([])
+    for (const button of buttons) {
+      expect(button).toHaveAttribute('hidden')
+      expect(button).toHaveAttribute('type', 'button')
+    }
+  })
+
+  it('ends with the three buttons that work the lid: tilt, sound and tidy', () => {
+    const container = renderLid()
+    const controls = [...container.querySelectorAll('[data-control]')]
+
+    expect(controls.map((control) => control.getAttribute('data-control'))).toEqual([
+      'tilt',
+      'sound',
+      'tidy',
+    ])
+    expect(controls.map((control) => control.getAttribute('data-sticker'))).toEqual(CONTROL_IDS)
+    expect(specs.filter(isControl).map(({ id }) => id)).toEqual(CONTROL_IDS)
+    expect(container.querySelector('[data-control="sound"]')).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
+    expect(container.querySelector('[data-control="sound"]')).toHaveAttribute('aria-label', 'Sound')
+    expect(container.querySelector('[data-control="tidy"]')).toHaveTextContent('Tidy the lid')
+    expect(container.querySelector('[data-control="tidy"]')).not.toHaveAttribute('aria-pressed')
+    expect(container.querySelector('[data-control="tilt"]')).toHaveTextContent('Tilt me')
+  })
+
+  it('marks what can be picked up: every sticker, and nothing drawn on the lid itself', () => {
+    const container = renderLid()
+    const fixed = [...container.querySelectorAll('[data-sticker]:not([data-grab])')].map(
+      (sticker) => sticker.getAttribute('data-sticker'),
+    )
+
+    expect(fixed).toEqual(['lanyard', 'badge', 'next-spot', 'tally'])
   })
 
   it('types no arrow or star: each is drawn', () => {

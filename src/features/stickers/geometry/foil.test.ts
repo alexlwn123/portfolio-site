@@ -25,8 +25,8 @@ describe('the foil at rest', () => {
     })
   })
 
-  it('matches the --hx and --hy the stylesheet gives the CSS foil', () => {
-    expect(cssNumber('hx')).toBe(FOIL_REST.x)
-    expect(cssNumber('hy')).toBe(FOIL_REST.y)
+  it('matches where the stylesheet rests the lamp, which the CSS foil follows', () => {
+    expect(cssNumber('lamp-rest-x')).toBe(FOIL_REST.x)
+    expect(cssNumber('lamp-rest-y')).toBe(FOIL_REST.y)
   })
 })
