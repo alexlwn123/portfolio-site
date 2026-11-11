@@ -3,13 +3,16 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../content'
 import {
   bitcoinPlusPlusSummary,
+  displayUrl,
   experienceWhen,
   locationLabel,
   organizedSummary,
   participantsLabel,
   plural,
+  placeLine,
   prizesLabel,
   resultLabel,
+  roleLine,
   winsSummary,
 } from './describe'
 
@@ -135,5 +138,22 @@ describe('plural', () => {
     expect(plural(1, 'win', 'wins')).toBe('1 win')
     expect(plural(0, 'win', 'wins')).toBe('0 wins')
     expect(plural(1471, 'participant', 'participants')).toBe('1,471 participants')
+  })
+})
+
+describe('profile lines', () => {
+  it('joins the title and organization, and the parts of the location', () => {
+    expect(roleLine(content.profile)).toBe(
+      `${content.profile.role.title} at ${content.profile.role.organization}`,
+    )
+    expect(placeLine(content.profile)).toBe('Atlanta, Georgia, USA')
+  })
+})
+
+describe('displayUrl', () => {
+  it('drops the scheme, and the path when it is only a slash', () => {
+    expect(displayUrl('https://example.com')).toBe('example.com')
+    expect(displayUrl('https://example.com/')).toBe('example.com')
+    expect(displayUrl('https://example.com/cv/')).toBe('example.com/cv/')
   })
 })

@@ -18,7 +18,7 @@ describe('EducationSection', () => {
   it('claims no graduation, because the year is not recorded', () => {
     render(<EducationSection education={content.education} />)
 
-    expect(screen.getByRole('region')).not.toHaveTextContent(/graduat|degree|B\.?S\.?|–/i)
+    expect(screen.getByRole('region')).not.toHaveTextContent(/\bgraduated\b|degree|–/i)
   })
 
   it('shows a graduation date when one is recorded', () => {

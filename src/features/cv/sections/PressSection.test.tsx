@@ -15,11 +15,12 @@ describe('PressSection', () => {
 
     const items = section.getAllByRole('listitem')
     expect(items).toHaveLength(content.press.length)
+    for (const item of content.press) {
+      expect(section.getByRole('link', { name: item.title })).toHaveAttribute('href', item.url)
+    }
     content.press.forEach((item, index) => {
       expect(items[index]).toHaveTextContent(item.outlet)
-      expect(
-        within(items[index] as HTMLElement).getByRole('link', { name: item.title }),
-      ).toHaveAttribute('href', item.url)
+      expect(items[index]).toHaveTextContent(item.title)
     })
   })
 
