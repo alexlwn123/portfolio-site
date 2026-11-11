@@ -78,7 +78,8 @@ export const copy = deepFreeze({
     patentLabel: {
       one: 'U.S. PAT. NO.',
       many: 'U.S. PAT. NOS.',
-      pending: 'OTHER PATENTS PENDING',
+      /** One application pending is not "patents": the label counts before it speaks. */
+      pending: { one: 'ANOTHER PATENT PENDING', many: 'OTHER PATENTS PENDING' },
     },
     /** The medal for a win chosen from a field of teams. */
     medal: {

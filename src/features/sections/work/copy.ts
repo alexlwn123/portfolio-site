@@ -14,7 +14,7 @@ export interface Counted {
  */
 export const workCopy = {
   title: ['Career', 'path'],
-  kicker: 'every job left its tag. each one is stuck where the job began.',
+  kicker: 'every job left its tag, stuck where the job began. the current one sits up top.',
 
   /** The steel rule the tags hang off. */
   rule: {

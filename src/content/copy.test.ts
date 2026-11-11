@@ -72,7 +72,7 @@ describe('copy', () => {
     expect(copy.lid.patentLabel).toEqual({
       one: 'U.S. PAT. NO.',
       many: 'U.S. PAT. NOS.',
-      pending: 'OTHER PATENTS PENDING',
+      pending: { one: 'ANOTHER PATENT PENDING', many: 'OTHER PATENTS PENDING' },
     })
     expect(copy.lid.medal.outOf('300+')).toBe('OF 300+')
     expect(copy.lid.medal.teams).toBe('TEAMS')

@@ -14,7 +14,7 @@ const words = deepFreeze({
   /** The strip printed across the top of the sheet. */
   sheet: {
     name: 'Prize stickers',
-    edition: 'The complete set, newest first',
+    edition: 'The set so far, newest first',
     make: 'Kiss-cut vinyl',
     pieces: (count: Figure) => counted(count, 'pc', 'pcs'),
     series: (from: Figure, to: Figure) =>

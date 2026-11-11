@@ -117,7 +117,7 @@ for (const width of [1440, 728, 390] as const) {
     const label = page.locator('a[data-sticker="patents"]')
 
     await expect(label).toContainText('U.S. PAT. NOS. 12,354,083 · 12,536,579')
-    await expect(label).toContainText('OTHER PATENTS PENDING')
+    await expect(label).toContainText('ANOTHER PATENT PENDING')
     await label.click()
 
     await expect(page).toHaveURL(/\/#patents$/)

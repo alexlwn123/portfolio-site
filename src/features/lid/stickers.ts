@@ -255,6 +255,15 @@ function medal(wins: Content['wins']): MedalSpec<StickerId> {
   }
 }
 
+/** The label's closing line: how many applications are pending, or null when none is. */
+function pendingLine({ anyPending, pending }: Stats['patents']): string | null {
+  const words = copy.lid.patentLabel.pending
+  if (!anyPending) {
+    return null
+  }
+  return pending === 1 ? words.one : words.many
+}
+
 /** The compliance label: the granted patents by number, and whether more are pending. */
 function patentLabel({ patents }: Content, stats: Stats): ComplianceLabelSpec<StickerId> {
   const words = copy.lid.patentLabel
@@ -265,7 +274,7 @@ function patentLabel({ patents }: Content, stats: Stats): ComplianceLabelSpec<St
     kind: 'complianceLabel',
     heading: numbers.length === 1 ? words.one : words.many,
     numbers,
-    pending: stats.patents.anyPending ? words.pending : null,
+    pending: pendingLine(stats.patents),
     href: sectionAnchor('patents'),
   }
 }

@@ -235,9 +235,16 @@ describe('lidStickers', () => {
       kind: 'complianceLabel',
       heading: 'U.S. PAT. NOS.',
       numbers: ['12,354,083', '12,536,579'],
-      pending: 'OTHER PATENTS PENDING',
+      pending: 'ANOTHER PATENT PENDING',
       href: '/#patents',
     })
+  })
+
+  it('says so in the plural when more than one application is pending', () => {
+    const two = { ...stats, patents: { ...stats.patents, pending: 2 } }
+    const label = flattenStickers(lidStickers(content, two)).find(({ id }) => id === 'patents')
+
+    expect(label).toMatchObject({ pending: 'OTHER PATENTS PENDING' })
   })
 
   it('says patents are pending only while a filing is', () => {

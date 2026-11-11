@@ -195,7 +195,7 @@ describe('Lid', () => {
       .filter((link) => link.getAttribute('href') === '/#patents')
     expect(toPatents.map((link) => link.textContent.trim())).toEqual([
       'INVENTOR',
-      'U.S. PAT. NOS. 12,354,083 · 12,536,579 OTHER PATENTS PENDING',
+      'U.S. PAT. NOS. 12,354,083 · 12,536,579 ANOTHER PATENT PENDING',
     ])
     expect(toPatents[1]).toHaveAttribute('data-sticker', 'patents')
   })

@@ -309,7 +309,7 @@ describe('the additions to the lid', () => {
       const printed = label?.textContent.includes(patent.number.serial) ?? false
       expect(printed, patent.number.serial).toBe(patent.status.kind === 'granted')
     }
-    expect(label?.textContent).toContain('OTHER PATENTS PENDING')
+    expect(label?.textContent).toContain('ANOTHER PATENT PENDING')
   })
 
   it('has six ribbons in the order of the page, the last of them to the patents', async () => {
