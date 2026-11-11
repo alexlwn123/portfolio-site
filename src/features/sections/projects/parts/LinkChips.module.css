@@ -1,0 +1,58 @@
+/* A row of links, each punched out of label tape. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7em 0.8em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: block;
+}
+
+.chip {
+  width: max-content;
+}
+
+/*
+ * Ink tape with highlighter lettering, as a label maker embosses it. The
+ * height makes every chip a target of 24px or more on the narrowest phone.
+ */
+.face {
+  display: flex;
+  gap: 0.45em;
+  align-items: center;
+  min-height: 2.05em;
+  padding: 0.2em 0.75em 0.14em 0.8em;
+  border: 0.16em solid var(--white);
+  border-radius: 0.3em;
+  background: var(--chip, var(--white));
+  color: var(--ink);
+  font-size: 1.36em;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+}
+
+/* The arrow points up and out: the link leaves the site. */
+.arrow {
+  width: 0.82em;
+  height: 0.82em;
+  rotate: -45deg;
+  transition: translate 0.2s;
+  translate: calc(var(--lift, 0) * 0.14em) calc(var(--lift, 0) * -0.14em);
+}
+
+@container section (max-width: 560px) {
+  .face {
+    min-height: 2.2em;
+    font-size: 1.3em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow {
+    transition: none;
+  }
+}

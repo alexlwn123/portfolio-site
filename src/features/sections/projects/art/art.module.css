@@ -1,0 +1,72 @@
+/*
+ * What the mat's drawings need beyond the palette classes of
+ * stickers/paint.module.css: a few more fills and lines, round pen ends, and
+ * the one thing that moves, the computer's cursor.
+ */
+
+/* The colour of the die-cut border the filter grows around a drawing. */
+.edge {
+  flood-color: var(--white);
+}
+
+.cobalt {
+  fill: var(--cobalt);
+}
+
+.deep {
+  fill: var(--deep);
+}
+
+.tangLight {
+  fill: var(--tang-light);
+}
+
+.hiLine {
+  stroke: var(--hi);
+}
+
+.mintLine {
+  stroke: var(--mint);
+}
+
+.gumLine {
+  stroke: var(--gum);
+}
+
+/* A pen with a round nib. */
+.pen {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Light falling across a screen. */
+.glare {
+  fill: var(--white);
+  opacity: 0.12;
+}
+
+.faint {
+  opacity: 0.45;
+}
+
+/* The prompt's cursor, which blinks while motion is welcome. */
+.cursor {
+  fill: var(--hi);
+  animation: blink 1.1s steps(2, jump-none) infinite;
+}
+
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
+}
