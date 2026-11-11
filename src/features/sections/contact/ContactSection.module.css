@@ -1,6 +1,8 @@
 /*
- * The end of the page. On a laptop the label takes the left and the strips
- * of wristband fan down the right, with the CV's asset tag under the label.
+ * The end of the page. On a laptop the label takes the left of the column
+ * from its left edge and the strips of wristband are a ladder down the right,
+ * out to its right edge: the two are one block, as tall as each other, with
+ * the CV's asset tag and the small print on the column's middle under both.
  * On a tablet and a phone it is one column: the label, the strips, the tag.
  */
 .contact {
@@ -8,9 +10,15 @@
   grid-template-columns: minmax(0, 58em) minmax(0, 1fr);
   grid-template-areas:
     'label bands'
-    'cv bands';
-  gap: 3.4em 4em;
-  align-items: start;
+    'cv cv';
+  gap: 4.6em 4em;
+  align-items: stretch;
+}
+
+/* Each holds one thing, which is stretched to the row: the label and the ladder end level. */
+.label,
+.bands {
+  display: grid;
 }
 
 .label {
@@ -19,14 +27,12 @@
 
 .bands {
   grid-area: bands;
-  padding-top: 1em;
 }
 
 .cv {
   grid-area: cv;
-  justify-self: end;
-  margin-right: 3em;
-  rotate: 2.5deg;
+  justify-self: center;
+  rotate: -1.5deg;
 }
 
 /* The lid's asset tag, half as big again: this is the last thing a thumb reaches for. */
@@ -37,7 +43,7 @@
 
 .smallPrint {
   max-width: 34em;
-  margin: 5.5em auto 0;
+  margin: 3.4em auto 0;
   color: var(--white);
   font-size: 1.5em;
   font-weight: var(--weight-medium);
@@ -57,13 +63,8 @@
     gap: 3.4em;
   }
 
-  .bands {
-    padding-top: 0;
-  }
-
   .cv {
-    justify-self: center;
-    margin-right: 0;
+    margin-top: 0.6em;
   }
 
   .cvTag {
@@ -81,6 +82,6 @@
   }
 
   .smallPrint {
-    margin-top: 4.4em;
+    margin-top: 3em;
   }
 }

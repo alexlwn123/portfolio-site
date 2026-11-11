@@ -5,19 +5,25 @@
  * highlighter tape holds one corner down.
  */
 .stuck {
-  rotate: -1.6deg;
+  display: grid;
+  rotate: -1deg;
 }
 
 .label {
+  display: grid;
   padding: 0.9em;
   border-radius: 2em;
   background: var(--tang);
   box-shadow: inset 0 0 0 0.5em var(--white);
 }
 
+/* Given more height than it needs, the label keeps the plea at its head and the reward at its foot. */
 .face {
   position: relative;
-  padding: 2.6em 3.2em 2.4em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3em 3.2em 2.6em;
   border-radius: 1.2em;
   background: var(--white);
   color: var(--ink);
@@ -39,7 +45,7 @@
 
 .plea {
   margin: 0;
-  font-size: 2.5em;
+  font-size: 2.7em;
   line-height: 1.04;
   letter-spacing: 0.09em;
 }
@@ -52,7 +58,7 @@
 
 .name {
   display: block;
-  font-size: 6.3em;
+  font-size: 7.3em;
   line-height: 0.92;
   letter-spacing: -0.01em;
 }
@@ -60,7 +66,7 @@
 .city {
   display: block;
   margin-top: 0.5em;
-  font-size: 2.8em;
+  font-size: 3em;
   line-height: 1;
   letter-spacing: 0.09em;
 }
@@ -92,7 +98,7 @@
 
 .to {
   font-stretch: var(--label-stretch);
-  font-size: 3.9em;
+  font-size: 4.4em;
   font-weight: var(--label-weight);
   line-height: 1;
   letter-spacing: 0.01em;
@@ -128,22 +134,38 @@
 
 .reward {
   margin: 1.1em 0 0 0.3em;
-  font-size: 2.3em;
+  font-size: 2.5em;
   line-height: 1.15;
   rotate: -1.2deg;
 }
 
 @container section (max-width: 1099px) {
+  .stuck {
+    rotate: -1.2deg;
+  }
+
   .face {
     padding: 2.6em 3em 2.4em;
+  }
+
+  .plea {
+    font-size: 2.5em;
   }
 
   .name {
     font-size: 8.1em;
   }
 
+  .city {
+    font-size: 2.8em;
+  }
+
   .to {
     font-size: 4.6em;
+  }
+
+  .reward {
+    font-size: 2.3em;
   }
 }
 
