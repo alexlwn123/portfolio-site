@@ -407,9 +407,14 @@ test.describe('pick up, throw, re-stick', () => {
 
     expect(await linksNotUnderTheirOwnCentre(page)).toEqual([])
     await expect(lidLinks(page)).toHaveCount(hrefs.length)
-    await page.locator('body').evaluate(() => {
+    await page.locator('body').evaluate((body) => {
       window.scrollTo(0, 0)
       ;(document.activeElement as HTMLElement | null)?.blur()
+      // Start tabbing from the top of the page, not from the button just pressed:
+      // the sections under the lid have links of their own.
+      body.setAttribute('tabindex', '-1')
+      body.focus({ preventScroll: true })
+      body.removeAttribute('tabindex')
     })
     const visited: string[] = []
     for (let stop = 0; visited.length < hrefs.length && stop < hrefs.length * 2; stop += 1) {

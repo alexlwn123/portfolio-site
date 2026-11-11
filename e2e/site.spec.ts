@@ -54,12 +54,19 @@ for (const { name, section } of RIBBONS) {
 test('the count stickers reach their CV sections too', async ({ page }) => {
   await openLid(page, 728)
 
-  await page.getByRole('link', { name: /hackathons organized/ }).click()
+  // On the lid: the career path further down has counts of its own.
+  await page
+    .locator('[data-lid]')
+    .getByRole('link', { name: /hackathons organized/ })
+    .click()
   await expect(page).toHaveURL(/\/cv\/#organized$/)
   await expect(page.locator('section#organized')).toBeInViewport()
 
   await page.goBack()
-  await page.getByRole('link', { name: /hackathon wins$/ }).click()
+  await page
+    .locator('[data-lid]')
+    .getByRole('link', { name: /hackathon wins$/ })
+    .click()
   await expect(page).toHaveURL(/\/cv\/#wins$/)
 })
 
@@ -92,7 +99,9 @@ for (const width of [1280, 390] as const) {
 test('the lid counts nine wins on the seal and on the ribbon', async ({ page }) => {
   await openLid(page, 728)
 
-  await expect(page.getByRole('link', { name: '9 hackathon wins' })).toBeVisible()
+  await expect(
+    page.locator('[data-lid]').getByRole('link', { name: '9 hackathon wins' }),
+  ).toBeVisible()
   await expect(
     page.getByRole('navigation', { name: 'Sections' }).getByRole('link', { name: /^WINNER/ }),
   ).toHaveText(/×9$/)

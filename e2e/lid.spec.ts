@@ -190,7 +190,7 @@ test.describe('the lid', () => {
 
     await expect(plain.getByRole('heading', { level: 1 })).toHaveText(content.profile.name)
     await expect(plain.locator('[data-sticker]')).toHaveCount(STICKER_IDS.length)
-    await expect(plain.getByText(content.profile.role.title)).toBeVisible()
+    await expect(plain.locator('[data-lid]').getByText(content.profile.role.title)).toBeVisible()
     await expect(plain.getByRole('img', { name: /smiling/ })).toBeVisible()
     // Nothing that needs the script is offered without it.
     await expect(plain.getByRole('button')).toHaveCount(0)
