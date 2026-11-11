@@ -187,7 +187,8 @@ function yearsBetween(years: readonly number[]): readonly number[] {
 /**
  * The path, newest first: the present, holding the current job, then every
  * year down to the earliest on record. A year in which nothing is recorded
- * is still a stop, so the rule the path is drawn on keeps its scale.
+ * is still a stop, so that the rule the path is drawn on can show it as a
+ * break and no year goes missing.
  */
 export function careerPath(source: PathSource): readonly PathStop[] {
   const newestFirst = inJoiningOrder(source.experience).toReversed()

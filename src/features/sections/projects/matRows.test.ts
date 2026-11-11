@@ -85,13 +85,27 @@ describe('standInRows', () => {
   it('stands nothing where there is nothing to stand', () => {
     expect(standInRows([], 12)).toEqual([])
   })
+
+  it('leaves a row alone that asks for no width at all, having nothing to share out', () => {
+    expect(spans(standInRows([0, 0], 12))).toEqual([0, 0])
+  })
 })
 
 describe('matPlaces', () => {
   it('has a place for every sticker, and one for the scraps that close the mat', () => {
     expect(places.stickers).toHaveLength(stickers.length)
-    expect(places.scraps.laptop.place).toBe('last')
-    expect(places.scraps.tablet.place).toBe('last')
+    expect(places.scraps?.laptop.place).toBe('last')
+    expect(places.scraps?.tablet.place).toBe('last')
+  })
+
+  it('lays the scraps across an empty mat on their own', () => {
+    expect(matPlaces([])).toEqual({
+      stickers: [],
+      scraps: {
+        laptop: { row: 1, span: MAT.laptop.columns, place: 'only' },
+        tablet: { row: 1, span: MAT.tablet.columns, place: 'only' },
+      },
+    })
   })
 
   it('leads the first row with the lead project, cut the widest, on a laptop and on a tablet', () => {
@@ -122,7 +136,7 @@ describe('matPlaces', () => {
 
   it('fills every row of the mat, the scraps counted in', () => {
     for (const width of ['laptop', 'tablet'] as const) {
-      const all = [...places.stickers, places.scraps].map((place) => place[width])
+      const all = [...places.stickers, places.scraps].flatMap((place) => place?.[width] ?? [])
 
       for (const row of rowsOf(all)) {
         expect(sum(spans(row)), width).toBe(MAT[width].columns)
@@ -158,7 +172,7 @@ describe('matPlaces', () => {
 
     expect(more.stickers).toHaveLength(stickers.length + 1)
     for (const width of ['laptop', 'tablet'] as const) {
-      const all = [...more.stickers, more.scraps].map((place) => place[width])
+      const all = [...more.stickers, more.scraps].flatMap((place) => place?.[width] ?? [])
 
       for (const row of rowsOf(all)) {
         expect(sum(spans(row)), width).toBe(MAT[width].columns)

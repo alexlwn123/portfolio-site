@@ -218,23 +218,32 @@
   --fill: 1;
 }
 
-.stickers > [data-face='capsule'],
-.stickers > [data-face='jukebox'] {
+.stickers > [data-face='capsule'] {
   --most: 29em;
   --fill: 1.04;
+}
+
+/*
+ * The jukebox is set in type, small print and all, so it is cut a little
+ * wider than its place: narrower, and its address would be under 11px on a
+ * 1100px screen. It rides over its neighbour's edge instead.
+ */
+.stickers > [data-face='jukebox'] {
+  --most: 30em;
+  --fill: 1.14;
 }
 
 /* ---------- what lies beside them ---------- */
 
 /* The knife was put down over the first row, where the stickers beside the lead stand lower. */
-.stickers > [data-mat-prop='knife'] {
+.stickers > .knife {
   position: absolute;
   top: -3.4em;
   right: 5em;
 }
 
 /* The scraps were swept to the foot of the mat's last row. */
-.stickers > [data-mat-prop='offcuts'] {
+.stickers > .offcuts {
   align-self: end;
   justify-self: end;
   grid-row-end: span 1;
@@ -312,7 +321,7 @@
     --caption-inset: 4em;
   }
 
-  .stickers > [data-mat-prop='knife'] {
+  .stickers > .knife {
     top: -2em;
     right: -1em;
     font-size: 0.72em;
@@ -384,13 +393,13 @@
     --flag-top: -4em;
   }
 
-  .stickers > [data-mat-prop='knife'] {
+  .stickers > .knife {
     position: static;
     align-self: center;
     font-size: 1em;
   }
 
-  .stickers > [data-mat-prop='offcuts'] {
+  .stickers > .offcuts {
     align-self: center;
   }
 }

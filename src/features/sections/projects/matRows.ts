@@ -159,6 +159,17 @@ function wantedBy(sticker: ProjectSticker, lead: string | undefined, width: MatW
   return wordy || WIDE_FACES.includes(sticker.face.kind) ? width.wide : width.regular
 }
 
+/** Each standing on a laptop with the same sticker's standing on a tablet. */
+function atBothWidths(
+  laptop: readonly Standing[],
+  tablet: readonly Standing[],
+): readonly MatPlace[] {
+  return laptop.flatMap((onLaptop, index) => {
+    const onTablet = tablet[index]
+    return onTablet === undefined ? [] : [{ laptop: onLaptop, tablet: onTablet }]
+  })
+}
+
 /**
  * Where every sticker stands on the mat, at a laptop's width and a tablet's,
  * and where the weeded scraps lie: they are swept to the end of the last row.
@@ -166,7 +177,7 @@ function wantedBy(sticker: ProjectSticker, lead: string | undefined, width: MatW
  */
 export function matPlaces(stickers: readonly ProjectSticker[]): {
   readonly stickers: readonly MatPlace[]
-  readonly scraps: MatPlace
+  readonly scraps: MatPlace | undefined
 } {
   const lead = stickers[0]?.id
   const standings = (width: MatWidth): readonly Standing[] =>
@@ -174,17 +185,9 @@ export function matPlaces(stickers: readonly ProjectSticker[]): {
       [...stickers.map((sticker) => wantedBy(sticker, lead, width)), width.scraps],
       width.columns,
     )
-  const laptop = standings(MAT.laptop)
-  const tablet = standings(MAT.tablet)
-  const at = (index: number): MatPlace => {
-    const [onLaptop, onTablet] = [laptop[index], tablet[index]]
-    if (onLaptop === undefined || onTablet === undefined) {
-      throw new Error(`The mat has no place for sticker ${String(index)}`)
-    }
-    return { laptop: onLaptop, tablet: onTablet }
-  }
+  const stood = atBothWidths(standings(MAT.laptop), standings(MAT.tablet))
 
-  return { stickers: stickers.map((_, index) => at(index)), scraps: at(stickers.length) }
+  return { stickers: stood.slice(0, stickers.length), scraps: stood.at(-1) }
 }
 
 /** A standing as the mat's stylesheet reads it: the columns, and the place in the row. */
