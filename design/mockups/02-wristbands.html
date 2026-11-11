@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alex Lewin · Sticker Shock · sixteen wristbands</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+@property --p { syntax: '<length>'; inherits: false; initial-value: 0px; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+
+.lid {
+  --ink: #17122B; --cobalt: #2B35F5; --deep: #1B1FA8;
+  --tang: #FF6B1A; --gum: #FF4FA3; --hi: #EEFF41; --mint: #2FE6B5;
+  --hx: .35; --hy2: .3;
+  container: lid / inline-size;
+  position: relative; isolation: isolate; overflow: hidden; border-radius: 12px;
+  color: var(--ink);
+  font-family: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+  background:
+    linear-gradient(112deg, transparent 26%, rgba(255,255,255,.13) 39%, rgba(255,255,255,.02) 46%, transparent 60%),
+    radial-gradient(90% 40% at 10% -5%, rgba(150,170,255,.6), transparent 70%),
+    radial-gradient(80% 35% at 105% 104%, rgba(12,10,95,.75), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, rgba(0,0,40,.05) 1px 2px, transparent 2px 4px),
+    #2B35F5;
+}
+.lid::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: soft-light; opacity: .5;
+}
+.stage {
+  position: relative; font-size: calc(100cqw / 72.8);
+  --hw: 30em;            /* hand width */
+  --hu: calc(var(--hw) / 300);
+  --aw: calc(var(--hu) * 176);  /* wrist width */
+  --cx: 36.4em;          /* centre line of the arm */
+  --hy: 2.6em;           /* top of the hand */
+  --tap: 5.4em;          /* how much wider the arm gets by the elbow */
+}
+.bw { font-family: 'Bowlby One', 'Arial Black', Impact, sans-serif; font-weight: 400; }
+.cd { font-stretch: 75%; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+.mk { font-family: 'Permanent Marker', 'Marker Felt', 'Bradley Hand', 'Comic Sans MS', cursive; font-weight: 400; }
+
+/* ---------- stickers (shared with the lid) ---------- */
+.s {
+  position: absolute; display: block; z-index: var(--z, 3);
+  left: calc(var(--x) * .1em); top: calc(var(--y) * .1em); width: calc(var(--w) * .1em);
+  rotate: var(--r, 0deg); color: var(--ink); text-decoration: none;
+  filter: drop-shadow(0 .1em 0 rgba(9,6,60,.5)) drop-shadow(0 .5em .5em rgba(9,6,60,.38));
+  transition: translate .28s cubic-bezier(.2,1.5,.4,1), scale .28s cubic-bezier(.2,1.5,.4,1);
+  animation: slap .45s cubic-bezier(.2,1.4,.35,1) backwards; animation-delay: calc(var(--i, 0) * 45ms);
+}
+.s svg { display: block; width: 100%; height: auto; overflow: visible; }
+.s:hover { translate: 0 -.3em; scale: 1.035; }
+@keyframes slap { 0% { scale: 1.09; translate: 0 -.5em; } 55% { scale: .975; translate: 0 0; } 100% { scale: 1; } }
+.v { position: relative; display: block; overflow: hidden; padding: .5em; border-radius: 1.5em;
+  background: var(--c, #fff); box-shadow: inset 0 0 0 .5em #fff; }
+.v::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(118deg, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 26%, rgba(255,255,255,0) 64%, rgba(255,255,255,.22) 100%); }
+.peel { --p: 2.4em; transition: --p .3s cubic-bezier(.2,1.5,.4,1);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--p)), calc(100% - var(--p)) 100%, 0 100%); }
+.peel::after { content: ""; position: absolute; right: 0; bottom: 0; width: var(--p); height: var(--p); z-index: 4;
+  background: linear-gradient(135deg, #c6c9da 0%, #f6f6fb 28%, #dfe1ec 44%, #b9bccf 50%, transparent 50.5%);
+  border-top-left-radius: .5em; filter: drop-shadow(-.2em -.2em .25em rgba(9,6,60,.4)); }
+.s:hover .peel { --p: 4.2em; }
+.holo, .band.foil {
+  background:
+    repeating-linear-gradient(calc(52deg + var(--hx) * 36deg), rgba(255,255,255,0) 0 .55em, rgba(255,255,255,.4) .62em, rgba(255,255,255,0) .8em),
+    radial-gradient(circle at calc(var(--hx) * 100%) calc(var(--hy2) * 100%), rgba(255,255,255,.75), rgba(255,255,255,0) 38%),
+    linear-gradient(calc(105deg + var(--hy2) * 50deg), #5CF0FF 0%, #B39AFF 17%, #FF86DA 34%, #FFF06A 52%, #7DFFBE 70%, #5CF0FF 86%, #B39AFF 100%);
+  background-size: 100% 100%, 100% 100%, 240% 240%;
+  background-position: 0 0, 0 0, calc(var(--hx) * 100%) calc(var(--hy2) * 100%);
+}
+.pill { width: max-content; }
+.pill b { display: block; font-size: 1.4em; font-stretch: 75%; font-weight: 800; letter-spacing: .09em; white-space: nowrap;
+  background: var(--c, #fff); color: var(--t, var(--ink)); border: .26em solid #fff; border-radius: 2em; padding: .32em .95em .28em; }
+
+/* ---------- top: lanyard nav, title, totals, the hand ---------- */
+.top { position: relative; height: calc(var(--hy) + var(--hw) * 310 / 300 - 2.6em); }
+.navstrap { position: absolute; left: -3em; right: -3em; top: 1.5em; height: 2.7em; rotate: -1.1deg; z-index: 1; overflow: hidden;
+  display: flex; align-items: center; white-space: nowrap; text-decoration: none; color: #fff;
+  background: linear-gradient(180deg, #C81F78 0 .3em, #FF4FA3 .3em calc(100% - .3em), #C81F78 calc(100% - .3em));
+  filter: drop-shadow(0 .4em .4em rgba(9,6,60,.4)); }
+.navstrap span { font-size: 1.35em; font-stretch: 75%; font-weight: 800; letter-spacing: .16em; padding-left: 4em; }
+.tags a { position: absolute; top: 3.9em; left: calc(var(--x) * .1em); width: 10.6em; height: 3.7em; z-index: 4; rotate: var(--r, 0deg); transform-origin: 50% 0;
+  text-decoration: none; color: var(--ink); filter: drop-shadow(0 .28em .22em rgba(9,6,60,.45)); transition: translate .25s cubic-bezier(.2,1.5,.4,1); }
+.tags a:hover { translate: 0 .5em; }
+.tags a span { display: flex; align-items: center; justify-content: center; gap: .4em; width: 100%; height: 100%; padding-bottom: .3em;
+  font-family: 'Bowlby One', 'Arial Black', Impact, sans-serif; font-size: 1.12em; letter-spacing: .04em;
+  background: linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,0) 30%, rgba(0,0,0,.13)), var(--c);
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / .7em 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / .7em 100%; }
+.tags a em { font-style: normal; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: .85em; }
+.tags a.on { height: 4.6em; }
+.tags a.on span { box-shadow: inset 0 0 0 .22em var(--ink); }
+.tags a::before { content: ""; position: absolute; left: 50%; top: -1.5em; width: .5em; height: 2em; margin-left: -.25em; border-radius: .2em;
+  background: linear-gradient(90deg, #f4f6fb, #9aa1b8); }
+
+.hand { position: absolute; left: calc(var(--cx) - var(--hw) / 2); top: var(--hy); width: var(--hw); z-index: 2; display: block;
+  filter: drop-shadow(0 .6em .6em rgba(9,6,60,.4)); transform-origin: 50% 100%; animation: wave 3.4s ease-in-out infinite alternate; }
+@keyframes wave { from { rotate: -1.2deg; } to { rotate: 1.2deg; } }
+
+.sixteen svg text { font-family: 'Bowlby One', 'Arial Black', Impact, sans-serif; }
+.ttl .v { padding: 1.2em 1.5em 1.1em; border-radius: 1em; }
+.ttl .bw { display: block; font-size: 2.35em; line-height: 1; }
+.ttl small { display: block; font-size: 1.32em; line-height: 1.1; margin-top: .45em; }
+.tot .v { padding: 1.15em 1.6em 1.1em; }
+.tot .bw { display: block; font-size: 3.5em; line-height: 1; }
+.tot .cd { display: block; font-size: 1.35em; margin-top: .25em; }
+.tot small { display: block; font-size: 1.08em; font-weight: 600; margin-top: .4em; line-height: 1.2; white-space: nowrap; }
+
+/* ---------- the arm ---------- */
+.arm { position: relative; }
+.forearm { position: absolute; left: var(--cx); top: 2.3em; bottom: -9em; width: 0; z-index: 1; filter: drop-shadow(0 .6em .6em rgba(9,6,60,.4)); }
+.forearm i { position: absolute; top: 0; bottom: 0; left: 0; translate: -50% 0;
+  width: calc(var(--aw) + var(--tap) + var(--e) * 2);
+  clip-path: polygon(calc(var(--tap) / 2) 0, calc(100% - var(--tap) / 2) 0, 100% 100%, 0 100%); }
+.forearm i:nth-child(1) { --e: calc(var(--hu) * 16); background: #fff; }
+.forearm i:nth-child(2) { --e: calc(var(--hu) * 7); background: var(--ink); }
+.forearm i:nth-child(3) { --e: 0em; background: linear-gradient(90deg, #E63A8E 0, #FF4FA3 16%, #FF7DBC 34%, #FF4FA3 60%, #E0348A 100%); }
+
+.rows { position: relative; z-index: 3; list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
+.band {
+  grid-column: 2; grid-row: 1; position: relative; display: flex; align-items: center; gap: .7em;
+  width: calc(var(--aw) + 3em + var(--k) * var(--tap) / 17); height: 4.5em; margin: .57em 0; padding: 0 1em;
+  border-radius: .7em; background: var(--c, #fff); color: var(--t, var(--ink)); rotate: var(--r, 0deg);
+  filter: drop-shadow(0 .1em 0 rgba(9,6,60,.5)) drop-shadow(0 .38em .32em rgba(9,6,60,.4));
+  transition: translate .3s cubic-bezier(.2,1.5,.4,1), rotate .3s;
+  animation: slap .45s cubic-bezier(.2,1.4,.35,1) backwards; animation-delay: calc(var(--k) * 40ms + 200ms);
+}
+.band::before { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(90deg, rgba(9,6,60,.34), rgba(9,6,60,0) 9%, rgba(255,255,255,.22) 30%, rgba(9,6,60,0) 62%, rgba(9,6,60,.3)),
+              linear-gradient(180deg, rgba(255,255,255,.35) 0 .26em, transparent .26em calc(100% - .26em), rgba(0,0,0,.14) calc(100% - .26em)); }
+/* the loose tail of the band points at its note */
+.band::after { content: ""; position: absolute; z-index: -1; top: .65em; bottom: .65em; width: 3.4em; border-radius: .3em;
+  background: repeating-linear-gradient(-58deg, transparent 0 .5em, rgba(23,18,43,.45) .5em .62em), var(--c, #fff);
+  filter: brightness(.92); }
+.R .band::after { right: -2.5em; rotate: -9deg; transform-origin: 0 50%; }
+.L .band::after { left: -2.5em; rotate: 9deg; transform-origin: 100% 50%; }
+.L .band { flex-direction: row-reverse; }
+.row:hover .band { rotate: 0deg; }
+.R:hover .band { translate: .9em 0; } .L:hover .band { translate: -.9em 0; }
+.band .no { flex: none; display: grid; place-items: center; width: 1.75em; height: 1.75em; border-radius: 50%;
+  font-family: 'Bowlby One', 'Arial Black', Impact, sans-serif; font-size: 1.3em; border: .13em solid currentColor; padding-top: .05em; }
+.band .nm { flex: 1; min-width: 0; text-align: center; text-wrap: balance;
+  font-size: 1.52em; font-stretch: 75%; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; line-height: 1; }
+.band .pat { flex: none; align-self: stretch; width: 2.5em; margin: 0 -1em 0 0; border-radius: 0 .7em .7em 0; }
+.L .band .pat { margin: 0 0 0 -1em; border-radius: .7em 0 0 .7em; }
+.p-stripes { background: repeating-linear-gradient(-45deg, var(--ink) 0 .3em, transparent .3em .72em); }
+.p-checker { background: conic-gradient(var(--ink) 25%, transparent 0 50%, var(--ink) 0 75%, transparent 0) 0 0 / .9em .9em; }
+.p-hazard { background: repeating-linear-gradient(-45deg, var(--hi) 0 .45em, var(--ink) .45em .9em); }
+.p-zig { background: linear-gradient(135deg, var(--ink) 25%, transparent 25%) -.4em 0 / .8em .8em, linear-gradient(225deg, var(--ink) 25%, transparent 25%) -.4em 0 / .8em .8em; }
+.p-lines { background: repeating-linear-gradient(90deg, var(--ink) 0 .2em, transparent .2em .56em); }
+.p-bars { background: repeating-linear-gradient(0deg, #fff 0 .36em, transparent .36em .82em); }
+.p-tiles { background: linear-gradient(#fff .16em, transparent .16em) 0 0 / .8em .8em, linear-gradient(90deg, #fff .16em, transparent .16em) 0 0 / .8em .8em; }
+.p-dots { background: radial-gradient(var(--ink) .2em, transparent .24em) 0 0 / .7em .7em; }
+
+/* woven festival band with a sliding bead */
+.band.wov { border-radius: .25em;
+  background: linear-gradient(180deg, var(--e1) 0 .34em, var(--e2) .34em .68em, transparent .68em calc(100% - .68em), var(--e2) calc(100% - .68em) calc(100% - .34em), var(--e1) calc(100% - .34em)),
+              repeating-linear-gradient(45deg, rgba(23,18,43,.09) 0 .12em, transparent .12em .3em), var(--c); }
+.band.wov::after { background: repeating-linear-gradient(0deg, var(--c) 0 .22em, transparent .22em .4em); filter: none; top: .2em; bottom: .2em; width: 3em; }
+.band .bead { flex: none; align-self: center; width: 1.1em; height: 5.3em; margin: 0 -.5em; border-radius: .4em; z-index: 3;
+  background: linear-gradient(90deg, #3a3550, #17122B 60%); box-shadow: inset .12em 0 0 rgba(255,255,255,.3); }
+/* silicone */
+.band.sil { border-radius: 2.3em; height: 4.2em;
+  background: linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,0) 30%, rgba(0,0,0,.22)), var(--c); }
+.band.sil::after { display: none; }
+.band.sil .nm { font-family: 'Bowlby One', 'Arial Black', Impact, sans-serif; font-weight: 400; font-stretch: 100%; font-size: 1.5em; letter-spacing: .08em;
+  text-shadow: 0 -.06em 0 rgba(0,0,0,.45), 0 .05em 0 rgba(255,255,255,.25); }
+/* holographic: the big one */
+.band.foil { height: 6.2em; }
+.band.foil::after { background: linear-gradient(90deg, #FF86DA, #FFF06A); filter: none; }
+.band.foil .nm { font-family: 'Bowlby One', 'Arial Black', Impact, sans-serif; font-weight: 400; font-stretch: 100%; font-size: 1.62em; letter-spacing: .03em; line-height: 1.05; }
+/* two hours long */
+.band.thin { height: 3em; }
+.band.thin .nm { font-size: 1.3em; }
+.band.thin .no { font-size: 1.05em; }
+/* not printed yet */
+.band.blank { width: calc(var(--aw) + 13em); background: #fff; outline: .16em dashed var(--ink); outline-offset: -.5em; rotate: -5deg; margin-top: 0; }
+.band.blank::after { display: none; }
+.band.blank .nm { font-family: 'Permanent Marker', 'Marker Felt', 'Bradley Hand', 'Comic Sans MS', cursive; font-weight: 400; font-stretch: 100%; text-transform: none; letter-spacing: 0; font-size: 1.75em; }
+
+/* notes written on the lid next to each band */
+.note { grid-row: 1; height: 0; display: flex; flex-direction: column; justify-content: flex-start; translate: 0 -3.2em; color: #fff; min-width: 0; }
+.row:last-child .note { translate: 0 -1.2em; }
+.row:first-child .note { translate: 0 -1.6em; }
+.L .note { grid-column: 1; align-items: flex-end; text-align: right; padding: 0 4.2em 0 .8em; }
+.R .note { grid-column: 3; align-items: flex-start; text-align: left; padding: 0 .8em 0 4.2em; }
+.note .city { font-family: 'Permanent Marker', 'Marker Felt', 'Bradley Hand', 'Comic Sans MS', cursive; font-weight: 400; font-size: 2em; line-height: 1.02; }
+.note .when { font-size: 1.2em; font-weight: 600; opacity: .9; margin-top: .2em; line-height: 1.2; max-width: 16em; }
+.note .pls { display: flex; flex-wrap: wrap; gap: .45em; margin-top: .5em; }
+.L .note .pls { justify-content: flex-end; }
+.pl { font-size: 1.08em; font-stretch: 75%; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; text-decoration: none;
+  background: #fff; color: var(--ink); border-radius: 2em; padding: .24em .72em .2em; rotate: -1.5deg; box-shadow: 0 .16em 0 rgba(9,6,60,.5); }
+.pl.y { background: var(--hi); rotate: 1.5deg; }
+.pl.q { background: none; color: #fff; box-shadow: none; outline: 1px dashed rgba(255,255,255,.8); }
+.pl.npr { background: var(--gum); rotate: 2deg; }
+.pl.npr:hover { background: var(--hi); }
+.note .scr { font-family: 'Permanent Marker', 'Marker Felt', 'Bradley Hand', 'Comic Sans MS', cursive; font-size: 1.42em; line-height: 1.1; color: var(--hi); rotate: -2deg; margin-top: .5em; max-width: 13em; }
+
+.foot { position: relative; z-index: 4; height: 7.5em; }
+.foot .s { animation: none; }
+.tattoo { position: absolute; left: var(--cx); top: 1em; translate: -50% 0; rotate: -4deg; color: var(--ink); white-space: nowrap; opacity: .92; }
+.tattoo span { font-size: 2.1em; }
+
+/* ---------- phone ---------- */
+@container lid (max-width: 560px) {
+  .stage { font-size: calc(100cqw / 39); --hw: 18em; --cx: 9em; --hy: 23em; --tap: 3.6em; }
+  .s { left: calc(var(--mx, var(--x)) * .1em); top: calc(var(--my, var(--y)) * .1em); width: calc(var(--mw, var(--w)) * .1em); rotate: var(--mr, var(--r, 0deg)); }
+  .pill { width: max-content; }
+  .tags a { left: calc(var(--mx) * .1em); width: 8.9em; }
+  .tags a em { display: none; }
+  .tags a span { font-size: 1.02em; }
+  .row { grid-template-columns: calc(var(--cx) * 2) 1fr; align-items: center; }
+  .band { grid-column: 1; justify-self: center; width: calc(var(--aw) + 2.6em + var(--k) * var(--tap) / 17); height: auto; min-height: 4.6em; align-self: center; padding: .5em .7em; gap: .5em; }
+  .band.foil { min-height: 6em; }
+  .band::after { width: 2.6em; }
+  .R .band::after, .L .band::after { right: -1.8em; }
+  .band.thin { min-height: 3em; padding: .35em .7em; }
+  .band.thin .nm { font-size: 1.05em; }
+  .band.blank { width: calc(var(--aw) + 6em); align-self: center; }
+  .band .nm { font-size: 1.22em; }
+  .band .no { font-size: 1.1em; }
+  .band .pat { width: 1.8em; margin-right: -.7em; }
+  .L .band .pat { margin: 0 -.7em 0 0; border-radius: 0 .7em .7em 0; }
+  .band.foil .nm, .band.sil .nm { font-size: 1.12em; }
+  .band.blank .nm { font-size: 1.4em; }
+  .L .band { flex-direction: row; }
+  .L .band::after { left: auto; rotate: -9deg; transform-origin: 0 50%; }
+  .L:hover .band { translate: .9em 0; }
+  .note, .L .note, .R .note, .row:last-child .note, .row:first-child .note { translate: none; grid-column: 2; height: auto; align-items: flex-start; text-align: left; padding: .75em .4em .85em 2.5em; }
+  .pl { font-size: 1em; padding: .24em .62em .2em; }
+  .note .pls { gap: .35em; }
+  .L .note .pls { justify-content: flex-start; }
+  .note .city { font-size: 1.8em; }
+  .m-hide { display: none; }
+  .tattoo span { font-size: 1.5em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s, .band, .hand { animation: none; }
+  .s, .band, .peel, .tags a { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="lid" id="lid">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="hg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="170" y2="90" spreadMethod="reflect">
+      <stop offset="0" stop-color="#5CF0FF"/><stop offset=".2" stop-color="#B39AFF"/><stop offset=".4" stop-color="#FF86DA"/>
+      <stop offset=".6" stop-color="#FFF06A"/><stop offset=".8" stop-color="#7DFFBE"/><stop offset="1" stop-color="#5CF0FF"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="stage">
+  <header class="top">
+    <!-- the lanyard is the way back -->
+    <a class="navstrap" href="#lid" aria-label="Back to the lid">
+      <span>&larr; BACK TO THE LID ✦ ALEX.LWN.LOL ✦ ATL ✦ ALEX.LWN.LOL ✦ ATL ✦ ALEX.LWN.LOL ✦ ATL ✦ ALEX.LWN.LOL ✦ ATL ✦ ALEX.LWN.LOL ✦ ATL ✦ ALEX.LWN.LOL ✦ ATL ✦ ALEX.LWN.LOL</span>
+    </a>
+    <nav class="tags" aria-label="Sections">
+      <a class="on" href="#organized" aria-current="page" style="--x:16;--mx:6;--r:-2deg;--c:var(--tang)"><span>ORGANIZER <em>×16</em></span></a>
+      <a href="#wins" style="--x:130;--mx:102;--r:1.5deg;--c:var(--hi)"><span>WINNER <em>×8</em></span></a>
+      <a href="#talks" style="--x:494;--mx:198;--r:-1deg;--c:var(--mint)"><span>SPEAKER</span></a>
+      <a href="#projects" style="--x:608;--mx:294;--r:2deg;--c:var(--gum)"><span>BUILDER</span></a>
+    </nav>
+
+    <!-- title -->
+    <div class="s sixteen" style="--x:8;--y:88;--w:200;--r:-5deg;--z:5;--i:0;--mx:2;--my:86;--mw:150" role="img" aria-label="16">
+      <svg viewBox="0 0 270 196" aria-hidden="true">
+        <defs><text id="n16" x="135" y="164" font-size="200" text-anchor="middle" letter-spacing="-6">16</text></defs>
+        <use href="#n16" fill="#fff" stroke="#fff" stroke-width="36" stroke-linejoin="round" transform="translate(3 4)"/>
+        <use href="#n16" fill="#17122B" stroke="#17122B" stroke-width="13" stroke-linejoin="round" transform="translate(7 8)"/>
+        <use href="#n16" fill="#17122B" stroke="#17122B" stroke-width="13" stroke-linejoin="round"/>
+        <use href="#n16" fill="url(#hg)"/>
+      </svg>
+    </div>
+    <div class="s ttl" style="--x:12;--y:214;--w:204;--r:3deg;--z:6;--i:1;--mx:156;--my:92;--mw:224;--mr:2deg">
+      <h1 class="v peel" style="--c:var(--hi);margin:0;font-size:inherit;font-weight:inherit"><span class="bw">HACKATHONS<br>ORGANIZED</span><small class="mk">one wristband each. newest at the wrist.</small></h1>
+    </div>
+
+    <!-- totals -->
+    <span class="s pill" style="--x:516;--y:82;--r:-5deg;--z:6;--i:2;--c:var(--mint);--mx:192;--my:192;--mr:-3deg"><b>8 COUNTRIES + ONLINE</b></span>
+    <div class="s tot" style="--x:532;--y:112;--w:180;--r:4deg;--z:5;--i:3;--mx:214;--my:226;--mw:160;--mr:3deg">
+      <div class="v" style="--c:var(--tang)"><span class="bw">1,471</span><span class="cd">participants*</span></div>
+    </div>
+    <div class="s tot" style="--x:502;--y:192;--w:216;--r:-4deg;--z:6;--i:4;--mx:174;--my:294;--mw:210;--mr:-3deg">
+      <div class="v holo peel"><span class="bw">$163,525</span><span class="cd">in prizes*</span><small>*12 events with public figures</small></div>
+    </div>
+
+    <!-- high five -->
+    <svg class="hand" viewBox="0 0 300 310" aria-hidden="true">
+      <defs>
+        <g id="hs">
+          <rect x="64" y="40" width="42" height="170" rx="21" transform="rotate(-8 85 200)"/>
+          <rect x="108" y="14" width="42" height="190" rx="21" transform="rotate(-2 129 200)"/>
+          <rect x="152" y="28" width="42" height="180" rx="21" transform="rotate(4 173 200)"/>
+          <rect x="196" y="66" width="38" height="140" rx="19" transform="rotate(10 215 200)"/>
+          <rect x="18" y="150" width="46" height="130" rx="23" transform="rotate(-36 64 268)"/>
+          <rect x="62" y="150" width="176" height="220" rx="46"/>
+        </g>
+      </defs>
+      <use href="#hs" fill="#fff" stroke="#fff" stroke-width="32" stroke-linejoin="round"/>
+      <use href="#hs" fill="#17122B" stroke="#17122B" stroke-width="14" stroke-linejoin="round"/>
+      <use href="#hs" fill="#FF4FA3"/>
+      <g fill="none" stroke-linecap="round">
+        <path d="M78 196 L72 66 M122 190 L119 40 M166 190 L170 52 M207 192 L221 92" stroke="#FF8CC4" stroke-width="7"/>
+        <path d="M108 196 L107 150 M152 196 L152 146 M194 198 L197 156" stroke="#17122B" stroke-width="6"/>
+        <path d="M66 214 Q70 250 92 268" stroke="#17122B" stroke-width="6"/>
+      </g>
+      <g class="stamp" transform="rotate(-13 152 244)" fill="none" stroke="#1B1FA8" opacity=".82">
+        <circle cx="152" cy="244" r="36" stroke-width="3.2"/>
+        <circle cx="152" cy="244" r="20" stroke-width="1.6" stroke-dasharray="2 3"/>
+        <path id="stp" d="M126,244 a26,26 0 1,1 52,0 a26,26 0 1,1 -52,0" stroke="none"/>
+        <text class="cd" font-size="8.6" fill="#1B1FA8" stroke="none"><textPath href="#stp" textLength="158">ORGANIZER ✦ SINCE 2020 ✦</textPath></text>
+        <path d="M152 231l3.6 8.4 9.1.8-6.9 6 2.1 8.9-7.9-4.7-7.9 4.7 2.1-8.9-6.9-6 9.1-.8z" fill="#1B1FA8" stroke="none"/>
+      </g>
+    </svg>
+  </header>
+
+  <div class="arm" id="organized">
+    <div class="forearm" aria-hidden="true"><i></i><i></i><i></i></div>
+    <ol class="rows" reversed>
+<li class="row R" style="--k:0">
+  <span class="band blank" style="--k:0;--r:-5deg"><span class="no">17</span><span class="nm">AI Hack for Freedom IV</span></span>
+  <div class="note"><span class="when">Upcoming · not announced</span><span class="scr">still on the roll</span></div>
+</li>
+<li class="row L" style="--k:1">
+  <span class="band tyv" style="--k:1;--r:1.8deg;--c:var(--mint)"><span class="no">16</span><span class="nm">AI Hack for Freedom III</span><i class="pat p-stripes"></i></span>
+  <div class="note"><b class="city">Washington, DC</b><span class="when">Sep 2026 · USA</span><span class="pls"><span class="pl ">10 teams</span><span class="pl y">paid in bitcoin</span><a class="pl npr" href="https://www.npr.org/2026/10/27/nx-s1-5983462/human-rights-activists-look-to-harness-ai-for-the-greater-good" target="_blank" rel="noopener">covered by NPR &nearr;</a></span></div>
+</li>
+<li class="row R" style="--k:2">
+  <span class="band tyv" style="--k:2;--r:-1.4deg;--c:var(--tang)"><span class="no">15</span><span class="nm">bitcoin++ consensus edition</span><i class="pat p-checker"></i></span>
+  <div class="note"><b class="city">Toronto</b><span class="when">Jul 2026 · Canada</span><span class="pls"><span class="pl q">figures not public</span></span></div>
+</li>
+<li class="row L" style="--k:3">
+  <span class="band wov" style="--k:3;--r:2.2deg;--c:var(--hi);--e1:var(--ink);--e2:var(--tang)"><span class="no">14</span><span class="nm">bitcoin++ open source edition</span><i class="bead"></i></span>
+  <div class="note"><b class="city">Nairobi</b><span class="when">Jun 17–18, 2026 · Kenya</span><span class="pls"><span class="pl ">90 participants</span><span class="pl y">$6,180 prizes</span></span></div>
+</li>
+<li class="row R" style="--k:4">
+  <span class="band tyv" style="--k:4;--r:-1deg;--c:var(--mint)"><span class="no">13</span><span class="nm">AI Hack for Freedom II</span><i class="pat p-stripes"></i></span>
+  <div class="note"><b class="city">Nashville, TN</b><span class="when">May 2026 · USA</span><span class="pls"><span class="pl ">8 teams</span><span class="pl y">paid in bitcoin</span></span></div>
+</li>
+<li class="row L" style="--k:5">
+  <span class="band tyv" style="--k:5;--r:1.5deg;--c:var(--cobalt);--t:#fff"><span class="no">12</span><span class="nm">bitcoin++ exploits edition</span><i class="pat p-hazard"></i></span>
+  <div class="note"><b class="city">Florianópolis</b><span class="when">Feb 2026 · Brazil</span><span class="pls"><span class="pl q">figures not public</span></span></div>
+</li>
+<li class="row R" style="--k:6">
+  <span class="band wov" style="--k:6;--r:-2.2deg;--c:#fff;--e1:var(--tang);--e2:var(--cobalt)"><span class="no">11</span><span class="nm">bitcoin++ sovereignty edition</span><i class="bead"></i></span>
+  <div class="note"><b class="city">Taipei</b><span class="when">Dec 16, 2025 · Taiwan</span><span class="pls"><span class="pl ">58 participants</span><span class="pl y">$7,785 prizes</span></span></div>
+</li>
+<li class="row L" style="--k:7">
+  <span class="band tyv" style="--k:7;--r:1.2deg;--c:var(--hi)"><span class="no">10</span><span class="nm">Lightning++ 2025</span><i class="pat p-zig"></i></span>
+  <div class="note"><b class="city">Berlin</b><span class="when">Oct 2–3, 2025 · Germany</span><span class="pls"><span class="pl ">38 participants</span><span class="pl y">$15,560 prizes</span></span></div>
+</li>
+<li class="row R" style="--k:8">
+  <span class="band tyv" style="--k:8;--r:-1.6deg;--c:var(--tang)"><span class="no">9</span><span class="nm">bitcoin++ scaling edition</span><i class="pat p-lines"></i></span>
+  <div class="note"><b class="city">Istanbul</b><span class="when">Sep 4, 2025 · Türkiye</span><span class="pls"><span class="pl ">18 participants</span><span class="pl y">$7,750 prizes</span></span></div>
+</li>
+<li class="row L" style="--k:9">
+  <span class="band tyv" style="--k:9;--r:2deg;--c:var(--ink);--t:#fff"><span class="no">8</span><span class="nm">bitcoin++ privacy edition</span><i class="pat p-bars"></i></span>
+  <div class="note"><b class="city">Riga</b><span class="when">Aug 7, 2025 · Latvia</span><span class="pls"><span class="pl ">29 participants</span><span class="pl y">$5,700 prizes</span></span></div>
+</li>
+<li class="row R" style="--k:10">
+  <span class="band tyv" style="--k:10;--r:-1.2deg;--c:#5CF0FF"><span class="no">7</span><span class="nm">bitcoin++ mempool (“pool”) edition</span><i class="pat p-tiles"></i></span>
+  <div class="note"><b class="city">Austin, TX</b><span class="when">May 8–9, 2025 · USA</span><span class="pls"><span class="pl ">30 participants</span><span class="pl y">$10,000 prizes</span></span></div>
+</li>
+<li class="row L" style="--k:11">
+  <span class="band foil holo" style="--k:11;--r:1deg"><span class="no">6</span><span class="nm">Bitcoin 2025 Official Hackathon</span></span>
+  <div class="note"><b class="city">Online</b><span class="when">Apr 8 – May 20, 2025 · for the Bitcoin 2025 conference in Las Vegas</span><span class="pls"><span class="pl ">832 participants</span><span class="pl y">$58,750 prizes</span></span></div>
+</li>
+<li class="row R" style="--k:12">
+  <span class="band tyv thin" style="--k:12;--r:-2.4deg;--c:#fff"><span class="no">5</span><span class="nm">bitcoin++ AI Turbo Hackathon</span><i class="pat p-dots"></i></span>
+  <div class="note"><b class="city">Austin, TX</b><span class="when">Mar 11, 2025 · two hours, during SXSW</span><span class="pls"><span class="pl ">21 participants</span><span class="pl y">non-monetary</span></span></div>
+</li>
+<li class="row L" style="--k:13">
+  <span class="band wov" style="--k:13;--r:1.6deg;--c:var(--hi);--e1:#5CF0FF;--e2:var(--cobalt)"><span class="no">4</span><span class="nm">bitcoin++ beach edition</span><i class="bead"></i></span>
+  <div class="note"><b class="city">Florianópolis</b><span class="when">Feb 20–22, 2025 · Brazil</span><span class="pls"><span class="pl ">86 participants</span><span class="pl y">$15,100 prizes</span></span></div>
+</li>
+<li class="row R" style="--k:14">
+  <span class="band tyv" style="--k:14;--r:-1.2deg;--c:var(--mint)"><span class="no">3</span><span class="nm">bitcoin++ ecash edition</span><i class="pat p-dots"></i></span>
+  <div class="note"><b class="city">Berlin</b><span class="when">Oct 11–13, 2024 · Germany</span><span class="pls"><span class="pl ">20 participants</span><span class="pl y">$15,200 prizes</span></span><span class="scr">I also won this one. Awkward. Haven&rsquo;t entered my own since.</span></div>
+</li>
+<li class="row L" style="--k:15">
+  <span class="band sil" style="--k:15;--r:1.4deg;--c:var(--deep);--t:#FFB27A"><span class="no">2</span><span class="nm">AuburnHacks 2021</span></span>
+  <div class="note"><b class="city">Online</b><span class="when">Apr 10–11, 2021</span><span class="pls"><span class="pl ">137 participants</span><span class="pl y">$15,160 prizes</span></span></div>
+</li>
+<li class="row R" style="--k:16">
+  <span class="band sil" style="--k:16;--r:-1.8deg;--c:var(--tang);--t:var(--ink)"><span class="no">1</span><span class="nm">AuburnHacks 2020</span></span>
+  <div class="note"><b class="city">Auburn, AL</b><span class="when">Feb 8–9, 2020 · USA</span><span class="pls"><span class="pl ">112 participants</span><span class="pl y">$6,340 prizes</span></span></div>
+</li>
+    </ol>
+  </div>
+
+  <footer class="foot">
+    <a class="s pill" href="#wins" style="--x:552;--y:38;--r:-4deg;--c:var(--hi);--mx:216;--my:30"><b>NEXT: 8 WINS &rarr;</b></a>
+    <span class="tattoo" aria-hidden="true"><span class="mk">room for more &darr;</span></span>
+  </footer>
+</div>
+</div>
+
+<script>
+(function () {
+  var lid = document.getElementById('lid');
+  var hg = document.getElementById('hg');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var target = { x: 0.35, y: 0.3 };
+  var now = { x: 0.35, y: 0.3 };
+  lid.addEventListener('pointermove', function (e) {
+    var r = lid.getBoundingClientRect();
+    target = { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
+  });
+  function paint(t) {
+    var driftX = reduce ? 0 : Math.sin(t / 2600) * 0.2;
+    var driftY = reduce ? 0 : Math.cos(t / 3300) * 0.2;
+    now = { x: now.x + (target.x + driftX - now.x) * 0.08, y: now.y + (target.y + driftY - now.y) * 0.08 };
+    lid.style.setProperty('--hx', now.x.toFixed(3));
+    lid.style.setProperty('--hy2', now.y.toFixed(3));
+    if (hg) {
+      hg.setAttribute('gradientTransform',
+        'translate(' + (now.x * 200 - 100).toFixed(1) + ' 0) rotate(' + (now.y * 40 - 20).toFixed(1) + ' 135 100)');
+    }
+    window.requestAnimationFrame(paint);
+  }
+  window.requestAnimationFrame(paint);
+})();
+</script>
+</body>
+</html>
