@@ -68,6 +68,21 @@ describe('copy', () => {
     expect(copy.lid.record.sessions(51)).toBe('51 stage sessions')
   })
 
+  it('words the three additions: the inventor ribbon, the patent label and the medal', () => {
+    expect(copy.lid.ribbons.inventor).toBe('INVENTOR')
+    expect(copy.lid.patentLabel).toEqual({
+      one: 'U.S. PAT. NO.',
+      many: 'U.S. PAT. NOS.',
+      pending: 'OTHER PATENTS PENDING',
+    })
+    expect(copy.lid.medal.outOf('300+')).toBe('OF 300+')
+    expect(copy.lid.medal.teams).toBe('TEAMS')
+    expect(copy.lid.medal.team('Eth Heads')).toBe('Team Eth Heads')
+    expect(copy.lid.medal.summary('1st', '300+', 'NCR Global Hackathon 2021', 'Eth Heads')).toBe(
+      '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads',
+    )
+  })
+
   it('types no arrows or stars on the lid: those glyphs are drawn', () => {
     const drawn = collectStrings(copy.lid).filter((text) => /[←-⇿✦★☆]/.test(text))
 

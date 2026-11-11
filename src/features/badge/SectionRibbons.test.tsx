@@ -35,7 +35,13 @@ describe('SectionRibbons', () => {
     const sections = SECTIONS.map(({ id }) => `/cv/#${id}`)
     const hrefs = nav.getAllByRole('link').map((link) => link.getAttribute('href'))
 
-    expect(hrefs).toEqual(['/cv/#organized', '/cv/#wins', '/cv/#talks', '/cv/#projects'])
+    expect(hrefs).toEqual([
+      '/cv/#organized',
+      '/cv/#wins',
+      '/cv/#talks',
+      '/cv/#projects',
+      '/cv/#patents',
+    ])
     for (const href of hrefs) {
       expect(sections).toContain(href)
     }
@@ -44,7 +50,16 @@ describe('SectionRibbons', () => {
   it('is a list of links inside one navigation landmark', () => {
     const nav = renderRibbons()
 
-    expect(within(nav.getByRole('list')).getAllByRole('listitem')).toHaveLength(4)
+    expect(within(nav.getByRole('list')).getAllByRole('listitem')).toHaveLength(5)
+  })
+
+  it('ends with the inventor ribbon, which leads to the patents and carries no count', () => {
+    const nav = renderRibbons()
+    const inventor = nav.getAllByRole('link').at(-1)
+
+    expect(inventor).toHaveTextContent(/^INVENTOR$/)
+    expect(inventor).toHaveAttribute('href', '/cv/#patents')
+    expect(inventor).toHaveClass(tones.white ?? '')
   })
 
   it('prints no count on a ribbon that has none', () => {

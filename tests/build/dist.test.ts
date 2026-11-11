@@ -135,7 +135,7 @@ describe('/', () => {
       (link) => link.getAttribute('href')?.split('#')[1] ?? '',
     )
 
-    expect(new Set(anchors)).toEqual(new Set(['organized', 'wins', 'talks', 'projects']))
+    expect(new Set(anchors)).toEqual(new Set(['organized', 'wins', 'talks', 'projects', 'patents']))
     for (const anchor of anchors) {
       expect(cv.getElementById(anchor), anchor).not.toBeNull()
     }
@@ -163,6 +163,55 @@ describe('/', () => {
     }
     expect(files.filter((file) => file.endsWith('.png') && file.includes('alex-lewin'))).toEqual([])
     expect(page.querySelector('picture img')?.getAttribute('alt')).toMatch(/smiling/)
+  })
+})
+
+describe('the additions to the lid', () => {
+  it('prints the granted patent numbers from the content, and no application’s', async () => {
+    const page = await readPage('/')
+    const label = page.querySelector('a[data-sticker="patents"]')
+    const granted = content.patents.filter((patent) => patent.status.kind === 'granted')
+
+    expect(label?.getAttribute('href')).toBe('/cv/#patents')
+    expect(granted).toHaveLength(2)
+    for (const patent of content.patents) {
+      const printed = label?.textContent.includes(patent.number.serial) ?? false
+      expect(printed, patent.number.serial).toBe(patent.status.kind === 'granted')
+    }
+    expect(label?.textContent).toContain('OTHER PATENTS PENDING')
+  })
+
+  it('has five ribbons, the last of them to the patents', async () => {
+    const page = await readPage('/')
+    const ribbons = [...page.querySelectorAll('nav[aria-label="Sections"] a')]
+
+    expect(ribbons.map((ribbon) => ribbon.getAttribute('href'))).toEqual([
+      '/cv/#organized',
+      '/cv/#wins',
+      '/cv/#talks',
+      '/cv/#projects',
+      '/cv/#patents',
+    ])
+    expect(ribbons.at(-1)?.textContent).toBe('INVENTOR')
+  })
+
+  it('links the NCR medal to the wins, named in words', async () => {
+    const page = await readPage('/')
+    const medal = page.querySelector('a[data-sticker="ncr-win"]')
+
+    expect(medal?.getAttribute('href')).toBe('/cv/#wins')
+    expect(medal?.getAttribute('aria-label')).toBe(
+      '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads',
+    )
+  })
+
+  it('shows nine wins wherever the lid counts them', async () => {
+    const page = await readPage('/')
+    const text = page.querySelector('main')?.textContent ?? ''
+
+    expect(text).toContain('9×')
+    expect(text).toContain('×9')
+    expect(page.querySelector('a[aria-label="9 hackathon wins"]')).not.toBeNull()
   })
 })
 

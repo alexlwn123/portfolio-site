@@ -76,7 +76,7 @@ describe('Badge', () => {
     renderBadge()
 
     const nav = screen.getByRole('navigation', { name: 'Sections' })
-    expect(within(nav).getAllByRole('link')).toHaveLength(4)
+    expect(within(nav).getAllByRole('link')).toHaveLength(5)
   })
 
   it('names its clip’s gradient after the sticker', () => {

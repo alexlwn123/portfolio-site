@@ -51,6 +51,25 @@ describe('the lid’s placements', () => {
     }
   })
 
+  it.each(LAYOUTS)('places the three additions, none of them hidden: %s', (_, layout) => {
+    for (const id of ['ncr-win', 'patents'] as const) {
+      expect(layout[id], id).not.toBe(HIDDEN)
+      expect(layout[id], id).toMatchObject({ w: expect.any(Number) as unknown })
+    }
+    expect(layout.badge).not.toBe(HIDDEN)
+  })
+
+  it('keeps the compliance label under its neighbours, so it covers no link', () => {
+    expect(desktop.patents.z).toBeLessThan(desktop.workshop.z)
+    expect(desktop.patents.z).toBeLessThan(desktop['pleb-fm'].z)
+    expect(desktop.patents.z).toBeGreaterThan(desktop['next-spot'].z)
+  })
+
+  it('sets the medal above the strap it sits between, and below the badge', () => {
+    expect(desktop['ncr-win'].z).toBeGreaterThan(desktop.lanyard.z)
+    expect(desktop['ncr-win'].z).toBeLessThan(desktop.badge.z)
+  })
+
   it('gives a sticker a width on both layouts or on neither', () => {
     for (const { id, w } of placed(phone)) {
       expect(w === undefined, id).toBe(desktop[id as keyof typeof desktop].w === undefined)

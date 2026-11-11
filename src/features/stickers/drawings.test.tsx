@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import { DieCutText } from './DieCutText'
 import { FOIL_REST, foilGradientTransform } from './geometry/foil'
+import { MEDAL, medalRim } from './geometry/medal'
 import { RING_ARCS, RING_STAR_ANGLES } from './geometry/ring'
 import { starburstPoints, WINS_SEAL } from './geometry/starburst'
 import { HexBadge } from './HexBadge'
@@ -11,10 +12,12 @@ import { Bolt } from './illustrations/Bolt'
 import { Crab } from './illustrations/Crab'
 import { ArrowDown, ArrowRight, Star } from './illustrations/Glyphs'
 import { SharedDefs } from './illustrations/SharedDefs'
+import { Medal } from './Medal'
 import { RoundBadge } from './RoundBadge'
 import { Starburst } from './Starburst'
 import { SHARED_IDS } from './svgIds'
 import { Tally } from './Tally'
+import tones from './tones.module.css'
 
 function texts(container: HTMLElement): readonly string[] {
   return [...container.querySelectorAll('svg > text, svg > g > text, textPath')]
@@ -38,6 +41,10 @@ describe('every drawing', () => {
     ['Starburst', <Starburst key="burst" top="HACKATHON" figure="8×" bottom="WINNER" />],
     ['RoundBadge', <RoundBadge key="round" id="round" ring={['A', 'B']} figure="16" />],
     ['HexBadge', <HexBadge key="hex" kicker="1st" title={['Lightning']} foot="Berlin" />],
+    [
+      'Medal',
+      <Medal key="medal" id="medal" rank="1st" lines={['OF 300+']} rim={['A', 'B']} tone="hi" />,
+    ],
     ['Tally', <Tally key="tally" count={16} />],
     ['SharedDefs', <SharedDefs key="defs" />],
   ])('%s is hidden from assistive technology and cannot take focus', (_, drawing) => {
@@ -147,6 +154,56 @@ describe('RoundBadge', () => {
     const { container } = render(badge)
 
     expect(container.querySelector('svg > text:last-of-type')).toHaveTextContent('16')
+  })
+})
+
+describe('Medal', () => {
+  const RIM = ['NCR Global Hackathon 2021', 'Team Eth Heads'] as const
+  const medal = <Medal id="ncr-win" rank="1st" lines={['OF 300+', 'TEAMS']} rim={RIM} tone="hi" />
+
+  it('sets each phrase on its own arc of the rim, where the geometry puts it', () => {
+    const { container } = render(medal)
+    const arcs = [...container.querySelectorAll('textPath')]
+    const expected = medalRim(...RIM).arcs
+
+    expect(arcs.map((arc) => arc.textContent)).toEqual([...RIM])
+    expect(arcs.map((arc) => arc.getAttribute('href'))).toEqual(['#ncr-win-rim', '#ncr-win-rim'])
+    expect(arcs.map((arc) => Number(arc.getAttribute('startOffset')))).toEqual(
+      expected.map(({ start }) => start),
+    )
+    expect(arcs.map((arc) => Number(arc.getAttribute('textLength')))).toEqual(
+      expected.map(({ length }) => length),
+    )
+  })
+
+  it('draws a star between the phrases instead of typing one', () => {
+    const { container } = render(medal)
+
+    expect(container.querySelectorAll('path[transform]')).toHaveLength(2)
+    expect(container.textContent).not.toMatch(/[✦★]/)
+  })
+
+  it('letters the rank in the middle, over its lines', () => {
+    const { container } = render(medal)
+
+    expect(texts(container)).toEqual([...RIM, '1st', 'OF 300+', 'TEAMS'])
+  })
+
+  it('sets every line of lettering at the one small size or larger', () => {
+    const { container } = render(medal)
+    const sizes = [...container.querySelectorAll('text')].map((text) =>
+      Number(text.getAttribute('font-size')),
+    )
+
+    expect(sizes).toHaveLength(5)
+    expect(Math.min(...sizes)).toBe(MEDAL.rimSize)
+  })
+
+  it('is cut from the tone it is given, and names its rim after the sticker', () => {
+    const { container } = render(medal)
+
+    expect(container.querySelector('svg')).toHaveClass(tones.hi ?? '')
+    expect(ids(container)).toEqual(['ncr-win-rim'])
   })
 })
 

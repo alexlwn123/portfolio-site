@@ -1,8 +1,13 @@
 import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { expect, type Page, test } from '@playwright/test'
+import { expect, type Locator, type Page, test } from '@playwright/test'
 
+import { content, stats } from '../src/content'
+import { copy } from '../src/content/copy'
+import { cvSection } from '../src/features/lid/facts'
+import { flattenStickers } from '../src/features/lid/stickerSpecs'
+import { lidStickers } from '../src/features/lid/stickers'
 import { MOCKUPS, openMockup, saveScreenshot, SCREENSHOT_DIR } from './mockup'
 import { diffScreenshots, OUTSIDE, type Region } from './pixelDiff'
 import { openLid } from './support'
@@ -41,21 +46,122 @@ const DEPARTED = [
 /** Stickers that overlap a departed one, and so share some of its changed pixels. */
 const MAX_UNTOUCHED_DIFFERENCE = 0.001
 
-/** The box around each sticker and everything inside it. */
+/*
+ * What has been added to the lid since the mockup was approved, listed under
+ * "Additions since the mockup" in DEVIATIONS.md. A picture that predates them
+ * cannot match them, so the places they occupy are left out of the comparison:
+ * not compared, counted in neither the difference nor the total, and painted
+ * blue on lid-728-difference.png. Everything else is held to the tolerances
+ * above, which have not moved.
+ */
+
+/** Two stickers the mockup does not have. */
+const ADDED_STICKERS = ['ncr-win', 'patents'] as const
+
+/**
+ * Three city pills moved down to make room for the fifth ribbon. Each is left
+ * out twice: where the lid has it now, and where the mockup still has it.
+ */
+const MOVED_PILLS = ['city-berlin', 'city-toronto', 'city-austin'] as const
+
+/** A sticker's shadow falls outside its box. This much around the box is left out with it. */
+const SHADOW_REACH_PX = 14
+/** Lettering has no shadow. A hair of margin covers its anti-aliased edge. */
+const TEXT_MARGIN_PX = 2
+
+/** The left-out places must stay a small part of the page, or the comparison means nothing. */
+const MAX_EXCLUDED = 0.08
+
+const stickers = flattenStickers(lidStickers(content, stats))
+
+/** What a moved pill reads, which is how the mockup's copy of it is found. */
+function pillText(id: string): string {
+  const pill = stickers.find((sticker) => sticker.id === id)
+  if (pill?.kind !== 'pill') {
+    throw new Error(`The sticker "${id}" is not a pill`)
+  }
+  return pill.text
+}
+
+/**
+ * One box around every matched element and everything inside them, grown by a
+ * margin. Matching nothing is an error: an addition that has gone missing
+ * should fail the comparison, not slip out of it.
+ */
+async function boxAround(elements: Locator, name: string, margin = 0): Promise<Region> {
+  const rects = await elements.evaluateAll((matched) =>
+    matched
+      .flatMap((element) => [element, ...element.querySelectorAll('*')])
+      .map((part) => part.getBoundingClientRect())
+      .filter(({ width, height }) => width > 0 && height > 0)
+      .map(({ left, top, right, bottom }) => ({
+        left,
+        top: top + window.scrollY,
+        right,
+        bottom: bottom + window.scrollY,
+      })),
+  )
+  if (rects.length === 0) {
+    throw new Error(`Nothing on the page to draw a box around for "${name}"`)
+  }
+  return {
+    name,
+    left: Math.min(...rects.map(({ left }) => left)) - margin,
+    top: Math.min(...rects.map(({ top }) => top)) - margin,
+    right: Math.max(...rects.map(({ right }) => right)) + margin,
+    bottom: Math.max(...rects.map(({ bottom }) => bottom)) + margin,
+  }
+}
+
+/** The box around each sticker and everything inside it. Stickers hidden at this width have none. */
 async function stickerRegions(page: Page): Promise<readonly Region[]> {
-  return page.locator('[data-sticker]').evaluateAll((stickers) =>
-    stickers.map((sticker) => {
-      const boxes = [sticker, ...sticker.querySelectorAll('*')]
-        .map((element) => element.getBoundingClientRect())
-        .filter(({ width, height }) => width > 0 && height > 0)
-      return {
-        name: sticker.getAttribute('data-sticker') ?? '',
-        left: Math.min(...boxes.map(({ left }) => left)),
-        top: Math.min(...boxes.map(({ top }) => top)) + window.scrollY,
-        right: Math.max(...boxes.map(({ right }) => right)),
-        bottom: Math.max(...boxes.map(({ bottom }) => bottom)) + window.scrollY,
-      }
-    }),
+  const all = page.locator('[data-sticker]')
+  const ids = await all.evaluateAll((found) =>
+    found
+      .filter((sticker) => sticker.getClientRects().length > 0)
+      .map((sticker) => sticker.getAttribute('data-sticker') ?? ''),
+  )
+  return Promise.all(ids.map((id) => boxAround(page.locator(`[data-sticker="${id}"]`), id)))
+}
+
+/** Where the additions are on the lid: the new stickers, the new ribbon and the changed count. */
+async function additionsOnLid(page: Page): Promise<readonly Region[]> {
+  const sticker = (id: string): Locator => page.locator(`[data-sticker="${id}"]`)
+  const ribbons = page.getByRole('navigation', { name: copy.lid.nav.sections })
+  const { winsSeal, ribbons: words } = copy.lid
+
+  return Promise.all([
+    ...ADDED_STICKERS.map((id) => boxAround(sticker(id), `added: ${id}`, SHADOW_REACH_PX)),
+    ...MOVED_PILLS.map((id) => boxAround(sticker(id), `moved to: ${id}`, SHADOW_REACH_PX)),
+    boxAround(
+      ribbons.locator(`a[href="${cvSection('patents')}"]`),
+      'added: inventor ribbon',
+      SHADOW_REACH_PX,
+    ),
+    // The ninth win changed the count in two places: the seal's figure and the ribbon's.
+    boxAround(
+      sticker('wins-count').locator('text', { hasText: winsSeal.times(stats.wins.total) }),
+      'changed count: wins seal',
+      TEXT_MARGIN_PX,
+    ),
+    boxAround(
+      ribbons.getByText(words.times(stats.wins.total), { exact: true }),
+      'changed count: winner ribbon',
+      TEXT_MARGIN_PX,
+    ),
+  ])
+}
+
+/** Where the mockup still has the pills that the lid has moved. */
+async function vacatedOnMockup(mockupPage: Page): Promise<readonly Region[]> {
+  return Promise.all(
+    MOVED_PILLS.map((id) =>
+      boxAround(
+        mockupPage.locator('.pill', { hasText: new RegExp(`^${pillText(id)}$`, 'i') }),
+        `moved from: ${id}`,
+        SHADOW_REACH_PX,
+      ),
+    ),
   )
 }
 
@@ -70,24 +176,29 @@ for (const width of REVIEW_WIDTHS) {
   })
 }
 
-test('looks like the approved mockup at 728 wide', async ({ page, context }) => {
+test('looks like the approved mockup at 728 wide, the additions aside', async ({
+  page,
+  context,
+}) => {
   const mockupPage = await context.newPage()
   await openMockup(mockupPage, MOCKUPS.firstScreen, COMPARED_WIDTH)
   const mockup = await mockupPage.screenshot({ fullPage: true, animations: 'disabled' })
   await openLid(page, COMPARED_WIDTH)
   const lid = await page.screenshot({ fullPage: true, animations: 'disabled' })
+  const excluded = [...(await additionsOnLid(page)), ...(await vacatedOnMockup(mockupPage))]
 
-  const diff = await diffScreenshots(page, mockup, lid, await stickerRegions(page))
+  const diff = await diffScreenshots(page, mockup, lid, await stickerRegions(page), excluded)
   const pixels = diff.width * diff.height
-  const share = (count: number): string => `${((count / pixels) * 100).toFixed(2)}%`
-  const untouched = Object.entries(diff.byRegion).filter(
-    ([name]) => name !== OUTSIDE && !DEPARTED.some((departed) => departed === name),
-  )
+  const share = (count: number, of = pixels): string => `${((count / of) * 100).toFixed(2)}%`
+  const apart: readonly string[] = [...DEPARTED, ...ADDED_STICKERS, ...MOVED_PILLS, OUTSIDE]
+  const untouched = Object.entries(diff.byRegion).filter(([name]) => !apart.includes(name))
   const report = {
     width: diff.width,
     height: diff.height,
-    difference: share(diff.differing),
-    tolerance: share(MAX_DIFFERENCE * pixels),
+    difference: share(diff.differing, diff.compared),
+    tolerance: share(MAX_DIFFERENCE * diff.compared, diff.compared),
+    excluded: share(diff.excluded),
+    excludedPlaces: excluded.map(({ name }) => name),
     bySticker: Object.fromEntries(
       Object.entries(diff.byRegion)
         .toSorted(([, one], [, other]) => other - one)
@@ -102,6 +213,9 @@ test('looks like the approved mockup at 728 wide', async ({ page, context }) => 
   test.info().annotations.push({ type: 'difference', description: JSON.stringify(report) })
 
   expect([diff.width, diff.height]).toEqual([COMPARED_WIDTH, 1300])
+  // Every addition was found on the page, and together they are a small part of it.
+  expect(excluded).toHaveLength(ADDED_STICKERS.length + MOVED_PILLS.length * 2 + 3)
+  expect(diff.excluded / pixels).toBeLessThanOrEqual(MAX_EXCLUDED)
   expect(diff.ratio).toBeLessThanOrEqual(MAX_DIFFERENCE)
   for (const [name, count] of untouched) {
     expect(count / pixels, `${name} should match the mockup`).toBeLessThanOrEqual(

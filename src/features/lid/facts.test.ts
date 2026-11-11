@@ -6,8 +6,11 @@ import {
   balanceLines,
   compactSats,
   cvSection,
+  fieldFigure,
+  fieldWin,
   findById,
   firstWeekSats,
+  grantedPatentNumbers,
   inPersonCity,
   introText,
   latestPodiumWin,
@@ -171,9 +174,58 @@ describe('figures the record states as numbers', () => {
   })
 })
 
+describe('the win that was chosen from a field', () => {
+  it('writes the size of the field, with a plus when the record says "more than"', () => {
+    expect(fieldFigure({ unit: 'teams', count: 300, atLeast: true })).toBe('300+')
+    expect(fieldFigure({ unit: 'teams', count: 1200, atLeast: false })).toBe('1,200')
+  })
+
+  it('accepts a podium win that records its field and its team', () => {
+    const ncr = fieldWin(win('ncr-global-hackathon-2021'))
+
+    expect(ncr.field.count).toBe(300)
+    expect(ncr.team.name).toBe('Eth Heads')
+    expect(ncr.result.place).toBe(1)
+  })
+
+  it('stops the build for a win with no field, no team or no place', () => {
+    const ncr = win('ncr-global-hackathon-2021')
+
+    expect(() => fieldWin(win('pleb-fm'))).toThrow(/pleb-fm/)
+    expect(() => fieldWin({ ...ncr, project: 'Something', team: null })).toThrow(/ncr-global/)
+    expect(() => fieldWin({ ...ncr, result: { kind: 'prize', prizeName: null } })).toThrow(
+      /ncr-global/,
+    )
+  })
+})
+
+describe('grantedPatentNumbers', () => {
+  it('lists the numbers of the granted patents, lowest first', () => {
+    expect(grantedPatentNumbers(content.patents)).toEqual(['12,354,083', '12,536,579'])
+    expect(grantedPatentNumbers(content.patents.toReversed())).toEqual(['12,354,083', '12,536,579'])
+  })
+
+  it('leaves out applications and anything he has chosen not to show', () => {
+    const allShown = content.patents.map((patent) => ({ ...patent, shown: true }))
+    const oneHidden = content.patents.map((patent) =>
+      patent.id === 'us-12354083' ? { ...patent, shown: false } : patent,
+    )
+
+    expect(grantedPatentNumbers(allShown)).toEqual(['12,354,083', '12,536,579'])
+    expect(grantedPatentNumbers(oneHidden)).toEqual(['12,536,579'])
+  })
+
+  it('stops the build when there is no granted patent to print', () => {
+    const applications = content.patents.filter((patent) => patent.status.kind !== 'granted')
+
+    expect(() => grantedPatentNumbers(applications)).toThrow(/granted patent/)
+  })
+})
+
 describe('links', () => {
   it('points at a CV section', () => {
     expect(cvSection('wins')).toBe('/cv/#wins')
+    expect(cvSection('patents')).toBe('/cv/#patents')
   })
 
   it('says a win in one line, as the CV does', () => {

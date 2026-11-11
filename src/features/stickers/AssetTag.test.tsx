@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { AssetTag } from './AssetTag'
+import metal from './metal.module.css'
 
 describe('AssetTag', () => {
   it('prints the small line and the label', () => {
@@ -18,5 +19,11 @@ describe('AssetTag', () => {
     expect(container.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
     expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(2)
     expect(container.textContent).not.toMatch(/[←-⇿]/)
+  })
+
+  it('is cut from brushed metal', () => {
+    const { container } = render(<AssetTag kicker="The serious version" label="Plain CV" />)
+
+    expect(container.firstElementChild).toHaveClass(metal.brushed ?? '')
   })
 })

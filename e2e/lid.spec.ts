@@ -1,6 +1,7 @@
 import { expect, type Page, test } from '@playwright/test'
 
 import { content, stats } from '../src/content'
+import { cvSection } from '../src/features/lid/facts'
 import { MAX_WIDTH_PX, MIN_TEXT_PX, NARROW_PHONE_PX } from '../src/features/lid/placement/artboards'
 import { flattenStickers, linksOf } from '../src/features/lid/stickerSpecs'
 import { lidStickers, STICKER_IDS } from '../src/features/lid/stickers'
@@ -11,6 +12,15 @@ const WIDTHS = [1280, 728, 390] as const
 const MIN_TARGET_PX = 24
 const MIN_OUTLINE_PX = 2
 const WEB_FONTS = ['Bowlby One', 'Bricolage Grotesque', 'Permanent Marker'] as const
+
+/** What was stuck on after the mockup: two stickers and the fifth ribbon. */
+const ADDITIONS = [
+  '[data-sticker="ncr-win"]',
+  '[data-sticker="patents"]',
+  `nav a[href="${cvSection('patents')}"]`,
+] as const
+/** Each addition is probed on a grid of this many points a side. */
+const SAMPLES_PER_SIDE = 12
 
 const stickers = flattenStickers(lidStickers(content, stats))
 const hrefs = stickers.flatMap(linksOf)
@@ -48,6 +58,41 @@ test.describe('the lid', () => {
       expect(missed).toEqual([])
     })
 
+    test(`the additions cover no other link at ${String(width)} wide`, async ({ page }) => {
+      await openLid(page, width)
+
+      const covered = await page.evaluate(
+        ({ selectors, steps }) => {
+          const links = [...document.querySelectorAll('main a')]
+          const linkAt = (element: Element): Element | undefined =>
+            links.find((link) => link.contains(element))
+          return selectors.flatMap((selector) => {
+            const added = document.querySelector(selector)
+            if (!added) {
+              return [`${selector} is missing`]
+            }
+            added.scrollIntoView({ block: 'center' })
+            const box = added.getBoundingClientRect()
+            const points = Array.from({ length: steps * steps }, (_, index) => ({
+              x: box.left + ((index % steps) + 0.5) * (box.width / steps),
+              y: box.top + (Math.floor(index / steps) + 0.5) * (box.height / steps),
+            }))
+            // Everything painted at a point, topmost first: a link under the addition is covered.
+            const under = points.flatMap(({ x, y }) => {
+              const stack = document.elementsFromPoint(x, y)
+              const at = stack.findIndex((element) => added.contains(element))
+              return at < 0 ? [] : stack.slice(at + 1).flatMap((element) => linkAt(element) ?? [])
+            })
+            return [...new Set(under)]
+              .filter((link) => link !== added && !link.contains(added))
+              .map((link) => `${selector} covers ${link.getAttribute('href') ?? ''}`)
+          })
+        },
+        { selectors: ADDITIONS, steps: SAMPLES_PER_SIDE },
+      )
+      expect(covered).toEqual([])
+    })
+
     test(`nothing spills out sideways at ${String(width)} wide`, async ({ page }) => {
       await openLid(page, width)
 
@@ -68,11 +113,12 @@ test.describe('the lid', () => {
     }
 
     expect(visited).toEqual(hrefs.map((href) => resolved(href, baseURL)))
-    expect(visited.slice(0, 5).map((href) => new URL(href).hash)).toEqual([
+    expect(visited.slice(0, 6).map((href) => new URL(href).hash)).toEqual([
       '#organized',
       '#wins',
       '#talks',
       '#projects',
+      '#patents',
       '',
     ])
   })

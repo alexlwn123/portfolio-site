@@ -32,6 +32,14 @@ describe('lidStickers', () => {
     expect(kinds.indexOf('assetTag')).toBe(4)
   })
 
+  it('adds the NCR medal after the other wins and the patent label as the last of the small print', () => {
+    const ids = stickers.map(({ id }) => id)
+
+    expect(ids.indexOf('ncr-win')).toBe(ids.indexOf('latest-win') + 1)
+    expect(ids.indexOf('patents')).toBe(ids.indexOf('elsewhere') - 1)
+    expect(STICKER_IDS).toHaveLength(32)
+  })
+
   it('is frozen, like the content it is built from', () => {
     expect(Object.isFrozen(items)).toBe(true)
     expect(Object.isFrozen(sticker('badge', 'badge').ribbons)).toBe(true)
@@ -110,7 +118,77 @@ describe('lidStickers', () => {
       { label: 'WINNER', count: '×9', href: '/cv/#wins', tone: 'hi' },
       { label: 'SPEAKER', count: null, href: '/cv/#talks', tone: 'mint' },
       { label: 'BUILDER', count: null, href: '/cv/#projects', tone: 'gum' },
+      { label: 'INVENTOR', count: null, href: '/cv/#patents', tone: 'white' },
     ])
+  })
+
+  it('prints the granted patent numbers on the compliance label, lowest first', () => {
+    expect(sticker('patents', 'complianceLabel')).toEqual({
+      id: 'patents',
+      kind: 'complianceLabel',
+      heading: 'U.S. PAT. NOS.',
+      numbers: ['12,354,083', '12,536,579'],
+      pending: 'OTHER PATENTS PENDING',
+      href: '/cv/#patents',
+    })
+  })
+
+  it('says patents are pending only while a filing is', () => {
+    const decided = {
+      ...content,
+      patents: content.patents.filter((patent) => patent.status.kind !== 'pending'),
+    }
+    const label = flattenStickers(lidStickers(decided, deriveStats(decided))).find(
+      ({ id }) => id === 'patents',
+    )
+
+    expect(label).toMatchObject({ numbers: ['12,354,083', '12,536,579'], pending: null })
+  })
+
+  it('never prints an application’s number, or a patent he has chosen not to show', () => {
+    const numbers = sticker('patents', 'complianceLabel').numbers.join(' ')
+    const one = {
+      ...content,
+      patents: content.patents.map((patent) =>
+        patent.id === 'us-12536579' ? { ...patent, shown: false } : patent,
+      ),
+    }
+    const label = flattenStickers(lidStickers(one, deriveStats(one))).find(
+      ({ id }) => id === 'patents',
+    )
+
+    expect(numbers).not.toMatch(/2023|2024|\//)
+    expect(label).toMatchObject({ heading: 'U.S. PAT. NO.', numbers: ['12,354,083'] })
+  })
+
+  it('strikes a medal for the NCR win: first of 300+ teams, as team Eth Heads', () => {
+    expect(sticker('ncr-win', 'medal')).toEqual({
+      id: 'ncr-win',
+      kind: 'medal',
+      label: '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads',
+      rank: '1st',
+      lines: ['OF 300+', 'TEAMS'],
+      rim: ['NCR Global Hackathon 2021', 'Team Eth Heads'],
+      tone: 'hi',
+      href: '/cv/#wins',
+    })
+  })
+
+  it('takes the medal’s figures from the win record', () => {
+    const bigger = {
+      ...content,
+      wins: content.wins.map((win) =>
+        win.id === 'ncr-global-hackathon-2021'
+          ? { ...win, field: { unit: 'teams' as const, count: 1200, atLeast: false } }
+          : win,
+      ),
+    }
+    const medal = flattenStickers(lidStickers(bigger, stats)).find(({ id }) => id === 'ncr-win')
+
+    expect(medal).toMatchObject({
+      lines: ['OF 1,200', 'TEAMS'],
+      label: '1st of 1,200 teams, NCR Global Hackathon 2021, team Eth Heads',
+    })
   })
 
   it('shows the newest podium win in foil', () => {
@@ -245,7 +323,14 @@ describe('lidStickers', () => {
     const internal = stickers.flatMap(linksOf).filter((href) => href.startsWith('/'))
 
     expect(new Set(internal)).toEqual(
-      new Set(['/cv/', '/cv/#organized', '/cv/#wins', '/cv/#talks', '/cv/#projects']),
+      new Set([
+        '/cv/',
+        '/cv/#organized',
+        '/cv/#wins',
+        '/cv/#talks',
+        '/cv/#projects',
+        '/cv/#patents',
+      ]),
     )
   })
 

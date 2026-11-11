@@ -161,6 +161,36 @@ describe('Lid', () => {
     }
   })
 
+  it('reaches the patents two ways: the inventor ribbon and the compliance label', () => {
+    renderLid()
+
+    const toPatents = screen
+      .getAllByRole('link')
+      .filter((link) => link.getAttribute('href') === '/cv/#patents')
+    expect(toPatents.map((link) => link.textContent.trim())).toEqual([
+      'INVENTOR',
+      'U.S. PAT. NOS. 12,354,083 · 12,536,579 OTHER PATENTS PENDING',
+    ])
+    expect(toPatents[1]).toHaveAttribute('data-sticker', 'patents')
+  })
+
+  it('names the NCR medal in words and sends it to the wins', () => {
+    renderLid()
+
+    const medal = screen.getByRole('link', {
+      name: '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads',
+    })
+    expect(medal).toHaveAttribute('href', '/cv/#wins')
+    expect(medal).toHaveAttribute('data-sticker', 'ncr-win')
+    expect(medal.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  it('never calls the filings patents he does not hold', () => {
+    const text = renderLid().textContent
+
+    expect(text).not.toMatch(/2023\/0032782|2024\/0037539|four patents|4 patents/i)
+  })
+
   it('reaches the plain CV through the asset tag', () => {
     renderLid()
 
@@ -222,6 +252,8 @@ describe('Lid', () => {
 
     expect(container).toHaveTextContent(`×${String(stats.organized.count)}`)
     expect(container).toHaveTextContent(`${String(stats.wins.total)}×`)
+    expect(container).toHaveTextContent('9×')
+    expect(container).toHaveTextContent('×9')
     expect(container).toHaveTextContent(`hackathon #${String(stats.organized.nextNumber)}`)
     expect(container).toHaveTextContent(`${String(stats.bitcoinPlusPlus.editions)} editions`)
     expect(container.querySelectorAll('[data-sticker="tally"] path')).toHaveLength(
