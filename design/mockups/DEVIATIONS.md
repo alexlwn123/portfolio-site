@@ -1,18 +1,21 @@
 # Where the lid departs from the mockup
 
-The home page is a port of `01-first-screen.html`. At the mockup's own width of 728px the two
-differ in 1.66% of the pixels compared (`e2e/lid-visual.spec.ts` measures it on every run and fails
-above 2.7%). The comparison leaves out 8.9% of the page: the places taken by what was stuck on
-after the mockup was approved, which are listed at the end under "Additions since the mockup".
-Three city pills moved to make room for those. Every other sticker's box is in the same place to
-the hundredth of a pixel. The pixels that differ are the ones listed here.
+The home page began as a port of `01-first-screen.html`. Since round 2 ("Round 2: a proper site",
+at the end) the lid is no longer laid out as the mockup is, and the comparison with it guards how
+each sticker is drawn, not where it is stuck. At the mockup's own width of 728px, with the lid
+dressed as the mockup, the two differ in 1.63% of the pixels compared (`e2e/lid-visual.spec.ts`
+measures it on every run and fails above 2.7%). The pixels that differ are the ones listed here.
 
 Sizes are in design units unless they say px. One unit is 1px when an artboard is shown at its own
-width (728 for the desktop arrangement, 390 for the phone one), and ten units are 1em.
+width (1100 for the wide arrangement, 728 for the desktop one, 390 for the phone one), and ten
+units are 1em.
 
 ## The five requested departures
 
 ### 1. Width cap and centring
+
+Superseded in round 2: the lid now runs edge to edge at every width, with no desk and no corners.
+See "Round 2: a proper site" at the end. What this departure was:
 
 |               | Mockup                                    | Lid                                                         |
 | ------------- | ----------------------------------------- | ----------------------------------------------------------- |
@@ -137,10 +140,11 @@ font the browser found (on this Mac: SF, Lucida Grande and Zapf Dingbats).
 - **The sixteenth tally mark is full height.** The marks are generated from the count. The first
   fifteen are the mockup's strokes exactly; the mockup's last one was 6 units shorter.
 - **Links.** The mockup's count stickers and ribbons pointed at anchors on a page that did not
-  exist. They go to `/cv/#organized`, `#wins`, `#talks` and `#projects`. Project and contact
-  stickers open in the same tab, as links on the CV do. The mockup opened them in a new one.
-- **Rounded corners show the desk.** The four 12px corners of the lid are ink where the mockup's
-  were white.
+  exist. They went to `/cv/#organized`, `#wins`, `#talks` and `#projects`; since round 2 they go to
+  the sections of the home page itself. Project and contact stickers open in the same tab, as
+  links on the CV do. The mockup opened them in a new one.
+- **Rounded corners showed the desk.** Until round 2 the four 12px corners of the lid were ink
+  where the mockup's were white. The lid has no corners now.
 - **The mockup's script was not ported: it was rebuilt.** The foil that follows the pointer and the
   peel-and-restick dragging are now part of a larger interaction layer, described at the end under
   "The interaction layer". The light rests where the mockup's script started it (0.35 across, 0.3
@@ -369,3 +373,83 @@ motion was set.
 
 The tests run in headless Chromium on a desktop. A real phone's tilt (the tests send the readings a
 sensor would), the sounds as heard, Safari and Firefox, and a pen on a tablet have not been tried.
+
+## Round 2: a proper site
+
+Alex's feedback on the built lid: it read as a screenshot on a desk ("weird margins"), and its
+first screen was "just focusing on the hackathon stuff". Both answers move the lid further from
+the mockup, so this round also changed how the lid is compared with it.
+
+### Full bleed, and a third arrangement
+
+|                    | Before                                        | Now                                                                       |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------------- |
+| The lid            | A 1001px card with 12px corners on an ink desk | Cobalt from edge to edge at every width, no desk, no corners, no padding |
+| Arrangements       | 390 (to 560px) and 728 (561px and up)         | 390 (to 560px), 728 (561 to 1099px) and a new wide one, 1100 (1100px up)  |
+| Largest artboard   | 728 units at 1001px                           | 1100 units, growing to 1920px (1.75px a unit), then centred               |
+| Artboard heights   | 728 × 1300, 390 × 2256                         | 1100 × 1090, 728 × 1510, 390 × 2526                                       |
+| Below the lid      | The desk                                      | The strap pinned to the top, then the first section                       |
+
+Past 1920px the stickers stop growing and are centred, and the cobalt and its brushed texture run
+on to both edges. The wide arrangement is `src/features/lid/placement/wide.ts`. Its badge hangs
+from a point 120 units above the top edge (`rise` in `artboards.ts`), higher than on the other
+two, so that at 1440 × 900 the first screen shows the name, the hello tag, the badge with the top
+of its ribbons, the Plain CV tag and both counts. The lid is kept clear 60 units either side of
+the badge and 120 below its ribbons, for the badge's drag and spring.
+
+### The whole career, not only hackathons
+
+- **The hello tag** introduces the whole person. Its handwriting is his own first line followed by
+  "I build AI agents at" the employer the record marks as current, "Before that: bitcoin and
+  Lightning apps." and "Along the way:" the count of granted patents "and hackathons around the
+  world." The highlighted phrase is now "AI agents", where the mockup had "hackathons".
+- **Five asset tags** for his employers (Finite Computer, Fedi, Zion, BlockSpaces, NCR), drawn as
+  the silver plates, white "property of" labels and riveted strips companies stick on their
+  laptops: `src/features/stickers/PropertyTag.tsx`. Each has the organization and, where the record
+  has one, the start year ("Issued 2024"); the current job reads "In service". They link to the
+  work section.
+- **Six ribbons**, in the order of the page: ENGINEER, WINNER ×9, BUILDER, ORGANIZER ×16, SPEAKER,
+  INVENTOR. The mockup had four (ORGANIZER, WINNER, SPEAKER, BUILDER).
+- **Links stay on the page.** Every sticker and ribbon that went to `/cv/#…` now goes to the
+  matching section of the home page. Plain CV still goes to `/cv/`, and the "More in the CV" link
+  at the foot of a peeled sticker's note still goes to the CV's own section.
+- **Nothing was dropped.** To make room, the stickers below the hello tag moved down on the 728
+  and phone arrangements (200 to 260 units on 728). The eight city pills kept their size and were moved
+  into the gaps.
+
+### The strap pinned to the top
+
+`src/features/nav/`: the lanyard's strap laid flat between the lid and the first section,
+`position: sticky`, 44px tall at every width, a `nav` named "On this page" (the ribbons' is
+"Sections"). It carries Top and a link to each section; on a phone the links scroll sideways
+inside it. The page sets `--pinned-height` to its height, so a section followed from it lands with
+its heading clear. Following a link on the page glides there, except under reduced motion.
+
+### How the comparison with the mockup changed
+
+Until this round `e2e/lid-visual.spec.ts` compared the lid as laid out with the mockup, and left
+out the places taken by everything added since. With the asset tags, the sixth ribbon and the
+moved stickers those places would have come to well over the 9% it allowed, and the comparison
+would have guarded almost nothing. It now works the other way round:
+
+1. **It dresses the lid as the mockup** before taking the picture (`e2e/mockupArrangement.ts`): it
+   adds a stylesheet that puts every sticker the mockup has back at the mockup's place, size,
+   tilt and stacking, makes the stage the mockup's 1300 units tall and takes off everything added
+   since (the five asset tags, the NCR medal, the patents label and the three buttons the script
+   shows). It then gives the hello tag the mockup's sentence around "hackathons" and hangs the
+   mockup's four ribbons in the mockup's order.
+2. **It compares the two pictures** as before: at most 2.7% of the pixels may differ, and every
+   sticker not in the list of recorded departures must match to 0.1%. Today the difference is
+   1.63%.
+3. **Only the two counts the ninth win changed are left out**: the wins seal's figure and the
+   WINNER ribbon's ×9. The allowance for what is left out came down from 9% to 2%; they take 1.57%.
+4. **Two new checks keep it honest.** Every sticker on the lid is either on the mockup or on the
+   list of additions, so a new sticker cannot slip past unnoticed. And the dressed lid is checked
+   to have every mockup sticker at the mockup's exact place, its height, the mockup's hello
+   wording and its four ribbons, so the dressing cannot quietly stop working.
+
+What it still guards: how every sticker of the mockup is drawn (vinyl, cut, paint, lettering,
+shadow), at the mockup's width. What it no longer guards: where the stickers are stuck, the
+wording of the hello tag, and the ribbons beyond the mockup's four. Those are covered by
+`e2e/lid.spec.ts` instead, at 390, 728 and 1440 wide, with 1100, 1920 and 2560 checked for
+overflow and for the 11px floor. The review screenshots are now taken at 1920, 1440, 728 and 390.
