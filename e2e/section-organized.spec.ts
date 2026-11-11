@@ -6,6 +6,7 @@ import { MIN_TEXT_PX, NARROW_PHONE_PX } from '../src/features/lid/placement/artb
 import { organizedCopy } from '../src/features/sections/organized/copy'
 import { formatDateSpan } from '../src/lib/formatDate'
 import { formatMillions, formatNumber, formatUsd } from '../src/lib/formatNumber'
+import { COLUMN_WIDTHS, columnFaults, columnUse, drawnEach, drawnOne, isNear } from './columnUse'
 import {
   linkNames,
   linksSmallerThan,
@@ -18,6 +19,16 @@ import {
 } from './winsAndOrganizedSupport'
 
 const MIN_TARGET_PX = 24
+/** The arm is drawn to run off the foot of the page, so it is not held to the column. */
+const RUNS_OFF = ['[data-forearm]']
+/** How far, in em, the first line of a label may sit above or below the middle of its band. */
+const LEVEL_EM = 1
+const LABELS = {
+  left: 'li[data-side="left"] > :last-child',
+  right: 'li[data-side="right"] > :last-child',
+}
+/** The first line of every label: the city, in his hand. */
+const FIRST_LINES = 'li[data-side] > :last-child > * > :first-child'
 const { organized, press } = content
 const totals = stats.organized
 
@@ -86,6 +97,67 @@ test.describe('the "organized" section', () => {
         })
       })
       expect(overlaps).toEqual([])
+    })
+  }
+
+  for (const width of COLUMN_WIDTHS) {
+    test(`uses the column at ${String(width)} wide: edge to edge or centred, with no dead block`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'organized')
+
+      expect(columnFaults(await columnUse(section, RUNS_OFF))).toEqual([])
+    })
+
+    test(`letters the labels out to the column's edges at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'organized')
+      const left = await drawnEach(section, LABELS.left)
+      const right = await drawnEach(section, LABELS.right)
+
+      expect(left.length + right.length).toBe(organized.length)
+      expect(left.filter(({ fromLeft }) => !isNear(fromLeft))).toEqual([])
+      expect(right.filter(({ fromRight }) => !isNear(fromRight))).toEqual([])
+    })
+
+    test(`sets the first line of each label level with its band at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'organized')
+      const bands = await drawnEach(section, '[data-band]')
+      const lines = await drawnEach(section, FIRST_LINES)
+
+      expect(lines).toHaveLength(organized.length)
+      const adrift = lines.flatMap((line, index) => {
+        const band = bands[index]
+        return band && isNear(line.middle - band.middle, LEVEL_EM)
+          ? []
+          : [`${organized[index]?.name ?? ''}: ${String(line.middle - (band?.middle ?? 0))}em`]
+      })
+      expect(adrift).toEqual([])
+    })
+
+    test(`sets the totals against the column's edges and the arm on its middle at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'organized')
+      const total = (name: string) => drawnOne(section, `[data-total="${name}"]`)
+      const [count, participants, prizes] = await Promise.all(
+        ['count', 'participants', 'prizes'].map(total),
+      )
+      const bands = await drawnEach(section, '[data-band]')
+
+      expect(isNear(count?.fromRight ?? NaN), 'the count ends at the right edge').toBe(true)
+      expect(isNear(participants?.fromLeft ?? NaN), 'the head count starts at the left edge').toBe(
+        true,
+      )
+      expect(isNear(prizes?.fromRight ?? NaN), 'the prize money ends at the right edge').toBe(true)
+      expect(
+        isNear((participants?.top ?? NaN) - (prizes?.top ?? NaN)),
+        'the two tiles are level',
+      ).toBe(true)
+      expect(bands.filter(({ offCentre }) => !isNear(offCentre))).toEqual([])
     })
   }
 

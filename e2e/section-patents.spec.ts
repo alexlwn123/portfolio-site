@@ -7,6 +7,15 @@ import { MIN_TEXT_PX } from '../src/features/lid/placement/artboards'
 import { patentsCopy } from '../src/features/sections/patents/copy'
 import { formatPartialDate } from '../src/lib/formatDate'
 import {
+  COLUMN_WIDTHS,
+  columnFaults,
+  columnUse,
+  type Drawn,
+  drawnEach,
+  drawnOne,
+  isNear,
+} from './columnUse'
+import {
   cutOffSideways,
   drawnText,
   expectNamedLinks,
@@ -24,6 +33,19 @@ import {
 const shown = publishablePatents(content.patents)
 const RIVETS = 4
 const INSPECTION_STICKERS = 3
+const STICKERS = `[aria-label="${patentsCopy.stickers.list}"] > li`
+/** A sticker is stuck on the plate when this much of it is, and over an edge when this much is not. */
+const ON_THE_PLATE = 1 / 3
+const OFF_THE_PLATE = 1 / 10
+
+/** How much of one thing lies on another, as a share of its own area. */
+function shareOn(thing: Drawn, ground: Drawn): number {
+  const across =
+    Math.min(thing.fromLeft + thing.width, ground.fromLeft + ground.width) -
+    Math.max(thing.fromLeft, ground.fromLeft)
+  const down = Math.min(thing.bottom, ground.bottom) - Math.max(thing.top, ground.top)
+  return (Math.max(0, across) * Math.max(0, down)) / (thing.width * thing.height)
+}
 
 test.describe('the patents plate', () => {
   for (const { width } of SECTION_VIEWPORTS) {
@@ -82,6 +104,45 @@ test.describe('the patents plate', () => {
             box.top >= row.bottom
           expect(apart, await sticker.innerText()).toBe(true)
         }
+      }
+    })
+  }
+
+  for (const width of COLUMN_WIDTHS) {
+    test(`uses the column at ${String(width)} wide: edge to edge or centred, with no dead block`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'patents')
+
+      expect(columnFaults(await columnUse(section))).toEqual([])
+    })
+
+    test(`the plate spans the column, or sits on its middle, at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'patents')
+      const plate = await drawnOne(section, '[data-plate]')
+      const spans = isNear(plate.fromLeft) && isNear(plate.fromRight)
+
+      expect(spans || isNear(plate.offCentre), JSON.stringify(plate)).toBe(true)
+    })
+
+    test(`every sticker is stuck on the plate, over one of its edges, at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'patents')
+      const plate = await drawnOne(section, '[data-plate]')
+      const stickers = await drawnEach(section, STICKERS)
+
+      expect(stickers).toHaveLength(INSPECTION_STICKERS)
+      for (const [index, sticker] of stickers.entries()) {
+        const on = shareOn(sticker, plate)
+        expect(on, `sticker ${String(index + 1)} is on the plate`).toBeGreaterThanOrEqual(
+          ON_THE_PLATE,
+        )
+        expect(1 - on, `sticker ${String(index + 1)} hangs over an edge`).toBeGreaterThanOrEqual(
+          OFF_THE_PLATE,
+        )
       }
     })
   }

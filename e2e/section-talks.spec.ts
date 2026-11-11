@@ -5,6 +5,17 @@ import { LABELS } from '../src/features/cv/labels'
 import { MIN_TEXT_PX, NARROW_PHONE_PX } from '../src/features/lid/placement/artboards'
 import { isoDate } from '../src/lib/formatDate'
 import {
+  COLUMN_WIDTHS,
+  columnFaults,
+  columnUse,
+  drawnEach,
+  drawnOne,
+  isNear,
+  laidOutOne,
+  rowsOf,
+  spansColumn,
+} from './columnUse'
+import {
   drawnText,
   hrefsIn,
   linksNotUnderTheirCentre,
@@ -15,6 +26,11 @@ import {
 } from './sectionChecks'
 
 const SECTION = 'talks'
+/** The ruler along the top of the mat runs from one side of the screen to the other. */
+const RUNS_OFF = ['[data-mat-prop]']
+const TEE = 'article[aria-labelledby="talks-tour-title"]'
+/** The stickers round the shirt: whatever comes after it. */
+const AROUND = `${TEE} + *`
 /** The press items that are cuttings. The rest are pages of reference. */
 const cuttings = content.press.filter(({ subject }) => subject.kind !== 'reference')
 
@@ -33,6 +49,50 @@ test.describe('Talks and press', () => {
       expect(await linksNotUnderTheirCentre(section)).toEqual([])
     })
   }
+
+  for (const width of COLUMN_WIDTHS) {
+    test(`uses the column at ${String(width)} wide: edge to edge or centred, with no dead block`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, SECTION, width)
+
+      expect(columnFaults(await columnUse(section, RUNS_OFF))).toEqual([])
+    })
+  }
+
+  test('on a laptop, the shirt starts at the column’s left edge and every sticker beside it ends at its right edge', async ({
+    page,
+  }) => {
+    const section = await openSection(page, SECTION, 1440)
+    const tee = await drawnOne(section, TEE)
+    const beside = await drawnEach(section, `${AROUND} > *`)
+
+    expect(isNear(tee.fromLeft), `the shirt starts ${String(tee.fromLeft)}em in`).toBe(true)
+    expect(beside.length).toBeGreaterThanOrEqual(cuttings.length)
+    expect(beside.filter(({ fromRight }) => !isNear(fromRight))).toEqual([])
+  })
+
+  test('on a laptop, the shirt and the stickers beside it end together', async ({ page }) => {
+    const section = await openSection(page, SECTION, 1440)
+    const hem = (await laidOutOne(section, TEE)).bottom
+    const last = (await drawnOne(section, AROUND)).bottom
+
+    expect(isNear(hem - last), `the hem is ${String(hem - last)}em below the last sticker`).toBe(
+      true,
+    )
+  })
+
+  test('on a tablet, the stickers under the shirt are set in rows that span the column', async ({
+    page,
+  }) => {
+    const section = await openSection(page, SECTION, 900)
+    const hem = (await laidOutOne(section, TEE)).bottom
+    const rows = rowsOf(await drawnEach(section, `${AROUND} > *`))
+
+    expect(rows.length).toBeGreaterThan(1)
+    expect(rows[0]?.every(({ top }) => top > hem)).toBe(true)
+    expect(rows.filter((row) => !spansColumn(row))).toEqual([])
+  })
 
   test(`draws no text under ${String(MIN_TEXT_PX)}px at ${String(NARROW_PHONE_PX)} wide`, async ({
     page,

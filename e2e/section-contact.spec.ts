@@ -4,6 +4,16 @@ import { content } from '../src/content'
 import { MIN_TEXT_PX } from '../src/features/lid/placement/artboards'
 import { contactCopy } from '../src/features/sections/contact/copy'
 import {
+  COLUMN_WIDTHS,
+  columnFaults,
+  columnUse,
+  drawnEach,
+  drawnOne,
+  isNear,
+  rowsOf,
+  spansColumn,
+} from './columnUse'
+import {
   cutOffSideways,
   drawnText,
   expectNamedLinks,
@@ -21,6 +31,11 @@ import {
 const { profile } = content
 /** The address, a strip for each profile link, and the plain CV. */
 const LINKS = profile.links.length + 2
+/** The whole label, its tangerine border included. */
+const LABEL = 'div:has(> div > [data-return-label])'
+const STRIPS = 'li[data-band] a'
+const CV_TAG = 'a[href$="/cv/"]'
+const SMALL_PRINT = '[data-section-body] > p'
 
 test.describe('say hello', () => {
   for (const { width } of SECTION_VIEWPORTS) {
@@ -65,6 +80,72 @@ test.describe('say hello', () => {
       }
     })
   }
+
+  for (const width of COLUMN_WIDTHS) {
+    test(`uses the column at ${String(width)} wide: edge to edge or centred, with no dead block`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'contact')
+
+      expect(columnFaults(await columnUse(section))).toEqual([])
+    })
+
+    test(`centres the CV tag and the small print under the label and the strips at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'contact')
+      const label = await drawnOne(section, LABEL)
+      const strips = await drawnEach(section, STRIPS)
+      const tag = await drawnOne(section, CV_TAG)
+      const smallPrint = await drawnOne(section, SMALL_PRINT)
+      const above = Math.max(label.bottom, ...strips.map(({ bottom }) => bottom))
+
+      expect(isNear(tag.offCentre), `the tag is ${String(tag.offCentre)}em off centre`).toBe(true)
+      expect(isNear(smallPrint.offCentre)).toBe(true)
+      expect(tag.top).toBeGreaterThanOrEqual(above)
+      expect(smallPrint.top).toBeGreaterThanOrEqual(tag.bottom)
+    })
+  }
+
+  test('on a laptop, the label starts at the column’s left edge and every strip ends at its right edge', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'contact')
+    const label = await drawnOne(section, LABEL)
+    const strips = await drawnEach(section, STRIPS)
+
+    expect(isNear(label.fromLeft), `the label starts ${String(label.fromLeft)}em in`).toBe(true)
+    expect(strips).toHaveLength(profile.links.length)
+    expect(strips.filter(({ fromRight }) => !isNear(fromRight))).toEqual([])
+    expect(strips.filter(({ fromLeft }) => fromLeft < label.fromLeft + label.width)).toEqual([])
+  })
+
+  test('on a laptop, the strips start and end level with the label', async ({ page }) => {
+    const section = await openSection(page, 1440, 'contact')
+    const label = await drawnOne(section, LABEL)
+    const strips = await drawnOne(section, '[data-bands]')
+
+    expect(
+      isNear(strips.top - label.top),
+      `the strips start ${String(strips.top - label.top)}em below the label's top`,
+    ).toBe(true)
+    expect(
+      isNear(strips.bottom - label.bottom),
+      `the strips end ${String(strips.bottom - label.bottom)}em below the label's foot`,
+    ).toBe(true)
+  })
+
+  test('on a tablet, the label spans the column and so does every row of strips', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 900, 'contact')
+    const label = await drawnOne(section, LABEL)
+    const rows = rowsOf(await drawnEach(section, STRIPS))
+
+    expect(isNear(label.fromLeft) && isNear(label.fromRight), JSON.stringify(label)).toBe(true)
+    expect(rows.length).toBeGreaterThan(1)
+    expect(rows.filter((row) => !spansColumn(row))).toEqual([])
+  })
 
   test(`draws no text under ${String(MIN_TEXT_PX)}px on a narrow phone`, async ({ page }) => {
     const section = await openSectionOnNarrowPhone(page, 'contact')
