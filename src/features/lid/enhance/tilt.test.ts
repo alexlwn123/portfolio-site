@@ -37,6 +37,15 @@ describe('tilt', () => {
     expect(back?.x).toBeLessThan(LAMP_REST.x)
   })
 
+  it('says how far the phone leans across from where it was held, in degrees, up to the range', () => {
+    const { state } = tilt(TILT_START, { beta: 50, gamma: 10 })
+
+    expect(tilt(TILT_START, { beta: 50, gamma: 10 }).lean).toBe(0)
+    expect(tilt(state, { beta: 50, gamma: 22 }).lean).toBe(12)
+    expect(tilt(state, { beta: 50, gamma: -80 }).lean).toBe(-TILT_RANGE_DEG)
+    expect(tilt(state, { beta: null, gamma: 4 }).lean).toBe(0)
+  })
+
   it('re-baselines on visibility', () => {
     const { state } = tilt(TILT_START, { beta: 10, gamma: 10 })
 
@@ -52,6 +61,7 @@ describe('tilt', () => {
     expect(tilt(TILT_START, { beta: null, gamma: null })).toEqual({
       state: TILT_START,
       lamp: null,
+      lean: 0,
     })
     expect(tilt(TILT_START, { beta: 3, gamma: null }).lamp).toBeNull()
   })

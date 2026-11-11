@@ -98,6 +98,44 @@ describe('enhancing the lid', () => {
     expect(fixture.lid.style.getPropertyValue('--lamp-x')).toBe('')
   })
 
+  it('hangs the badge, which drops in and settles, and tidying puts it back from the hand', () => {
+    const env = fakeEnv()
+    enhanceLid(document, env)
+    env.frames.flush(1200)
+    const badge = fixture.sticker('badge')
+
+    expect(badge).toHaveAttribute('data-hang')
+    expect(badge).not.toHaveAttribute('style')
+
+    const link = badge.querySelector('a') ?? badge
+    pointer(link, 'pointerdown', { x: 530, y: 631 })
+    pointer(window, 'pointermove', { x: 700, y: 600 })
+    env.frames.flush(30)
+    expect(badge.style.getPropertyValue('--hang-dx')).not.toBe('')
+
+    fixture.control('tidy').click()
+    expect(badge).not.toHaveAttribute('style')
+  })
+
+  it('leans the badge with a tilted phone', async () => {
+    const { fakeOrientation } = await import('../../../test/lidFixture')
+    const orientation = fakeOrientation(true)
+    const env = fakeEnv({ touch: true, orientation })
+    enhanceLid(document, env)
+    env.frames.flush(1200)
+
+    fixture.control('tilt').click()
+    await Promise.resolve()
+    await Promise.resolve()
+    orientation.send({ beta: 0, gamma: 0 })
+    orientation.send({ beta: 0, gamma: 20 })
+    env.frames.flush(30)
+
+    expect(
+      Number.parseFloat(fixture.sticker('badge').style.getPropertyValue('--hang-dx')),
+    ).toBeGreaterThan(0)
+  })
+
   it('moves the lamp with a tilted phone, through the same loop as the pointer', async () => {
     const { fakeOrientation } = await import('../../../test/lidFixture')
     const orientation = fakeOrientation(true)

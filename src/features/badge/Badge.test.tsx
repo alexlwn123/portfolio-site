@@ -79,6 +79,15 @@ describe('Badge', () => {
     expect(within(nav).getAllByRole('link')).toHaveLength(5)
   })
 
+  it('marks the card, sleeve and ribbons together, as what a hand takes hold of', () => {
+    const { container } = renderBadge()
+    const card = container.querySelector('[data-badge-card]')
+
+    expect(container.querySelectorAll('[data-badge-card]')).toHaveLength(1)
+    expect(card?.querySelector('nav')).not.toBeNull()
+    expect(card?.querySelector('img')).not.toBeNull()
+  })
+
   it('names its clip’s gradient after the sticker', () => {
     const { container } = renderBadge()
 
