@@ -53,6 +53,14 @@ export default defineConfig([
     },
   },
   {
+    // The JSON-LD data block is the single sanctioned use of set:html. Its
+    // input is escaped by serializeJsonLd (src/features/seo/jsonLd.ts).
+    files: ['src/features/seo/JsonLd.astro'],
+    rules: {
+      'astro/no-set-html-directive': 'off',
+    },
+  },
+  {
     files: ['*.config.{js,ts}', 'tests/**/*.ts', 'e2e/**/*.ts'],
     languageOptions: { globals: globals.node },
   },

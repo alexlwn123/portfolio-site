@@ -1,9 +1,10 @@
 ---
-import { copy } from '../content/copy'
+import { content, stats } from '../content'
 import { ComingSoon } from '../features/home/ComingSoon'
+import { buildMeta } from '../features/seo/meta'
 import Base from '../layouts/Base.astro'
 ---
 
-<Base title={copy.placeholder.title} description={copy.placeholder.body}>
+<Base meta={buildMeta('home', content, stats)}>
   <ComingSoon />
 </Base>

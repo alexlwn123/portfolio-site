@@ -5,12 +5,14 @@ import '@fontsource/permanent-marker/latin-400.css'
 import '../design/tokens.css'
 import '../design/base.css'
 
+import JsonLd from '../features/seo/JsonLd.astro'
+import type { PageMeta } from '../features/seo/meta'
+
 interface Props {
-  title: string
-  description: string
+  meta: PageMeta
 }
 
-const { title, description } = Astro.props
+const { meta } = Astro.props
 ---
 
 <!doctype html>
@@ -18,13 +20,23 @@ const { title, description } = Astro.props
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <meta name="robots" content={meta.robots} />
+    {meta.canonical && <link rel="canonical" href={meta.canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={meta.siteName} />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    {meta.canonical && <meta property="og:url" content={meta.canonical} />}
+    <meta property="og:image" content={meta.image} />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    {meta.jsonLd && <JsonLd json={meta.jsonLd} />}
   </head>
   <body>
     <slot />

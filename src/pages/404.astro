@@ -1,9 +1,10 @@
 ---
-import { copy } from '../content/copy'
+import { content, stats } from '../content'
 import { NotFound } from '../features/notFound/NotFound'
+import { buildMeta } from '../features/seo/meta'
 import Base from '../layouts/Base.astro'
 ---
 
-<Base title={copy.notFound.title} description={copy.notFound.body}>
+<Base meta={buildMeta('notFound', content, stats)}>
   <NotFound />
 </Base>
