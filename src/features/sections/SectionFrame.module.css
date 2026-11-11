@@ -57,11 +57,16 @@
     var(--ink);
 }
 
+/*
+ * The column every section is set in: 1000 units between two gutters of 50.
+ * The unit grows with the screen up to 1440px across and stops there, so on a
+ * larger screen the margins grow and the type does not.
+ */
 .units {
-  max-width: 1920px;
+  max-width: 1440px;
   margin-inline: auto;
   padding: 7em 5em 9em;
-  font-size: min(calc(100cqw / 110), calc(1920px / 110));
+  font-size: min(calc(100cqw / 110), calc(1440px / 110));
 }
 
 .header {
