@@ -1,8 +1,5 @@
-/* The one serious sticker: a brushed-metal asset tag with a barcode. */
+/* A serious sticker: a brushed-metal asset tag with a barcode. Its metal is in metal.module.css. */
 .tag {
-  /* The tag's own metal, light to dark and back. */
-  --c: linear-gradient(100deg, #f4f5f9, #c9cedb 38%, #fafbfd 52%, #bfc5d4);
-
   display: flex;
   gap: 1.1em;
   align-items: center;

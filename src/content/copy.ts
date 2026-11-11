@@ -49,7 +49,22 @@ export const copy = deepFreeze({
       winner: 'WINNER',
       speaker: 'SPEAKER',
       builder: 'BUILDER',
+      inventor: 'INVENTOR',
       times: (count: Figure) => `×${String(count)}`,
+    },
+    /** The compliance label. The numbers themselves come from the patent records. */
+    patentLabel: {
+      one: 'U.S. PAT. NO.',
+      many: 'U.S. PAT. NOS.',
+      pending: 'OTHER PATENTS PENDING',
+    },
+    /** The medal for a win chosen from a field of teams. */
+    medal: {
+      outOf: (field: Figure) => `OF ${String(field)}`,
+      teams: 'TEAMS',
+      team: (name: string) => `Team ${name}`,
+      summary: (rank: Figure, field: Figure, event: string, team: string) =>
+        `${String(rank)} of ${String(field)} teams, ${event}, team ${team}`,
     },
     cities: { label: 'Cities I have run hackathons in' },
     bumper: { note: 'a real workshop I teach at bitcoin++' },

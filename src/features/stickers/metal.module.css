@@ -1,0 +1,7 @@
+/*
+ * Brushed metal, light to dark and back. The serious stickers are cut from
+ * it: the asset tag and the compliance label.
+ */
+.brushed {
+  --c: linear-gradient(100deg, #f4f5f9, #c9cedb 38%, #fafbfd 52%, #bfc5d4);
+}

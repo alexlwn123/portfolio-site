@@ -23,10 +23,15 @@ const COMPARED_WIDTH = 728
 /*
  * A faithful port differs from the mockup only where design/mockups/DEVIATIONS.md
  * says it should: recoloured lettering, drawn glyphs, the photo's new pipeline
- * and the hex badge's larger foot line. Those repaint about 2% of the page.
- * The tolerance leaves room for that and little else.
+ * and the hex badge's larger foot line. Those repaint 1.6% of what is compared.
+ * The tolerance leaves a point of room for that and little else.
+ *
+ * It was 3% while the whole page was compared and those departures came to
+ * 1.95%. Leaving the additions out (see below) took the recoloured figure on
+ * the wins seal out with them, so the tolerance came down by the same 0.3
+ * points. The room is what it was.
  */
-const MAX_DIFFERENCE = 0.03
+const MAX_DIFFERENCE = 0.027
 
 /** The stickers the recorded departures touch. Every other sticker must match. */
 const DEPARTED = [
@@ -55,7 +60,7 @@ const MAX_UNTOUCHED_DIFFERENCE = 0.001
  * above, which have not moved.
  */
 
-/** Two stickers the mockup does not have. */
+/** Two stickers the mockup does not have: the medal and the compliance label. */
 const ADDED_STICKERS = ['ncr-win', 'patents'] as const
 
 /**
@@ -64,13 +69,27 @@ const ADDED_STICKERS = ['ncr-win', 'patents'] as const
  */
 const MOVED_PILLS = ['city-berlin', 'city-toronto', 'city-austin'] as const
 
-/** A sticker's shadow falls outside its box. This much around the box is left out with it. */
-const SHADOW_REACH_PX = 14
-/** Lettering has no shadow. A hair of margin covers its anti-aliased edge. */
-const TEXT_MARGIN_PX = 2
+/** How far past its box a place is left out, in px. */
+interface Margin {
+  readonly top: number
+  readonly side: number
+  readonly bottom: number
+}
 
-/** The left-out places must stay a small part of the page, or the comparison means nothing. */
-const MAX_EXCLUDED = 0.08
+/**
+ * A sticker's shadow falls outside its box, mostly below it: it is cast 5px
+ * down and blurred by 5px. This much around the box is left out with it.
+ */
+const SHADOW: Margin = { top: 3, side: 6, bottom: 12 }
+/** Lettering has no shadow. A hair of margin covers its anti-aliased edge. */
+const LETTERING: Margin = { top: 2, side: 2, bottom: 2 }
+const NONE: Margin = { top: 0, side: 0, bottom: 0 }
+
+/**
+ * The left-out places must stay a small part of the page, or the comparison
+ * means nothing. They come to 7.9% of it today.
+ */
+const MAX_EXCLUDED = 0.09
 
 const stickers = flattenStickers(lidStickers(content, stats))
 
@@ -88,7 +107,7 @@ function pillText(id: string): string {
  * margin. Matching nothing is an error: an addition that has gone missing
  * should fail the comparison, not slip out of it.
  */
-async function boxAround(elements: Locator, name: string, margin = 0): Promise<Region> {
+async function boxAround(elements: Locator, name: string, margin = NONE): Promise<Region> {
   const rects = await elements.evaluateAll((matched) =>
     matched
       .flatMap((element) => [element, ...element.querySelectorAll('*')])
@@ -106,10 +125,10 @@ async function boxAround(elements: Locator, name: string, margin = 0): Promise<R
   }
   return {
     name,
-    left: Math.min(...rects.map(({ left }) => left)) - margin,
-    top: Math.min(...rects.map(({ top }) => top)) - margin,
-    right: Math.max(...rects.map(({ right }) => right)) + margin,
-    bottom: Math.max(...rects.map(({ bottom }) => bottom)) + margin,
+    left: Math.min(...rects.map(({ left }) => left)) - margin.side,
+    top: Math.min(...rects.map(({ top }) => top)) - margin.top,
+    right: Math.max(...rects.map(({ right }) => right)) + margin.side,
+    bottom: Math.max(...rects.map(({ bottom }) => bottom)) + margin.bottom,
   }
 }
 
@@ -131,23 +150,23 @@ async function additionsOnLid(page: Page): Promise<readonly Region[]> {
   const { winsSeal, ribbons: words } = copy.lid
 
   return Promise.all([
-    ...ADDED_STICKERS.map((id) => boxAround(sticker(id), `added: ${id}`, SHADOW_REACH_PX)),
-    ...MOVED_PILLS.map((id) => boxAround(sticker(id), `moved to: ${id}`, SHADOW_REACH_PX)),
+    ...ADDED_STICKERS.map((id) => boxAround(sticker(id), `added: ${id}`, SHADOW)),
+    ...MOVED_PILLS.map((id) => boxAround(sticker(id), `moved to: ${id}`, SHADOW)),
     boxAround(
       ribbons.locator(`a[href="${cvSection('patents')}"]`),
       'added: inventor ribbon',
-      SHADOW_REACH_PX,
+      SHADOW,
     ),
     // The ninth win changed the count in two places: the seal's figure and the ribbon's.
     boxAround(
       sticker('wins-count').locator('text', { hasText: winsSeal.times(stats.wins.total) }),
       'changed count: wins seal',
-      TEXT_MARGIN_PX,
+      LETTERING,
     ),
     boxAround(
       ribbons.getByText(words.times(stats.wins.total), { exact: true }),
       'changed count: winner ribbon',
-      TEXT_MARGIN_PX,
+      LETTERING,
     ),
   ])
 }
@@ -159,7 +178,7 @@ async function vacatedOnMockup(mockupPage: Page): Promise<readonly Region[]> {
       boxAround(
         mockupPage.locator('.pill', { hasText: new RegExp(`^${pillText(id)}$`, 'i') }),
         `moved from: ${id}`,
-        SHADOW_REACH_PX,
+        SHADOW,
       ),
     ),
   )
@@ -190,8 +209,10 @@ test('looks like the approved mockup at 728 wide, the additions aside', async ({
   const diff = await diffScreenshots(page, mockup, lid, await stickerRegions(page), excluded)
   const pixels = diff.width * diff.height
   const share = (count: number, of = pixels): string => `${((count / of) * 100).toFixed(2)}%`
-  const apart: readonly string[] = [...DEPARTED, ...ADDED_STICKERS, ...MOVED_PILLS, OUTSIDE]
-  const untouched = Object.entries(diff.byRegion).filter(([name]) => !apart.includes(name))
+  // An addition's own box is left out whole, so nothing is ever counted under its name.
+  const untouched = Object.entries(diff.byRegion).filter(
+    ([name]) => name !== OUTSIDE && !DEPARTED.some((departed) => departed === name),
+  )
   const report = {
     width: diff.width,
     height: diff.height,

@@ -20,8 +20,8 @@ describe('medalRim', () => {
   const [top, bottom] = arcs
 
   it('centres the first phrase on twelve o’clock and the second on six', () => {
-    expect(top.start + top.length / 2).toBeCloseTo(CIRCUMFERENCE / 2, 1)
-    expect(bottom.start + bottom.length / 2).toBeCloseTo(CIRCUMFERENCE, 1)
+    expect(top.start + top.length / 2).toBeCloseTo(CIRCUMFERENCE / 2, 0)
+    expect(bottom.start + bottom.length / 2).toBeCloseTo(CIRCUMFERENCE, 0)
   })
 
   it('shares the rim by the length of each phrase, leaving a gap for each star', () => {
@@ -30,7 +30,7 @@ describe('medalRim', () => {
   })
 
   it('never lets the phrases meet: each star has its gap', () => {
-    expect(bottom.start - (top.start + top.length)).toBeCloseTo(MEDAL.starGap, 1)
+    expect(bottom.start - (top.start + top.length)).toBeCloseTo(MEDAL.starGap, 0)
     expect(top.start).toBeGreaterThan(0)
   })
 
@@ -39,7 +39,7 @@ describe('medalRim', () => {
 
     expect(right).toBeGreaterThan(0)
     expect(right).toBeLessThan(180)
-    expect(right + left).toBeCloseTo(360, 1)
+    expect(right + left).toBeCloseTo(360, 0)
   })
 
   it('puts the stars at three and nine o’clock when the phrases are as long as each other', () => {

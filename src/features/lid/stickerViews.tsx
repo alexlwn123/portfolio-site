@@ -7,6 +7,7 @@ import { Lanyard, strapsClass } from '../badge/Lanyard'
 import type { BadgePhotoImage } from '../badge/photoSources'
 import { AssetTag } from '../stickers/AssetTag'
 import { Bumper } from '../stickers/Bumper'
+import { ComplianceLabel } from '../stickers/ComplianceLabel'
 import { DieCutText } from '../stickers/DieCutText'
 import { FoilWin } from '../stickers/FoilWin'
 import { Ghost } from '../stickers/Ghost'
@@ -16,6 +17,7 @@ import { ArcadeButton } from '../stickers/illustrations/ArcadeButton'
 import { Bolt } from '../stickers/illustrations/Bolt'
 import { Crab } from '../stickers/illustrations/Crab'
 import { Jukebox } from '../stickers/Jukebox'
+import { Medal } from '../stickers/Medal'
 import { ParkingSign } from '../stickers/ParkingSign'
 import { Pill } from '../stickers/Pill'
 import { RecordSticker } from '../stickers/RecordSticker'
@@ -55,6 +57,8 @@ const FRAMES: Readonly<Record<StickerKind, Frame>> = {
   starburst: INLINE,
   roundBadge: INLINE,
   foilWin: INLINE,
+  medal: INLINE,
+  complianceLabel: INLINE,
   bolt: { as: 'span', decorative: true },
   pill: { as: 'span', selfSized: true },
   bumper: INLINE,
@@ -88,6 +92,10 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
       return <RoundBadge {...spec} />
     case 'foilWin':
       return <FoilWin {...spec} />
+    case 'medal':
+      return <Medal {...spec} />
+    case 'complianceLabel':
+      return <ComplianceLabel {...spec} />
     case 'bolt':
       return <Bolt />
     case 'pill':

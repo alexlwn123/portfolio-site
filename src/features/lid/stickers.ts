@@ -10,8 +10,11 @@ import {
   balanceLines,
   compactSats,
   cvSection,
+  fieldFigure,
+  fieldWin,
   findById,
   firstWeekSats,
+  grantedPatentNumbers,
   inPersonCity,
   introText,
   latestPodiumWin,
@@ -25,8 +28,10 @@ import {
 } from './facts'
 import type {
   BadgeSpec,
+  ComplianceLabelSpec,
   GroupSpec,
   LidItem,
+  MedalSpec,
   PillSpec,
   StickerSpec,
   TextLink,
@@ -53,6 +58,7 @@ export const STICKER_IDS = [
   'wins-count',
   'organized-count',
   'latest-win',
+  'ncr-win',
   'bolt-top',
   'city-nairobi',
   'city-taipei',
@@ -73,6 +79,7 @@ export const STICKER_IDS = [
   'next-spot',
   'tally',
   'bolt-bottom',
+  'patents',
   'elsewhere',
   'more-elsewhere',
 ] as const
@@ -96,6 +103,8 @@ const CITY_PILLS: readonly (readonly [StickerId, string, Tone])[] = [
 ]
 
 const WORKSHOP_TALK = 'how-to-win-every-hackathon'
+/** The win that was chosen from a field of teams, and so gets a medal. */
+const FIELD_WIN = 'ncr-global-hackathon-2021'
 const ELSEWHERE: readonly ProfileLinkId[] = ['github', 'x', 'linkedin']
 const MORE_ELSEWHERE: readonly ProfileLinkId[] = ['devpost', 'booking']
 
@@ -129,6 +138,7 @@ function badge({ profile }: Content, stats: Stats): BadgeSpec<StickerId> {
       },
       { label: ribbons.speaker, count: null, href: cvSection('talks'), tone: 'mint' },
       { label: ribbons.builder, count: null, href: cvSection('projects'), tone: 'gum' },
+      { label: ribbons.inventor, count: null, href: cvSection('patents'), tone: 'white' },
     ],
   }
 }
@@ -196,8 +206,44 @@ function counts({ wins }: Content, stats: Stats): readonly Spec[] {
       lines: [latest.event, city === null ? year : `${city}, ${year}`],
       href: cvSection('wins'),
     },
+    medal(wins),
     { id: 'bolt-top', kind: 'bolt' },
   ]
+}
+
+/** The medal for the win that was chosen from a field: its rank, the field and who took it. */
+function medal(wins: Content['wins']): MedalSpec<StickerId> {
+  const words = copy.lid.medal
+  const win = fieldWin(findById(wins, FIELD_WIN, 'win'))
+  const rank = ordinal(win.result.place)
+  const field = fieldFigure(win.field)
+  const event = `${win.event} ${String(win.year)}`
+
+  return {
+    id: 'ncr-win',
+    kind: 'medal',
+    label: words.summary(rank, field, event, win.team.name),
+    rank,
+    lines: [words.outOf(field), words.teams],
+    rim: [event, words.team(win.team.name)],
+    tone: 'hi',
+    href: cvSection('wins'),
+  }
+}
+
+/** The compliance label: the granted patents by number, and whether more are pending. */
+function patentLabel({ patents }: Content, stats: Stats): ComplianceLabelSpec<StickerId> {
+  const words = copy.lid.patentLabel
+  const numbers = grantedPatentNumbers(patents)
+
+  return {
+    id: 'patents',
+    kind: 'complianceLabel',
+    heading: numbers.length === 1 ? words.one : words.many,
+    numbers,
+    pending: stats.patents.anyPending ? words.pending : null,
+    href: cvSection('patents'),
+  }
 }
 
 function cities({ organized }: Content): GroupSpec<StickerId> {
@@ -299,6 +345,7 @@ function records(content: Content, stats: Stats): readonly Spec[] {
     nextSpot(content, stats),
     { id: 'tally', kind: 'tally', count: stats.organized.count },
     { id: 'bolt-bottom', kind: 'bolt' },
+    patentLabel(content, stats),
   ]
 }
 

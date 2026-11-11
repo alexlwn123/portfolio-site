@@ -85,6 +85,23 @@ export interface FoilWinSpec<Id extends string> extends LinkSpec<'foilWin', Id> 
   readonly lines: readonly string[]
 }
 
+export interface MedalSpec<Id extends string> extends LinkSpec<'medal', Id> {
+  readonly label: string
+  readonly rank: string
+  /** Short lines under the rank. */
+  readonly lines: readonly string[]
+  /** The two phrases set round the rim. */
+  readonly rim: readonly [string, string]
+  readonly tone: Tone
+}
+
+export interface ComplianceLabelSpec<Id extends string> extends LinkSpec<'complianceLabel', Id> {
+  readonly heading: string
+  readonly numbers: readonly string[]
+  /** The line about filings still pending, or null when none is. */
+  readonly pending: string | null
+}
+
 export type BoltSpec<Id extends string> = Spec<'bolt', Id>
 
 export interface PillSpec<Id extends string> extends Spec<'pill', Id> {
@@ -155,6 +172,8 @@ export type StickerSpec<Id extends string = string> =
   | StarburstSpec<Id>
   | RoundBadgeSpec<Id>
   | FoilWinSpec<Id>
+  | MedalSpec<Id>
+  | ComplianceLabelSpec<Id>
   | BoltSpec<Id>
   | PillSpec<Id>
   | BumperSpec<Id>

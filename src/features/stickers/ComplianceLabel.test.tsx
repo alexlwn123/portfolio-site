@@ -48,8 +48,8 @@ describe('ComplianceLabel', () => {
         pending="OTHER PATENTS PENDING"
       />,
     )
-    const runs = [...container.querySelectorAll(`.${styles.run ?? ''}`)].map(
-      (run) => run.textContent,
+    const runs = [...container.querySelectorAll(`.${styles.run ?? ''}`)].map((run) =>
+      run.textContent.trim(),
     )
 
     expect(runs).toEqual(['U.S. PAT. NOS.', '12,354,083 · 12,536,579', 'OTHER PATENTS PENDING'])

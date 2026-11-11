@@ -27,7 +27,7 @@ for phones, compiled into a stylesheet at build time. No element carries an inli
 
 ```
 design/mockups/     approved mockups, kept unchanged, and DEVIATIONS.md: where the site departs from them
-design/screenshots/ the mockups and the home page as rendered, rewritten by every `pnpm test:e2e`
+design/screenshots/ the mockups, the home page and the CV as rendered, rewritten by every `pnpm test:e2e`
 docs/               source material
 e2e/                Playwright specs
 public/             files served as they are (favicons, robots.txt, web manifest)

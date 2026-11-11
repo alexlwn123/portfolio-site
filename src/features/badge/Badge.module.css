@@ -5,6 +5,16 @@
   overflow: visible;
 }
 
+/*
+ * The clip is drawn in a box as wide as the badge and as tall as the straps
+ * above it. A drawing takes no clicks, and this one must not take them from a
+ * sticker that sits between the straps. The element is named so that this
+ * outranks the rule that lets everything else on the hang be touched.
+ */
+svg.clip {
+  pointer-events: none;
+}
+
 .metalLight {
   stop-color: var(--metal-light);
 }

@@ -1,6 +1,16 @@
-import type { Organized, Profile, Project, SatsFigure, Win, WinResult } from '../../content'
+import type {
+  Organized,
+  Patent,
+  Profile,
+  Project,
+  SatsFigure,
+  Win,
+  WinField,
+  WinResult,
+} from '../../content'
+import { publishablePatents } from '../../content/derive'
 import { winName } from '../../content/winName'
-import { formatMillions } from '../../lib/formatNumber'
+import { formatMillions, formatNumber } from '../../lib/formatNumber'
 import { PATHS } from '../../lib/paths'
 import { resultLabel } from '../cv/describe'
 import type { SectionId } from '../cv/labels'
@@ -125,6 +135,44 @@ export function firstWeekSats(win: Win): SatsFigure {
     throw new Error(`The win "${win.id}" records no first-week sats`)
   }
   return win.firstWeekSats
+}
+
+/** A podium win that records how large the field was and which team took it. */
+export type FieldWin = PodiumWin & {
+  readonly field: WinField
+  readonly team: NonNullable<Win['team']>
+}
+
+/** "300+": the size of a field, with a plus when the record says "more than". */
+export function fieldFigure({ count, atLeast }: WinField): string {
+  return `${formatNumber(count)}${atLeast ? '+' : ''}`
+}
+
+/** Checks that a win has everything the medal prints: a place, a field and a team. */
+export function fieldWin(win: Win): FieldWin {
+  if (!isPodium(win) || win.field === null || win.team === null) {
+    throw new Error(`The win "${win.id}" does not record a place, a field and a team`)
+  }
+  return { ...win, field: win.field, team: win.team }
+}
+
+function serialValue(serial: string): number {
+  return Number(serial.replaceAll(/\D/g, ''))
+}
+
+/**
+ * The numbers of the granted patents he has chosen to show, lowest first, as
+ * a compliance label lists them. An application's number is never among them.
+ */
+export function grantedPatentNumbers(patents: readonly Patent[]): readonly string[] {
+  const numbers = publishablePatents(patents)
+    .filter(({ status }) => status.kind === 'granted')
+    .map(({ number }) => number.serial)
+    .toSorted((one, other) => serialValue(one) - serialValue(other))
+  if (numbers.length === 0) {
+    throw new Error('There is no granted patent to print on the compliance label')
+  }
+  return numbers
 }
 
 /** The address of a section of the CV page. A dead anchor does not type-check. */

@@ -59,6 +59,11 @@
   z-index: 1;
 }
 
+/* Past the fourth, a ribbon leans as the first four do in turn, tucked under the one above. */
+.item:nth-child(n + 5) .ribbon {
+  z-index: 0;
+}
+
 .ribbon:hover,
 .ribbon:focus-visible {
   translate: calc(var(--o, 0) * 0.1em + 0.9em) 0;

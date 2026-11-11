@@ -16,7 +16,7 @@ export const ARTBOARDS = Object.freeze({
   /** design/mockups/01-first-screen.html, as approved. */
   desktop: Object.freeze({ width: 728, height: 1300 }),
   /** The mockup's phone arrangement, retuned so no label is under 11px. */
-  phone: Object.freeze({ width: 390, height: 2128 }),
+  phone: Object.freeze({ width: 390, height: 2256 }),
 } satisfies Record<string, Artboard>)
 
 export type LayoutName = keyof typeof ARTBOARDS
