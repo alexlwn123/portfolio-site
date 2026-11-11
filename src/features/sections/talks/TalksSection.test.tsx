@@ -10,6 +10,12 @@ function renderSection(): HTMLElement {
   return screen.getByRole('region', { name: /^Talks\s*& press$/ })
 }
 
+/** The places beside the shirt, each of which holds one sticker. */
+function placesBesideTheShirt(section: HTMLElement): readonly Element[] {
+  const shirt = within(section).getByRole('article', { name: /World\s*tour/i })
+  return [...(shirt.nextElementSibling?.children ?? [])]
+}
+
 describe('TalksSection', () => {
   it('is the "talks" section, on the cutting mat', () => {
     const section = renderSection()
@@ -42,6 +48,34 @@ describe('TalksSection', () => {
       within(section).getByRole('article', { name: /^How to Win\s*Every Hackathon$/ }),
     ).toBeInTheDocument()
     expect(section.querySelectorAll('[data-press]')).toHaveLength(2)
+  })
+
+  it('gives every sticker beside the shirt a place of its own, in the order they are read', () => {
+    const places = placesBesideTheShirt(renderSection())
+    const cuttings = content.press.filter(({ subject }) => subject.kind !== 'reference')
+
+    // The sign, the pass, the stamp card, a cutting for each piece, and the pages of reference.
+    expect(places).toHaveLength(cuttings.length + 4)
+    for (const place of places) {
+      expect(place.childElementCount).toBe(1)
+    }
+    expect(places[0]).toHaveTextContent(talksCopy.onAir.sign)
+    expect(places[1]).toHaveTextContent(talksCopy.pass.band)
+    expect(places[2]).toHaveTextContent(talksCopy.record.card)
+    expect(places.at(-1)).toHaveTextContent(talksCopy.press.seeAlso)
+  })
+
+  it('keeps no place for pages of reference when the press has none', () => {
+    const press = content.press.filter(({ subject }) => subject.kind !== 'reference')
+    render(<TalksSection content={{ ...content, press }} stats={stats} />)
+    const section = screen.getByRole('region')
+    const places = placesBesideTheShirt(section)
+
+    expect(within(section).queryByText(talksCopy.press.seeAlso)).toBeNull()
+    expect(places).toHaveLength(press.length + 3)
+    for (const place of places) {
+      expect(place.childElementCount).toBe(1)
+    }
   })
 
   it('prints the bitcoin++ record from the derived stats, with every edition', () => {
