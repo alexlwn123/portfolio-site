@@ -21,15 +21,31 @@
   aspect-ratio: var(--ratio, 1);
   color: var(--ink);
 
-  /* Everything on a sticker is set in its own em, so this is how large it is drawn. */
-  font-size: 1.3em;
+  /*
+   * Everything on a sticker is set in its own em, so this is how large it is
+   * drawn: a size for the shape, by what the result weighs (a first place is
+   * the largest on the sheet), by how much room the sheet has given the win.
+   */
+  --size: 1.24em;
+
+  font-size: calc(var(--size) * var(--weight, 1) * var(--room, 1));
   rotate: var(--tilt, 0deg);
 }
 
-/* The two wide shapes are as wide as a column of the sheet allows. */
+/* The two wide shapes are set a size down, or they would be as wide as their line. */
 .slab,
 .ticket {
-  font-size: 1.12em;
+  --size: 1.07em;
+}
+
+/* What a result weighs. */
+.second,
+.third {
+  --weight: 0.84;
+}
+
+.prize {
+  --weight: 0.8;
 }
 
 .cut,
@@ -496,19 +512,23 @@
 }
 
 @container section (max-width: 1099px) {
+  .sticker {
+    --size: 1.3em;
+  }
+
   .slab,
   .ticket {
-    font-size: 1.16em;
+    --size: 1.16em;
   }
 }
 
 @container section (max-width: 560px) {
   .sticker {
-    font-size: 1.36em;
+    --size: 1.36em;
   }
 
   .slab,
   .ticket {
-    font-size: 1.3em;
+    --size: 1.3em;
   }
 }

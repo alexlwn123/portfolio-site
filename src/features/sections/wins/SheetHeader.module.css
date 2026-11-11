@@ -10,7 +10,9 @@
   gap: 1.4em 4em;
   align-items: end;
   margin-bottom: 3.4em;
-  padding: 6.8em 0 2.2em;
+
+  /* Room under the print for the sticker that rides up over the rule. */
+  padding: 6.8em 0 3.2em;
   border-bottom: 0.16em dashed rgba(var(--shadow-rgb), 0.45);
 }
 

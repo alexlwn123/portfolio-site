@@ -1,43 +1,127 @@
 /*
- * The mat, with the stickers scattered on it. The scatter is hand-set, as the
- * lid's is, but on a grid: columns two units wide and rows one unit tall,
- * with every project given a place and a size by its id at each width. A
- * sticker whose text runs longer than its place allows makes its rows taller
- * and pushes the others down, so nothing can ever be covered.
+ * The mat, with the stickers stood on it in rows. Nobody places a sticker by
+ * hand: matRows.ts shares them out into rows and gives each a number of the
+ * mat's columns, twenty-four across on a laptop and twelve on a tablet, and
+ * every row adds up to the whole width. So a row's first sticker stands on
+ * the column's left edge and its last on the right, and a project added to
+ * the records later is stood in a row like the rest.
  *
- * The places are in grid-area order: row, column, rows spanned, columns
- * spanned. The first rows lie beside the section's heading, which is why the
- * list is pulled up level with it and why nothing on the left starts there.
- *
- * A project with no place of its own here is put in the first gap that fits.
+ * A row of stickers is two rows of the grid: the stickers, which stand on the
+ * foot of the first, and their captions, which hang from the head of the
+ * second. That is what a row shares: the line its stickers stand on. It does
+ * not share a size. Each face is cut as wide as its shape wants (--most) or
+ * as its place allows (--fill of it), whichever is less.
  */
 .stickers {
-  --beside-heading: 21em;
+  --row-gap: 2.2em;
 
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(50, minmax(0, 1fr));
-  grid-auto-rows: minmax(1em, auto);
-  grid-auto-flow: row dense;
-  align-items: start;
-  margin: calc(var(--beside-heading) * -1) 0 0;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+
+  /* The last row's captions leave no gap under them. */
+  margin: 0 0 calc(var(--row-gap) * -1);
   padding: 0;
   list-style: none;
-
-  /* The heading and its kicker are underneath, and stay within reach. */
-  pointer-events: none;
 }
 
 .stickers > li {
-  pointer-events: auto;
+  grid-row-end: span 2;
+  grid-column-end: span 5;
 }
 
-/* The place of a project nobody has placed: a bumper's worth of room. */
-.stickers > [data-project] {
-  --item: 26em;
+/* ---------- how many columns a sticker was given ---------- */
 
-  grid-area: auto / auto / span 24 / span 13;
+.stickers > [data-span='3'] {
+  grid-column-end: span 3;
+}
+
+.stickers > [data-span='4'] {
+  grid-column-end: span 4;
+}
+
+.stickers > [data-span='5'] {
+  grid-column-end: span 5;
+}
+
+.stickers > [data-span='6'] {
+  grid-column-end: span 6;
+}
+
+.stickers > [data-span='7'] {
+  grid-column-end: span 7;
+}
+
+.stickers > [data-span='8'] {
+  grid-column-end: span 8;
+}
+
+.stickers > [data-span='9'] {
+  grid-column-end: span 9;
+}
+
+.stickers > [data-span='10'] {
+  grid-column-end: span 10;
+}
+
+.stickers > [data-span='11'] {
+  grid-column-end: span 11;
+}
+
+.stickers > [data-span='12'] {
+  grid-column-end: span 12;
+}
+
+.stickers > [data-span='24'] {
+  grid-column-end: span 24;
+}
+
+/* ---------- where it stands in its row ---------- */
+
+/* The first stands on the mat's left edge and the last on its right. */
+.stickers > [data-place='first'],
+.stickers > [data-place='only'] {
+  --lean: start;
+
+  grid-column-start: 1;
+}
+
+.stickers > [data-place='middle'] {
+  --lean: center;
+}
+
+.stickers > [data-place='last'] {
+  --lean: end;
+  --caption-inset: 0em;
+  --caption-outset: 0.9em;
+}
+
+/* ---------- how each is put down ---------- */
+
+/* No two neighbours lean the same way. */
+.stickers > li:nth-child(6n + 1) {
+  --tilt: -2deg;
+}
+
+.stickers > li:nth-child(6n + 2) {
+  --tilt: 2.5deg;
+}
+
+.stickers > li:nth-child(6n + 3) {
+  --tilt: -1.5deg;
+}
+
+.stickers > li:nth-child(6n + 4) {
+  --tilt: 3deg;
+}
+
+.stickers > li:nth-child(6n + 5) {
+  --tilt: -3deg;
+}
+
+.stickers > li:nth-child(6n) {
+  --tilt: 1.5deg;
 }
 
 /* Tape and marker take turns through the palette. */
@@ -51,307 +135,200 @@
   --pen: var(--mint);
 }
 
-/* A flag that would cover the caption beside it is planted on the other corner. */
-.stickers > [data-project='last-pay-wins'],
-.stickers > [data-project='auntie-ln'],
-.stickers > [data-project='stringer-safety'] {
-  --flag-left: -1em;
-  --flag-top: -2.6em;
-  --flag-tilt: -5deg;
+/*
+ * A winner's flag stands over its sticker, planted a little way into its top
+ * edge (--flag-bite), and his note stands over the day job. A sticker cut low
+ * and wide is lettered right to its top edge, and so is a pointed one at its
+ * tip: there the flag only just touches.
+ */
+.stickers > [data-won] {
+  --flag-bite: 2.3em;
+  --headroom: calc(5.7em - var(--flag-bite));
 }
 
-/* The jukebox is wide and low, so its flag stands clear of the lettering. */
-.stickers > [data-project='pleb-fm'] {
-  --flag-left: calc(100% - 9em);
-  --flag-top: -4.2em;
+.stickers > [data-won][data-face='jukebox'],
+.stickers > [data-won][data-face='capsule'],
+.stickers > [data-won][data-face='ticket'],
+.stickers > [data-won][data-face='mint'],
+.stickers > [data-won][data-face='ramp'],
+.stickers > [data-won][data-face='bumper'] {
+  --flag-bite: 0.5em;
 }
 
-/* A long flag, kept over its own hexagon and off the neighbours. */
-.stickers > [data-project='lightning-welder'] {
-  --flag-left: calc(100% - 10.5em);
-  --flag-top: -2.2em;
+.stickers > [data-won][data-face='tree'] {
+  --flag-bite: 1em;
 }
 
-/* ---------- 1100 units: a laptop ---------- */
-
-.stickers > [data-project='finite-computer'] {
-  --face: 40em;
-  --item: 42em;
-  --tilt: -2.5deg;
-  --caption-inset: 4em;
-
-  grid-area: 23 / 1 / span 46 / span 21;
+.stickers > [data-day-job] {
+  --headroom: 3.2em;
 }
 
-.stickers > [data-project='btc-plinko'] {
-  --face: 21em;
-  --item: 22em;
-  --tilt: 4deg;
+/* ---------- how wide each shape is cut ---------- */
 
-  grid-area: 1 / 24 / span 29 / span 11;
+.stickers > [data-project] {
+  --most: 22em;
+  --fill: 0.94;
 }
 
-.stickers > [data-project='cargo-leaderboard'] {
-  --face: 26em;
-  --item: 28em;
-  --tilt: 0deg;
-
-  grid-area: 3 / 37 / span 31 / span 14;
+.stickers > [data-face='computer'] {
+  --most: 30.5em;
+  --fill: 0.98;
+  --caption-inset: 3em;
 }
 
-.stickers > [data-project='clawthing-store'] {
-  --face: 27em;
-  --item: 28em;
-  --tilt: -3deg;
-
-  grid-area: 33 / 23 / span 34 / span 14;
+/* The tall shapes are cut narrower, each to a width of its own. */
+.stickers > [data-face='plinko'] {
+  --most: 19em;
 }
 
-.stickers > [data-project='fedimint-sdk'] {
-  --face: 25em;
-  --item: 26em;
-  --tilt: 3deg;
-
-  grid-area: 38 / 38 / span 23 / span 13;
+.stickers > [data-face='knight'] {
+  --most: 18.5em;
 }
 
-.stickers > [data-project='web-to-svg-extension'] {
-  --face: 22em;
-  --item: 25em;
-  --tilt: -3deg;
-
-  grid-area: 70 / 24 / span 32 / span 13;
+.stickers > [data-face='hex'],
+.stickers > [data-face='puzzle'] {
+  --most: 20em;
 }
 
-.stickers > [data-project='bitcoinramps'] {
-  --face: 27em;
-  --item: 28em;
-  --tilt: 0deg;
-
-  grid-area: 64 / 37 / span 28 / span 14;
+.stickers > [data-face='button'] {
+  --most: 19.5em;
 }
 
-.stickers > [data-project='last-pay-wins'] {
-  --face: 23em;
-  --item: 44em;
-  --tilt: 2deg;
-
-  flex-direction: row;
-  align-items: center;
-  grid-area: 73 / 1 / span 24 / span 22;
+.stickers > [data-face='parking'] {
+  --most: 17.5em;
 }
 
-.stickers > [data-project='pleb-fm'] {
-  --item: 35em;
-  --type: 1.6em;
-  --tilt: -2deg;
-
-  grid-area: 103 / 2 / span 22 / span 18;
+.stickers > [data-face='stamp'] {
+  --most: 16em;
 }
 
-.stickers > [data-project='rough-consensus'] {
-  --face: 25em;
-  --item: 27em;
-  --tilt: 2.5deg;
-
-  grid-area: 95 / 37 / span 32 / span 14;
+.stickers > [data-face='shield'] {
+  --most: 17em;
 }
 
-.stickers > [data-project='lightning-welder'] {
-  --face: 23em;
-  --item: 25em;
-  --tilt: -3deg;
-
-  grid-area: 106 / 21 / span 38 / span 13;
+.stickers > [data-face='tree'] {
+  --most: 16.5em;
 }
 
-.stickers > [data-project='arion-parking'] {
-  --face: 19em;
-  --item: 22em;
-  --type: 1.55em;
-  --tilt: 0deg;
-
-  grid-area: 129 / 3 / span 39 / span 11;
+.stickers > [data-face='mint'],
+.stickers > [data-face='ramp'],
+.stickers > [data-face='ticket'],
+.stickers > [data-face='bumper'] {
+  --most: 25em;
+  --fill: 1;
 }
 
-.stickers > [data-project='auntie-ln'] {
-  --face: 19em;
-  --item: 42em;
-  --tilt: -2deg;
-
-  flex-direction: row;
-  align-items: center;
-  grid-area: 174 / 15 / span 24 / span 21;
+.stickers > [data-face='capsule'] {
+  --most: 29em;
+  --fill: 1.04;
 }
 
-.stickers > [data-project='treepay-ux'] {
-  --face: 20em;
-  --item: 24em;
-  --tilt: -3deg;
-
-  grid-area: 131 / 39 / span 35 / span 12;
+/*
+ * The jukebox is set in type, small print and all, so it is cut a little
+ * wider than its place: narrower, and its address would be under 11px on a
+ * 1100px screen. It rides over its neighbour's edge instead.
+ */
+.stickers > [data-face='jukebox'] {
+  --most: 30em;
+  --fill: 1.14;
 }
 
-.stickers > [data-project='chesscup-hack'] {
-  --face: 21em;
-  --item: 25em;
-  --tilt: 2deg;
+/* ---------- what lies beside them ---------- */
 
-  grid-area: 169 / 38 / span 33 / span 13;
+/* The knife was put down over the first row, where the stickers beside the lead stand lower. */
+.stickers > .knife {
+  position: absolute;
+  top: -3.4em;
+  right: 5em;
 }
 
-.stickers > [data-project='tapass-fun'] {
-  --face: 29em;
-  --item: 30em;
-  --tilt: -5deg;
-
-  grid-area: 147 / 22 / span 23 / span 15;
+/* The scraps were swept to the foot of the mat's last row. */
+.stickers > .offcuts {
+  align-self: end;
+  justify-self: end;
+  grid-row-end: span 1;
 }
 
-.stickers > [data-project='kattis'] {
-  --face: 25em;
-  --item: 26em;
-  --tilt: 3deg;
-
-  grid-area: 171 / 1 / span 21 / span 13;
-}
-
-.stickers > [data-project='stringer-safety'] {
-  --face: 20em;
-  --item: 43em;
-  --tilt: 1.5deg;
-
-  flex-direction: row;
-  align-items: center;
-  grid-area: 201 / 16 / span 24 / span 22;
-}
-
-.stickers > [data-mat-prop='knife'] {
-  grid-area: 127 / 15 / span 34 / span 6;
-}
-
-.stickers > [data-mat-prop='offcuts'] {
-  grid-area: 197 / 3 / span 17 / span 11;
-}
-
-/* ---------- 728 units: a tablet. Two stickers abreast, and none beside its caption. ---------- */
+/* ---------- 728 units: a tablet. Twelve columns, two or three stickers to a row. ---------- */
 
 @container section (max-width: 1099px) {
   .stickers {
-    grid-template-columns: repeat(33, minmax(0, 1fr));
+    grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
-  .stickers > [data-project='finite-computer'] {
-    --face: 38em;
-    --item: 40em;
+  .stickers > [data-span-tablet='3'] {
+    grid-column-end: span 3;
+  }
+
+  .stickers > [data-span-tablet='4'] {
+    grid-column-end: span 4;
+  }
+
+  .stickers > [data-span-tablet='5'] {
+    grid-column-end: span 5;
+  }
+
+  .stickers > [data-span-tablet='6'] {
+    grid-column-end: span 6;
+  }
+
+  .stickers > [data-span-tablet='7'] {
+    grid-column-end: span 7;
+  }
+
+  .stickers > [data-span-tablet='8'] {
+    grid-column-end: span 8;
+  }
+
+  .stickers > [data-span-tablet='9'] {
+    grid-column-end: span 9;
+  }
+
+  .stickers > [data-span-tablet='10'] {
+    grid-column-end: span 10;
+  }
+
+  .stickers > [data-span-tablet='11'] {
+    grid-column-end: span 11;
+  }
+
+  .stickers > [data-span-tablet='12'] {
+    grid-column-end: span 12;
+  }
+
+  .stickers > [data-place] {
+    --lean: center;
+    --caption-inset: 0.9em;
+    --caption-outset: 0em;
+
+    grid-column-start: auto;
+  }
+
+  .stickers > [data-place-tablet='first'],
+  .stickers > [data-place-tablet='only'] {
+    --lean: start;
+
+    grid-column-start: 1;
+  }
+
+  .stickers > [data-place-tablet='last'] {
+    --lean: end;
+    --caption-inset: 0em;
+    --caption-outset: 0.9em;
+  }
+
+  .stickers > [data-face='computer'] {
     --caption-inset: 4em;
-
-    grid-area: 23 / 1 / span 44 / span 20;
   }
 
-  .stickers > [data-project='btc-plinko'] {
-    grid-area: 1 / 23 / span 29 / span 11;
-  }
-
-  .stickers > [data-project='cargo-leaderboard'] {
-    --face: 25em;
-    --item: 26em;
-
-    grid-area: 59 / 21 / span 30 / span 13;
-  }
-
-  .stickers > [data-project='clawthing-store'] {
-    grid-area: 71 / 2 / span 34 / span 14;
-  }
-
-  .stickers > [data-project='fedimint-sdk'] {
-    grid-area: 33 / 21 / span 23 / span 13;
-  }
-
-  .stickers > [data-project='web-to-svg-extension'] {
-    grid-area: 93 / 20 / span 32 / span 13;
-  }
-
-  .stickers > [data-project='bitcoinramps'] {
-    grid-area: 109 / 2 / span 28 / span 14;
-  }
-
-  .stickers > [data-project='last-pay-wins'] {
-    --item: 28em;
-
-    flex-direction: column;
-    align-items: flex-start;
-    grid-area: 141 / 1 / span 36 / span 14;
-  }
-
-  .stickers > [data-project='pleb-fm'] {
-    grid-area: 165 / 16 / span 22 / span 18;
-  }
-
-  .stickers > [data-project='rough-consensus'] {
-    grid-area: 129 / 20 / span 32 / span 14;
-  }
-
-  .stickers > [data-project='lightning-welder'] {
-    grid-area: 181 / 2 / span 38 / span 13;
-  }
-
-  .stickers > [data-project='arion-parking'] {
-    grid-area: 191 / 22 / span 39 / span 11;
-  }
-
-  .stickers > [data-project='auntie-ln'] {
-    --item: 28em;
-
-    flex-direction: column;
-    align-items: flex-start;
-    grid-area: 223 / 1 / span 39 / span 14;
-  }
-
-  .stickers > [data-project='treepay-ux'] {
-    grid-area: 233 / 20 / span 35 / span 12;
-  }
-
-  .stickers > [data-project='chesscup-hack'] {
-    grid-area: 266 / 2 / span 33 / span 13;
-  }
-
-  .stickers > [data-project='tapass-fun'] {
-    grid-area: 272 / 18 / span 23 / span 15;
-  }
-
-  .stickers > [data-project='kattis'] {
-    grid-area: 299 / 20 / span 21 / span 13;
-  }
-
-  .stickers > [data-project='stringer-safety'] {
-    --item: 28em;
-
-    flex-direction: column;
-    align-items: flex-start;
-    grid-area: 303 / 1 / span 36 / span 14;
-  }
-
-  .stickers > [data-mat-prop='knife'] {
-    grid-area: 193 / 16 / span 34 / span 6;
-  }
-
-  .stickers > [data-mat-prop='offcuts'] {
-    grid-area: 323 / 21 / span 17 / span 11;
+  .stickers > .knife {
+    top: -2em;
+    right: -1em;
+    font-size: 0.72em;
   }
 }
 
 /* ---------- 390 units: a phone. One flowing column, leaning left and right. ---------- */
-
-@container section (max-width: 1099px) {
-  .stickers > [data-project='last-pay-wins'],
-  .stickers > [data-project='auntie-ln'],
-  .stickers > [data-project='stringer-safety'] {
-    --flag-left: calc(100% - 5.5em);
-    --flag-top: -1.4em;
-    --flag-tilt: 5deg;
-  }
-}
 
 @container section (max-width: 560px) {
   .stickers {
@@ -359,14 +336,15 @@
     flex-direction: column;
     gap: 3.6em;
     align-items: flex-start;
-    margin-top: 0;
+    margin-bottom: 0;
   }
 
   /* Cut a size smaller, so that more than one is on the screen at a time. */
   .stickers > [data-project] {
-    --item: 31em;
-    --face-scale: 0.88;
-    --flag-left: auto;
+    --lean: flex-start;
+    --caption-inset: 0.9em;
+    --caption-outset: 0em;
+    --fill: 1;
     --flag-top: -2.2em;
   }
 
@@ -398,26 +376,30 @@
     margin-top: 2.6em;
   }
 
-  .stickers > [data-project='finite-computer'] {
-    --face: 34em;
-    --face-scale: 1;
-    --item: 35.8em;
+  .stickers > [data-won],
+  .stickers > [data-day-job] {
+    --headroom: 0em;
+  }
+
+  .stickers > [data-face='computer'] {
+    --most: 34em;
     --tilt: -1.5deg;
     --caption-inset: 2.4em;
 
     margin-top: 3.4em;
   }
 
-  .stickers > [data-project='pleb-fm'] {
-    --type: 1.5em;
+  .stickers > [data-face='jukebox'] {
     --flag-top: -4em;
   }
 
-  .stickers > [data-mat-prop='knife'] {
+  .stickers > .knife {
+    position: static;
     align-self: center;
+    font-size: 1em;
   }
 
-  .stickers > [data-mat-prop='offcuts'] {
+  .stickers > .offcuts {
     align-self: center;
   }
 }

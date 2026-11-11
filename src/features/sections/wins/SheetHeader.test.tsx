@@ -58,6 +58,10 @@ describe('SheetHeader', () => {
     expect(header.querySelector('[data-hang-hole]')).toHaveAttribute('aria-hidden', 'true')
   })
 
+  it('is the strip, with the rule the sheet is printed with along its foot', () => {
+    expect(renderHeader().querySelectorAll('[data-strip]')).toHaveLength(1)
+  })
+
   it('leaves the years out when there are no wins to span', () => {
     const { container } = render(<SheetHeader total={0} tally={[]} span={null} />)
 

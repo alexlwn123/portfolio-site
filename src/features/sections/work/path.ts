@@ -96,7 +96,12 @@ function isFiled(patent: Patent): patent is Filed {
   return patent.filed !== null
 }
 
-/** What else happened in a year, in one fixed order. A kind with nothing to show is left out. */
+/**
+ * What else happened in a year, in one fixed order. A kind with nothing to
+ * show is left out. The hackathons he ran come first: theirs is the longest
+ * line, a list of cities, and the first sticker of a year is the one that is
+ * given the most room.
+ */
 function marksOf(source: PathSource, year: number): readonly PathMark[] {
   const shown = publishablePatents(source.patents)
   const wins = source.wins.filter((win) => win.year === year)
@@ -111,8 +116,8 @@ function marksOf(source: PathSource, year: number): readonly PathMark[] {
   const first = firstStageTalk(source.talks)
 
   return [
-    ...(wins.length > 0 ? [{ kind: 'wins', wins } as const] : []),
     ...(events.length > 0 ? [{ kind: 'organized', events } as const] : []),
+    ...(wins.length > 0 ? [{ kind: 'wins', wins } as const] : []),
     ...(granted.length > 0 ? [{ kind: 'granted', patents: granted } as const] : []),
     ...(filed.length > 0 ? [{ kind: 'filed', patents: filed } as const] : []),
     ...(first?.date.year === year ? [{ kind: 'firstTalk', ...first } as const] : []),
@@ -182,7 +187,8 @@ function yearsBetween(years: readonly number[]): readonly number[] {
 /**
  * The path, newest first: the present, holding the current job, then every
  * year down to the earliest on record. A year in which nothing is recorded
- * is still a stop, so the rule the path is drawn on keeps its scale.
+ * is still a stop, so that the rule the path is drawn on can show it as a
+ * break and no year goes missing.
  */
 export function careerPath(source: PathSource): readonly PathStop[] {
   const newestFirst = inJoiningOrder(source.experience).toReversed()

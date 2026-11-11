@@ -26,6 +26,14 @@ describe('WinsSection', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/^Hackathon\s*wins\s*$/)
   })
 
+  it('lays every win on one sheet', () => {
+    const section = renderSection()
+    const sheets = section.querySelectorAll('[data-sheet]')
+
+    expect(sheets).toHaveLength(1)
+    expect(sheets[0]?.querySelectorAll('[data-win]')).toHaveLength(content.wins.length)
+  })
+
   it('lists every win in the record, newest first', () => {
     renderSection()
 

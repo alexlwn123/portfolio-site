@@ -6,6 +6,7 @@ import { winName } from '../src/content/winName'
 import { resultLabel } from '../src/features/cv/describe'
 import { MIN_TEXT_PX, NARROW_PHONE_PX } from '../src/features/lid/placement/artboards'
 import { winsCopy } from '../src/features/sections/wins/copy'
+import { columnUse, EDGE_TOLERANCE_EM, edgeGaps } from './columnFill'
 import {
   linkNames,
   linksSmallerThan,
@@ -18,6 +19,17 @@ import {
 } from './winsAndOrganizedSupport'
 
 const MIN_TARGET_PX = 24
+/** The widths at which the body is held to the column: a laptop and a tablet. */
+const COLUMN_WIDTHS = [1440, 900] as const
+/** A sheet's edge may round to a pixel either side of the column's. */
+const SHEET_EDGE_PX = 1
+/** How far a sticker on the sheet may be turned, in degrees: a few, and never none. */
+const MOST_TILT_DEG = 6
+/** The most and the least of a line that a win shares with another takes. */
+const LARGEST_SHARE = 0.6
+const SMALLEST_SHARE = 0.36
+/** How many rules the sheet is printed with. One sticker rides over each. */
+const OVER_THE_RULE = 2
 const { wins } = content
 const projects = publishableProjects(content.projects)
 
@@ -86,6 +98,146 @@ test.describe('the "wins" section', () => {
       expect(covered).toEqual([])
     })
   }
+
+  for (const width of COLUMN_WIDTHS) {
+    test(`runs from the column's left edge to its right, with no dead block, at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'wins')
+      const use = await columnUse(section)
+      const gaps = edgeGaps(use)
+
+      expect(gaps.left).toBeLessThanOrEqual(EDGE_TOLERANCE_EM)
+      expect(gaps.right).toBeLessThanOrEqual(EDGE_TOLERANCE_EM)
+      expect(use.deadBlocks).toEqual([])
+    })
+
+    test(`gives the newest win more room than any other at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'wins')
+      // Its place on the sheet, the sticker cut for it, and the name it is headed with.
+      const room = await section.locator('[data-win]').evaluateAll((entries) =>
+        entries.map((entry) => {
+          const sticker = entry.querySelector('[data-prize]')
+          const heading = entry.querySelector('h3')
+          return {
+            entry: entry.getBoundingClientRect().width,
+            sticker: sticker instanceof HTMLElement ? sticker.offsetWidth : 0,
+            heading: heading === null ? 0 : Number.parseFloat(getComputedStyle(heading).fontSize),
+          }
+        }),
+      )
+      const [newest, ...others] = room
+      const most = (measure: (each: (typeof room)[number]) => number): number =>
+        Math.max(...others.map(measure))
+
+      expect(others.length).toBe(wins.length - 1)
+      expect(newest?.entry).toBeGreaterThanOrEqual(most((each) => each.entry))
+      expect(newest?.sticker).toBeGreaterThan(most((each) => each.sticker))
+      expect(newest?.heading).toBeGreaterThan(most((each) => each.heading))
+    })
+  }
+
+  test('gives the newest win a line of the sheet to itself on a laptop, and no other', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'wins')
+    const line = await section
+      .getByRole('list', { name: winsCopy.sheet.listLabel })
+      .evaluate((list) => list.getBoundingClientRect().width)
+    const widths = await section
+      .locator('[data-win]')
+      .evaluateAll((entries) => entries.map((entry) => entry.getBoundingClientRect().width))
+    const [newest = 0, ...others] = widths
+
+    expect(Math.abs(newest - line)).toBeLessThanOrEqual(1)
+    // Two to a line everywhere else, and never the same share of it twice running.
+    for (const [index, width] of others.entries()) {
+      expect(width, String(index)).toBeLessThan(line * LARGEST_SHARE)
+      expect(width, String(index)).toBeGreaterThan(line * SMALLEST_SHARE)
+    }
+  })
+
+  for (const width of SECTION_WIDTHS) {
+    test(`lays the sheet's edges on the column's at ${String(width)} wide`, async ({ page }) => {
+      const section = await openSection(page, width, 'wins')
+      const { column } = await columnUse(section)
+      const sheet = await section.locator('[data-sheet]').evaluate((element) => {
+        const { left, right } = element.getBoundingClientRect()
+        return { left, right }
+      })
+
+      expect(Math.abs(sheet.left - column.left)).toBeLessThanOrEqual(SHEET_EDGE_PX)
+      expect(Math.abs(sheet.right - column.right)).toBeLessThanOrEqual(SHEET_EDGE_PX)
+    })
+
+    test(`cuts a first place bigger than a second or a prize at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'wins')
+      const areas = (finish: string): Promise<readonly number[]> =>
+        section
+          .locator(`[data-prize][data-finish="${finish}"]`)
+          .evaluateAll((stickers) =>
+            stickers.map((sticker) =>
+              sticker instanceof HTMLElement ? sticker.offsetWidth * sticker.offsetHeight : 0,
+            ),
+          )
+      const firsts = await areas('first')
+      const rest = [
+        ...(await areas('second')),
+        ...(await areas('third')),
+        ...(await areas('prize')),
+      ]
+
+      expect(firsts.length).toBeGreaterThan(0)
+      expect(rest.length).toBeGreaterThan(0)
+      expect(Math.min(...firsts)).toBeGreaterThan(Math.max(...rest))
+    })
+
+    test(`turns every sticker a few degrees, and no two neighbours alike, at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'wins')
+      const tilts = await section
+        .locator('[data-prize]')
+        .evaluateAll((stickers) =>
+          stickers.map((sticker) => Number.parseFloat(getComputedStyle(sticker).rotate)),
+        )
+
+      expect(tilts).toHaveLength(wins.length)
+      for (const [index, tilt] of tilts.entries()) {
+        expect(Math.abs(tilt), String(index)).toBeGreaterThan(0)
+        expect(Math.abs(tilt), String(index)).toBeLessThanOrEqual(MOST_TILT_DEG)
+        expect(tilt, String(index)).not.toBe(tilts[index + 1])
+      }
+    })
+  }
+
+  test('lets a sticker ride over each of the two rules the sheet is printed with', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'wins')
+    // Under the strip, and under the newest win, which the sheet rules off from the rest.
+    const rules = await section
+      .locator('[data-strip], [data-win]:first-child')
+      .evaluateAll((printed) => printed.map((element) => element.getBoundingClientRect().bottom))
+    const riding = await section.locator('[data-prize]').evaluateAll(
+      (stickers, lines) =>
+        lines.map(
+          (line) =>
+            stickers.filter((sticker) => {
+              const { top, bottom } = sticker.getBoundingClientRect()
+              return top < line && bottom > line
+            }).length,
+        ),
+      rules,
+    )
+
+    expect(riding).toEqual([1, 1])
+    expect(riding).toHaveLength(OVER_THE_RULE)
+  })
 
   test(`no text is under ${String(MIN_TEXT_PX)}px at ${String(NARROW_PHONE_PX)} wide`, async ({
     page,

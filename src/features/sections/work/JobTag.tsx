@@ -89,7 +89,7 @@ export function JobTag({ job: { role, assetNumber }, barcode }: JobTagProps): Re
 
   return (
     <article
-      className={cx(styles.job, role.current && styles.current)}
+      className={styles.job}
       data-job={role.id}
       data-current={role.current ? '' : undefined}
       aria-labelledby={headingId}

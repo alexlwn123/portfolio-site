@@ -44,6 +44,17 @@ describe('stickerLook', () => {
     }
   })
 
+  it('cuts no first place in a low, wide shape, which would make it the smallest on the sheet', () => {
+    const onTheSheet = facts.flatMap((win, index) =>
+      win.finish === 'first' && !win.peeled ? [stickerLook(win, index)] : [],
+    )
+
+    expect(onTheSheet.length).toBeGreaterThan(0)
+    for (const { shape } of onTheSheet) {
+      expect(['slab', 'ticket']).not.toContain(shape)
+    }
+  })
+
   it('gives the win with a field the medal, which has a ring to letter it on', () => {
     const fielded = facts.findIndex(({ field }) => field !== null)
 

@@ -53,3 +53,25 @@ describe.each([
     expect(item).toHaveClass('lying')
   })
 })
+
+describe('Offcuts, swept to the end of the last row', () => {
+  it('says where they lie when told', () => {
+    const { container } = render(
+      <ul>
+        <Offcuts
+          note="weeded bits"
+          place={{
+            laptop: { row: 4, span: 4, place: 'last' },
+            tablet: { row: 7, span: 3, place: 'last' },
+          }}
+        />
+      </ul>,
+    )
+    const item = container.querySelector('[data-mat-prop="offcuts"]')
+
+    expect(item).toHaveAttribute('data-span', '4')
+    expect(item).toHaveAttribute('data-place', 'last')
+    expect(item).toHaveAttribute('data-span-tablet', '3')
+    expect(item).toHaveAttribute('data-place-tablet', 'last')
+  })
+})
