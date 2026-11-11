@@ -1,22 +1,30 @@
-import type { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 
 import type { Education } from '../../../content'
 import styles from '../cv.module.css'
 import { LABELS } from '../labels'
-import { DateText } from '../parts/DateText'
+import { DateSpanText, DateText } from '../parts/DateText'
 import { Entry } from '../parts/Entry'
 import { Section } from '../parts/Section'
 
-function EducationEntry({ entry }: { readonly entry: Education }): ReactElement {
-  const began =
-    entry.start !== null ? (
-      <>
-        {LABELS.began} <DateText date={entry.start} month="long" />
-      </>
-    ) : null
-
+/** The years he was there, or only when it began. Nothing when the start is unknown. */
+function attended({ start, end }: Education): ReactNode {
+  if (start === null) {
+    return null
+  }
+  if (end !== null) {
+    return <DateSpanText span={{ start, end }} month="long" />
+  }
   return (
-    <Entry when={began}>
+    <>
+      {LABELS.began} <DateText date={start} month="long" />
+    </>
+  )
+}
+
+function EducationEntry({ entry }: { readonly entry: Education }): ReactElement {
+  return (
+    <Entry when={attended(entry)}>
       <p className={styles.entryTitle}>{entry.institution}</p>
       <p className={styles.org}>
         {entry.level}, {entry.subject}

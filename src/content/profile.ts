@@ -2,6 +2,7 @@ import type { z } from 'zod'
 
 import { parseContent } from './parse'
 import { profileSchema } from './schema'
+import { fromOwner, fromPublicRecord } from './source'
 
 const record: z.input<typeof profileSchema> = {
   name: 'Alex Lewin',
@@ -22,32 +23,51 @@ const record: z.input<typeof profileSchema> = {
   // The work address from the CV file's Links table. Never a personal mailbox.
   email: 'alex@finite.computer',
   links: [
-    { id: 'github', label: 'GitHub', shortLabel: null, url: 'https://github.com/alexlwn123' },
-    { id: 'x', label: 'X', shortLabel: null, url: 'https://x.com/ALewin' },
+    {
+      id: 'github',
+      label: 'GitHub',
+      shortLabel: null,
+      url: 'https://github.com/alexlwn123',
+      source: fromOwner(),
+    },
+    { id: 'x', label: 'X', shortLabel: null, url: 'https://x.com/ALewin', source: fromOwner() },
     {
       id: 'linkedin',
       label: 'LinkedIn',
       shortLabel: null,
-      url: 'https://www.linkedin.com/in/alex-lewin-058265174/',
+      url: 'https://www.linkedin.com/in/alex-lewin1/',
+      source: fromPublicRecord(
+        'The address was replaced: the one in the CV file, /in/alex-lewin-058265174/, is dead.',
+        'https://www.linkedin.com/in/alex-lewin1/',
+      ),
     },
-    { id: 'devpost', label: 'Devpost', shortLabel: null, url: 'https://devpost.com/alexlwn123' },
+    {
+      id: 'devpost',
+      label: 'Devpost',
+      shortLabel: null,
+      url: 'https://devpost.com/alexlwn123',
+      source: fromOwner(),
+    },
     {
       id: 'bitcoinPlusPlus',
       label: 'bitcoin++ community profile',
       shortLabel: null,
       url: 'https://btcpp.dev/whois/alexlwn123',
+      source: fromOwner(),
     },
     {
       id: 'booking',
       label: 'Book a 30-minute call',
       shortLabel: 'Book 30 min',
       url: 'https://fantastical.app/alexlwn123/30mins',
+      source: fromOwner(),
     },
     {
       id: 'card',
       label: 'Business-card page',
       shortLabel: null,
       url: 'https://qr.lwn.lol',
+      source: fromOwner(),
     },
   ],
 }

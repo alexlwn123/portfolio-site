@@ -2,6 +2,7 @@ import { deepFreeze } from '../lib/deepFreeze'
 import { deriveStats } from './derive'
 import { education, experience } from './experience'
 import { organized } from './organized'
+import { patents } from './patents'
 import { press } from './press'
 import { profile } from './profile'
 import { projects } from './projects'
@@ -24,6 +25,7 @@ export const content: Content = deepFreeze({
   talks,
   bitcoinPlusPlus,
   projects,
+  patents,
   press,
 })
 

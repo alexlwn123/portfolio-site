@@ -53,7 +53,10 @@ describe('pressClaim', () => {
   it.each([
     ['btcpp-nairobi-2026', 'Coverage of bitcoin++ open source edition in Nairobi, a hackathon'],
     ['auburnhacks-2021', 'Coverage of AuburnHacks 2021, a hackathon'],
-    ['ai-hack-for-freedom-iv', 'Coverage of AI Hack for Freedom IV, a hackathon'],
+    [
+      'ai-hack-for-freedom-iv',
+      'Coverage of AI Hack for Freedom IV in San Francisco, CA, a hackathon',
+    ],
   ])('names the place only when the event had one (%s)', (organizedId, expected) => {
     const item: Press = {
       ...npr,
@@ -61,6 +64,25 @@ describe('pressClaim', () => {
     }
 
     expect(pressClaim(item, content).claim).toContain(expected)
+  })
+
+  it('names no place for an event whose place is not announced', () => {
+    const unplaced = content.organized.map((event) =>
+      event.id === 'ai-hack-for-freedom-iv' ? { ...event, location: null } : event,
+    )
+    const item: Press = {
+      ...npr,
+      subject: {
+        kind: 'organizedEvent',
+        organizedId: 'ai-hack-for-freedom-iv',
+        namesEvent: false,
+        namesOwner: false,
+      },
+    }
+
+    expect(pressClaim(item, { ...content, organized: unplaced }).claim).toBe(
+      'Coverage of AI Hack for Freedom IV, a hackathon he helped organize.',
+    )
   })
 
   it('never gives a prize a placement in a winners announcement', () => {

@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react'
 import type { BitcoinPlusPlus, Stats, Talk } from '../../../content'
 import styles from '../cv.module.css'
 import { bitcoinPlusPlusSummary } from '../describe'
-import { LABELS, TALK_FORMATS } from '../labels'
+import { LABELS, TALK_FORMATS, TALK_ROLES } from '../labels'
 import { DateText } from '../parts/DateText'
 import { Entry } from '../parts/Entry'
 import { LinkList } from '../parts/LinkList'
@@ -21,11 +21,12 @@ function TalkEntry({ talk }: { readonly talk: Talk }): ReactElement {
   // An unconfirmed venue is treated like an unknown one: it is not printed.
   const venue = talk.venue?.confirmed === true ? talk.venue.name : null
   const format = talk.format !== null ? TALK_FORMATS[talk.format] : null
+  const role = talk.role !== null ? TALK_ROLES[talk.role] : null
 
   return (
     <Entry when={talkWhen(talk)}>
       <p className={styles.entryTitle}>{talk.title}</p>
-      <MetaLine parts={[format, venue, talk.detail]} />
+      <MetaLine parts={[format, role, venue, talk.detail]} />
       {talk.alsoListedAs !== null && (
         <p className={styles.note}>
           {LABELS.alsoListedAs} “{talk.alsoListedAs}”

@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../../content'
+import { winName } from '../../../content/winName'
 import { WinsSection } from './WinsSection'
 
 function renderSection() {
@@ -27,7 +28,7 @@ describe('WinsSection', () => {
     expect(items).toHaveLength(stats.wins.total)
     content.wins.forEach((win, index) => {
       expect(items[index]).toHaveTextContent(String(win.year))
-      expect(items[index]).toHaveTextContent(win.project)
+      expect(items[index]).toHaveTextContent(winName(win))
       expect(items[index]).toHaveTextContent(win.event)
     })
   })

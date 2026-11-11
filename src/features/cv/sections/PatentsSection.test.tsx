@@ -3,10 +3,11 @@ import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../../content'
 import type { Patent } from '../../../content'
+import { patentStats } from '../../../content/derive'
 import { PatentsSection } from './PatentsSection'
 
 function renderSection(patents: readonly Patent[] = content.patents) {
-  render(<PatentsSection patents={patents} stats={stats.patents} />)
+  render(<PatentsSection patents={patents} stats={patentStats(patents)} />)
   return within(screen.getByRole('region', { name: 'Patents' }))
 }
 
@@ -123,6 +124,28 @@ describe('PatentsSection', () => {
 
     expect(section.queryByRole('list', { name: 'Applications' })).toBeNull()
     expect(section.queryByRole('heading', { name: 'Applications' })).toBeNull()
+  })
+
+  it('prints no filing date for an application that records none', () => {
+    const undated = content.patents
+      .filter((patent) => patent.status.kind === 'pending')
+      .map((patent) => ({ ...patent, filed: null }))
+    const section = renderSection(undated)
+    const [application] = section.getAllByRole('listitem')
+
+    expect(application?.querySelector('time')).toBeNull()
+    expect(application).not.toHaveTextContent(/filed/i)
+    expect(application).toHaveTextContent(/^Self-Sovereign Identity/)
+  })
+
+  it('prints no summary when nothing is granted or pending', () => {
+    const abandoned = content.patents
+      .filter((patent) => patent.status.kind === 'abandoned')
+      .map((patent) => ({ ...patent, shown: true }))
+    const section = renderSection(abandoned)
+
+    expect(section.queryByText(/granted|pending/i)).toBeNull()
+    expect(section.getAllByRole('listitem')).toHaveLength(1)
   })
 
   it('leaves out the granted list when nothing has been granted', () => {

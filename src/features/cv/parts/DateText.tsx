@@ -20,9 +20,10 @@ export function DateText({ date, month = 'short' }: DateTextProps): ReactElement
 
 interface DateSpanTextProps {
   readonly span: DateSpan
+  readonly month?: MonthStyle
 }
 
 /** A span of dates as one time element, anchored on its first day. */
-export function DateSpanText({ span }: DateSpanTextProps): ReactElement {
-  return <time dateTime={isoDate(span.start)}>{formatDateSpan(span)}</time>
+export function DateSpanText({ span, month = 'short' }: DateSpanTextProps): ReactElement {
+  return <time dateTime={isoDate(span.start)}>{formatDateSpan(span, month)}</time>
 }

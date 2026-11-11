@@ -1,5 +1,6 @@
 import { ordinal } from '../lib/formatNumber'
 import type { Content, Organized, Press, Win } from './schema'
+import { winName } from './winName'
 
 /** What a page may say about a press item: the claim, and who the piece names. */
 export interface PressClaim {
@@ -67,7 +68,7 @@ export function pressClaim(item: Press, sources: Sources): PressClaim {
     case 'win': {
       const win = findById(sources.wins, subject.winId, 'win')
       return {
-        claim: `Announcement of the ${win.event} winners, with ${win.project} ${resultPhrase(win)}.`,
+        claim: `Announcement of the ${win.event} winners, with ${winName(win)} ${resultPhrase(win)}.`,
         naming: subject.namesOwner ? null : 'The announcement does not name him.',
       }
     }

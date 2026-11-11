@@ -9,6 +9,7 @@ export const SECTIONS = Object.freeze([
   { id: 'organized', title: 'Hackathons organized' },
   { id: 'talks', title: 'Talks, workshops and panels' },
   { id: 'projects', title: 'Projects' },
+  { id: 'patents', title: 'Patents' },
   { id: 'press', title: 'Press' },
   { id: 'education', title: 'Education' },
   { id: 'contact', title: 'Contact' },
@@ -41,19 +42,28 @@ export const LABELS = Object.freeze({
   prizeWinner: 'Prize winner',
   overall: 'overall',
   tied: 'tied',
+  team: 'Team',
+  outOf: 'Out of',
+  announcedAs: 'Announced as',
 
   online: 'Online',
   heldList: 'Hackathons held',
   upcoming: 'Upcoming',
   upcomingNote: 'Not yet held, so not counted in the totals above.',
   nonMonetaryPrizes: 'Non-monetary prizes',
-  bitcoinPrizes: 'Prizes paid in bitcoin',
+  about: 'About',
 
   talksList: 'Talks',
   ongoing: 'Ongoing',
   alsoListedAs: 'Also listed as',
   bitcoinPlusPlus: 'bitcoin++',
   editionsList: 'bitcoin++ editions attended',
+
+  grantedList: 'Patents granted',
+  applications: 'Applications',
+  application: 'Application',
+  granted: 'Granted',
+  filed: 'Filed',
 
   hackathonWin: 'Hackathon win',
   reportedBy: 'Reported by',
@@ -67,4 +77,17 @@ export const TALK_FORMATS = Object.freeze({
   panel: 'Panel',
   talk: 'Talk',
   podcast: 'Podcast',
+} as const)
+
+export const TALK_ROLES = Object.freeze({
+  moderator: 'Moderator',
+  panelist: 'Panelist',
+  guest: 'Guest',
+  coHost: 'Co-host',
+} as const)
+
+/** An application is labelled by its state. A granted patent needs no such label. */
+export const APPLICATION_STATES = Object.freeze({
+  pending: 'Pending',
+  abandoned: 'Abandoned',
 } as const)

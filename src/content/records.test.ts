@@ -418,7 +418,7 @@ describe('patents', () => {
       ['2023/0032782', 'pending'],
       ['2024/0037539', 'abandoned'],
     ])
-    expect(patents.every((patent) => patent.number.office === 'US')).toBe(true)
+    expect(new Set(patents.map((patent) => patent.number.office))).toEqual(new Set(['US']))
   })
 
   it('records each granted patent with its title, grant date, assignee and co-inventor', () => {
@@ -429,7 +429,10 @@ describe('patents', () => {
       status: { kind: 'granted', granted: { year: 2026, month: 1, day: 27 } },
       assignee: 'NCR Voyix Corp',
       coInventors: ['Christian Lee McDaniel'],
-      url: 'https://patents.google.com/patent/US12536579B2/en',
+      link: {
+        label: 'Google Patents',
+        url: 'https://patents.google.com/patent/US12536579B2/en',
+      },
     })
     expect(byId(patents, 'us-12354083')).toMatchObject({
       number: { office: 'US', serial: '12,354,083', kindCode: 'B2' },
@@ -438,7 +441,10 @@ describe('patents', () => {
       status: { kind: 'granted', granted: { year: 2025, month: 7, day: 8 } },
       assignee: 'Digital First Holdings LLC',
       coInventors: ['Bryan Walser Nonni'],
-      url: 'https://patents.google.com/patent/US12354083B2/en',
+      link: {
+        label: 'Google Patents',
+        url: 'https://patents.google.com/patent/US12354083B2/en',
+      },
     })
   })
 
@@ -450,7 +456,10 @@ describe('patents', () => {
       status: { kind: 'pending' },
       assignee: 'NCR Corp',
       coInventors: ['Bryan Walser Nonni'],
-      url: 'https://patents.google.com/patent/US20230032782A1/en',
+      link: {
+        label: 'Google Patents',
+        url: 'https://patents.google.com/patent/US20230032782A1/en',
+      },
     })
     expect(byId(patents, 'us-20240037539')).toMatchObject({
       number: { kindCode: 'A1' },
@@ -459,7 +468,10 @@ describe('patents', () => {
       status: { kind: 'abandoned' },
       assignee: 'NCR Voyix Corp',
       coInventors: ['Bryan Walser Nonni', 'Brent Vance Zucker'],
-      url: 'https://patents.google.com/patent/US20240037539A1/en',
+      link: {
+        label: 'Google Patents',
+        url: 'https://patents.google.com/patent/US20240037539A1/en',
+      },
     })
   })
 

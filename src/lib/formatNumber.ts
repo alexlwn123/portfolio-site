@@ -8,6 +8,10 @@ const dollars = new Intl.NumberFormat(LOCALE, {
 })
 const ordinalRules = new Intl.PluralRules(LOCALE, { type: 'ordinal' })
 
+const MILLION = 1_000_000
+const MILLIONS_DECIMALS = 3
+const inMillions = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: MILLIONS_DECIMALS })
+
 const ORDINAL_SUFFIX: Readonly<Record<Intl.LDMLPluralRule, string>> = Object.freeze({
   zero: 'th',
   one: 'st',
@@ -25,6 +29,11 @@ export function formatNumber(value: number): string {
 /** 163525 becomes "$163,525". */
 export function formatUsd(amount: number): string {
   return dollars.format(amount)
+}
+
+/** 2500000 becomes "2.5" and 17542000 "17.542": the caller adds "million" or "M". */
+export function formatMillions(value: number): string {
+  return inMillions.format(value / MILLION)
 }
 
 /** 1 becomes "1st", 2 "2nd", 11 "11th". */

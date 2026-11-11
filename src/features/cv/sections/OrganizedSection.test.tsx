@@ -128,6 +128,16 @@ describe('OrganizedSection', () => {
     expect(itemFor(section, 'AuburnHacks 2020')).not.toHaveTextContent('Executive director')
   })
 
+  it('says only "Upcoming" where an upcoming hackathon has no date yet', () => {
+    const undated: Organized = { ...bare, status: 'upcoming', date: null, location: null }
+
+    render(<OrganizedSection organized={[undated]} stats={stats.organized} />)
+    const item = within(screen.getByRole('list', { name: 'Upcoming' })).getByRole('listitem')
+
+    expect(item).toHaveTextContent(/^Upcoming\s*A Quiet Hackathon$/)
+    expect(item.querySelector('time')).toBeNull()
+  })
+
   it('leaves the upcoming section out when nothing is upcoming', () => {
     render(<OrganizedSection organized={heldEvents(content.organized)} stats={stats.organized} />)
 

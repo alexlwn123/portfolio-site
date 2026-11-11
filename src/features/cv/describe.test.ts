@@ -69,6 +69,10 @@ describe('what a win prints', () => {
     expect(winTitle(win('ncr-global-hackathon-2021'))).toBe('Team Eth Heads')
   })
 
+  it('titles a win with its event if it ever has neither, which the schema refuses', () => {
+    expect(winTitle({ ...win('pleb-fm'), project: null, team: null })).toBe('SatsxSW hackathon')
+  })
+
   it('adds the edition to the name of an event that numbers them', () => {
     expect(eventLabel(win('ncr-global-hackathon-2021'))).toBe('NCR Global Hackathon, 3rd annual')
     expect(eventLabel(win('bitdevs-upgrade'))).toBe('AI4All')
@@ -150,6 +154,10 @@ describe('what a patent prints', () => {
     expect(patentsSummary({ ...base, granted: 0, pending: 2, anyPending: true })).toBe(
       '2 applications pending.',
     )
+  })
+
+  it('says nothing at all when nothing is granted or pending', () => {
+    expect(patentsSummary({ granted: 0, pending: 0, filings: 1, anyPending: false })).toBeNull()
   })
 })
 

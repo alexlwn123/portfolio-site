@@ -3,7 +3,13 @@ import type { ReactElement, ReactNode } from 'react'
 import type { Organized, Stats } from '../../../content'
 import { heldEvents, upcomingEvents } from '../../../content/derive'
 import styles from '../cv.module.css'
-import { locationLabel, organizedSummary, participantsLabel, prizesLabel } from '../describe'
+import {
+  locationLabel,
+  organizedSummary,
+  participantsLabel,
+  prizesLabel,
+  projectsLabel,
+} from '../describe'
 import { LABELS } from '../labels'
 import { DateSpanText } from '../parts/DateText'
 import { Entry } from '../parts/Entry'
@@ -20,15 +26,18 @@ function eventWhen(event: Organized): ReactNode {
 }
 
 function EventEntry({ event }: { readonly event: Organized }): ReactElement {
-  const { location, participants, prizes } = event
+  const { location, participants, prizes, projects } = event
 
   return (
     <Entry when={eventWhen(event)}>
       <p className={styles.entryTitle}>{event.name}</p>
-      <MetaLine parts={[location !== null ? locationLabel(location) : null, event.note]} />
+      <MetaLine
+        parts={[location !== null ? locationLabel(location) : null, event.role, event.note]}
+      />
       <MetaLine
         parts={[
           participants !== null ? participantsLabel(participants) : null,
+          projects !== null ? projectsLabel(projects) : null,
           prizes !== null ? prizesLabel(prizes) : null,
         ]}
       />

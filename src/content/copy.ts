@@ -54,7 +54,7 @@ export const copy = deepFreeze({
     cities: { label: 'Cities I have run hackathons in' },
     bumper: { note: 'a real workshop I teach at bitcoin++' },
     projects: { label: 'Projects' },
-    button: { firstWeek: (millions: Figure) => `${String(millions)}M+ SATS IN WEEK ONE` },
+    button: { firstWeek: (sats: Figure) => `${String(sats)} SATS IN WEEK ONE` },
     parkingSign: { letter: 'P' },
     jukebox: { tagline: 'Lightning jukebox' },
     record: {
@@ -79,7 +79,8 @@ export const copy = deepFreeze({
     back: 'BACK TO THE LID',
     participants: 'participants',
     prizes: 'in prizes',
-    footnote: (events: Figure) => `${String(events)} events with public figures`,
+    participantsFootnote: (events: Figure) => `${String(events)} events with a public head count`,
+    prizesFootnote: (events: Figure) => `${String(events)} events with a public prize figure`,
     stamp: (sinceYear: Figure) => `ORGANIZER ✦ SINCE ${String(sinceYear)}`,
     blank: 'still on the roll',
     notAnnounced: 'not announced',

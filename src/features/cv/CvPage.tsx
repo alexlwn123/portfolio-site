@@ -12,6 +12,7 @@ import { ContactSection } from './sections/ContactSection'
 import { EducationSection } from './sections/EducationSection'
 import { ExperienceSection } from './sections/ExperienceSection'
 import { OrganizedSection } from './sections/OrganizedSection'
+import { PatentsSection } from './sections/PatentsSection'
 import { PressSection } from './sections/PressSection'
 import { ProjectsSection } from './sections/ProjectsSection'
 import { TalksSection } from './sections/TalksSection'
@@ -43,6 +44,7 @@ export function CvPage({ content, stats }: CvPageProps): ReactElement {
           stats={stats.bitcoinPlusPlus}
         />
         <ProjectsSection projects={content.projects} wins={content.wins} />
+        <PatentsSection patents={content.patents} stats={stats.patents} />
         <PressSection press={content.press} sources={content} />
         <EducationSection education={content.education} />
         <ContactSection profile={profile} />

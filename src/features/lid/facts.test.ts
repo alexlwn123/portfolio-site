@@ -7,7 +7,7 @@ import {
   compactSats,
   cvSection,
   findById,
-  firstWeekFigure,
+  firstWeekSats,
   inPersonCity,
   introText,
   latestPodiumWin,
@@ -44,7 +44,9 @@ describe('inPersonCity', () => {
   })
 
   it('refuses a hackathon whose place is not yet known', () => {
-    expect(() => inPersonCity(event('ai-hack-for-freedom-iv'))).toThrow(/ai-hack-for-freedom-iv/)
+    const unplaced = { ...event('ai-hack-for-freedom-iv'), location: null }
+
+    expect(() => inPersonCity(unplaced)).toThrow(/ai-hack-for-freedom-iv/)
   })
 })
 
@@ -151,7 +153,7 @@ describe('figures the record states as numbers', () => {
   })
 
   it('reads the first-week figure from the win’s own field', () => {
-    expect(firstWeekFigure(win('last-pay-wins'))).toBe('2.5M+')
+    expect(compactSats(firstWeekSats(win('last-pay-wins')))).toBe('2.5M+')
   })
 
   it('follows the number, not the wording of any note', () => {
@@ -161,11 +163,11 @@ describe('figures the record states as numbers', () => {
       notes: ['Collected and paid out more than 2.5 million sats in its first week.'],
     }
 
-    expect(firstWeekFigure(busier)).toBe('4.25M')
+    expect(compactSats(firstWeekSats(busier))).toBe('4.25M')
   })
 
   it('stops the build when the win records no such figure', () => {
-    expect(() => firstWeekFigure(win('pleb-fm'))).toThrow(/pleb-fm/)
+    expect(() => firstWeekSats(win('pleb-fm'))).toThrow(/pleb-fm/)
   })
 })
 

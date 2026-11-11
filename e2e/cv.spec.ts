@@ -80,7 +80,7 @@ test.describe('/cv/', () => {
       patents.getByRole('list', { name: 'Applications' }).getByRole('listitem'),
     ).toHaveText([/Application US 2023\/0032782 A1/])
     await expect(
-      patents.getByRole('link', { name: /Google Patents: Methods and a system for in-store/ }),
+      patents.getByRole('link', { name: /^Google Patents\s*: Methods and a system for in-store/ }),
     ).toHaveAttribute('href', 'https://patents.google.com/patent/US12536579B2/en')
     await expect(page.getByText(/abandoned|non-fungible/i)).toHaveCount(0)
   })

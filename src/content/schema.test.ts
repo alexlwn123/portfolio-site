@@ -75,7 +75,7 @@ const validPatent = {
   status: { kind: 'granted', granted: { year: 2026, month: 1, day: 27 } },
   assignee: 'Example Corp',
   coInventors: ['A. N. Other'],
-  url: 'https://patents.google.com/patent/US12345678B2/en',
+  link: { label: 'Google Patents', url: 'https://patents.google.com/patent/US12345678B2/en' },
   shown: true,
 }
 

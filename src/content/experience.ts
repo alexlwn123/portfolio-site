@@ -2,6 +2,7 @@ import type { z } from 'zod'
 
 import { parseContent, recordList } from './parse'
 import { educationSchema, experienceSchema } from './schema'
+import { fromPublicRecord } from './source'
 
 /*
  * Start dates come from the current site's timeline. End dates are not
@@ -68,7 +69,13 @@ const educationRecords: readonly z.input<typeof educationSchema>[] = [
     level: 'Undergraduate',
     subject: 'Software Engineering',
     start: { year: 2018, month: 8, day: null },
+    // His LinkedIn profile lists 2018 to 2021. It states no degree, so no graduation is claimed.
+    end: { year: 2021, month: null, day: null },
     graduated: null,
+    source: fromPublicRecord(
+      'The last year, 2021, was added from his LinkedIn profile. Whether he graduated is still not recorded.',
+      'https://www.linkedin.com/in/alex-lewin1/',
+    ),
   },
 ]
 

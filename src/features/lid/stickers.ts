@@ -1,16 +1,17 @@
 import type { Content, Stats } from '../../content'
 import { copy } from '../../content/copy'
 import { upcomingEvents } from '../../content/derive'
+import { winName } from '../../content/winName'
 import { deepFreeze } from '../../lib/deepFreeze'
 import { ordinal } from '../../lib/formatNumber'
 import { PATHS } from '../../lib/paths'
-import { resultLabel } from '../cv/describe'
+import { firstWeekNote, resultLabel } from '../cv/describe'
 import {
   balanceLines,
-  cityFromPlace,
+  compactSats,
   cvSection,
   findById,
-  firstWeekMillions,
+  firstWeekSats,
   inPersonCity,
   introText,
   latestPodiumWin,
@@ -158,7 +159,7 @@ function counts({ wins }: Content, stats: Stats): readonly Spec[] {
   const { cvSticker, winsSeal, organizedSeal } = copy.lid
   const { count, countryCount, includesOnline } = stats.organized
   const latest = latestPodiumWin(wins)
-  const city = cityFromPlace(latest.eventPlace)
+  const city = latest.eventPlace?.city ?? null
   const year = String(latest.year)
 
   return [
@@ -191,7 +192,7 @@ function counts({ wins }: Content, stats: Stats): readonly Spec[] {
       id: 'latest-win',
       kind: 'foilWin',
       rank: ordinal(latest.result.place),
-      title: latest.project,
+      title: winName(latest),
       lines: [latest.event, city === null ? year : `${city}, ${year}`],
       href: cvSection('wins'),
     },
@@ -221,14 +222,15 @@ function winners({ projects: records, wins }: Content): readonly [Spec, Spec] {
   const jukebox = findById(records, 'pleb-fm', 'project')
   const jukeboxWin = findById(wins, 'pleb-fm', 'win')
   const result = `${resultLabel(jukeboxWin.result)} · ${shortEventName(jukeboxWin.event)}`
+  const firstWeek = firstWeekSats(buttonWin)
 
   return [
     {
       id: 'last-pay-wins',
       kind: 'arcadeButton',
-      label: `${button.name}: ${buttonWin.notes.join(' ')}`,
+      label: `${button.name}: ${firstWeekNote(firstWeek)}`,
       top: button.name,
-      bottom: copy.lid.button.firstWeek(firstWeekMillions(buttonWin)),
+      bottom: copy.lid.button.firstWeek(compactSats(firstWeek)),
       href: projectHome(button),
     },
     {
@@ -289,7 +291,7 @@ function records(content: Content, stats: Stats): readonly Spec[] {
       kind: 'hexBadge',
       label: winSummary(welder),
       kicker: resultLabel(welder.result),
-      title: welder.project.split(' '),
+      title: winName(welder).split(' '),
       foot: `${hexWin.series} ${inPersonCity(ownHackathon(welder, content.organized))} ${shortYear(welder.year)}`,
       href: cvSection('wins'),
     },

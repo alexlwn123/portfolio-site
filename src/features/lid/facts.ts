@@ -1,4 +1,6 @@
-import type { Organized, Profile, Project, Win, WinResult } from '../../content'
+import type { Organized, Profile, Project, SatsFigure, Win, WinResult } from '../../content'
+import { winName } from '../../content/winName'
+import { formatMillions } from '../../lib/formatNumber'
 import { PATHS } from '../../lib/paths'
 import { resultLabel } from '../cv/describe'
 import type { SectionId } from '../cv/labels'
@@ -112,26 +114,17 @@ export function balanceLines(text: string): readonly [string, string] {
   )
 }
 
-/*
- * Two facts the records state only in prose. They are read with strict
- * patterns, never retyped: if the wording changes, the figure fails the build
- * and the city is simply left off.
- */
-const FIRST_WEEK_SATS = /more than (\d+(?:\.\d+)?) million sats in its first week/
-const CITY_BEFORE_STATE = /(?:^|, )([^,]+), [A-Z]{2}$/
-
-/** "2.5", from the note that the game took more than 2.5 million sats in its first week. */
-export function firstWeekMillions(win: Win): string {
-  const figure = win.notes.map((note) => FIRST_WEEK_SATS.exec(note)?.[1]).find(Boolean)
-  if (figure === undefined) {
-    throw new Error(`No note on the win "${win.id}" states its first-week sats`)
-  }
-  return figure
+/** "2.5M+": sats in millions, with a plus when the record says "more than". */
+export function compactSats({ sats, atLeast }: SatsFigure): string {
+  return `${formatMillions(sats)}M${atLeast ? '+' : ''}`
 }
 
-/** "Austin" from "Bitcoin Park, Austin, TX". Null for a place written any other way. */
-export function cityFromPlace(place: string | null): string | null {
-  return (place === null ? null : CITY_BEFORE_STATE.exec(place)?.[1]) ?? null
+/** What a project took in over its first week: the number in its win record, never its prose. */
+export function firstWeekSats(win: Win): SatsFigure {
+  if (win.firstWeekSats === null) {
+    throw new Error(`The win "${win.id}" records no first-week sats`)
+  }
+  return win.firstWeekSats
 }
 
 /** The address of a section of the CV page. A dead anchor does not type-check. */
@@ -141,5 +134,5 @@ export function cvSection(id: SectionId): string {
 
 /** "Lightning Welder: 1st overall, bitcoin++ Berlin, ecash edition, 2024". */
 export function winSummary(win: Win): string {
-  return `${win.project}: ${resultLabel(win.result)}, ${win.event}, ${String(win.year)}`
+  return `${winName(win)}: ${resultLabel(win.result)}, ${win.event}, ${String(win.year)}`
 }
