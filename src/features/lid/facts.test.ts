@@ -5,6 +5,8 @@ import type { Organized, Project, Win } from '../../content'
 import {
   balanceLines,
   compactSats,
+  countWord,
+  currentJob,
   cvSection,
   fieldFigure,
   fieldWin,
@@ -12,7 +14,7 @@ import {
   firstWeekSats,
   grantedPatentNumbers,
   inPersonCity,
-  introText,
+  introOpening,
   latestPodiumWin,
   ownHackathon,
   projectHome,
@@ -114,17 +116,47 @@ describe('latestPodiumWin', () => {
   })
 })
 
-describe('introText', () => {
-  it('joins his own first two lines, without the article the tag already says', () => {
-    expect(introText(content.profile)).toBe(
-      'software engineer from Atlanta, GA. I organize and compete in hackathons around the world.',
-    )
+describe('introOpening', () => {
+  it('takes his own first line, without the article the tag already says', () => {
+    expect(introOpening(content.profile)).toBe('software engineer from Atlanta, GA.')
+    expect(introOpening({ selfDescription: ['An engineer.'] })).toBe('engineer.')
   })
 
-  it('needs two lines to work with', () => {
-    const profile = { ...content.profile, selfDescription: ['A software engineer.'] }
+  it('needs a line to work with', () => {
+    expect(() => introOpening({ selfDescription: [] })).toThrow(/self-description/)
+  })
+})
 
-    expect(() => introText(profile)).toThrow(/two lines/)
+describe('currentJob', () => {
+  it('finds the job he holds now', () => {
+    expect(currentJob(content.experience)).toMatchObject({
+      id: 'finite-computer',
+      organization: content.profile.role.organization,
+    })
+  })
+
+  it('stops the build when no job is marked as current', () => {
+    const past = content.experience.map((job) => ({ ...job, current: false }))
+
+    expect(() => currentJob(past)).toThrow(/current/)
+  })
+})
+
+describe('countWord', () => {
+  it('writes a small count as a word', () => {
+    expect([0, 1, 2, 3, 9, 12].map(countWord)).toEqual([
+      'zero',
+      'one',
+      'two',
+      'three',
+      'nine',
+      'twelve',
+    ])
+  })
+
+  it('leaves a larger count as a figure', () => {
+    expect(countWord(13)).toBe('13')
+    expect(countWord(1471)).toBe('1,471')
   })
 })
 

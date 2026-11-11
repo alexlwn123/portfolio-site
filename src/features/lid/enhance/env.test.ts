@@ -172,15 +172,14 @@ describe('what the browser can do', () => {
     expect(browserEnv(window).orientation?.screenAngle()).toBe(90)
   })
 
-  it('tells the lid when it changes between its two arrangements', () => {
+  it('tells the lid when it changes between its three arrangements', () => {
     const asked = stubMedia()
     const callback = vi.fn()
 
     browserEnv(window).onRearrange(callback)
 
-    expect(asked.get('(max-width: 560px)')?.addEventListener).toHaveBeenCalledWith(
-      'change',
-      callback,
-    )
+    for (const query of ['(max-width: 560px)', '(min-width: 1100px)']) {
+      expect(asked.get(query)?.addEventListener, query).toHaveBeenCalledWith('change', callback)
+    }
   })
 })

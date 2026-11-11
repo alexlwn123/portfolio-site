@@ -23,6 +23,41 @@ describe('buildMeta', () => {
     expect(home.description).toContain(profile.location.city)
   })
 
+  it('describes the whole career on the home page: the job, every employer before it, the patents', () => {
+    const [current, ...earlier] = content.experience
+
+    expect(home.description).toContain(`${profile.role.title} at ${profile.role.organization}`)
+    expect(current?.organization).toBe(profile.role.organization)
+    for (const { organization } of earlier) {
+      expect(home.description).toContain(organization)
+    }
+    expect(home.description).toContain(`${String(stats.patents.granted)} granted patents`)
+    expect(home.description).toBe(
+      'Minister of Development at Finite Computer in Atlanta, Georgia. ' +
+        'Before that: Fedi, Zion, BlockSpaces, and NCR Corporation. ' +
+        '2 granted patents, 9 hackathon wins, 16 hackathons organized in 8 countries.',
+    )
+  })
+
+  it('follows the records: one employer, one patent, no "before that" with nothing before', () => {
+    const [current] = content.experience
+    const early = { ...content, experience: current ? [current] : [] }
+    const one = { ...stats, patents: { ...stats.patents, granted: 1 } }
+
+    expect(buildMeta('home', early, stats).description).not.toContain('Before that')
+    expect(buildMeta('home', content, one).description).toContain('1 granted patent,')
+    expect(buildMeta('home', content, one).description).not.toContain('1 granted patents')
+  })
+
+  it('never counts an application or a hidden filing as a patent', () => {
+    expect(home.description).not.toMatch(/(3|4|three|four) (granted )?patents/i)
+    expect(stats.patents.filings).toBeGreaterThan(stats.patents.granted)
+  })
+
+  it('stays short enough to be shown whole in a search result', () => {
+    expect(home.description.length).toBeLessThanOrEqual(200)
+  })
+
   it('gives each indexable page a canonical URL on the site, with a trailing slash', () => {
     expect(home.canonical).toBe(`${profile.site}/`)
     expect(cv.canonical).toBe(`${profile.site}/cv/`)

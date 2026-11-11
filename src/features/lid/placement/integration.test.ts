@@ -35,7 +35,9 @@ describe('lidPlacement', () => {
     void setup?.({ updateConfig, addWatchFile } as unknown as Parameters<typeof setup>[0])
 
     const watched = addWatchFile.mock.calls.map(([file]) => fileURLToPath(file))
-    expect(watched.some((file) => file.endsWith('placement/desktop.ts'))).toBe(true)
+    for (const layout of ['wide', 'desktop', 'phone']) {
+      expect(watched.some((file) => file.endsWith(`placement/${layout}.ts`))).toBe(true)
+    }
     expect(watched.some((file) => file.endsWith('lid/stickers.ts'))).toBe(true)
     expect(watched.every((file) => existsSync(file))).toBe(true)
     expect(updateConfig).toHaveBeenCalledWith({

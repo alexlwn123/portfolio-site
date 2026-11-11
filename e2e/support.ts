@@ -113,7 +113,7 @@ export async function carry(
   from: { readonly x: number; readonly y: number } = { x: 0.5, y: 0.5 },
 ): Promise<void> {
   await sticker(page, id).evaluate((element) => {
-    element.scrollIntoView({ block: 'center' })
+    element.scrollIntoView({ block: 'center', behavior: 'instant' })
   })
   const box = await boxOf(sticker(page, id))
   const start = { x: box.x + box.width * from.x, y: box.y + box.height * from.y }
@@ -128,7 +128,7 @@ export async function carry(
 export async function linksNotUnderTheirOwnCentre(page: Page): Promise<readonly (string | null)[]> {
   return lidLinks(page).evaluateAll((elements) =>
     elements.flatMap((link) => {
-      link.scrollIntoView({ block: 'center' })
+      link.scrollIntoView({ block: 'center', behavior: 'instant' })
       const box = link.getBoundingClientRect()
       const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
       return link.contains(hit) ? [] : [link.getAttribute('href')]
@@ -156,7 +156,7 @@ export async function linksCoveredBy(
         if (!added || added.getClientRects().length === 0) {
           return [`${selector} is missing`]
         }
-        added.scrollIntoView({ block: 'center' })
+        added.scrollIntoView({ block: 'center', behavior: 'instant' })
         const box = added.getBoundingClientRect()
         const points = Array.from({ length: side * side }, (_, index) => ({
           x: box.left + ((index % side) + 0.5) * (box.width / side),

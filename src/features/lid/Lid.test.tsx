@@ -4,10 +4,11 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../content'
 import type { BadgePhotoImage } from '../badge/photoSources'
 import { SECTIONS } from '../cv/labels'
+import { SECTION_IDS } from '../sections/sectionIds'
 import { Lid } from './Lid'
 import { isNoted, lidNotes, NOTED_IDS } from './notes'
 import { flattenStickers, isControl, isDecoration, linksOf } from './stickerSpecs'
-import { CONTROL_IDS, lidStickers, STICKER_IDS } from './stickers'
+import { CONTROL_IDS, EMPLOYER_IDS, lidStickers, STICKER_IDS } from './stickers'
 
 const photo: BadgePhotoImage = {
   sources: [{ type: 'image/avif', srcSet: '/_astro/portrait.avif 424w' }],
@@ -64,7 +65,15 @@ describe('Lid', () => {
     const container = renderLid()
 
     expect(screen.queryByRole('main')).toBeNull()
-    expect(container.querySelector('[data-lid-desk] [data-lid-stage]')).not.toBeNull()
+    expect(container.querySelector('[data-lid] > [data-lid-stage]')).not.toBeNull()
+  })
+
+  it('is the surface itself: nothing wraps the lid, so nothing can frame it', () => {
+    const container = renderLid()
+
+    expect(container.firstElementChild).toHaveAttribute('data-lid')
+    expect(container.children).toHaveLength(1)
+    expect(container.querySelector('[data-lid-desk]')).toBeNull()
   })
 
   it('sticks down every sticker once, in reading order', () => {
@@ -86,11 +95,13 @@ describe('Lid', () => {
     expect(names).toEqual(['Sections', 'Elsewhere', 'More elsewhere'])
   })
 
-  it('groups the city pills and the project stickers as lists', () => {
+  it('groups the employers, the city pills and the project stickers as lists', () => {
     renderLid()
 
+    const employers = screen.getByRole('list', { name: 'Where I have worked' })
     const cities = screen.getByRole('list', { name: 'Cities I have run hackathons in' })
     const projects = screen.getByRole('list', { name: 'Projects' })
+    expect(within(employers).getAllByRole('listitem')).toHaveLength(content.experience.length)
     expect(within(cities).getAllByRole('listitem')).toHaveLength(8)
     expect(projects.querySelectorAll(':scope > li')).toHaveLength(4)
     expect(onTheFace(within(projects).getAllByRole('link'))).toHaveLength(4)
@@ -146,13 +157,10 @@ describe('Lid', () => {
   it('names the count stickers and the project drawings in words', () => {
     renderLid()
 
-    expect(screen.getByRole('link', { name: '9 hackathon wins' })).toHaveAttribute(
-      'href',
-      '/cv/#wins',
-    )
+    expect(screen.getByRole('link', { name: '9 hackathon wins' })).toHaveAttribute('href', '/#wins')
     expect(
       screen.getByRole('link', { name: '16 hackathons organized in 8 countries plus online' }),
-    ).toHaveAttribute('href', '/cv/#organized')
+    ).toHaveAttribute('href', '/#organized')
     expect(screen.getByRole('link', { name: /^Last Pay Wins: / })).toHaveAttribute(
       'href',
       'https://lastpaywins.com',
@@ -182,7 +190,7 @@ describe('Lid', () => {
 
     const toPatents = screen
       .getAllByRole('link')
-      .filter((link) => link.getAttribute('href') === '/cv/#patents')
+      .filter((link) => link.getAttribute('href') === '/#patents')
     expect(toPatents.map((link) => link.textContent.trim())).toEqual([
       'INVENTOR',
       'U.S. PAT. NOS. 12,354,083 · 12,536,579 OTHER PATENTS PENDING',
@@ -196,7 +204,7 @@ describe('Lid', () => {
     const medal = screen.getByRole('link', {
       name: '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads',
     })
-    expect(medal).toHaveAttribute('href', '/cv/#wins')
+    expect(medal).toHaveAttribute('href', '/#wins')
     expect(medal.closest('[data-sticker]')).toHaveAttribute('data-sticker', 'ncr-win')
     expect(medal.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
   })
@@ -213,18 +221,59 @@ describe('Lid', () => {
     expect(screen.getByRole('link', { name: /Plain CV/ })).toHaveAttribute('href', '/cv/')
   })
 
-  it('points at no anchor the CV does not have', () => {
+  it('points at no anchor that this page or the CV does not have', () => {
     const container = renderLid()
-    const anchors = [...container.querySelectorAll('a[href*="#"]')].map(
-      (link) => link.getAttribute('href')?.split('#')[1],
+    const hrefs = [...container.querySelectorAll('a[href*="#"]')].map(
+      (link) => link.getAttribute('href') ?? '',
     )
-    const sections: readonly string[] = SECTIONS.map(({ id }) => id)
+    const onThisPage: readonly string[] = SECTION_IDS.map((id) => `/#${id}`)
+    const onTheCv: readonly string[] = SECTIONS.map(({ id }) => `/cv/#${id}`)
 
-    expect(anchors.length).toBeGreaterThan(0)
-    for (const anchor of anchors) {
-      expect(sections).toContain(anchor)
+    expect(hrefs.length).toBeGreaterThan(0)
+    for (const href of hrefs) {
+      expect([...onThisPage, ...onTheCv]).toContain(href)
     }
     expect(container.querySelector('a[href^="#"]')).toBeNull()
+  })
+
+  it('sends every sticker’s own link to this page, and only a note’s "more" to the CV', () => {
+    renderLid()
+
+    const toTheCv = screen
+      .getAllByRole('link')
+      .filter((link) => link.getAttribute('href')?.startsWith('/cv/#'))
+    expect(toTheCv.length).toBe(NOTED_IDS.length)
+    for (const link of toTheCv) {
+      expect(link.closest('[data-note]')).not.toBeNull()
+    }
+  })
+
+  it('sticks an asset tag down for every employer, each a link to the career section', () => {
+    const container = renderLid()
+    const employers = within(screen.getByRole('list', { name: 'Where I have worked' }))
+    const tags = employers.getAllByRole('link')
+
+    expect(tags.map((tag) => tag.getAttribute('href'))).toEqual(
+      content.experience.map(() => '/#work'),
+    )
+    expect(tags.map((tag) => tag.getAttribute('data-sticker'))).toEqual(EMPLOYER_IDS)
+    for (const [index, job] of content.experience.entries()) {
+      expect(tags[index]).toHaveTextContent(job.organization)
+      expect(tags[index]).toHaveAccessibleName(new RegExp(job.organization))
+    }
+    expect(employers.getByRole('link', { name: /Fedi/ })).toHaveTextContent('2024')
+    expect(container.querySelector('[data-sticker="job-finite-computer"]')).not.toHaveTextContent(
+      /\d{4}/,
+    )
+  })
+
+  it('introduces the whole career on the hello tag, with one phrase highlighted', () => {
+    const container = renderLid()
+    const hello = container.querySelector('[data-sticker="hello"]')
+
+    expect(hello).toHaveTextContent(content.profile.role.organization)
+    expect(hello).toHaveTextContent(/two granted patents/)
+    expect(hello?.querySelectorAll('mark')).toHaveLength(1)
   })
 
   it('opens no link in a new window', () => {
