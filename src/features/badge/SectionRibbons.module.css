@@ -1,0 +1,109 @@
+/* Stick-on ribbons under the badge: the way into each section of the CV. */
+.ribbons {
+  width: 100%;
+  margin-top: -0.2em;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  margin-top: -0.85em;
+}
+
+/* Each ribbon is stuck on a little askew: --o shifts it, --rr tilts it. */
+.ribbon {
+  position: relative;
+  display: block;
+  width: 20.6em;
+  height: 4.3em;
+  color: var(--ink);
+  text-decoration: none;
+  filter: drop-shadow(0 0.28em 0.22em rgba(var(--shadow-rgb), 0.45));
+  transition: translate 0.25s var(--ease-slap);
+  translate: calc(var(--o, 0) * 0.1em) 0;
+  rotate: var(--rr, 0deg);
+}
+
+.item:nth-child(4n + 1) .ribbon {
+  --o: -5;
+  --rr: -1.4deg;
+
+  z-index: 4;
+}
+
+.item:nth-child(4n + 2) .ribbon {
+  --o: 4;
+  --rr: 1deg;
+
+  z-index: 3;
+}
+
+.item:nth-child(4n + 3) .ribbon {
+  --o: -2;
+  --rr: -0.6deg;
+
+  z-index: 2;
+}
+
+.item:nth-child(4n + 4) .ribbon {
+  --o: 5;
+  --rr: 1.6deg;
+
+  z-index: 1;
+}
+
+.ribbon:hover,
+.ribbon:focus-visible {
+  translate: calc(var(--o, 0) * 0.1em + 0.9em) 0;
+}
+
+.ribbon:focus-visible {
+  z-index: 5;
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.3em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+/* The printed face, with pinked ends cut by the mask. */
+.face {
+  display: flex;
+  gap: 0.45em;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 0.25em;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5),
+      rgba(255, 255, 255, 0) 30%,
+      rgba(0, 0, 0, 0.13)
+    ),
+    var(--c);
+  font-size: 1.85em;
+  letter-spacing: 0.04em;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% /
+    0.46em 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 0.46em 100%;
+}
+
+.count {
+  font-family: var(--font-body);
+  font-size: 0.8em;
+  font-weight: var(--weight-heavy);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ribbon {
+    transition: none;
+  }
+}

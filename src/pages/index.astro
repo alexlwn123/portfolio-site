@@ -1,10 +1,18 @@
 ---
+import 'virtual:lid-placement.css'
+
+import { getImage } from 'astro:assets'
+
+import portrait from '../assets/alex-lewin.png'
 import { content, stats } from '../content'
-import { ComingSoon } from '../features/home/ComingSoon'
+import { resolveBadgePhoto } from '../features/badge/photoSources'
+import { Lid } from '../features/lid/Lid'
 import { buildMeta } from '../features/seo/meta'
 import Base from '../layouts/Base.astro'
+
+const photo = await resolveBadgePhoto(getImage, portrait)
 ---
 
 <Base meta={buildMeta('home', content, stats)}>
-  <ComingSoon />
+  <Lid content={content} stats={stats} photo={photo} />
 </Base>

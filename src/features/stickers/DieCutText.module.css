@@ -1,0 +1,80 @@
+/*
+ * The name: holographic letters with an ink edge, an ink shadow and a white
+ * die-cut border, each a copy of the same two lines of text.
+ *
+ * The letters are Bricolage Grotesque Regular, thickened by the ink edge. The
+ * mockup's stylesheet asks for Bowlby One, but its rule (.name svg text) cannot
+ * reach text that is drawn through <use>, so the approved render never showed
+ * it. The face is set outright here, and is the same in every browser.
+ */
+.letters {
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+  text-transform: uppercase;
+}
+
+.cut {
+  fill: var(--white);
+  stroke: var(--white);
+  stroke-linejoin: round;
+  stroke-width: 36px;
+}
+
+.edge {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-linejoin: round;
+  stroke-width: 13px;
+}
+
+.stripe {
+  fill: var(--white);
+  opacity: 0.34;
+}
+
+.glowCentre {
+  stop-color: var(--white);
+  stop-opacity: 0.5;
+}
+
+.glowEdge {
+  stop-color: var(--white);
+  stop-opacity: 0;
+}
+
+.sparks {
+  fill: var(--white);
+}
+
+.spark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+
+.spark:nth-of-type(2) {
+  animation-delay: -0.9s;
+}
+
+.spark:nth-of-type(3) {
+  animation-delay: -1.7s;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    transform: scale(0.45) rotate(0deg);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.1) rotate(45deg);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spark {
+    animation: none;
+  }
+}

@@ -1,0 +1,30 @@
+/*
+ * Anything that hangs from the top of the lid: the lanyard's straps and the
+ * badge on the end of them. Both are placed at the same point and swing about
+ * a pivot 30em above it, so they move as one.
+ */
+.hang {
+  transform-origin: 50% -30em;
+  animation: sway 5.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.hang > * {
+  pointer-events: auto;
+}
+
+@keyframes sway {
+  from {
+    rotate: -1.3deg;
+  }
+
+  to {
+    rotate: 1.9deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hang {
+    animation: none;
+  }
+}

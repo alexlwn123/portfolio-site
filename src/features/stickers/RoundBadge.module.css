@@ -1,0 +1,6 @@
+/* The organized seal: a mint globe with its caption set around the rim. */
+.globe {
+  fill: none;
+  stroke: var(--white);
+  opacity: 0.75;
+}

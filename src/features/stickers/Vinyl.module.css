@@ -1,0 +1,60 @@
+/*
+ * The vinyl skin: a white die-cut edge around a colour, with a gloss on top.
+ * The shape is wrapped in :where() so that a sticker's own class can change
+ * its padding, corners, edge or surface whichever stylesheet loads last.
+ */
+:where(.vinyl) {
+  display: block;
+  padding: 0.5em;
+  border-radius: 1.5em;
+  background: var(--c, var(--white));
+  box-shadow: inset 0 0 0 0.5em var(--white);
+}
+
+.vinyl {
+  position: relative;
+  overflow: hidden;
+}
+
+.vinyl::before {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0) 26%,
+    rgba(255, 255, 255, 0) 64%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  pointer-events: none;
+  content: '';
+}
+
+/*
+ * A corner that has started to peel. The cut grows from 2.4em to 4.2em while
+ * the sticker is lifted: --lift comes from Sticker.module.css and the
+ * clip-path animates between the two polygons.
+ */
+.peel {
+  --cut: calc(2.4em + var(--lift, 0) * 1.8em);
+
+  transition: clip-path 0.3s var(--ease-slap);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%
+  );
+}
+
+.peelTopLeft {
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peel {
+    transition: none;
+  }
+}

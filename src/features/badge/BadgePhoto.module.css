@@ -1,0 +1,35 @@
+/*
+ * The badge photo, printed in three inks. The image is a tall centred column
+ * of the portrait (see photoCrop.ts): the frame shows one band of it, and the
+ * left, top and width below slide that band into view. photoCrop.test.ts
+ * checks them against the crop.
+ */
+.photo {
+  position: relative;
+  aspect-ratio: 1 / 0.72;
+  overflow: hidden;
+  background: var(--hi);
+}
+
+/* The gradient map is the #lid-tritone filter in SharedDefs. */
+.image {
+  position: absolute;
+  top: -106.22%;
+  left: -0.95%;
+  display: block;
+  width: 100.95%;
+  max-width: none;
+  height: auto;
+  filter: url('#lid-tritone') contrast(1.05);
+}
+
+/* Halftone dots, printed over the top in deep blue. */
+.photo::after {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(27, 31, 168, 0.55) 0 26%, transparent 30%) 0 0 / 0.45em
+    0.45em;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  content: '';
+}

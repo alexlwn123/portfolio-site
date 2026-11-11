@@ -1,0 +1,28 @@
+/*
+ * The vinyl colours. A tone sets --c, the colour the sticker is cut from,
+ * and --t, the colour of what is printed on it: ink, except on ink itself.
+ */
+.white {
+  --c: var(--white);
+}
+
+.ink {
+  --c: var(--ink);
+  --t: var(--white);
+}
+
+.tang {
+  --c: var(--tang);
+}
+
+.gum {
+  --c: var(--gum);
+}
+
+.hi {
+  --c: var(--hi);
+}
+
+.mint {
+  --c: var(--mint);
+}

@@ -2,9 +2,14 @@
 
 The source for [alex.lwn.lol](https://alex.lwn.lol).
 
-The site is being rebuilt around an approved design called "Sticker Shock": the home page is the lid
-of a laptop covered in die-cut stickers. The approved mockups are in `design/mockups/` and the facts
-the site states come from `docs/alex-lewin-cv-data.md`.
+The site is built around an approved design called "Sticker Shock": the home page is the lid of a
+laptop covered in die-cut stickers, and `/cv/` is the same record as a plain page. The approved
+mockups are in `design/mockups/` and the facts the site states come from
+`docs/alex-lewin-cv-data.md`.
+
+Each sticker on the lid is listed once, in reading order, in `src/features/lid/stickers.ts`. Where
+it sits is data in `src/features/lid/placement/`: one hand-set arrangement for wide screens and one
+for phones, compiled into a stylesheet at build time. No element carries an inline style.
 
 ## Stack
 
@@ -21,7 +26,8 @@ the site states come from `docs/alex-lewin-cv-data.md`.
 ## Layout
 
 ```
-design/mockups/     approved mockups, kept unchanged
+design/mockups/     approved mockups, kept unchanged, and DEVIATIONS.md: where the site departs from them
+design/screenshots/ the mockups and the home page as rendered, rewritten by every `pnpm test:e2e`
 docs/               source material
 e2e/                Playwright specs
 public/             files served as they are (favicons, robots.txt, web manifest)

@@ -9,12 +9,6 @@ type Figure = number | string
  * figure it is a template, and the caller passes the figure in from `stats`.
  */
 export const copy = deepFreeze({
-  placeholder: {
-    title: 'The lid is coming',
-    body: 'This page will be the lid of a laptop, covered in stickers. Until they are stuck down, the plain CV has the whole record.',
-    cvLink: 'Read the plain CV',
-  },
-
   notFound: {
     title: 'Page not found',
     body: 'Nothing is stuck to this spot. The link may be old, or the address may have a typo.',
@@ -22,21 +16,34 @@ export const copy = deepFreeze({
     cvLink: 'Read the plain CV',
   },
 
-  /** design/mockups/01-first-screen.html */
+  /**
+   * design/mockups/01-first-screen.html. Arrows and stars are drawn, not
+   * typed, so none appear here: the mockup's glyphs fell back to system fonts.
+   */
   lid: {
-    hello: { greeting: 'HELLO', lead: 'I’m a' },
+    hello: { greeting: 'HELLO', lead: 'I’m a', highlight: 'hackathons' },
     cvSticker: { kicker: 'The serious version', label: 'Plain CV' },
     winsSeal: {
       top: 'HACKATHON',
       bottom: 'WINNER',
       times: (wins: Figure) => `${String(wins)}×`,
+      summary: (wins: Figure) => `${String(wins)} hackathon wins`,
     },
     organizedSeal: {
       label: 'HACKATHONS ORGANIZED',
       countries: (countries: Figure) => `${String(countries)} COUNTRIES + ONLINE`,
+      countriesInPerson: (countries: Figure) => `${String(countries)} COUNTRIES`,
+      summary: (organized: Figure, countries: Figure) =>
+        `${String(organized)} hackathons organized in ${String(countries)} countries plus online`,
+      summaryInPerson: (organized: Figure, countries: Figure) =>
+        `${String(organized)} hackathons organized in ${String(countries)} countries`,
     },
-    lanyard: { loop: ['HACK', 'ORGANIZE', 'REPEAT'], city: 'ATL', separator: '✦' },
-    badge: { roles: ['Hacker', 'Organizer', 'Speaker'], titleNote: 'real title ↓' },
+    lanyard: { loop: ['HACK', 'ORGANIZE', 'REPEAT'], city: 'ATL' },
+    badge: {
+      roles: ['Hacker', 'Organizer', 'Speaker'],
+      titleNote: 'real title',
+      photoAlt: (name: string) => `${name}, smiling, in a cap`,
+    },
     ribbons: {
       organizer: 'ORGANIZER',
       winner: 'WINNER',
@@ -44,7 +51,19 @@ export const copy = deepFreeze({
       builder: 'BUILDER',
       times: (count: Figure) => `×${String(count)}`,
     },
+    cities: { label: 'Cities I have run hackathons in' },
     bumper: { note: 'a real workshop I teach at bitcoin++' },
+    projects: { label: 'Projects' },
+    button: { firstWeek: (millions: Figure) => `${String(millions)}M+ SATS IN WEEK ONE` },
+    parkingSign: { letter: 'P' },
+    jukebox: { tagline: 'Lightning jukebox' },
+    record: {
+      mark: '++',
+      name: 'bitcoin++',
+      editions: (editions: Figure) => `${String(editions)} editions`,
+      sessions: (sessions: Figure) => `${String(sessions)} stage sessions`,
+    },
+    hexWin: { series: 'BTC++' },
     phrase: 'BITCOIN & FREEDOM TECH',
     ghost: {
       saved: (nextNumber: Figure) => `this spot saved for hackathon #${String(nextNumber)}`,

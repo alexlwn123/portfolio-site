@@ -1,18 +1,31 @@
 import { expect, test } from '@playwright/test'
 
-import { collectConsole, collectRequests } from './support'
+import { content } from '../src/content'
+import { collectConsole, collectRequests, openLid } from './support'
 
 const PAGES = ['/', '/cv/'] as const
 
-test('the home page says the lid is coming', async ({ page }) => {
+/** Each ribbon on the badge, and the CV section it must land on. */
+const RIBBONS = [
+  { name: /^ORGANIZER/, section: 'organized' },
+  { name: /^WINNER/, section: 'wins' },
+  { name: 'SPEAKER', section: 'talks' },
+  { name: 'BUILDER', section: 'projects' },
+] as const
+
+test('the home page is the lid, headed by his name', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(/lid/i)
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(content.profile.name)
+  await expect(page.locator('[data-sticker]').first()).toBeVisible()
 })
 
-test('home links to /cv/ and back', async ({ page }) => {
-  await page.goto('/')
-  await page.getByRole('link', { name: /CV/ }).click()
+test('home reaches /cv/ through the asset-tag sticker, and the CV leads back', async ({ page }) => {
+  await openLid(page, 1280)
+  const tag = page.locator('a[data-sticker="cv"]')
+
+  await expect(tag).toHaveAccessibleName(/Plain CV/)
+  await tag.click()
 
   await expect(page).toHaveURL(/\/cv\/$/)
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
@@ -23,7 +36,30 @@ test('home links to /cv/ and back', async ({ page }) => {
     .click()
 
   await expect(page).toHaveURL(/\/$/)
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(/lid/i)
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(content.profile.name)
+})
+
+for (const { name, section } of RIBBONS) {
+  test(`the ${section} ribbon reaches its CV section`, async ({ page }) => {
+    await openLid(page, 390)
+
+    await page.getByRole('navigation', { name: 'Sections' }).getByRole('link', { name }).click()
+
+    await expect(page).toHaveURL(new RegExp(`/cv/#${section}$`))
+    await expect(page.locator(`section#${section}`)).toBeInViewport()
+  })
+}
+
+test('the count stickers reach their CV sections too', async ({ page }) => {
+  await openLid(page, 728)
+
+  await page.getByRole('link', { name: /hackathons organized/ }).click()
+  await expect(page).toHaveURL(/\/cv\/#organized$/)
+  await expect(page.locator('section#organized')).toBeInViewport()
+
+  await page.goBack()
+  await page.getByRole('link', { name: /hackathon wins$/ }).click()
+  await expect(page).toHaveURL(/\/cv\/#wins$/)
 })
 
 test('an unknown address gets the 404 page, with ways out', async ({ page }) => {

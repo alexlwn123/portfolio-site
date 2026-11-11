@@ -1,0 +1,13 @@
+/* The wins seal: a tangerine starburst with a stitched ring. */
+.burst {
+  fill: var(--tang);
+  stroke: var(--white);
+}
+
+/*
+ * The figure is ink with a white shadow. The mockup had it white with an ink
+ * shadow, which is 2.9:1 against the tangerine.
+ */
+.figureShadow {
+  fill: var(--white);
+}

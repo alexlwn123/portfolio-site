@@ -1,0 +1,4 @@
+/* The hex badge: foil inside a white die-cut edge, with a fine ink keyline. */
+.edge {
+  stroke: var(--white);
+}

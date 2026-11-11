@@ -1,0 +1,33 @@
+/* The outline of a sticker that is not there yet, marked out on the lid. */
+.ghost {
+  padding: 1em 0.8em;
+  border: 0.2em dashed rgba(255, 255, 255, 0.6);
+  border-radius: 1.4em;
+  background:
+    radial-gradient(60% 80% at 30% 30%, rgba(255, 255, 255, 0.14), transparent 70%),
+    rgba(255, 255, 255, 0.05);
+  color: var(--white);
+  text-align: center;
+}
+
+.note {
+  display: block;
+  margin: 0;
+  font-size: 1.6em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.detail {
+  display: block;
+  margin: 0.3em 0 0;
+  font-size: 1.1em;
+  font-weight: var(--weight-medium);
+  opacity: 0.85;
+}
+
+@container lid (max-width: 560px) {
+  .detail {
+    font-size: 1.2em;
+  }
+}

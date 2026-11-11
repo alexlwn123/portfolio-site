@@ -102,4 +102,20 @@ export default defineConfig([
       ],
     },
   },
+  {
+    // The one exception to the rule above: modules that are nothing but
+    // measurements. Placements are coordinates on an artboard and geometry is
+    // the shape of a drawing, so their numbers are the data, not stray facts.
+    // Components may not join this list: they read these modules instead.
+    files: [
+      'src/features/lid/placement/artboards.ts',
+      'src/features/lid/placement/desktop.ts',
+      'src/features/lid/placement/phone.ts',
+      'src/features/stickers/geometry/*.ts',
+      'src/features/badge/photoCrop.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
+    },
+  },
 ])

@@ -1,0 +1,65 @@
+/* The one serious sticker: a brushed-metal asset tag with a barcode. */
+.tag {
+  /* The tag's own metal, light to dark and back. */
+  --c: linear-gradient(100deg, #f4f5f9, #c9cedb 38%, #fafbfd 52%, #bfc5d4);
+
+  display: flex;
+  gap: 1.1em;
+  align-items: center;
+  padding: 1.15em 1.5em 1.15em 1.4em;
+  border-radius: 0.7em;
+  box-shadow:
+    inset 0 0 0 0.35em var(--white),
+    inset 0 0 0 0.5em var(--ink);
+}
+
+.bars {
+  flex: none;
+  width: 3.4em;
+  height: 4em;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 0.22em,
+    transparent 0.22em 0.4em,
+    var(--ink) 0.4em 0.5em,
+    transparent 0.5em 0.9em,
+    var(--ink) 0.9em 1.25em,
+    transparent 1.25em 1.42em
+  );
+}
+
+.kicker {
+  display: block;
+  font-size: 1.06em;
+  white-space: nowrap;
+}
+
+.label {
+  display: block;
+  font-size: 2.55em;
+  font-weight: var(--weight-heavy);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* The arrow leans forward while the sticker is lifted. */
+.arrow {
+  width: 0.873em;
+  height: 0.8em;
+  margin-left: 0.08em;
+  transition: translate 0.2s;
+  translate: calc(var(--lift, 0) * 0.25em) 0;
+}
+
+@container lid (max-width: 560px) {
+  .kicker {
+    font-size: 1.2em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow {
+    transition: none;
+  }
+}

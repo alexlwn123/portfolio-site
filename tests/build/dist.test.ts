@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { content } from '../../src/content'
 import { PERSONAL_MAIL_DOMAINS } from '../../src/content/schema'
 import { SECTIONS } from '../../src/features/cv/labels'
+import { STICKER_IDS } from '../../src/features/lid/stickers'
 import { executableScripts, listDistFiles, readDistFile, readPage } from './dist'
 import { INDEXABLE_ROUTES, ROUTES } from './routes'
 
@@ -98,6 +99,70 @@ describe('/cv/', () => {
 
     expect(css).toMatch(/@media print/)
     expect(css).toMatch(/attr\(href\)/)
+  })
+})
+
+describe('/', () => {
+  async function homeCss(): Promise<string> {
+    const page = await readPage('/')
+    const sheets = await Promise.all(
+      [...page.querySelectorAll('link[rel="stylesheet"]')].map((link) =>
+        readDistFile((link.getAttribute('href') ?? '').replace(/^\//, '')),
+      ),
+    )
+    return sheets.join('\n')
+  }
+
+  it('places every sticker from a stylesheet, with the phone layout in a container query', async () => {
+    const page = await readPage('/')
+    const css = await homeCss()
+    const ids = [...page.querySelectorAll('[data-sticker]')].map((sticker) =>
+      sticker.getAttribute('data-sticker'),
+    )
+
+    expect(ids).toEqual(STICKER_IDS)
+    for (const id of STICKER_IDS) {
+      expect(css, id).toMatch(new RegExp(`\\[data-sticker="?${id}"?\\]\\{`))
+    }
+    expect(css).toMatch(/@container lid \((max-width:\s*560px|width\s*<=\s*560px)\)/)
+    expect(css).toMatch(/container:\s*lid\s*\/\s*inline-size/)
+  })
+
+  it('links only to CV sections that exist', async () => {
+    const home = await readPage('/')
+    const cv = await readPage('/cv/')
+    const anchors = [...home.querySelectorAll('a[href^="/cv/#"]')].map(
+      (link) => link.getAttribute('href')?.split('#')[1] ?? '',
+    )
+
+    expect(new Set(anchors)).toEqual(new Set(['organized', 'wins', 'talks', 'projects']))
+    for (const anchor of anchors) {
+      expect(cv.getElementById(anchor), anchor).not.toBeNull()
+    }
+    expect(home.querySelector('a[href^="#"]')).toBeNull()
+  })
+
+  it('embeds nothing as a data: URI, in the page or in its stylesheets', async () => {
+    const page = await readPage('/')
+
+    expect(page.documentElement.outerHTML).not.toMatch(/data:(image|font|application)/)
+    expect(await homeCss()).not.toMatch(/url\(\s*["']?data:/)
+  })
+
+  it('publishes the badge photo as AVIF and WebP, and keeps the original out of the build', async () => {
+    const page = await readPage('/')
+    const files = await listDistFiles()
+    const candidates = [...page.querySelectorAll('picture source')].flatMap((source) =>
+      (source.getAttribute('srcset') ?? '').split(', ').map((candidate) => candidate.split(' ')[0]),
+    )
+
+    expect(candidates.some((url) => url?.endsWith('.avif'))).toBe(true)
+    expect(candidates.some((url) => url?.endsWith('.webp'))).toBe(true)
+    for (const url of candidates) {
+      expect(files).toContain((url ?? '').replace(/^\//, ''))
+    }
+    expect(files.filter((file) => file.endsWith('.png') && file.includes('alex-lewin'))).toEqual([])
+    expect(page.querySelector('picture img')?.getAttribute('alt')).toMatch(/smiling/)
   })
 })
 

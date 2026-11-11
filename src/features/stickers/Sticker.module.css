@@ -1,0 +1,88 @@
+/*
+ * Anything on the lid is placed: where it sits (left, top, width, rotate,
+ * z-index) comes from the placement stylesheet, which finds it by its
+ * data-sticker attribute. A sticker is also shadowed, slaps down on load and
+ * lifts when touched: that part is the mockup's .s rule. What is drawn
+ * straight onto the lid (the tally, the saved spot) is placed and no more.
+ */
+.placed {
+  position: absolute;
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.sticker {
+  /* 0 at rest, 1 while hovered or focused. Peeling corners and arrows read it. */
+  --lift: 0;
+
+  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
+    drop-shadow(0 0.5em 0.5em rgba(var(--shadow-rgb), 0.38));
+  transition:
+    translate var(--duration-hover) var(--ease-slap),
+    scale var(--duration-hover) var(--ease-slap),
+    filter var(--duration-hover);
+  animation: slap var(--duration-slap) cubic-bezier(0.2, 1.4, 0.35, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* A sticker with no width of its own in the placement data sizes itself. */
+.selfSized {
+  width: max-content;
+}
+
+/* Lifted off the lid: under the pointer, or holding keyboard focus. */
+.sticker:hover,
+.sticker:focus-visible {
+  --lift: 1;
+
+  z-index: 40;
+  translate: 0 -0.35em;
+  scale: 1.035;
+  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
+    drop-shadow(0 1.3em 1em rgba(var(--shadow-rgb), 0.42));
+}
+
+/* The same for a sticker whose links are inside it. Kept apart from the rule
+   above so a browser without :has() still gets that one. */
+.sticker:has(:focus-visible) {
+  --lift: 1;
+
+  z-index: 40;
+  translate: 0 -0.35em;
+  scale: 1.035;
+  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
+    drop-shadow(0 1.3em 1em rgba(var(--shadow-rgb), 0.42));
+}
+
+/* Highlighter ring with an ink edge on both sides: visible on the cobalt lid
+   and on any sticker it overlaps. */
+.sticker:focus-visible {
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.3em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+@keyframes slap {
+  0% {
+    translate: 0 -0.5em;
+    scale: 1.09;
+  }
+
+  55% {
+    translate: 0 0;
+    scale: 0.975;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker {
+    transition: none;
+    animation: none;
+  }
+}

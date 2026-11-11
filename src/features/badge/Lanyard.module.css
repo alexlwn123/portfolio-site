@@ -1,0 +1,59 @@
+/*
+ * The two straps, each a band from far above the lid down to the clip. The
+ * mockup drew them as SVG lines from (-96, -300) and (356, -300) to the clip
+ * at (124, 268) and (136, 268): 60.9em long, 68.8 degrees off the horizontal.
+ */
+.straps {
+  filter: drop-shadow(0 0.4em 0.4em rgba(var(--shadow-rgb), 0.4));
+}
+
+.strap {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: 60.912em;
+  height: 2.9em;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--gum-dark) 0 0.3em,
+    var(--gum) 0.3em calc(100% - 0.3em),
+    var(--gum-dark) calc(100% - 0.3em)
+  );
+
+  /* Ink, not the mockup's white, which is 3:1 on bubblegum. */
+  color: var(--ink);
+  white-space: nowrap;
+  transform-origin: 0 50%;
+}
+
+/* Runs down to the clip. */
+.left {
+  top: -31.45em;
+  left: -9.6em;
+  rotate: 68.827deg;
+}
+
+/* Runs up from the clip. */
+.right {
+  top: 25.35em;
+  left: 13.6em;
+  rotate: -68.827deg;
+}
+
+.run {
+  display: flex;
+  align-items: center;
+  padding-top: 0.06em;
+  font-stretch: var(--label-stretch);
+  font-size: 1.35em;
+  font-weight: var(--label-weight);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.star {
+  width: 0.79em;
+  height: 0.79em;
+  margin: 0 0.49em 0 0.33em;
+}

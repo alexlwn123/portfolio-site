@@ -1,0 +1,18 @@
+/*
+ * Arrows and stars, drawn. The mockup typed them, and none of its three
+ * typefaces has them, so each browser borrowed a glyph from a system font.
+ */
+.glyph {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  fill: currentcolor;
+}
+
+.stroked {
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

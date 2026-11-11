@@ -1,0 +1,8 @@
+/* Paint marker on the lid itself: white, a little worn. */
+.marks {
+  fill: none;
+  stroke: var(--white);
+  stroke-linecap: round;
+  stroke-width: 4.2px;
+  opacity: 0.9;
+}

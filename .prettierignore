@@ -10,4 +10,7 @@ pnpm-lock.yaml
 design/mockups/
 docs/
 
+# written by the Playwright specs
+design/screenshots/
+
 LICENSE
