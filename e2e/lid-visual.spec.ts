@@ -15,7 +15,7 @@ import {
   mockupArrangementCss,
 } from './mockupArrangement'
 import { diffScreenshots, OUTSIDE, type Region } from './pixelDiff'
-import { boxOf, openLid } from './support'
+import { fitWindowToLid, openLid } from './support'
 
 /*
  * The lid's own screenshots for review, and the comparison with the approved
@@ -206,10 +206,8 @@ for (const width of REVIEW_WIDTHS) {
   test(`saves lid-${String(width)}.png`, async ({ page }) => {
     await openLid(page, width)
 
-    // The lid alone, in a window as tall as it is: the sections under it have specs of their
-    // own, and painting the whole long page to cut the lid out of it takes a busy machine too long.
-    const lid = page.locator('[data-lid]')
-    await page.setViewportSize({ width, height: Math.ceil((await boxOf(lid)).height) })
+    // The lid alone: the sections under it have specs of their own.
+    const lid = await fitWindowToLid(page)
     const image = await savePartScreenshot(lid, `lid-${String(width)}.png`)
 
     expect(image.byteLength).toBeGreaterThan(0)
@@ -244,7 +242,7 @@ test('every sticker of the mockup is still drawn as the mockup drew it', async (
   const mockup = await mockupPage.screenshot({ fullPage: true, animations: 'disabled' })
   await openLidAsMockup(page)
   // The lid alone: the strap and the sections under it are no part of the mockup.
-  const lid = await page.locator('[data-lid]').screenshot({ animations: 'disabled' })
+  const lid = await (await fitWindowToLid(page)).screenshot({ animations: 'disabled' })
   const excluded = await changedCounts(page)
 
   const diff = await diffScreenshots(page, mockup, lid, await stickerRegions(page), excluded)

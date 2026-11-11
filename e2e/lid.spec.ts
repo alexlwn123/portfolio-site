@@ -16,6 +16,7 @@ import { sectionAnchor } from '../src/features/sections/sectionIds'
 import { diffScreenshots, type Region } from './pixelDiff'
 import {
   collectRequests,
+  fitWindowToLid,
   lidLinks,
   linksCoveredBy,
   linksNotUnderTheirOwnCentre,
@@ -395,7 +396,8 @@ test.describe('the lid', () => {
     page,
   }) => {
     await openLid(page, 728)
-    const withScripts = await page.screenshot({ fullPage: true, animations: 'disabled' })
+    // The lid alone, both times: the sections under it are the same markup either way.
+    const withScripts = await (await fitWindowToLid(page)).screenshot({ animations: 'disabled' })
     const buttons = await Promise.all(SHOWN_CONTROLS.map((id) => shadowedBox(page, id)))
 
     const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce' })
@@ -419,7 +421,11 @@ test.describe('the lid', () => {
       notes['pleb-fm'].lines[0] ?? '',
     )
 
-    const withoutScripts = await plain.screenshot({ fullPage: true, animations: 'disabled' })
+    const withoutScripts = await (
+      await fitWindowToLid(plain)
+    ).screenshot({
+      animations: 'disabled',
+    })
     const { ratio, excluded } = await diffScreenshots(
       page,
       withScripts,

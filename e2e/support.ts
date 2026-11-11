@@ -44,6 +44,21 @@ export async function openLid(page: Page, width: number): Promise<void> {
   })
 }
 
+/**
+ * Makes the window as tall as the lid and hands the lid back, ready to be
+ * photographed. Cut out of a shorter window, the lid costs Chromium a painting
+ * of the whole long page under it, which a busy machine does not finish in time.
+ */
+export async function fitWindowToLid(page: Page): Promise<Locator> {
+  const lid = page.locator('[data-lid]')
+  const { width, height } = await boxOf(lid)
+  await page.setViewportSize({
+    width: page.viewportSize()?.width ?? Math.round(width),
+    height: Math.ceil(height),
+  })
+  return lid
+}
+
 /** Every link on the lid, in the order the markup has them. */
 export function lidLinks(page: Page): Locator {
   return page.locator('[data-lid]').getByRole('link')
