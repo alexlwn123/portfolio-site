@@ -417,9 +417,9 @@ test.describe('pick up, throw, re-stick', () => {
       body.removeAttribute('tabindex')
     })
     const visited: string[] = []
-    // Tab on from the last button pressed, through the sections under the lid
-    // and round to the top of the page, keeping only the lid's own links.
-    const stops = hrefs.length * 2 + (await page.locator('main a, main button').count())
+    // Keep only the lid's own links. The rest of the page has links and buttons
+    // too, so allow enough Tab presses to pass every one of them.
+    const stops = (await page.locator('a, button').count()) * 2
     for (let stop = 0; visited.length < hrefs.length && stop < stops; stop += 1) {
       await page.keyboard.press('Tab')
       const href = await page.evaluate(() => {

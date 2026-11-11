@@ -1,0 +1,181 @@
+/*
+ * A sheet of kiss-cut stickers lying on the lid: backing paper, a printed
+ * strip across the top, crop marks in the corners, and nine prize stickers
+ * with what each was for printed under it. The section's heading is a
+ * sticker stuck half on the sheet and half on the lid.
+ */
+.sheet {
+  --liner: var(--metal-light);
+
+  position: relative;
+  isolation: isolate;
+  margin: -7.4em -1.4em 0;
+  padding: 2.4em 4em 5.4em;
+  color: var(--ink);
+  rotate: -0.5deg;
+}
+
+/* The heading overlaps the sheet's corner, so it is stuck down over it. */
+:global(#wins-title) {
+  z-index: 2;
+}
+
+/* The paper, a little glossy, casting the sheet's shadow on the lid. */
+.paper {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0.5em;
+  background:
+    linear-gradient(
+      112deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.85) 42%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    var(--liner);
+  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
+    drop-shadow(0 0.7em 0.7em rgba(var(--shadow-rgb), 0.4));
+}
+
+.marks {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* A crop mark: two hairlines that stop short of the corner they point at. */
+.crop {
+  position: absolute;
+  width: 2.2em;
+  height: 2.2em;
+  background:
+    linear-gradient(var(--ink), var(--ink)) 0 100% / 1.4em 0.1em no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 100% 0 / 0.1em 1.4em no-repeat;
+  opacity: 0.7;
+}
+
+.crop:nth-child(1) {
+  top: 0.5em;
+  left: 0.5em;
+}
+
+.crop:nth-child(2) {
+  top: 0.5em;
+  right: 0.5em;
+  scale: -1 1;
+}
+
+.crop:nth-child(3) {
+  bottom: 0.5em;
+  left: 0.5em;
+  scale: 1 -1;
+}
+
+.crop:nth-child(4) {
+  right: 0.5em;
+  bottom: 0.5em;
+  scale: -1 -1;
+}
+
+/* The printer's colour bar: the six colours everything here is printed in. */
+.bar {
+  position: absolute;
+  bottom: 1.5em;
+  left: 5.5em;
+  width: 10.8em;
+  height: 1.2em;
+  background: linear-gradient(
+    90deg,
+    var(--cobalt) 0 16.66%,
+    var(--tang) 0 33.33%,
+    var(--gum) 0 50%,
+    var(--hi) 0 66.66%,
+    var(--mint) 0 83.33%,
+    var(--ink) 0
+  );
+}
+
+/* Two strips of highlighter tape hold the sheet to the lid. */
+.tape {
+  position: absolute;
+  width: 9em;
+  height: 2.4em;
+  background: var(--hi);
+  opacity: 0.88;
+  box-shadow: 0 0.12em 0.1em rgba(var(--shadow-rgb), 0.3);
+}
+
+.tape:nth-of-type(6) {
+  top: 0.2em;
+  right: -3em;
+  rotate: 38deg;
+}
+
+.tape:nth-of-type(7) {
+  bottom: 0.4em;
+  left: -3.2em;
+  rotate: 40deg;
+}
+
+.wins {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5em 4em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The middle column hangs lower, so the sheet is not a ruled grid. */
+.wins > :nth-child(3n + 2) {
+  margin-top: 4em;
+  margin-bottom: -4em;
+}
+
+@container section (max-width: 1099px) {
+  .sheet {
+    margin: -6.6em -1em 0;
+    padding: 2.2em 2.6em 5em;
+  }
+
+  .wins {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3.6em 3em;
+  }
+
+  .wins > :nth-child(3n + 2) {
+    margin-block: 0;
+  }
+
+  .wins > :nth-child(even) {
+    margin-top: 4em;
+    margin-bottom: -4em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .sheet {
+    margin: -5.6em -0.6em 0;
+    padding: 2em 1.6em 4.6em;
+    rotate: none;
+  }
+
+  .wins {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4em;
+  }
+
+  .wins > :nth-child(even) {
+    margin-block: 0;
+  }
+
+  .bar {
+    left: 3em;
+  }
+
+  .tape {
+    width: 7em;
+  }
+}

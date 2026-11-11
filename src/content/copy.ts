@@ -100,24 +100,28 @@ export const copy = deepFreeze({
     },
   },
 
-  /** design/mockups/02-wristbands.html */
+  /**
+   * design/mockups/02-wristbands.html. The star on the stamp and the arrow
+   * after "room for more" are drawn, as on the lid, so neither is typed here.
+   * The section's other words are in src/features/sections/organized/copy.ts.
+   */
   wristbands: {
     title: ['HACKATHONS', 'ORGANIZED'],
     subtitle: 'one wristband each. newest at the wrist.',
-    back: 'BACK TO THE LID',
     participants: 'participants',
     prizes: 'in prizes',
     participantsFootnote: (events: Figure) => `${String(events)} events with a public head count`,
     prizesFootnote: (events: Figure) => `${String(events)} events with a public prize figure`,
-    stamp: (sinceYear: Figure) => `ORGANIZER ✦ SINCE ${String(sinceYear)}`,
+    stamp: {
+      role: 'ORGANIZER',
+      since: (sinceYear: Figure) => `SINCE ${String(sinceYear)}`,
+    },
     blank: 'still on the roll',
     notAnnounced: 'not announced',
     figuresNotPublic: 'figures not public',
-    paidInBitcoin: 'paid in bitcoin',
-    nonMonetary: 'non-monetary',
+    nonMonetary: 'non-monetary prizes',
     coveredBy: (outlet: string) => `covered by ${outlet}`,
     ownWin: 'I also won this one. Awkward. Haven’t entered my own since.',
-    next: (wins: Figure) => `NEXT: ${String(wins)} WINS`,
-    roomForMore: 'room for more ↓',
+    roomForMore: 'room for more',
   },
 })

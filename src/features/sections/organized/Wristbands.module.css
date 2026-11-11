@@ -1,0 +1,435 @@
+/*
+ * The forearm and the rows of wristbands on it. A port of the mockup's .arm:
+ * each row is a band on the arm's centre line and its label on the lid
+ * beside it, left and right in turn.
+ *
+ * The mockup gave a label no height, so that the bands sat close, and trusted
+ * every label to be shorter than two bands. The record now says more than the
+ * mockup did, so here the list is one grid: a row is as tall as its band, and
+ * a label spans its own row and the next, which is free on its side because
+ * the labels take turns. A label that needs more room pushes the bands apart
+ * instead of running into the label below it.
+ */
+.arm {
+  position: relative;
+}
+
+/*
+ * The arm: three long tapers, one inside the next, for the white die-cut
+ * edge, the ink edge and the skin. The taper is far longer than any arm will
+ * be and is cut off where this box ends, so the arm widens at the same rate
+ * however many bands are on it, and runs off the bottom of the section.
+ */
+.forearm {
+  --length: 640em;
+  --spread: calc(var(--length) * var(--slope));
+
+  position: absolute;
+  inset: 1.4em 0 calc(var(--run-off) * -1);
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.skin,
+.skin::before,
+.skin::after {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(var(--aw) + var(--spread) * 2 + var(--e) * 2);
+  height: var(--length);
+  translate: -50% 0;
+  clip-path: polygon(var(--spread) 0, calc(100% - var(--spread)) 0, 100% 100%, 0 100%);
+}
+
+.skin {
+  --e: calc(var(--hu) * 16);
+
+  left: var(--cx);
+  background: var(--white);
+}
+
+.skin::before {
+  --e: calc(var(--hu) * 7);
+
+  background: var(--ink);
+  content: '';
+}
+
+/* Bubblegum, darker toward both edges and lit down the left of centre. */
+.skin::after {
+  --e: 0em;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--shadow-rgb), 0.13) 0,
+      rgba(var(--shadow-rgb), 0) 16%,
+      rgba(255, 255, 255, 0.26) 34%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(var(--shadow-rgb), 0.16) 100%
+    ),
+    var(--gum);
+  content: '';
+}
+
+.rows {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * A row lies over the row below it, where its label ends, so it lets the
+ * pointer through: only its band and its label can be pointed at.
+ *
+ * Each row is told where it starts, how many bands are above it (--k) and
+ * its tilt (--r). The first seventeen tilts are the mockup's. A row past the
+ * last one written here is placed after it with two rows to itself, keeps
+ * that one's width and takes its tilt by turns.
+ */
+.row {
+  --k: 31;
+  --r: 1.5deg;
+
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-template-columns: subgrid;
+  grid-row: span 2;
+  grid-column: 1 / -1;
+  pointer-events: none;
+}
+
+.row:nth-child(even) {
+  --r: -1.5deg;
+}
+
+.row:nth-child(1) {
+  --k: 0;
+  --r: -1.6deg;
+
+  grid-row: 1 / span 2;
+}
+
+.row:nth-child(2) {
+  --k: 1;
+  --r: 1.8deg;
+
+  grid-row: 2 / span 2;
+}
+
+.row:nth-child(3) {
+  --k: 2;
+  --r: -1.4deg;
+
+  grid-row: 3 / span 2;
+}
+
+.row:nth-child(4) {
+  --k: 3;
+  --r: 2.2deg;
+
+  grid-row: 4 / span 2;
+}
+
+.row:nth-child(5) {
+  --k: 4;
+  --r: -1deg;
+
+  grid-row: 5 / span 2;
+}
+
+.row:nth-child(6) {
+  --k: 5;
+  --r: 1.5deg;
+
+  grid-row: 6 / span 2;
+}
+
+.row:nth-child(7) {
+  --k: 6;
+  --r: -2.2deg;
+
+  grid-row: 7 / span 2;
+}
+
+.row:nth-child(8) {
+  --k: 7;
+  --r: 1.2deg;
+
+  grid-row: 8 / span 2;
+}
+
+.row:nth-child(9) {
+  --k: 8;
+  --r: -1.6deg;
+
+  grid-row: 9 / span 2;
+}
+
+.row:nth-child(10) {
+  --k: 9;
+  --r: 2deg;
+
+  grid-row: 10 / span 2;
+}
+
+.row:nth-child(11) {
+  --k: 10;
+  --r: -1.2deg;
+
+  grid-row: 11 / span 2;
+}
+
+.row:nth-child(12) {
+  --k: 11;
+  --r: 1deg;
+
+  grid-row: 12 / span 2;
+}
+
+.row:nth-child(13) {
+  --k: 12;
+  --r: -2.4deg;
+
+  grid-row: 13 / span 2;
+}
+
+.row:nth-child(14) {
+  --k: 13;
+  --r: 1.6deg;
+
+  grid-row: 14 / span 2;
+}
+
+.row:nth-child(15) {
+  --k: 14;
+  --r: -1.2deg;
+
+  grid-row: 15 / span 2;
+}
+
+.row:nth-child(16) {
+  --k: 15;
+  --r: 1.4deg;
+
+  grid-row: 16 / span 2;
+}
+
+.row:nth-child(17) {
+  --k: 16;
+  --r: -1.8deg;
+
+  grid-row: 17 / span 2;
+}
+
+.row:nth-child(18) {
+  --k: 17;
+
+  grid-row: 18 / span 2;
+}
+
+.row:nth-child(19) {
+  --k: 18;
+
+  grid-row: 19 / span 2;
+}
+
+.row:nth-child(20) {
+  --k: 19;
+
+  grid-row: 20 / span 2;
+}
+
+.row:nth-child(21) {
+  --k: 20;
+
+  grid-row: 21 / span 2;
+}
+
+.row:nth-child(22) {
+  --k: 21;
+
+  grid-row: 22 / span 2;
+}
+
+.row:nth-child(23) {
+  --k: 22;
+
+  grid-row: 23 / span 2;
+}
+
+.row:nth-child(24) {
+  --k: 23;
+
+  grid-row: 24 / span 2;
+}
+
+.row:nth-child(25) {
+  --k: 24;
+
+  grid-row: 25 / span 2;
+}
+
+.row:nth-child(26) {
+  --k: 25;
+
+  grid-row: 26 / span 2;
+}
+
+.row:nth-child(27) {
+  --k: 26;
+
+  grid-row: 27 / span 2;
+}
+
+.row:nth-child(28) {
+  --k: 27;
+
+  grid-row: 28 / span 2;
+}
+
+.row:nth-child(29) {
+  --k: 28;
+
+  grid-row: 29 / span 2;
+}
+
+.row:nth-child(30) {
+  --k: 29;
+
+  grid-row: 30 / span 2;
+}
+
+.row:nth-child(31) {
+  --k: 30;
+
+  grid-row: 31 / span 2;
+}
+
+.row:nth-child(32) {
+  --k: 31;
+
+  grid-row: 32 / span 2;
+}
+
+.wrist,
+.label {
+  pointer-events: auto;
+}
+
+.wrist {
+  grid-row: 1;
+  grid-column: 2;
+  align-self: center;
+}
+
+/* The label starts a little above its band, as the mockup's did. */
+.label {
+  grid-row: 1 / span 2;
+  align-self: start;
+  min-width: 0;
+  margin-top: -0.38em;
+  padding-bottom: 1em;
+}
+
+.row:first-child > .label {
+  margin-top: 0.65em;
+}
+
+/*
+ * A label keeps the mockup's distance from its band. --reach is how far the
+ * band sticks out past the column the rows share: half of what it is wider
+ * than the first band, or half of what the unprinted strip is longer.
+ */
+.label {
+  --reach: calc(var(--k) * var(--widen) / 2);
+  --gap: calc(4.2em + var(--reach));
+}
+
+.upcoming > .label {
+  --reach: 5em;
+}
+
+.left > .label {
+  grid-column: 1;
+  padding-inline: 0.8em var(--gap);
+}
+
+.right > .label {
+  grid-column: 3;
+  padding-inline: var(--gap) 0.8em;
+}
+
+/* Inked on the arm below the last band. */
+.tattoo {
+  position: relative;
+  left: var(--cx);
+  z-index: 4;
+  display: flex;
+  gap: 0.25em;
+  align-items: center;
+  width: max-content;
+  margin: 1.2em 0 0;
+  padding-bottom: 1.6em;
+  color: var(--ink);
+  font-size: 2.1em;
+  opacity: 0.92;
+  translate: -50% 0;
+  rotate: -4deg;
+  white-space: nowrap;
+}
+
+.arrow {
+  width: 0.8em;
+  height: 0.8em;
+}
+
+/* A phone: the band in a column of its own on the left, the label beside it at its full height. */
+@container section (max-width: 560px) {
+  .rows {
+    display: block;
+  }
+
+  .row {
+    grid-template-rows: none;
+    grid-template-columns: calc(var(--cx) * 2) minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .wrist {
+    grid-column: 1;
+    justify-self: center;
+  }
+
+  .left > .label,
+  .right > .label,
+  .row:first-child > .label {
+    grid-row: 1;
+    grid-column: 2;
+    align-self: center;
+    margin-top: 0;
+    padding: 0.75em 0 0.85em 2.3em;
+  }
+
+  /*
+   * The arm is narrow here, so the tattoo takes two lines to stay on the skin.
+   * The arm's centre is in the section's em, and the tattoo's em is 1.5 of
+   * those, so the centre is divided back down to land on the arm.
+   */
+  .tattoo {
+    left: calc(var(--cx) / 1.5);
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 6.5em;
+    font-size: 1.5em;
+    line-height: 1.1;
+    text-align: center;
+    white-space: normal;
+  }
+}

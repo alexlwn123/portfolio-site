@@ -1,0 +1,190 @@
+/*
+ * The strip printed across the top of the sheet: the name of the set at the
+ * left, the finishes and their tally in the middle, the barcode at the
+ * right, and the hole the sheet hung from in the shop.
+ */
+.strip {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 1.4em 4em;
+  align-items: end;
+  margin-bottom: 3.4em;
+  padding: 6.8em 0 2.2em;
+  border-bottom: 0.16em dashed rgba(var(--shadow-rgb), 0.45);
+}
+
+/* Punched through: the lid shows, and the paper's edge shades it. */
+.hole {
+  position: absolute;
+  top: 1.4em;
+  left: 62%;
+  width: 6.4em;
+  height: 1.5em;
+  border-radius: 1em;
+  background: var(--cobalt);
+  box-shadow: inset 0 0.22em 0.26em rgba(var(--shadow-rgb), 0.6);
+}
+
+.hole::after {
+  position: absolute;
+  top: -0.75em;
+  left: 50%;
+  width: 2.6em;
+  height: 2.6em;
+  margin-left: -1.3em;
+  border-radius: 50%;
+  background: var(--cobalt);
+  box-shadow: inset 0 0.3em 0.26em rgba(var(--shadow-rgb), 0.6);
+  clip-path: inset(0 0 calc(100% - 0.76em));
+  content: '';
+}
+
+.name,
+.edition,
+.make {
+  margin: 0;
+}
+
+.name {
+  font-size: 3.4em;
+  line-height: 0.95;
+}
+
+.edition {
+  margin-top: 0.35em;
+  font-size: 1.5em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+}
+
+/* ---------- the finishes, and how many of each ---------- */
+.tally {
+  display: flex;
+  gap: 2.2em;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.count {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  font-size: 1.7em;
+  white-space: nowrap;
+}
+
+.swatch {
+  --lx: 0.4;
+  --ly: 0.3;
+
+  flex: none;
+  width: 1.5em;
+  height: 1.5em;
+  border: 0.14em solid var(--white);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.07em rgba(var(--shadow-rgb), 0.4);
+}
+
+.second {
+  background: linear-gradient(
+    100deg,
+    var(--metal-light),
+    var(--metal-mid) 38%,
+    var(--metal-light) 56%,
+    var(--metal-mid)
+  );
+}
+
+.third {
+  background: var(--tang);
+}
+
+.prize {
+  background: var(--gum);
+}
+
+/* ---------- the barcode ---------- */
+.code {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  align-items: flex-end;
+}
+
+.barcode {
+  display: block;
+  width: 15em;
+  height: 3.6em;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 0.14em,
+    transparent 0.14em 0.36em,
+    var(--ink) 0.36em 0.7em,
+    transparent 0.7em 0.84em,
+    var(--ink) 0.84em 0.94em,
+    transparent 0.94em 1.3em,
+    var(--ink) 1.3em 1.52em,
+    transparent 1.52em 1.66em,
+    var(--ink) 1.66em 1.74em,
+    transparent 1.74em 2.1em
+  );
+}
+
+.make {
+  font-size: 1.3em;
+  white-space: nowrap;
+}
+
+@container section (max-width: 1099px) {
+  .strip {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.6em 2em;
+  }
+
+  .tally {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+
+  .hole {
+    left: 74%;
+  }
+}
+
+@container section (max-width: 560px) {
+  .strip {
+    grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 3.4em;
+    padding: 5.6em 0 1.8em;
+  }
+
+  .hole {
+    top: 1.6em;
+    left: 68%;
+  }
+
+  .name {
+    font-size: 3em;
+  }
+
+  .tally {
+    flex-wrap: wrap;
+    gap: 0.7em 1.6em;
+  }
+
+  .count {
+    font-size: 1.6em;
+  }
+
+  .code {
+    grid-row: 3;
+    align-items: flex-start;
+  }
+
+  .make {
+    white-space: normal;
+  }
+}

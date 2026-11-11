@@ -1,0 +1,156 @@
+/*
+ * One win on the sheet: the sticker, a little crooked, and under it what the
+ * record says, printed on the backing paper in ink.
+ */
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6em;
+  min-width: 0;
+}
+
+/* A slot is at least as tall as a round sticker, so a low one is not crowded by its caption. */
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 21em;
+}
+
+/* No two neighbours sit at the same angle. */
+.entry:nth-child(4n + 1) > .slot {
+  --tilt: -3deg;
+}
+
+.entry:nth-child(4n + 2) > .slot {
+  --tilt: 2.5deg;
+}
+
+.entry:nth-child(4n + 3) > .slot {
+  --tilt: -1.5deg;
+}
+
+.entry:nth-child(4n + 4) > .slot {
+  --tilt: 3.5deg;
+}
+
+.facts {
+  min-width: 0;
+}
+
+.title,
+.result,
+.what,
+.line,
+.hand,
+.naming {
+  margin: 0;
+}
+
+.title {
+  font-size: 2.5em;
+  line-height: 1;
+}
+
+.result {
+  margin-top: 0.4em;
+  font-size: 1.4em;
+  font-weight: var(--weight-bold);
+  line-height: 1.3;
+}
+
+/* The result, run over with a highlighter. */
+.place {
+  padding: 0.05em 0.3em;
+  border-radius: 0.2em;
+  background: var(--hi);
+  font-weight: var(--weight-heavy);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.what {
+  margin-top: 0.55em;
+  font-size: 1.5em;
+  line-height: 1.34;
+}
+
+.line {
+  margin-top: 0.4em;
+  color: var(--color-text-muted);
+  font-size: 1.32em;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+}
+
+/* Written on the sheet afterwards, in ballpoint. */
+.hand {
+  margin-top: 0.5em;
+  color: var(--deep);
+  font-size: 1.7em;
+  line-height: 1.12;
+  rotate: -1.5deg;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.3em;
+  margin: 0.35em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The padding makes every link a target of 24px or more on a phone. */
+.link {
+  display: inline-block;
+  padding: 0.42em 0;
+  color: var(--deep);
+  font-size: 1.4em;
+  font-weight: var(--weight-bold);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.2em;
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration-thickness: 0.2em;
+}
+
+/* The lid's ring, with the ink inside it: the paper is white, so the ink edge is what shows. */
+.link:focus-visible {
+  outline: 0.2em solid var(--ink);
+  outline-offset: 0.15em;
+  border-radius: 0.2em;
+  background: var(--hi);
+}
+
+.naming {
+  color: var(--color-text-muted);
+  font-size: 1.25em;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+}
+
+@container section (max-width: 560px) {
+  .entry {
+    gap: 1.2em;
+  }
+
+  .slot {
+    min-height: 0;
+  }
+
+  /* Left and right in turn, so the sheet does not read as one column. */
+  .entry:nth-child(odd) > .slot {
+    justify-content: flex-start;
+  }
+
+  .entry:nth-child(even) > .slot {
+    justify-content: flex-end;
+  }
+
+  .title {
+    font-size: 2.4em;
+  }
+}

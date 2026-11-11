@@ -42,9 +42,8 @@ describe('copy', () => {
     expect(copy.lid.ribbons.times(16)).toBe('×16')
     expect(copy.wristbands.participantsFootnote(12)).toBe('12 events with a public head count')
     expect(copy.wristbands.prizesFootnote(14)).toBe('14 events with a public prize figure')
-    expect(copy.wristbands.stamp(2020)).toBe('ORGANIZER ✦ SINCE 2020')
+    expect(copy.wristbands.stamp.since(2020)).toBe('SINCE 2020')
     expect(copy.wristbands.coveredBy('NPR')).toBe('covered by NPR')
-    expect(copy.wristbands.next(9)).toBe('NEXT: 9 WINS')
     expect(copy.lid.winsSeal.times(9)).toBe('9×')
   })
 
