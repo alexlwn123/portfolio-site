@@ -6,20 +6,26 @@
  * --over is how much wider a band is than the first one. Its margins take
  * that back, so every band takes the first one's room in the row and the
  * rows can share one column for the arm.
+ *
+ * --h is how tall this band is. Whatever it is, the band takes the room of a
+ * band of the usual height (--bh), with its middle where that one's would be:
+ * so the bands are evenly spaced down the arm, and a label can be set level
+ * with the middle of its band without knowing which kind it is.
  */
 .band {
   /* Foil reads the lamp. Here it is always at rest. */
   --lx: var(--lamp-rest-x);
   --ly: var(--lamp-rest-y);
   --over: calc(var(--k, 0) * var(--widen));
+  --h: var(--bh);
 
   position: relative;
   display: flex;
   gap: 0.7em;
   align-items: center;
   width: calc(var(--aw) + 3em + var(--over));
-  height: 4.5em;
-  margin: 0.57em calc(var(--over) / -2);
+  height: var(--h);
+  margin: calc(var(--bm) + (var(--bh) - var(--h)) / 2) calc(var(--over) / -2);
   padding: 0 1em;
   border-radius: 0.7em;
   color: var(--t, var(--ink));
@@ -214,7 +220,7 @@
 
 /* Two hours long. */
 .thin {
-  height: 3em;
+  --h: 3em;
 }
 
 .thin .name {
@@ -284,7 +290,8 @@
 
 /* ---------- moulded silicone ---------- */
 .silicone {
-  height: 4.2em;
+  --h: 4.2em;
+
   border-radius: 2.3em;
   background:
     linear-gradient(
@@ -313,7 +320,7 @@
 
 /* ---------- holographic: the big one ---------- */
 .foil {
-  height: 6.2em;
+  --h: 6.2em;
 }
 
 .foil::after {
@@ -361,7 +368,7 @@
     width: calc(var(--aw) + 2.6em + var(--over));
     height: auto;
     min-height: 4.6em;
-    margin-inline: 0;
+    margin: var(--bm) 0;
     padding: 0.5em 0.7em;
   }
 

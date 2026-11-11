@@ -1,7 +1,10 @@
 /*
- * The totals: each is placed against the top of the scene, around the hand.
- * On the wide artboard and the tablet the big number sits beside the
- * heading; the tiles and the countries flank the hand.
+ * The totals: each is placed against the top of the scene, around the hand,
+ * and each is set against an edge of the column. The big number ends the
+ * heading's row at the column's right edge. The two sums are level with each
+ * other either side of the hand, the head count from the left edge and the
+ * prize money up to the right. On the wide artboard the countries are named
+ * between the heading and the number; on a tablet, under the prize money.
  */
 .totals {
   margin: 0;
@@ -15,18 +18,24 @@
 }
 
 /* ---------- the big number, up beside the heading ---------- */
+/* Its die-cut edge is drawn past its box, so the box stands in from the column's edge by that much. */
 .count {
   top: -17.4em;
-  left: 35.6em;
+  right: 2.5em;
   width: 19.5em;
   rotate: -5deg;
 }
 
-/* ---------- the countries: a pill, and their names in his hand ---------- */
+/*
+ * ---------- the countries: a pill, and their names in his hand ----------
+ *
+ * Between the heading and the number. The pill is stuck over the bare end of
+ * the heading's sticker.
+ */
 .countries {
-  top: -15.4em;
-  left: 57.4em;
-  width: 19.5em;
+  top: -15em;
+  right: 23.3em;
+  width: 17.4em;
   color: var(--white);
 }
 
@@ -49,7 +58,7 @@
 
 .names {
   display: block;
-  margin: 0.7em 0 0 0.4em;
+  margin: 0.7em 0 0 1.5em;
   font-size: 1.7em;
   line-height: 1.18;
   rotate: -2deg;
@@ -82,45 +91,51 @@
 }
 
 .participants {
-  top: 8em;
-  left: 2.4em;
-  width: 19em;
-  rotate: 4deg;
+  top: 6em;
+  left: 0;
+  width: 20.5em;
+  rotate: 3deg;
 }
 
 .prizes {
-  top: 4.6em;
-  right: 1.4em;
+  top: 6em;
+  right: 0;
   width: 23.5em;
-  rotate: -4deg;
+  rotate: -3deg;
 }
 
 @container section (max-width: 1099px) {
   .count {
-    top: -22.6em;
-    left: 50em;
-    width: 18.4em;
+    top: -22.2em;
+    right: 2em;
+    width: 17.4em;
   }
 
+  /* Under the prize money, set flush right as it is. */
   .countries {
-    top: 0.6em;
-    left: 2.8em;
+    top: 15.6em;
+    right: 0;
     width: 18em;
+    text-align: right;
+  }
+
+  .pill {
+    margin-left: auto;
   }
 
   .names {
+    margin-right: 0.3em;
+    margin-left: 0;
     font-size: 1.6em;
   }
 
   .participants {
-    top: 16.6em;
-    left: 2.4em;
+    top: 4em;
     width: 17.6em;
   }
 
   .prizes {
-    top: 5.6em;
-    right: 1.6em;
+    top: 4em;
     width: 21.6em;
   }
 }
@@ -128,14 +143,21 @@
 @container section (max-width: 560px) {
   .count {
     top: -0.6em;
+    right: auto;
     left: -0.8em;
     width: 15em;
   }
 
   .countries {
     top: 0.2em;
+    right: auto;
     left: 15.6em;
     width: 20em;
+    text-align: left;
+  }
+
+  .pill {
+    margin-left: 0;
   }
 
   .pillFace {
@@ -143,7 +165,7 @@
   }
 
   .names {
-    margin-top: 0.5em;
+    margin: 0.5em 0 0 0.4em;
     font-size: 1.4em;
     line-height: 1.12;
   }

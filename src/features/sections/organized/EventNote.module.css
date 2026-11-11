@@ -1,21 +1,58 @@
 /*
  * What is lettered on the lid beside a wristband. A port of the mockup's
  * .note: the city in marker, when and where under it, the figures as small
- * pills, and a scrawl in highlighter where there is a story. A label on the
- * left of the arm is set flush right, toward its band.
+ * pills, and a scrawl in highlighter where there is a story.
+ *
+ * A label is set against the edge of the column, away from the arm: flush
+ * left on the left of it, flush right on the right. The mockup set it against
+ * the band. So that a label still belongs to its band, its first line is
+ * ruled across to it with a row of dots, as a contents page rules a title
+ * across to its page number.
  */
 .note {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-flow: row wrap;
+  gap: 0 0.7em;
+  align-items: center;
+  justify-content: flex-start;
   min-width: 0;
   color: var(--white);
   text-align: left;
 }
 
-:global([data-side='left']) .note {
-  align-items: flex-end;
+:global([data-side='right']) .note {
+  justify-content: flex-end;
   text-align: right;
+}
+
+/*
+ * The label is set in rows, so that it is short enough to sit beside two
+ * bands without pushing them apart. The city has a row to itself. The date
+ * and the line more share one when both fit. The pills start a row of their
+ * own, which this empty piece opens, and the press piece's link joins them
+ * when there is room. What is said last has a row to itself again. Nothing
+ * is moved out of the order the markup has it in.
+ */
+.note::after {
+  flex: 0 0 100%;
+  order: 1;
+  content: '';
+}
+
+.city,
+.naming,
+.scrawl {
+  flex: 0 0 100%;
+}
+
+.chips,
+.pressLink {
+  order: 2;
+}
+
+.naming,
+.scrawl {
+  order: 3;
 }
 
 .city,
@@ -27,24 +64,38 @@
 }
 
 .city {
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
   font-size: 2em;
   line-height: 1.02;
+  white-space: nowrap;
+}
+
+/* The row of dots, from the city to the band. */
+.city::after {
+  flex: 1;
+  min-width: 0;
+  border-top: 0.11em dotted rgba(255, 255, 255, 0.62);
+  content: '';
+}
+
+:global([data-side='right']) .city {
+  flex-direction: row-reverse;
 }
 
 .when {
-  max-width: 19em;
   margin-top: 0.2em;
-  font-size: 1.2em;
+  font-size: 1.15em;
   font-weight: var(--weight-medium);
   line-height: 1.2;
 }
 
 /* The line more: lighter than the date, so the two read apart. */
 .about {
-  max-width: 19em;
-  margin-top: 0.12em;
+  margin-top: 0.2em;
   color: var(--hi);
-  font-size: 1.2em;
+  font-size: 1.15em;
   font-weight: var(--weight-medium);
   line-height: 1.2;
 }
@@ -58,18 +109,18 @@
   list-style: none;
 }
 
-:global([data-side='left']) .chips {
+:global([data-side='right']) .chips {
   justify-content: flex-end;
 }
 
 .chip {
   display: block;
-  padding: 0.24em 0.72em 0.2em;
+  padding: 0.24em 0.64em 0.2em;
   border-radius: 2em;
   background: var(--white);
   box-shadow: 0 0.16em 0 rgba(var(--shadow-rgb), 0.5);
   color: var(--ink);
-  font-size: 1.08em;
+  font-size: 1.04em;
   rotate: -1.5deg;
   white-space: nowrap;
 }
@@ -88,19 +139,21 @@
   rotate: 0deg;
 }
 
-/* ---------- the press piece ---------- */
+/*
+ * ---------- the press piece ----------
+ *
+ * Its paragraph is not a box of its own: the link and the line under it are
+ * set in the label's rows, the link beside the pills.
+ */
 .press {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35em;
-  align-items: inherit;
-  margin-top: 0.55em;
+  display: contents;
 }
 
 .pressLink {
   display: inline-flex;
   gap: 0.35em;
   align-items: center;
+  margin-top: 0.5em;
   background: var(--gum);
   text-decoration: none;
   rotate: 2deg;
@@ -125,47 +178,57 @@
 }
 
 .naming {
-  max-width: 17em;
+  margin-top: 0.4em;
   font-size: 1.1em;
   font-weight: var(--weight-medium);
   line-height: 1.2;
 }
 
 .scrawl {
-  max-width: 13em;
-  margin-top: 0.5em;
+  margin-top: 0.35em;
   color: var(--hi);
-  font-size: 1.42em;
-  line-height: 1.1;
+  font-size: 1.32em;
+  line-height: 1.05;
   rotate: -2deg;
 }
 
 @container section (max-width: 1099px) {
-  .when,
-  .about {
-    max-width: 16em;
-  }
-}
-
-/* A phone: every label is to the right of the arm, set flush left. */
-@container section (max-width: 560px) {
-  .note,
-  :global([data-side='left']) .note {
-    align-items: flex-start;
-    text-align: left;
-  }
-
-  :global([data-side='left']) .chips {
-    justify-content: flex-start;
-  }
-
   .city {
     font-size: 1.8em;
   }
+}
 
+/* A phone: every label is to the right of the arm, set flush left, with no row of dots. */
+@container section (max-width: 560px) {
+  .note,
+  :global([data-side='right']) .note {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  :global([data-side='right']) .chips {
+    justify-content: flex-start;
+  }
+
+  .city,
+  :global([data-side='right']) .city {
+    display: block;
+    white-space: normal;
+  }
+
+  .city::after {
+    content: none;
+  }
+
+  /* 11px and over on the narrowest phone. */
   .when,
   .about {
-    max-width: none;
+    font-size: 1.2em;
+  }
+
+  .scrawl {
+    font-size: 1.42em;
+    line-height: 1.1;
   }
 
   .chips {

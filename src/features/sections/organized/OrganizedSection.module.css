@@ -11,6 +11,12 @@
  *   --hy     how far down the scene the hand's fingertips are
  *   --slope  how much wider the arm gets on each side for every em of length
  *   --widen  how much wider each band is than the one above it
+ *   --bh     how tall a band is; --bm is the room above and below it
+ *   --line   how tall the first line of a band's label is: the city, in his hand
+ *
+ * The scene is as wide as the column. The arm is on its middle, and the
+ * labels are lettered out to its edges: those on the left from the column's
+ * left edge, those on the right up to its right edge.
  */
 .scene {
   --hw: 30em;
@@ -20,6 +26,9 @@
   --hy: 0em;
   --slope: 0.0263;
   --widen: 0.318em;
+  --bh: 4.5em;
+  --bm: 0.57em;
+  --line: 2.04em;
 
   /* The frame's padding under the scene, in the scene's own em: the arm runs off through it. */
   --run-off: 7em;
@@ -43,15 +52,12 @@
   filter: drop-shadow(0 0.6em 0.6em rgba(var(--shadow-rgb), 0.4));
 }
 
-/*
- * The mockup's own artboard. The scene takes back the frame's padding, so the
- * labels have the width the mockup gave them.
- */
+/* The mockup's own artboard, held to the column: the labels have a little less room than it gave them. */
 @container section (max-width: 1099px) {
   .scene {
     --run-off: 8em;
+    --line: 1.84em;
 
-    margin-inline: -3em;
     font-size: 1em;
   }
 }
@@ -65,8 +71,6 @@
     --slope: 0.012;
     --widen: 0.21em;
     --run-off: 6.5em;
-
-    margin-inline: 0;
   }
 
   /*

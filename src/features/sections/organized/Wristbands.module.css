@@ -323,47 +323,56 @@
   pointer-events: auto;
 }
 
+/* A band sits at the top of its row, so a label that makes the row taller leaves it where it was. */
 .wrist {
   grid-row: 1;
   grid-column: 2;
-  align-self: center;
+  align-self: start;
 }
 
-/* The label starts a little above its band, as the mockup's did. */
+/*
+ * The first line of a label is level with the middle of its band: the label
+ * starts half a line above it. The mockup's started above the band.
+ */
 .label {
   grid-row: 1 / span 2;
   align-self: start;
   min-width: 0;
-  margin-top: -0.38em;
-  padding-bottom: 1em;
+  margin-top: calc(var(--bm) + (var(--bh) - var(--line)) / 2);
+  padding-bottom: 0.3em;
 }
 
+/* The unprinted strip has no room above it. */
 .row:first-child > .label {
-  margin-top: 0.65em;
+  margin-top: calc((var(--bh) - var(--line)) / 2);
 }
 
 /*
- * A label keeps the mockup's distance from its band. --reach is how far the
- * band sticks out past the column the rows share: half of what it is wider
- * than the first band, or half of what the unprinted strip is longer.
+ * A label runs from the edge of the column to just short of its band, and its
+ * first line is ruled across that gap (EventNote.module.css). --reach is how
+ * far the band sticks out past the column the rows share: half of what it is
+ * wider than the first band, or half of what the unprinted strip is longer.
+ * --gap is what is left clear beside the band, for the loose tail it has there.
  */
 .label {
   --reach: calc(var(--k) * var(--widen) / 2);
-  --gap: calc(4.2em + var(--reach));
+  --gap: calc(3em + var(--reach));
 }
 
+/* The unprinted strip has no tail. */
 .upcoming > .label {
   --reach: 5em;
+  --gap: calc(1.2em + var(--reach));
 }
 
 .left > .label {
   grid-column: 1;
-  padding-inline: 0.8em var(--gap);
+  padding-inline: 0 var(--gap);
 }
 
 .right > .label {
   grid-column: 3;
-  padding-inline: var(--gap) 0.8em;
+  padding-inline: var(--gap) 0;
 }
 
 /* Inked on the arm below the last band. */
@@ -404,6 +413,7 @@
 
   .wrist {
     grid-column: 1;
+    align-self: center;
     justify-self: center;
   }
 
