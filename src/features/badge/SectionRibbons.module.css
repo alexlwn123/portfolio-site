@@ -1,4 +1,4 @@
-/* Stick-on ribbons under the badge: the way into each section of the CV. */
+/* Stick-on ribbons under the badge: the way into each section of the page. */
 .ribbons {
   width: 100%;
   margin-top: -0.2em;
@@ -23,7 +23,7 @@
   display: block;
   width: 20.6em;
   height: 4.3em;
-  color: var(--ink);
+  color: var(--t, var(--ink));
   text-decoration: none;
   filter: drop-shadow(
     calc(var(--cast-x) * 0.56) calc(var(--cast-y) * 0.56) 0.22em rgba(var(--shadow-rgb), 0.45)
@@ -36,34 +36,58 @@
 .item:nth-child(4n + 1) .ribbon {
   --o: -5;
   --rr: -1.4deg;
-
-  z-index: 4;
 }
 
 .item:nth-child(4n + 2) .ribbon {
   --o: 4;
   --rr: 1deg;
-
-  z-index: 3;
 }
 
 .item:nth-child(4n + 3) .ribbon {
   --o: -2;
   --rr: -0.6deg;
-
-  z-index: 2;
 }
 
 .item:nth-child(4n + 4) .ribbon {
   --o: 5;
   --rr: 1.6deg;
-
-  z-index: 1;
 }
 
-/* Past the fourth, a ribbon leans as the first four do in turn, tucked under the one above. */
-.item:nth-child(n + 5) .ribbon {
-  z-index: 0;
+/*
+ * Each ribbon is tucked under the one above it. Past the fourth, a ribbon
+ * leans as the first four do in turn. Eight is more than the badge has ever
+ * carried, and any more than that would still lie in the order they come.
+ */
+.item:nth-child(1) .ribbon {
+  z-index: 8;
+}
+
+.item:nth-child(2) .ribbon {
+  z-index: 7;
+}
+
+.item:nth-child(3) .ribbon {
+  z-index: 6;
+}
+
+.item:nth-child(4) .ribbon {
+  z-index: 5;
+}
+
+.item:nth-child(5) .ribbon {
+  z-index: 4;
+}
+
+.item:nth-child(6) .ribbon {
+  z-index: 3;
+}
+
+.item:nth-child(7) .ribbon {
+  z-index: 2;
+}
+
+.item:nth-child(8) .ribbon {
+  z-index: 1;
 }
 
 .ribbon:hover,
@@ -71,8 +95,8 @@
   translate: calc(var(--o, 0) * 0.1em + 0.9em) 0;
 }
 
-.ribbon:focus-visible {
-  z-index: 5;
+.item .ribbon:focus-visible {
+  z-index: 9;
   outline: 0.3em solid var(--hi);
   outline-offset: 0.3em;
   border-radius: 0;

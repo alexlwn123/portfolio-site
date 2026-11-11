@@ -35,3 +35,10 @@
     font-size: 1.2em;
   }
 }
+
+/* On the wide artboard a unit is a pixel at its narrowest, and 1.06em would be under 11px. */
+@container lid (min-width: 1100px) {
+  .print {
+    font-size: 1.1em;
+  }
+}

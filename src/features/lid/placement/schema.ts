@@ -31,13 +31,14 @@ const placementSchema = z.strictObject({
 
 function isInside({ x, y, w = 0 }: Placement, artboard: Artboard): boolean {
   const withinWidth = x >= -BLEED && x + w <= artboard.width + BLEED
-  const withinHeight = y >= -BLEED && y <= artboard.height
+  const withinHeight = y >= -(artboard.rise ?? BLEED) && y <= artboard.height
   return withinWidth && withinHeight
 }
 
 function onArtboard(artboard: Artboard): z.ZodType<Placement> {
+  const { width, height, rise = BLEED } = artboard
   return placementSchema.refine((placement) => isInside(placement, artboard), {
-    error: `Placed outside the ${String(artboard.width)}×${String(artboard.height)} artboard (bleed ${String(BLEED)})`,
+    error: `Placed outside the ${String(width)}×${String(height)} artboard (bleed ${String(BLEED)}, rise ${String(rise)})`,
   })
 }
 

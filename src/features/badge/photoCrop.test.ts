@@ -5,9 +5,10 @@ import { describe, expect, it } from 'vitest'
 
 import {
   ARTBOARDS,
-  MAX_WIDTH_PX,
+  MAX_ARTBOARD_WIDTH_PX,
   PHONE_MAX_WIDTH_PX,
   UNITS_PER_EM,
+  WIDE_MIN_WIDTH_PX,
 } from '../lid/placement/artboards'
 import { BADGE_CROP, columnPlacement, columnWidth, PHOTO_SIZES } from './photoCrop'
 
@@ -49,9 +50,14 @@ describe('the badge photo’s crop', () => {
     const share = (artboard: { width: number }): number =>
       Math.ceil((FRAME_WIDTH_EM * UNITS_PER_EM * 100) / artboard.width)
 
+    const capped = Math.ceil(
+      (MAX_ARTBOARD_WIDTH_PX * FRAME_WIDTH_EM * UNITS_PER_EM) / ARTBOARDS.wide.width,
+    )
+
     expect(PHOTO_SIZES).toBe(
       `(max-width: ${String(PHONE_MAX_WIDTH_PX)}px) ${String(share(ARTBOARDS.phone))}vw, ` +
-        `min(${String(share(ARTBOARDS.desktop))}vw, ${String(Math.ceil((MAX_WIDTH_PX * FRAME_WIDTH_EM * UNITS_PER_EM) / ARTBOARDS.desktop.width))}px)`,
+        `(max-width: ${String(WIDE_MIN_WIDTH_PX - 1)}px) ${String(share(ARTBOARDS.desktop))}vw, ` +
+        `min(${String(share(ARTBOARDS.wide))}vw, ${String(capped)}px)`,
     )
   })
 })

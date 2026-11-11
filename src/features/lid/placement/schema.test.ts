@@ -65,6 +65,21 @@ describe('parseLayout', () => {
     expect(parse({ ...valid, name: hanging }).name).toEqual(hanging)
   })
 
+  it('lets an artboard say how far above its top edge a placement may start', () => {
+    const raised = { ...ARTBOARD, rise: 120 }
+    const hung = { x: 10, y: -120, w: 260, r: 0, z: 3 }
+
+    expect(parseLayout('wide', IDS, raised, { ...valid, name: hung }).name).toEqual(hung)
+    expect(() => parse({ ...valid, name: hung })).toThrow(/artboard/)
+    expect(() =>
+      parseLayout('wide', IDS, raised, { ...valid, name: { ...hung, y: -121 } }),
+    ).toThrow(/lid\.placement\.wide\.name/)
+    // The rise is for the top edge only: the sides keep the bleed.
+    expect(() =>
+      parseLayout('wide', IDS, raised, { ...valid, name: { ...hung, x: -(BLEED + 1) } }),
+    ).toThrow(/artboard/)
+  })
+
   it('does not accept "hidden" on the desktop', () => {
     expect(() => parse({ ...valid, pill: HIDDEN })).toThrow(ContentError)
   })

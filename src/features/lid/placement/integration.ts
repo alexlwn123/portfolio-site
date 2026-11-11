@@ -17,6 +17,7 @@ const RESOLVED = `\0${PLACEMENT_STYLESHEET}`
 /** The data the stylesheet is compiled from. A change to any restarts the dev server. */
 const SOURCES = [
   './artboards.ts',
+  './wide.ts',
   './desktop.ts',
   './phone.ts',
   './schema.ts',

@@ -23,22 +23,34 @@ const SOCIAL_IMAGE_PATH = '/android-chrome-512x512.png'
 const CV_TITLE = 'CV'
 const TITLE_SEPARATOR = ' · '
 
-type MetaContent = Pick<Content, 'profile'>
+type MetaContent = Pick<Content, 'profile' | 'experience'>
+
+const employers = new Intl.ListFormat('en-US', { style: 'long', type: 'conjunction' })
 
 function absoluteUrl(path: string, site: string): string {
   return new URL(path, site).href
 }
 
-function summary({ profile }: MetaContent, stats: Stats): string {
-  const { role, location } = profile
+/** "Before that: Fedi, Zion, BlockSpaces, and NCR Corporation.", or nothing for a first job. */
+function earlier({ experience }: MetaContent): readonly string[] {
+  const before = experience.filter(({ current }) => !current).map((job) => job.organization)
+  return before.length > 0 ? [`Before that: ${employers.format(before)}.`] : []
+}
+
+/** The whole career in a search result: the job, the jobs before it, then the counts. */
+function summary(content: MetaContent, stats: Stats): string {
+  const { role, location } = content.profile
+  const { granted } = stats.patents
   const wins = formatNumber(stats.wins.total)
   const organized = formatNumber(stats.organized.count)
   const countries = formatNumber(stats.organized.countryCount)
+  const patents = `${formatNumber(granted)} granted ${granted === 1 ? 'patent' : 'patents'}`
 
-  return (
-    `${role.title} at ${role.organization}, based in ${location.city}, ${location.region}. ` +
-    `${wins} hackathon wins and ${organized} hackathons organized across ${countries} countries.`
-  )
+  return [
+    `${role.title} at ${role.organization} in ${location.city}, ${location.region}.`,
+    ...earlier(content),
+    `${patents}, ${wins} hackathon wins, ${organized} hackathons organized in ${countries} countries.`,
+  ].join(' ')
 }
 
 function cvSummary({ profile }: MetaContent, stats: Stats): string {

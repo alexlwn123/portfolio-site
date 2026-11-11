@@ -9,6 +9,9 @@ html {
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+
+  /* A link to somewhere on the page glides there. Reduced motion, below, turns it off. */
+  scroll-behavior: smooth;
 }
 
 body {

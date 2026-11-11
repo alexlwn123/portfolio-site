@@ -6,6 +6,7 @@ import { content } from '../../src/content'
 import { PERSONAL_MAIL_DOMAINS } from '../../src/content/schema'
 import { SECTIONS } from '../../src/features/cv/labels'
 import { STICKER_IDS } from '../../src/features/lid/stickers'
+import { SECTION_IDS } from '../../src/features/sections/sectionIds'
 import { executableScripts, listDistFiles, readDistFile, readPage } from './dist'
 import { INDEXABLE_ROUTES, ROUTES } from './routes'
 
@@ -126,7 +127,7 @@ describe('/', () => {
     return sheets.join('\n')
   }
 
-  it('places every sticker from a stylesheet, with the phone layout in a container query', async () => {
+  it('places every sticker from a stylesheet, with the phone and wide layouts in container queries', async () => {
     const page = await readPage('/')
     const css = await homeCss()
     const ids = [...page.querySelectorAll('[data-sticker]')].map((sticker) =>
@@ -138,21 +139,49 @@ describe('/', () => {
       expect(css, id).toMatch(new RegExp(`\\[data-sticker="?${id}"?\\]\\{`))
     }
     expect(css).toMatch(/@container lid \((max-width:\s*560px|width\s*<=\s*560px)\)/)
+    expect(css).toMatch(/@container lid \((min-width:\s*1100px|width\s*>=\s*1100px)\)/)
     expect(css).toMatch(/container:\s*lid\s*\/\s*inline-size/)
   })
 
-  it('links only to CV sections that exist', async () => {
+  it('links only to CV sections that exist, and only from the notes under its stickers', async () => {
     const home = await readPage('/')
     const cv = await readPage('/cv/')
-    const anchors = [...home.querySelectorAll('a[href^="/cv/#"]')].map(
-      (link) => link.getAttribute('href')?.split('#')[1] ?? '',
-    )
+    const toTheCv = [...home.querySelectorAll('a[href^="/cv/#"]')]
+    const anchors = toTheCv.map((link) => link.getAttribute('href')?.split('#')[1] ?? '')
 
-    expect(new Set(anchors)).toEqual(new Set(['organized', 'wins', 'talks', 'projects', 'patents']))
+    expect(new Set(anchors)).toEqual(new Set(['wins', 'projects']))
     for (const anchor of anchors) {
       expect(cv.getElementById(anchor), anchor).not.toBeNull()
     }
+    expect(toTheCv.every((link) => link.closest('[data-note]') !== null)).toBe(true)
     expect(home.querySelector('a[href^="#"]')).toBeNull()
+  })
+
+  it('links to every section of its own, and to none it does not have', async () => {
+    const home = await readPage('/')
+    const anchors = [...home.querySelectorAll('a[href^="/#"]')].map(
+      (link) => link.getAttribute('href')?.split('#')[1] ?? '',
+    )
+
+    expect(new Set(anchors)).toEqual(new Set(['top', ...SECTION_IDS]))
+    for (const anchor of anchors) {
+      expect(home.getElementById(anchor), anchor).not.toBeNull()
+    }
+    expect(home.getElementById('top')?.hasAttribute('data-lid')).toBe(true)
+  })
+
+  it('pins a strap to the top with CSS alone, in a landmark of its own', async () => {
+    const home = await readPage('/')
+    const css = await homeCss()
+    const landmarks = [...home.querySelectorAll('nav')].map((nav) => nav.getAttribute('aria-label'))
+    const strap = home.querySelector('main > nav[data-pinned-strap]')
+
+    expect(new Set(landmarks).size).toBe(landmarks.length)
+    expect(strap?.previousElementSibling?.hasAttribute('data-lid')).toBe(true)
+    expect(strap?.nextElementSibling?.id).toBe(SECTION_IDS[0])
+    expect(css).toMatch(/position:\s*sticky/)
+    expect(css).toMatch(/--pinned-height:/)
+    expect(css).toMatch(/scroll-behavior:\s*smooth/)
   })
 
   it('embeds nothing as a data: URI, in the page or in its stylesheets', async () => {
@@ -271,7 +300,7 @@ describe('the additions to the lid', () => {
     const label = page.querySelector('a[data-sticker="patents"]')
     const granted = content.patents.filter((patent) => patent.status.kind === 'granted')
 
-    expect(label?.getAttribute('href')).toBe('/cv/#patents')
+    expect(label?.getAttribute('href')).toBe('/#patents')
     expect(granted).toHaveLength(2)
     for (const patent of content.patents) {
       const printed = label?.textContent.includes(patent.number.serial) ?? false
@@ -280,25 +309,54 @@ describe('the additions to the lid', () => {
     expect(label?.textContent).toContain('OTHER PATENTS PENDING')
   })
 
-  it('has five ribbons, the last of them to the patents', async () => {
+  it('has six ribbons in the order of the page, the last of them to the patents', async () => {
     const page = await readPage('/')
     const ribbons = [...page.querySelectorAll('nav[aria-label="Sections"] a')]
 
     expect(ribbons.map((ribbon) => ribbon.getAttribute('href'))).toEqual([
-      '/cv/#organized',
-      '/cv/#wins',
-      '/cv/#talks',
-      '/cv/#projects',
-      '/cv/#patents',
+      '/#work',
+      '/#wins',
+      '/#projects',
+      '/#organized',
+      '/#talks',
+      '/#patents',
     ])
+    expect(ribbons[0]?.textContent).toBe('ENGINEER')
     expect(ribbons.at(-1)?.textContent).toBe('INVENTOR')
+  })
+
+  it('sticks an asset tag on the lid for every employer in the record', async () => {
+    const page = await readPage('/')
+    const tags = [...page.querySelectorAll('ul[aria-label="Where I have worked"] a')]
+
+    expect(tags.map((tag) => tag.getAttribute('href'))).toEqual(
+      content.experience.map(() => '/#work'),
+    )
+    for (const [index, job] of content.experience.entries()) {
+      expect(tags[index]?.textContent, job.id).toContain(job.organization)
+      expect(tags[index]?.textContent.includes(String(job.start?.year)), job.id).toBe(
+        job.start !== null,
+      )
+    }
+  })
+
+  it('describes the whole career in its meta description', async () => {
+    const page = await readPage('/')
+    const description =
+      page.querySelector('meta[name="description"]')?.getAttribute('content') ?? ''
+
+    for (const { organization } of content.experience) {
+      expect(description).toContain(organization)
+    }
+    expect(description).toContain('2 granted patents')
+    expect(description).toContain('9 hackathon wins')
   })
 
   it('links the NCR medal to the wins, named in words', async () => {
     const page = await readPage('/')
     const medal = page.querySelector('[data-sticker="ncr-win"] a')
 
-    expect(medal?.getAttribute('href')).toBe('/cv/#wins')
+    expect(medal?.getAttribute('href')).toBe('/#wins')
     expect(medal?.getAttribute('aria-label')).toBe(
       '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads',
     )

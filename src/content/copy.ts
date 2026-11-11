@@ -21,7 +21,28 @@ export const copy = deepFreeze({
    * typed, so none appear here: the mockup's glyphs fell back to system fonts.
    */
   lid: {
-    hello: { greeting: 'HELLO', lead: 'I’m a', highlight: 'hackathons' },
+    /**
+     * The hello tag. His own first line opens it (see introOpening in
+     * src/features/lid/facts.ts) and these follow: the employer and the patent
+     * count are passed in from the records.
+     */
+    hello: {
+      greeting: 'HELLO',
+      lead: 'I’m a',
+      highlight: 'AI agents',
+      now: (employer: string) => `I build AI agents at ${employer}.`,
+      before: 'Before that: bitcoin and Lightning apps.',
+      alongTheWay: (count: Figure, patents: string) =>
+        `Along the way: ${String(count)} ${patents}, and hackathons around the world.`,
+      patents: { one: 'granted patent', many: 'granted patents' },
+    },
+    /** The asset tags his employers left on the lid. Names and years come from the records. */
+    employers: {
+      label: 'Where I have worked',
+      propertyOf: 'Property of',
+      issued: (year: Figure) => `Issued ${String(year)}`,
+      inService: 'In service',
+    },
     cvSticker: { kicker: 'The serious version', label: 'Plain CV' },
     winsSeal: {
       top: 'HACKATHON',
@@ -45,6 +66,7 @@ export const copy = deepFreeze({
       photoAlt: (name: string) => `${name}, smiling, in a cap`,
     },
     ribbons: {
+      engineer: 'ENGINEER',
       organizer: 'ORGANIZER',
       winner: 'WINNER',
       speaker: 'SPEAKER',

@@ -1,4 +1,5 @@
 import type {
+  Experience,
   Organized,
   Patent,
   Profile,
@@ -24,6 +25,21 @@ import type { SectionId } from '../cv/labels'
 export type PodiumWin = Win & { readonly result: Extract<WinResult, { kind: 'place' }> }
 
 const SITE_LINK_LABEL = 'Site'
+const COUNT_WORDS: readonly string[] = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+]
 const YEAR_DIGITS = 2
 
 export function findById<T extends { readonly id: string }>(
@@ -83,15 +99,29 @@ export function latestPodiumWin(wins: readonly Win[]): PodiumWin {
 }
 
 /**
- * His own introduction, ready to follow "I'm a": the first two lines of his
+ * How his introduction opens, ready to follow "I'm a": the first line of his
  * self-description, without the article the hello tag already supplies.
  */
-export function introText({ selfDescription }: Pick<Profile, 'selfDescription'>): string {
-  const [first, second] = selfDescription
-  if (first === undefined || second === undefined) {
-    throw new Error('The hello tag needs two lines of self-description')
+export function introOpening({ selfDescription }: Pick<Profile, 'selfDescription'>): string {
+  const [first] = selfDescription
+  if (first === undefined) {
+    throw new Error('The hello tag needs a first line of self-description')
   }
-  return `${first.replace(/^an?\s+/i, '')} ${second}`
+  return first.replace(/^an?\s+/i, '')
+}
+
+/** The job he holds now. The record marks exactly the ones that are current. */
+export function currentJob(experience: readonly Experience[]): Experience {
+  const job = experience.find(({ current }) => current)
+  if (!job) {
+    throw new Error('No job in the record is marked as current')
+  }
+  return job
+}
+
+/** A small count as handwriting has it: 2 is "two". Past twelve, the figure. */
+export function countWord(count: number): string {
+  return COUNT_WORDS[count] ?? formatNumber(count)
 }
 
 /** "SatsxSW hackathon" is "SatsxSW" on a sticker: every event here is one. */

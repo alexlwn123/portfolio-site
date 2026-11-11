@@ -1,18 +1,14 @@
 /*
- * The lid of the laptop, and the desk it lies on. The lid is as wide as the
- * screen until it reaches --lid-max-width, which the placement stylesheet
- * sets from artboards.ts; past that it stays that size, centred on the desk.
+ * The lid of the laptop. It is the page's first surface and runs from one
+ * edge of the screen to the other at every width: no desk under it, no frame
+ * round it, no corners. The stickers are placed on the stage inside it, which
+ * the placement stylesheet sizes from artboards.ts and, on a very wide
+ * screen, stops growing and centres. The lid carries on past it.
  */
-.desk {
-  min-height: 100vh;
-  min-height: 100svh;
-  padding-block: clamp(0rem, (100vw - var(--lid-max-width)) / 2, var(--space-6));
-  background: var(--ink);
-}
 
-/* The desk shows through when the page is pulled past its ends. */
-:global(body):has(.desk) {
-  background: var(--ink);
+/* More lid shows when the page is pulled past its top. */
+:global(body):has(.lid) {
+  background: var(--cobalt);
 }
 
 .lid {
@@ -33,10 +29,13 @@
 
   position: relative;
   isolation: isolate;
-  max-width: var(--lid-max-width);
-  margin-inline: auto;
-  overflow: hidden;
-  border-radius: 12px;
+
+  /*
+   * Stickers overhang the edges and are cut off there. Clipped, not hidden: a
+   * hidden overflow can still be scrolled, and focus on a sticker near the
+   * bottom edge would slide every sticker up with it.
+   */
+  overflow: clip;
   background:
     radial-gradient(
       130px 70px at 100% 0%,
@@ -99,6 +98,18 @@
   stroke-linecap: round;
   opacity: 0.16;
   pointer-events: none;
+}
+
+/*
+ * The badge's smallest line, the roles across the top of its card, is 1.08em:
+ * under 11px where the wide artboard's unit is one pixel. It is set a touch
+ * larger there. The rule belongs in Badge.module.css beside the phone's, and
+ * is here only because that file was being rewritten when this was added.
+ */
+@container lid (min-width: 1100px) {
+  .stage :global([data-sticker='badge']) div > ul {
+    font-size: 1.1em;
+  }
 }
 
 /* A list of stickers takes no room itself: each one is placed on the stage. */

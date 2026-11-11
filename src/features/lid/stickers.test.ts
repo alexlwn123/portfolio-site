@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../content'
 import { deriveStats } from '../../content/derive'
+import { SECTION_IDS } from '../sections/sectionIds'
 import { flattenStickers, isControl, isDecoration, linksOf, type StickerSpec } from './stickerSpecs'
-import { CONTROL_IDS, lidStickers, STICKER_IDS, type StickerId } from './stickers'
+import { CONTROL_IDS, EMPLOYER_IDS, lidStickers, STICKER_IDS, type StickerId } from './stickers'
 
 const items = lidStickers(content, stats)
 const stickers = flattenStickers(items)
@@ -37,7 +38,7 @@ describe('lidStickers', () => {
 
     expect(ids.indexOf('ncr-win')).toBe(ids.indexOf('latest-win') + 1)
     expect(ids.indexOf('patents')).toBe(ids.indexOf('elsewhere') - 1)
-    expect(STICKER_IDS).toHaveLength(35)
+    expect(STICKER_IDS).toHaveLength(40)
   })
 
   it('puts the three buttons last, after everything there is to read', () => {
@@ -69,11 +70,101 @@ describe('lidStickers', () => {
     expect(sticker('lanyard', 'lanyard').left).toEqual(['alex.lwn.lol', 'ATL'])
   })
 
-  it('introduces him in his own words', () => {
+  it('introduces the whole person: where he is from, his work now, what came before', () => {
     const hello = sticker('hello', 'hello')
 
-    expect(hello.text).toContain('software engineer from Atlanta, GA.')
+    expect(hello.text).toBe(
+      'software engineer from Atlanta, GA. I build AI agents at Finite Computer. ' +
+        'Before that: bitcoin and Lightning apps. ' +
+        'Along the way: two granted patents, and hackathons around the world.',
+    )
     expect(hello.text).toContain(hello.highlight)
+    expect(hello.highlight).not.toMatch(/hackathon/i)
+  })
+
+  it('takes the employer and the patent count in the introduction from the records', () => {
+    const moved = {
+      ...content,
+      experience: content.experience.map((job) =>
+        job.id === 'finite-computer' ? { ...job, organization: 'Somewhere Else' } : job,
+      ),
+      patents: content.patents.filter((patent) => patent.id !== 'us-12536579'),
+    }
+    const hello = flattenStickers(lidStickers(moved, deriveStats(moved))).find(
+      ({ id }) => id === 'hello',
+    )
+
+    expect(hello).toMatchObject({
+      text: expect.stringContaining('I build AI agents at Somewhere Else.') as unknown,
+    })
+    expect(hello).toMatchObject({
+      text: expect.stringContaining('one granted patent, and') as unknown,
+    })
+  })
+
+  it('sticks an asset tag on the lid for every employer, newest first', () => {
+    const tags = EMPLOYER_IDS.map((id) => sticker(id, 'propertyTag'))
+
+    expect(tags.map(({ organization }) => organization)).toEqual(
+      content.experience.map(({ organization }) => organization),
+    )
+    expect(tags.map(({ organization }) => organization)).toEqual([
+      'Finite Computer',
+      'Fedi',
+      'Zion',
+      'BlockSpaces',
+      'NCR Corporation',
+    ])
+    expect(tags.map(({ kicker }) => kicker)).toEqual(Array(5).fill('Property of'))
+    expect(new Set(tags.map(({ href }) => href))).toEqual(new Set(['/#work']))
+  })
+
+  it('prints a start year on a tag only where the record has one, and marks the current job', () => {
+    const lines = EMPLOYER_IDS.map((id) => sticker(id, 'propertyTag').issued)
+
+    expect(lines).toEqual([
+      'In service',
+      'Issued 2024',
+      'Issued 2023',
+      'Issued 2022',
+      'Issued 2020',
+    ])
+    expect(content.experience[0]).toMatchObject({ start: null, current: true })
+  })
+
+  it('follows the employment record when it changes', () => {
+    const dated = {
+      ...content,
+      experience: content.experience.map((job) =>
+        job.id === 'finite-computer'
+          ? { ...job, start: { year: 2025, month: null, day: null } }
+          : job.id === 'ncr'
+            ? { ...job, start: null }
+            : job,
+      ),
+    }
+    const tag = (id: StickerId) =>
+      flattenStickers(lidStickers(dated, stats)).find((candidate) => candidate.id === id)
+
+    expect(tag('job-finite-computer')).toMatchObject({ issued: 'Issued 2025 · In service' })
+    expect(tag('job-ncr')).toMatchObject({ issued: null })
+  })
+
+  it('groups the employers as one list, after the plain CV and before the counts', () => {
+    const ids = stickers.map(({ id }) => id)
+    const group = items.find((item) => item.kind === 'group' && item.key === 'employers')
+
+    expect(group).toMatchObject({ label: 'Where I have worked' })
+    expect(ids.slice(ids.indexOf('cv') + 1, ids.indexOf('wins-count'))).toEqual(EMPLOYER_IDS)
+  })
+
+  it('cuts the tags from silver and from white, so no two neighbours match', () => {
+    const cuts = EMPLOYER_IDS.map((id) => sticker(id, 'propertyTag').cut)
+
+    expect(new Set(cuts)).toEqual(new Set(['plate', 'label', 'strip']))
+    for (const [index, cut] of cuts.entries()) {
+      expect(cut, String(index)).not.toBe(cuts[index + 1])
+    }
   })
 
   it('takes every count from the derived numbers', () => {
@@ -121,14 +212,21 @@ describe('lidStickers', () => {
     expect(find('tally')).toMatchObject({ count: 14 })
   })
 
-  it('puts the same counts on the section ribbons', () => {
+  it('hangs six ribbons, in the order of the page, with the same counts', () => {
     expect(sticker('badge', 'badge').ribbons).toEqual([
-      { label: 'ORGANIZER', count: '×16', href: '/cv/#organized', tone: 'tang' },
-      { label: 'WINNER', count: '×9', href: '/cv/#wins', tone: 'hi' },
-      { label: 'SPEAKER', count: null, href: '/cv/#talks', tone: 'mint' },
-      { label: 'BUILDER', count: null, href: '/cv/#projects', tone: 'gum' },
-      { label: 'INVENTOR', count: null, href: '/cv/#patents', tone: 'white' },
+      { label: 'ENGINEER', count: null, href: '/#work', tone: 'ink' },
+      { label: 'WINNER', count: '×9', href: '/#wins', tone: 'hi' },
+      { label: 'BUILDER', count: null, href: '/#projects', tone: 'gum' },
+      { label: 'ORGANIZER', count: '×16', href: '/#organized', tone: 'tang' },
+      { label: 'SPEAKER', count: null, href: '/#talks', tone: 'mint' },
+      { label: 'INVENTOR', count: null, href: '/#patents', tone: 'white' },
     ])
+  })
+
+  it('leads each ribbon to a section of this page, leaving only the contact section to the strap', () => {
+    const led = sticker('badge', 'badge').ribbons.map(({ href }) => href.replace('/#', ''))
+
+    expect(led).toEqual(SECTION_IDS.filter((id) => id !== 'contact'))
   })
 
   it('prints the granted patent numbers on the compliance label, lowest first', () => {
@@ -138,7 +236,7 @@ describe('lidStickers', () => {
       heading: 'U.S. PAT. NOS.',
       numbers: ['12,354,083', '12,536,579'],
       pending: 'OTHER PATENTS PENDING',
-      href: '/cv/#patents',
+      href: '/#patents',
     })
   })
 
@@ -179,7 +277,7 @@ describe('lidStickers', () => {
       lines: ['OF 300+', 'TEAMS'],
       rim: ['NCR Global Hackathon 2021', 'Team Eth Heads'],
       tone: 'hi',
-      href: '/cv/#wins',
+      href: '/#wins',
     })
   })
 
@@ -205,7 +303,7 @@ describe('lidStickers', () => {
       rank: '1st',
       title: 'Stringer Safety',
       lines: ['AI Hack for Freedom I', 'Austin, 2026'],
-      href: '/cv/#wins',
+      href: '/#wins',
     })
   })
 
@@ -255,7 +353,7 @@ describe('lidStickers', () => {
     const bumper = sticker('workshop', 'bumper')
 
     expect(titles).toContain(bumper.lines.join(' '))
-    expect(bumper.href).toBe('/cv/#talks')
+    expect(bumper.href).toBe('/#talks')
   })
 
   it('project stickers link to their URLs', () => {
@@ -307,7 +405,7 @@ describe('lidStickers', () => {
       kicker: '1st overall',
       title: ['Lightning', 'Welder'],
       foot: 'BTC++ Berlin ’24',
-      href: '/cv/#wins',
+      href: '/#wins',
     })
   })
 
@@ -328,19 +426,18 @@ describe('lidStickers', () => {
     }
   })
 
-  it('links inside the site only to the CV and its sections', () => {
+  it('links inside the site only to the plain CV and to sections of this page', () => {
     const internal = stickers.flatMap(linksOf).filter((href) => href.startsWith('/'))
 
     expect(new Set(internal)).toEqual(
-      new Set([
-        '/cv/',
-        '/cv/#organized',
-        '/cv/#wins',
-        '/cv/#talks',
-        '/cv/#projects',
-        '/cv/#patents',
-      ]),
+      new Set(['/cv/', '/#work', '/#wins', '/#projects', '/#organized', '/#talks', '/#patents']),
     )
+    expect(internal.filter((href) => href.startsWith('/cv/'))).toEqual(['/cv/'])
+  })
+
+  it('sends the count stickers to their sections of this page', () => {
+    expect(sticker('wins-count', 'starburst').href).toBe('/#wins')
+    expect(sticker('organized-count', 'roundBadge').href).toBe('/#organized')
   })
 
   it('never links the name', () => {

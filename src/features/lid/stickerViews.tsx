@@ -23,6 +23,7 @@ import { Medal } from '../stickers/Medal'
 import { ParkingSign } from '../stickers/ParkingSign'
 import { PeelSticker, type PeelShape } from '../stickers/PeelSticker'
 import { Pill } from '../stickers/Pill'
+import { PropertyTag } from '../stickers/PropertyTag'
 import { RecordSticker } from '../stickers/RecordSticker'
 import { RoundBadge } from '../stickers/RoundBadge'
 import { Starburst } from '../stickers/Starburst'
@@ -63,6 +64,7 @@ const FRAMES: Readonly<Record<StickerKind, Frame>> = {
   badge: { flat: true, className: hang.hang },
   hello: {},
   assetTag: INLINE,
+  propertyTag: { as: 'span', selfSized: true },
   starburst: INLINE,
   roundBadge: INLINE,
   foilWin: INLINE,
@@ -93,6 +95,7 @@ function peelShape(kind: StickerKind): PeelShape {
 }
 
 type OpeningSpec = Extract<StickerSpec, { kind: 'name' | 'lanyard' | 'badge' | 'hello' }>
+type MetalSpec = Extract<StickerSpec, { kind: 'assetTag' | 'propertyTag' | 'complianceLabel' }>
 type ControlSpec = Extract<StickerSpec, { kind: 'sound' | 'tidy' | 'tilt' }>
 
 /** What the lid opens with: his name, his badge on its lanyard and his introduction. */
@@ -107,6 +110,18 @@ function openingFace(spec: OpeningSpec, photo: BadgePhotoImage): ReactElement {
       return <Badge {...spec} photo={photo} />
     case 'hello':
       return <HelloTag {...spec} />
+  }
+}
+
+/** The serious stickers: tags and labels of the kind a company sticks on a laptop. */
+function metalFace(spec: MetalSpec): ReactElement {
+  switch (spec.kind) {
+    case 'assetTag':
+      return <AssetTag {...spec} />
+    case 'propertyTag':
+      return <PropertyTag {...spec} />
+    case 'complianceLabel':
+      return <ComplianceLabel {...spec} />
   }
 }
 
@@ -130,7 +145,9 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
     case 'hello':
       return openingFace(spec, photo)
     case 'assetTag':
-      return <AssetTag {...spec} />
+    case 'propertyTag':
+    case 'complianceLabel':
+      return metalFace(spec)
     case 'starburst':
       return <Starburst {...spec} />
     case 'roundBadge':
@@ -139,8 +156,6 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
       return <FoilWin {...spec} />
     case 'medal':
       return <Medal {...spec} />
-    case 'complianceLabel':
-      return <ComplianceLabel {...spec} />
     case 'bolt':
       return <Bolt />
     case 'pill':

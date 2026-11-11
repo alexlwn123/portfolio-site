@@ -1,0 +1,12 @@
+/*
+ * The home page: the lid, the strap, the sections, one under the other with
+ * nothing between them and nothing either side.
+ */
+.page {
+  /*
+   * The height of what is pinned to the top of the screen: the strap. Each
+   * section reads it as its scroll margin, so a link that lands on a section
+   * leaves the heading clear of the strap.
+   */
+  --pinned-height: 2.75rem;
+}

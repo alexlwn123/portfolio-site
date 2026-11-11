@@ -278,8 +278,14 @@ test.describe('pick up, throw, re-stick', () => {
     const cv = sticker(page, 'cv')
     const before = await boxOf(cv)
     const url = page.url()
+    // The badge's own box is where it hangs from; its card, and the photo on it, hang below.
+    const badge = await boxOf(sticker(page, 'badge').getByRole('img'))
 
-    await carry(page, 'cv', { x: 520, y: -40 })
+    // Dropped on the badge's photo, wherever the arrangement hangs it.
+    await carry(page, 'cv', {
+      x: badge.x + badge.width / 2 - (before.x + before.width / 2),
+      y: badge.y + badge.height / 2 - (before.y + before.height / 2),
+    })
 
     const after = await boxOf(cv)
     expect(after.x - before.x).toBeGreaterThan(400)
@@ -313,7 +319,7 @@ test.describe('pick up, throw, re-stick', () => {
     await page.locator('[data-lid][data-enhanced]').waitFor()
     // The face of a sticker with a note under it is a link like any other.
     await sticker(page, 'lightning-welder').locator('a').first().click()
-    await expect(page).toHaveURL(/\/cv\/#wins$/)
+    await expect(page).toHaveURL(/\/#wins$/)
   })
 
   test('a sticker cannot leave the lid', async ({ page }) => {
@@ -376,8 +382,9 @@ test.describe('pick up, throw, re-stick', () => {
     const before = withoutSwingers(await stickerPlaces(page))
 
     await carry(page, 'cv', { x: 300, y: 200 })
-    await carry(page, 'name', { x: 120, y: 260 }, { x: 0.5, y: 0.3 })
+    // The pill goes first: on the wide lid the name, carried, lands on top of it.
     await carry(page, 'city-riga', { x: 400, y: -500 })
+    await carry(page, 'name', { x: 120, y: 260 }, { x: 0.5, y: 0.3 })
     await carry(page, 'cv', { x: -80, y: 300 })
     await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
     expect(withoutSwingers(await stickerPlaces(page))).not.toEqual(before)
@@ -397,9 +404,10 @@ test.describe('pick up, throw, re-stick', () => {
   }) => {
     await openLid(page, 728)
 
+    // The seal goes first: on the full-width lid the hello tag, carried, lands on top of it.
+    await carry(page, 'wins-count', { x: -200, y: 60 })
     await carry(page, 'hello', { x: 150, y: 400 })
     await carry(page, 'workshop', { x: 200, y: 120 })
-    await carry(page, 'wins-count', { x: -200, y: 60 })
     expect((await linksNotUnderTheirOwnCentre(page)).length).toBeGreaterThan(0)
     await (await cornerOf(page, 'ncr-win')).click()
     await page.getByRole('button', { name: 'Tidy the lid' }).click()
@@ -416,16 +424,15 @@ test.describe('pick up, throw, re-stick', () => {
       body.focus({ preventScroll: true })
       body.removeAttribute('tabindex')
     })
+    // The strap and the sections under the lid have links too: only the lid's are counted.
+    const stops = (await page.locator('a[href], button').count()) * 2
     const visited: string[] = []
-    // Keep only the lid's own links. The rest of the page has links and buttons
-    // too, so allow enough Tab presses to pass every one of them.
-    const stops = (await page.locator('a, button').count()) * 2
     for (let stop = 0; visited.length < hrefs.length && stop < stops; stop += 1) {
       await page.keyboard.press('Tab')
       const href = await page.evaluate(() => {
-        const active = document.activeElement
-        return active instanceof HTMLAnchorElement && active.closest('[data-lid]')
-          ? active.href
+        const focused = document.activeElement
+        return focused instanceof HTMLAnchorElement && focused.closest('[data-lid]') !== null
+          ? focused.href
           : null
       })
       if (href !== null) {
@@ -548,7 +555,7 @@ test.describe('peel to reveal', () => {
     await expect(noteOf(page, 'latest-win')).toBeVisible()
     await sticker(page, 'latest-win').locator('a').first().click()
 
-    await expect(page).toHaveURL(/\/cv\/#wins$/)
+    await expect(page).toHaveURL(/\/#wins$/)
   })
 
   test('a note never traps the visitor: a press, a key or the Tab key gets past it', async ({

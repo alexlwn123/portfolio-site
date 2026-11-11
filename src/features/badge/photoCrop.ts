@@ -28,9 +28,9 @@ export const PHOTO_SCALES: readonly number[] = Object.freeze([0.5, 0.75, 1])
 
 /**
  * The photo's frame is 21.5em wide: 56% of the phone artboard, 30% of the
- * desktop one, and 296px when the lid is at its widest.
+ * desktop one, 20% of the wide one, and 376px once that stops growing.
  */
-export const PHOTO_SIZES = '(max-width: 560px) 56vw, min(30vw, 296px)'
+export const PHOTO_SIZES = '(max-width: 560px) 56vw, (max-width: 1099px) 30vw, min(20vw, 376px)'
 
 const PERCENT = 100
 const PERCENT_DECIMALS = 2

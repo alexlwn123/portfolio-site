@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../content'
-import { SECTIONS } from '../cv/labels'
+import { SECTION_IDS, sectionAnchor } from '../sections/sectionIds'
 import { flattenStickers } from '../lid/stickerSpecs'
 import { lidStickers } from '../lid/stickers'
 import tones from '../stickers/tones.module.css'
@@ -30,27 +30,32 @@ describe('SectionRibbons', () => {
     expect(stats.wins.total).toBe(content.wins.length)
   })
 
-  it('leads each ribbon to a section the CV really has', () => {
+  it('leads each ribbon to a section this page really has, in the order of the page', () => {
     const nav = renderRibbons()
-    const sections = SECTIONS.map(({ id }) => `/cv/#${id}`)
+    const sections = SECTION_IDS.map(sectionAnchor)
     const hrefs = nav.getAllByRole('link').map((link) => link.getAttribute('href'))
 
-    expect(hrefs).toEqual([
-      '/cv/#organized',
-      '/cv/#wins',
-      '/cv/#talks',
-      '/cv/#projects',
-      '/cv/#patents',
+    expect(hrefs).toEqual(['/#work', '/#wins', '/#projects', '/#organized', '/#talks', '/#patents'])
+    expect(hrefs).toEqual(sections.slice(0, hrefs.length))
+  })
+
+  it('names the six ribbons for what he is: engineer first', () => {
+    const nav = renderRibbons()
+
+    expect(nav.getAllByRole('link').map((link) => link.textContent.replace(/\s+/g, ' '))).toEqual([
+      'ENGINEER',
+      `WINNER ×${String(stats.wins.total)}`,
+      'BUILDER',
+      `ORGANIZER ×${String(stats.organized.count)}`,
+      'SPEAKER',
+      'INVENTOR',
     ])
-    for (const href of hrefs) {
-      expect(sections).toContain(href)
-    }
   })
 
   it('is a list of links inside one navigation landmark', () => {
     const nav = renderRibbons()
 
-    expect(within(nav.getByRole('list')).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(nav.getByRole('list')).getAllByRole('listitem')).toHaveLength(6)
   })
 
   it('ends with the inventor ribbon, which leads to the patents and carries no count', () => {
@@ -58,8 +63,14 @@ describe('SectionRibbons', () => {
     const inventor = nav.getAllByRole('link').at(-1)
 
     expect(inventor).toHaveTextContent(/^INVENTOR$/)
-    expect(inventor).toHaveAttribute('href', '/cv/#patents')
+    expect(inventor).toHaveAttribute('href', '/#patents')
     expect(inventor).toHaveClass(tones.white ?? '')
+  })
+
+  it('cuts the engineer ribbon from ink, the one colour that takes white lettering', () => {
+    const nav = renderRibbons()
+
+    expect(nav.getByRole('link', { name: 'ENGINEER' })).toHaveClass(tones.ink ?? '')
   })
 
   it('prints no count on a ribbon that has none', () => {

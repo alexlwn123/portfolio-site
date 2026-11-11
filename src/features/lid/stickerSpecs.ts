@@ -4,9 +4,10 @@
  * the components print it without knowing where it came from.
  */
 
+import type { PropertyTagCut } from '../stickers/PropertyTag'
 import type { Tone } from '../stickers/tones'
 
-export type { Tone }
+export type { PropertyTagCut, Tone }
 
 interface Spec<Kind extends string, Id extends string> {
   readonly id: Id
@@ -63,6 +64,15 @@ export interface HelloSpec<Id extends string> extends Spec<'hello', Id> {
 export interface AssetTagSpec<Id extends string> extends LinkSpec<'assetTag', Id> {
   readonly kicker: string
   readonly label: string
+}
+
+/** An employer's asset tag: whose it was, and the small print under the name. */
+export interface PropertyTagSpec<Id extends string> extends LinkSpec<'propertyTag', Id> {
+  readonly kicker: string
+  readonly organization: string
+  /** "Issued 2024", "In service", both, or null when the record gives neither. */
+  readonly issued: string | null
+  readonly cut: PropertyTagCut
 }
 
 export interface StarburstSpec<Id extends string> extends LinkSpec<'starburst', Id> {
@@ -196,6 +206,7 @@ export type StickerSpec<Id extends string = string> =
   | BadgeSpec<Id>
   | HelloSpec<Id>
   | AssetTagSpec<Id>
+  | PropertyTagSpec<Id>
   | StarburstSpec<Id>
   | RoundBadgeSpec<Id>
   | FoilWinSpec<Id>
