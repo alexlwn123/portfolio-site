@@ -122,13 +122,22 @@
   rotate: -6deg;
 }
 
+/* Across the whole column, the card is the long way round: five stamps to a row. */
 @container section (max-width: 1099px) {
   .card {
     width: 34em;
   }
+
+  .stamps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 @container section (max-width: 560px) {
+  .stamps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .city {
     font-size: 1.24em;
   }

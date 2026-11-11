@@ -15,8 +15,9 @@ import { TourTee } from './TourTee'
 
 /**
  * "Talks & press": the back of a tour shirt with every dated appearance on
- * it, and round it the show that is still on air, the workshop that has its
- * own backstage pass, the bitcoin++ record and the press, cut out. Static
+ * it, and beside it the show that is still on air, the workshop that has its
+ * own backstage pass, the bitcoin++ record and the press, cut out. Each of
+ * those is stuck in a place of its own, which the stylesheet lays out. Static
  * HTML and CSS.
  */
 export const TalksSection: FunctionComponent<SectionProps> = ({ content, stats }) => {
@@ -30,14 +31,28 @@ export const TalksSection: FunctionComponent<SectionProps> = ({ content, stats }
         <TourTee name={content.profile.name} talks={content.talks} />
         <div className={styles.around}>
           {onAirShows(content.talks).map((show) => (
-            <OnAirSticker key={show.id} show={show} />
+            <div key={show.id} className={styles.air}>
+              <OnAirSticker show={show} />
+            </div>
           ))}
-          {pass !== null && <BackstagePass pass={pass} />}
-          <EditionCard record={content.bitcoinPlusPlus} stats={stats.bitcoinPlusPlus} />
+          {pass !== null && (
+            <div className={styles.pass}>
+              <BackstagePass pass={pass} />
+            </div>
+          )}
+          <div className={styles.card}>
+            <EditionCard record={content.bitcoinPlusPlus} stats={stats.bitcoinPlusPlus} />
+          </div>
           {clippings.map((clipping) => (
-            <Clipping key={clipping.id} clipping={clipping} />
+            <div key={clipping.id} className={styles.cutting}>
+              <Clipping clipping={clipping} />
+            </div>
           ))}
-          <SeeAlso references={references} />
+          {references.length > 0 && (
+            <div className={styles.also}>
+              <SeeAlso references={references} />
+            </div>
+          )}
         </div>
       </div>
     </SectionFrame>

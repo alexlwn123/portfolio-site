@@ -6,8 +6,14 @@
   --teeth: 1.1em;
 
   position: relative;
+  display: grid;
   width: 32em;
   max-width: 100%;
+}
+
+/* A cutting given more height than its print needs is a longer piece of paper. */
+.clipping > .paper {
+  display: grid;
 }
 
 .sheet {

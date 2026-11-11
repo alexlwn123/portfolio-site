@@ -4,16 +4,24 @@
  * the body's sides and its white die-cut edge run on from the drawing's at
  * any size: the body starts where the yoke stops, 80 units in from each
  * sleeve, with an edge 6 units thick.
+ *
+ * The shirt hangs from its shoulders: it leans about the middle of its
+ * collar, so its sleeves stay where they are put and only its hem swings.
+ * The drawing has 9 units of air beside each sleeve, which the shirt gives
+ * back on the left, so that the tip of the sleeve is on the column's edge.
  */
 .tee {
   --tee: 62em;
   --u: calc(var(--tee) / 620);
   --edge: calc(var(--u) * 6);
   --sleeve: calc(var(--u) * 80);
+  --air: calc(var(--u) * 9);
 
   position: relative;
   flex: none;
   width: var(--tee);
+  margin-left: calc(var(--air) * -1);
+  transform-origin: 50% 0;
   rotate: -1.2deg;
 }
 
@@ -280,9 +288,10 @@
 
 /* ---------- 728 units: the shirt fills the width ---------- */
 
+/* The air beside each sleeve is given back on both sides, so the sleeves reach both edges. */
 @container section (max-width: 1099px) {
   .tee {
-    --tee: 66.8em;
+    --tee: calc(66.8em * 620 / 602);
 
     rotate: -0.8deg;
   }
