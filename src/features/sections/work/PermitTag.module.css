@@ -1,16 +1,21 @@
 /*
  * The university's parking permit: one of the tags' family, and its own
- * thing. A tangerine decal with a punched hole, a white panel for the years
- * it was good for, and two boxed fields.
+ * thing. A tangerine hang tag with a punched hole at the end nearest the
+ * rule, a white panel for the years it was good for, and two boxed fields.
+ * It is not a job, so it is stuck down with the rest, as wide as its side.
  */
 .permit {
   position: relative;
-  width: 34em;
-  max-width: 100%;
+  width: 100%;
+  rotate: 0.8deg;
 }
 
 .tag {
-  padding: 1.3em 2.6em 1.3em 1.5em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8em 1.8em;
+  align-items: center;
+  padding: 1.3em 2.1em 1.3em 6.2em;
   border-radius: 1.4em;
   box-shadow:
     inset 0 0 0 0.45em var(--white),
@@ -21,10 +26,11 @@
 /* The hole a hang tag is hung by, showing the mat through it. */
 .hole {
   position: absolute;
-  top: 1.5em;
-  right: 3em;
+  top: 50%;
+  left: 2.2em;
   width: 2.3em;
   height: 2.3em;
+  margin-top: -1.15em;
   border: 0.22em solid var(--ink);
   border-radius: 50%;
   background: var(--ink);
@@ -32,29 +38,33 @@
 }
 
 .head {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 0.3em 1.4em;
+  align-items: baseline;
   margin: 0;
-  padding: 0.4em 4.6em 0 0.5em;
   font: inherit;
 }
 
 .issuer {
   display: block;
-  font-size: 2.3em;
+  font-size: 2.5em;
   line-height: 1;
 }
 
 .kind {
   display: block;
-  margin-top: 0.3em;
-  font-size: 1.4em;
+  font-size: 1.45em;
   letter-spacing: 0.14em;
 }
 
 .valid {
   display: flex;
+  flex: none;
   gap: 1em;
   align-items: baseline;
-  margin: 0.9em 0 0;
+  margin: 0;
   padding: 0.7em 1.1em 0.55em;
   border: 0.2em solid var(--ink);
   border-radius: 0.6em;
@@ -66,17 +76,18 @@
 }
 
 .years {
-  font-size: 3.5em;
+  font-size: 3.2em;
   line-height: 1;
   white-space: nowrap;
 }
 
+/* Beside the years when there is room, and under them when there is not. */
 .fields {
   display: flex;
+  flex: 1 1 15em;
   flex-wrap: wrap;
-  gap: 0.6em 1.8em;
-  margin: 0.9em 0 0;
-  padding: 0 0.5em;
+  gap: 0.45em 1.5em;
+  margin: 0;
 }
 
 .field {
@@ -86,44 +97,75 @@
 }
 
 .term {
-  font-size: 1.2em;
+  font-size: 1.25em;
   opacity: 0.85;
 }
 
 .value {
   margin: 0;
-  font-size: 1.55em;
+  font-size: 1.5em;
 }
 
+/* A tablet gives it the width beside the rule, and it does not need it all. */
 @container section (max-width: 1099px) {
   .permit {
-    width: 30em;
-  }
-
-  .issuer {
-    font-size: 2.1em;
-  }
-
-  .years {
-    font-size: 2.8em;
+    max-width: 44em;
   }
 }
 
+/* A phone stacks it: the hole in the corner, the years under the name. */
 @container section (max-width: 560px) {
   .permit {
-    width: auto;
+    max-width: none;
+    rotate: -0.6deg;
+  }
+
+  .tag {
+    padding: 1.3em 1.5em;
+  }
+
+  .valid {
+    flex: 1 1 100%;
+  }
+
+  .hole {
+    top: 1.5em;
+    right: 2em;
+    left: auto;
+    margin-top: 0;
+  }
+
+  .head {
+    display: block;
+    padding: 0.4em 4.6em 0 0.5em;
+  }
+
+  .kind {
+    margin-top: 0.3em;
   }
 
   .issuer {
     font-size: 2em;
   }
 
+  .kind {
+    font-size: 1.4em;
+  }
+
   .years {
     font-size: 2.8em;
   }
 
+  .fields {
+    gap: 0.6em 1.8em;
+    padding: 0 0.5em;
+  }
+
   .term {
-    font-size: 1.25em;
     opacity: 1;
+  }
+
+  .value {
+    font-size: 1.55em;
   }
 }

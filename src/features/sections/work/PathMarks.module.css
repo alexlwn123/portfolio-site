@@ -4,33 +4,62 @@
  * for wins, a length of spearmint wristband for hackathons run, a metal plate
  * for a patent granted, a file label for one applied for, a bubblegum ribbon
  * for the first talk.
+ *
+ * They run from the rule to the column's edge, two abreast, and an odd one
+ * out leads across the whole width. Down the side of a job's tag that sets
+ * the length of its year they are listed one under another instead.
  */
 .marks {
   display: flex;
   flex-wrap: wrap;
-  grid-row: 1;
-  grid-column: 3;
-  gap: 1.1em 1.3em;
-  align-content: flex-start;
+  gap: 1em 1.3em;
   align-items: flex-start;
-  align-self: start;
   margin: 0;
-  padding: 1.5em 0 1.3em 2em;
+  padding: 0;
   list-style: none;
 }
 
 .item {
-  max-width: 100%;
-  rotate: -1.6deg;
+  flex: 1 1 19em;
+  min-width: 0;
+  rotate: -1.1deg;
 }
 
 .item:nth-child(2n) {
-  margin-top: 0.5em;
-  rotate: 1.3deg;
+  rotate: 0.9deg;
 }
 
 .item:nth-child(3n) {
-  rotate: -0.7deg;
+  rotate: -0.5deg;
+}
+
+/* An odd number abreast: the first takes a line to itself. */
+.item:first-child:nth-last-child(odd),
+.down > .item {
+  flex-basis: 100%;
+}
+
+/* The ones with the most to say are given the most of a line. */
+.item[data-mark='wins'] {
+  flex-basis: 22.5em;
+}
+
+.item[data-mark='organized'] {
+  flex-basis: 21.5em;
+}
+
+/* A plate is as wide as the patent's number, which is never broken. */
+.item[data-mark='granted'] {
+  flex-basis: 19em;
+}
+
+.item[data-mark='filed'] {
+  flex-basis: 16.5em;
+}
+
+/* With a line to itself the ribbon says its two words on one. */
+.down .kicker > * {
+  display: inline;
 }
 
 /* ---------- what every face shares ---------- */
@@ -39,7 +68,6 @@
   display: flex;
   gap: 0.95em;
   align-items: flex-start;
-  max-width: 22.8em;
   padding: 0.9em 1.3em 0.95em 1.1em;
   border: 0.36em solid var(--white);
   border-radius: 1.1em;
@@ -93,7 +121,6 @@
 .wins {
   --c: var(--tang);
 
-  max-width: 27.4em;
   border-radius: 1.7em 0.5em 1.7em 0.5em;
 }
 
@@ -125,7 +152,6 @@
 
 /* A file label: white stock with a dashed rule round it. */
 .filed {
-  max-width: 18.2em;
   border: 0.2em dashed var(--ink);
   border-radius: 0.4em;
   outline: 0.36em solid var(--white);
@@ -137,7 +163,6 @@
 
   flex-direction: column;
   gap: 0;
-  max-width: 18.2em;
   padding: 0.95em 2.9em 1em 1.3em;
   border: 0;
   border-radius: 0.3em 0 0 0.3em;
@@ -151,21 +176,21 @@
   letter-spacing: 0.08em;
 }
 
+/* A tablet has room for three abreast where no job began. */
 @container section (max-width: 1099px) {
   .marks {
-    gap: 1em;
-    padding: 1.3em 0 1.4em 1.5em;
+    gap: 1em 1.2em;
   }
 
-  .item:nth-child(2n) {
-    margin-top: 0;
+  .item:nth-child(n),
+  .item:first-child:nth-last-child(odd) {
+    flex-basis: 17em;
   }
 
-  .face,
-  .wins,
-  .filed,
-  .firstTalk {
-    max-width: 26.4em;
+  /* Beside a job the column is a narrow one, and they are listed down it. */
+  .beside > .item:nth-child(n),
+  .down > .item:nth-child(n) {
+    flex-basis: 100%;
   }
 
   .figure {
@@ -173,18 +198,10 @@
   }
 }
 
+/* A phone lists them all. */
 @container section (max-width: 560px) {
-  .marks {
-    grid-row: 2;
-    grid-column: 2;
-    padding: 0.9em 0 0 1.2em;
-  }
-
-  .face,
-  .wins,
-  .filed,
-  .firstTalk {
-    max-width: 29em;
+  .item:nth-child(n) {
+    flex-basis: 100%;
   }
 
   .unit {

@@ -189,10 +189,10 @@ describe('careerPath', () => {
     expect(allMarks('organized').flatMap((mark) => mark.events)).toHaveLength(stats.organized.count)
   })
 
-  it('sets the marks of a year down in one order: wins, organized, granted, filed, first talk', () => {
+  it('sets the marks of a year down in one order: organized, wins, granted, filed, first talk', () => {
     const order: readonly PathMark['kind'][] = [
-      'wins',
       'organized',
+      'wins',
       'granted',
       'filed',
       'firstTalk',
@@ -203,8 +203,8 @@ describe('careerPath', () => {
       expect(kinds, stop.key).toEqual(order.filter((kind) => kinds.includes(kind)))
     }
     expect(stopOf(path, '2026').marks.map((mark) => mark.kind)).toEqual([
-      'wins',
       'organized',
+      'wins',
       'granted',
     ])
   })

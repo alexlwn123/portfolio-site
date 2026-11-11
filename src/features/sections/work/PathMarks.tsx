@@ -130,22 +130,41 @@ function MarkFace({ mark }: { readonly mark: PathMark }): ReactElement {
   }
 }
 
+/**
+ * How a year's stickers are set out. Abreast, where no job began that year
+ * and they have the whole side to themselves. Beside a job's tag that has
+ * room to hang past the years after it. Down the side of a tag that has none,
+ * one under another, since the year is as long as its tag whatever they do.
+ */
+export type MarksLayout = 'abreast' | 'beside' | 'down'
+
 interface PathMarksProps {
   readonly marks: readonly PathMark[]
   readonly year: number
+  readonly layout?: MarksLayout
 }
 
 /**
  * The small stickers on the other side of the rule: what else happened in a
  * year. Each is a link to the section that tells the rest.
  */
-export function PathMarks({ marks, year }: PathMarksProps): ReactElement | null {
+export function PathMarks({
+  marks,
+  year,
+  layout = 'abreast',
+}: PathMarksProps): ReactElement | null {
   if (marks.length === 0) {
     return null
   }
 
   return (
-    <ul className={styles.marks} role="list" aria-label={workCopy.marks.also(year)} data-marks="">
+    <ul
+      className={cx(styles.marks, styles[layout])}
+      role="list"
+      aria-label={workCopy.marks.also(year)}
+      data-marks=""
+      data-layout={layout}
+    >
       {marks.map((mark) => (
         <li key={mark.kind} className={styles.item} data-mark={mark.kind}>
           <Stuck href={sectionAnchor(markSection(mark.kind))}>

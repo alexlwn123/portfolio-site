@@ -65,10 +65,13 @@ describe('CareerPath', () => {
     expect(pinned('2021')).toEqual([])
   })
 
-  it('hangs the university permit from the year he began there', () => {
+  it('sticks the university permit down with the rest, at the year he began there', () => {
     const start = stopItem(renderPath(), '2018')
+    const permit = within(start).getByRole('article')
 
-    expect(within(start).getByRole('article')).toHaveAttribute('data-school', 'auburn-university')
+    expect(permit).toHaveAttribute('data-school', 'auburn-university')
+    expect(permit.closest('[data-aside]')).not.toBeNull()
+    expect(start.querySelector('[data-tags]')).toBeNull()
   })
 
   it('reads in order inside a stop: the year, what began, then what else happened', () => {
@@ -77,18 +80,47 @@ describe('CareerPath', () => {
       (part) =>
         (part.hasAttribute('data-year') && 'year') ||
         (part.hasAttribute('data-tags') && 'tags') ||
-        (part.hasAttribute('data-marks') && 'marks') ||
+        (part.hasAttribute('data-aside') && 'aside') ||
         part.tagName,
     )
 
-    expect(parts).toEqual(['year', 'tags', 'marks'])
+    expect(parts).toEqual(['year', 'tags', 'aside'])
+    expect(year.querySelector('[data-aside] > [data-marks]')).not.toBeNull()
   })
 
-  it('leaves a quiet year on the rule with nothing hanging from it', () => {
-    const quiet = stopItem(renderPath(), '2019')
+  it('leaves a quiet year on the rule with nothing hanging from it, and marks it as a break', () => {
+    const list = renderPath()
+    const quiet = stopItem(list, '2019')
 
-    expect(quiet.querySelector('article, ul, a')).toBeNull()
+    expect(quiet.querySelector('article, ul, a, [data-aside], [data-tags]')).toBeNull()
     expect(quiet).toHaveTextContent(/^2019$/)
+    expect(quiet).toHaveAttribute('data-quiet', '')
+    expect(list.querySelectorAll('[data-quiet]')).toHaveLength(1)
+  })
+
+  it('lets a tag hang past the years after it in which no other job began', () => {
+    const list = renderPath()
+    const past = (key: string): string | null | undefined =>
+      stopItem(list, key).querySelector('[data-tags]')?.getAttribute('data-past')
+
+    expect(past(NOW_KEY)).toBe('2')
+    expect(past('2024')).toBe('0')
+    expect(past('2023')).toBe('0')
+    expect(past('2022')).toBe('1')
+    expect(past('2020')).toBe('2')
+  })
+
+  it('sets what else happened down the side of a tag with no room, beside one with room, and abreast where no job began', () => {
+    const list = renderPath()
+    const layout = (key: string): string | null | undefined =>
+      stopItem(list, key).querySelector('[data-marks]')?.getAttribute('data-layout')
+
+    expect(layout('2024')).toBe('down')
+    expect(layout('2023')).toBe('down')
+    expect(layout('2022')).toBe('beside')
+    expect(layout('2020')).toBe('beside')
+    expect(layout('2026')).toBe('abreast')
+    expect(layout('2021')).toBe('abreast')
   })
 
   it('heads every tag with an h3, and uses no other heading', () => {
@@ -121,10 +153,11 @@ describe('CareerPath', () => {
     expect(new Set(drawn).size).toBe(tags.length)
   })
 
-  it('labels the rule’s unit for the eye only', () => {
+  it('labels the rule’s unit for the eye only, at its foot', () => {
     const list = renderPath()
     const unit = within(list.parentElement ?? list).getByText(workCopy.rule.unit)
 
     expect(unit.closest('[aria-hidden="true"]')).not.toBeNull()
+    expect(unit.closest('[data-rule-foot]')).not.toBeNull()
   })
 })

@@ -34,13 +34,22 @@ describe('PathMarks', () => {
     const list = screen.getByRole('list', { name: 'Also in 2026' })
     const items = [...list.querySelectorAll(':scope > li')]
     expect(items.map((item) => item.getAttribute('data-mark'))).toEqual([
-      'wins',
       'organized',
+      'wins',
       'granted',
     ])
     for (const item of items) {
       expect(within(item as HTMLElement).getAllByRole('link')).toHaveLength(1)
     }
+  })
+
+  it('is set out abreast unless it is told how else', () => {
+    const { marks } = stop('2024')
+    const { container, rerender } = render(<PathMarks marks={marks} year={2024} />)
+
+    expect(container.querySelector('[data-marks]')).toHaveAttribute('data-layout', 'abreast')
+    rerender(<PathMarks marks={marks} year={2024} layout="down" />)
+    expect(container.querySelector('[data-marks]')).toHaveAttribute('data-layout', 'down')
   })
 
   it('renders nothing for a year with no marks', () => {
