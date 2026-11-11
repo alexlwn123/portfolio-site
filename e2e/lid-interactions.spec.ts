@@ -412,10 +412,15 @@ test.describe('pick up, throw, re-stick', () => {
       ;(document.activeElement as HTMLElement | null)?.blur()
     })
     const visited: string[] = []
-    for (let stop = 0; visited.length < hrefs.length && stop < hrefs.length * 2; stop += 1) {
+    // The sections under the lid have links of their own; Tab passes them, and only the lid's count.
+    const stops = (await page.getByRole('link').count()) * 2
+    for (let stop = 0; visited.length < hrefs.length && stop < stops; stop += 1) {
       await page.keyboard.press('Tab')
       const href = await page.evaluate(() =>
-        document.activeElement instanceof HTMLAnchorElement ? document.activeElement.href : null,
+        document.activeElement instanceof HTMLAnchorElement &&
+        document.activeElement.closest('[data-lid]')
+          ? document.activeElement.href
+          : null,
       )
       if (href !== null) {
         visited.push(href)
