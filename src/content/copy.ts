@@ -76,12 +76,13 @@ export const copy = deepFreeze({
       inventor: 'INVENTOR',
       times: (count: Figure) => `×${String(count)}`,
     },
-    /** The compliance label. The numbers themselves come from the patent records. */
+    /**
+     * The compliance label's heading. The numbers under it come from the patent
+     * records, and the noun is "filing": not every filing became a patent.
+     */
     patentLabel: {
-      one: 'U.S. PAT. NO.',
-      many: 'U.S. PAT. NOS.',
-      /** One application pending is not "patents": the label counts before it speaks. */
-      pending: { one: 'ANOTHER PATENT PENDING', many: 'OTHER PATENTS PENDING' },
+      one: 'U.S. PATENT FILING',
+      many: 'U.S. PATENT FILINGS',
     },
     /** The medal for a win chosen from a field of teams. */
     medal: {

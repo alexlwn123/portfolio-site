@@ -15,7 +15,7 @@ describe('content', () => {
   it('exposes the derived numbers alongside the records', () => {
     expect(stats.wins.total).toBe(content.wins.length)
     expect(stats.organized.count).toBe(16)
-    expect(stats.patents.filings).toBe(content.patents.length)
+    expect(stats.patents.filings).toBe(content.patents.filter((patent) => patent.shown).length)
   })
 })
 

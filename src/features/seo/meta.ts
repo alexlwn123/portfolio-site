@@ -25,31 +25,39 @@ const TITLE_SEPARATOR = ' · '
 
 type MetaContent = Pick<Content, 'profile' | 'experience'>
 
-const employers = new Intl.ListFormat('en-US', { style: 'long', type: 'conjunction' })
+/** What sets one employer apart from the next. A plain list: the description has no room for more. */
+const EMPLOYER_SEPARATOR = ', '
 
 function absoluteUrl(path: string, site: string): string {
   return new URL(path, site).href
 }
 
-/** "Before that: Fedi, Zion, BlockSpaces, and NCR Corporation.", or nothing for a first job. */
+/** "Earlier: Fedi, Zion, BlockSpaces, NCR Corporation.", or nothing for a first job. */
 function earlier({ experience }: MetaContent): readonly string[] {
   const before = experience.filter(({ current }) => !current).map((job) => job.organization)
-  return before.length > 0 ? [`Before that: ${employers.format(before)}.`] : []
+  return before.length > 0 ? [`Earlier: ${before.join(EMPLOYER_SEPARATOR)}.`] : []
 }
 
-/** The whole career in a search result: the job, the jobs before it, then the counts. */
+/** "named inventor on 4 patent filings": every filing counted alike, so the noun is "filing". */
+function inventorOn({ filings }: Stats['patents']): string {
+  return `named inventor on ${formatNumber(filings)} patent ${filings === 1 ? 'filing' : 'filings'}`
+}
+
+/**
+ * The whole career in a search result: the job, the jobs before it, then the
+ * counts. It is kept to what a result shows, so the city stands without its
+ * state and the employers are a plain list.
+ */
 function summary(content: MetaContent, stats: Stats): string {
   const { role, location } = content.profile
-  const { granted } = stats.patents
   const wins = formatNumber(stats.wins.total)
   const organized = formatNumber(stats.organized.count)
   const countries = formatNumber(stats.organized.countryCount)
-  const patents = `${formatNumber(granted)} granted ${granted === 1 ? 'patent' : 'patents'}`
 
   return [
-    `${role.title} at ${role.organization} in ${location.city}, ${location.region}.`,
+    `${role.title} at ${role.organization} in ${location.city}.`,
     ...earlier(content),
-    `${patents}, ${wins} hackathon wins, ${organized} hackathons organized in ${countries} countries.`,
+    `${wins} hackathon wins, ${organized} hackathons organized in ${countries} countries, ${inventorOn(stats.patents)}.`,
   ].join(' ')
 }
 

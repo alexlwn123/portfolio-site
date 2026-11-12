@@ -12,7 +12,7 @@ export interface PathTotal {
 /**
  * Where the career stands today, one figure for each of the other sections:
  * wins, hackathons organized, bitcoin++ stage sessions, projects he has
- * confirmed, and patents granted. A figure of nothing is left out.
+ * confirmed, and patent filings he is named on. A figure of nothing is left out.
  */
 export function pathTotals(content: Pick<Content, 'projects'>, stats: Stats): readonly PathTotal[] {
   const totals: readonly PathTotal[] = [
@@ -20,7 +20,7 @@ export function pathTotals(content: Pick<Content, 'projects'>, stats: Stats): re
     { kind: 'organized', count: stats.organized.count, section: 'organized' },
     { kind: 'stage', count: stats.bitcoinPlusPlus.stageSessions, section: 'talks' },
     { kind: 'projects', count: publishableProjects(content.projects).length, section: 'projects' },
-    { kind: 'patents', count: stats.patents.granted, section: 'patents' },
+    { kind: 'patents', count: stats.patents.filings, section: 'patents' },
   ]
   return totals.filter(({ count }) => count > 0)
 }

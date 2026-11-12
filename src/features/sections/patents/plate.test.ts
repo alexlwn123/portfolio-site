@@ -3,14 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../../content'
 import type { Patent } from '../../../content'
 import { patentStats } from '../../../content/derive'
-import {
-  coInventorsField,
-  numberField,
-  plateCounts,
-  plateFilings,
-  recordSource,
-  statusOf,
-} from './plate'
+import { coInventorsField, numberField, plateCount, plateFilings, recordSource } from './plate'
 
 function patent(id: string): Patent {
   const found = content.patents.find((candidate) => candidate.id === id)
@@ -21,81 +14,62 @@ function patent(id: string): Patent {
 }
 
 describe('plateFilings', () => {
-  it('is the filings he has chosen to show, in the record’s order: granted first', () => {
+  it('is every filing that names him, in the record’s order', () => {
     expect(plateFilings(content.patents).map(({ id }) => id)).toEqual([
       'us-12536579',
       'us-12354083',
       'us-20230032782',
+      'us-20240037539',
     ])
   })
 
-  it('shows the abandoned application only once he flips its flag', () => {
-    const flipped = content.patents.map((filing) => ({ ...filing, shown: true }))
+  it('leaves out a filing he has taken off the site', () => {
+    const hidden = content.patents.map((filing) =>
+      filing.id === 'us-20240037539' ? { ...filing, shown: false } : filing,
+    )
 
-    expect(plateFilings(content.patents).map(({ id }) => id)).not.toContain('us-20240037539')
-    expect(plateFilings(flipped).map(({ id }) => id)).toContain('us-20240037539')
+    expect(plateFilings(hidden).map(({ id }) => id)).not.toContain('us-20240037539')
   })
 })
 
-describe('plateCounts', () => {
-  it('counts patents and applications apart, from the derived numbers', () => {
-    expect(plateCounts(stats.patents)).toEqual([
-      { kind: 'granted', count: 2, label: 'Patents granted' },
-      { kind: 'pending', count: 1, label: 'Application pending' },
-    ])
+describe('plateCount', () => {
+  it('is one count of all the filings, from the derived number, worded as filings', () => {
+    expect(plateCount(stats.patents)).toEqual({
+      label: 'Named inventor on',
+      count: 4,
+      unit: 'U.S. patent filings',
+    })
+    expect(plateCount(stats.patents)?.count).toBe(stats.patents.filings)
   })
 
-  it('never adds the two into one figure', () => {
-    const counts = plateCounts(stats.patents).map(({ count }) => count)
+  it('words a single filing as one', () => {
+    const [first] = content.patents
 
-    expect(counts).not.toContain(stats.patents.filings)
-    expect(counts).not.toContain(stats.patents.granted + stats.patents.pending)
+    expect(plateCount(patentStats(first ? [first] : []))).toEqual({
+      label: 'Named inventor on',
+      count: 1,
+      unit: 'U.S. patent filing',
+    })
   })
 
-  it('leaves out a count of nothing, and words a single patent as one', () => {
-    const [granted] = content.patents
-
-    expect(plateCounts(patentStats(granted ? [granted] : []))).toEqual([
-      { kind: 'granted', count: 1, label: 'Patent granted' },
-    ])
-    expect(plateCounts(patentStats([]))).toEqual([])
+  it('is nothing when there is nothing to count', () => {
+    expect(plateCount(patentStats([]))).toBeNull()
   })
 })
 
 describe('numberField', () => {
-  it('labels a granted patent’s number as a patent number, as the office prints it', () => {
+  it('labels every filing’s number the same way, and prints it as the office does', () => {
     expect(numberField(patent('us-12536579'))).toEqual({
-      label: 'Patent no.',
+      label: 'Publication no.',
       value: 'US 12,536,579 B2',
     })
-  })
-
-  it('labels an application’s number as an application number', () => {
     expect(numberField(patent('us-20230032782'))).toEqual({
-      label: 'Application no.',
+      label: 'Publication no.',
       value: 'US 2023/0032782 A1',
     })
-    expect(numberField(patent('us-20240037539')).label).toBe('Application no.')
-  })
-})
-
-describe('statusOf', () => {
-  it('is “granted”, with the day, for a granted patent', () => {
-    expect(statusOf(patent('us-12354083'))).toEqual({
-      label: 'Granted',
-      date: { year: 2025, month: 7, day: 8 },
-    })
-  })
-
-  it('is “application pending”, with no date, for one still pending', () => {
-    expect(statusOf(patent('us-20230032782'))).toEqual({ label: 'Application pending', date: null })
-  })
-
-  it('says so when an application was abandoned', () => {
-    expect(statusOf(patent('us-20240037539'))).toEqual({
-      label: 'Application abandoned',
-      date: null,
-    })
+    expect(new Set(content.patents.map((filing) => numberField(filing).label))).toEqual(
+      new Set(['Publication no.']),
+    )
   })
 })
 

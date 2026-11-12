@@ -269,50 +269,36 @@ describe('lidStickers', () => {
     expect(led).toEqual(SECTION_IDS.filter((id) => id !== 'contact'))
   })
 
-  it('prints the granted patent numbers on the compliance label, lowest first', () => {
+  it('prints every filing’s publication number on the compliance label, in the record’s order', () => {
     expect(sticker('patents', 'complianceLabel')).toEqual({
       id: 'patents',
       kind: 'complianceLabel',
-      heading: 'U.S. PAT. NOS.',
-      numbers: ['12,354,083', '12,536,579'],
-      pending: 'ANOTHER PATENT PENDING',
+      heading: 'U.S. PATENT FILINGS',
+      numbers: ['12,536,579', '12,354,083', '2023/0032782', '2024/0037539'],
       href: '/#patents',
     })
   })
 
-  it('says so in the plural when more than one application is pending', () => {
-    const two = { ...stats, patents: { ...stats.patents, pending: 2 } }
-    const label = flattenStickers(lidStickers(content, two)).find(({ id }) => id === 'patents')
+  it('prints as many numbers as the site counts filings, and not a word on what became of any', () => {
+    const label = sticker('patents', 'complianceLabel')
 
-    expect(label).toMatchObject({ pending: 'OTHER PATENTS PENDING' })
+    expect(label.numbers).toHaveLength(stats.patents.filings)
+    expect(Object.keys(label)).not.toContain('pending')
+    expect(JSON.stringify(label)).not.toMatch(/grant|pending|abandon|application/i)
   })
 
-  it('says patents are pending only while a filing is', () => {
-    const decided = {
-      ...content,
-      patents: content.patents.filter((patent) => patent.status.kind !== 'pending'),
-    }
-    const label = flattenStickers(lidStickers(decided, deriveStats(decided))).find(
-      ({ id }) => id === 'patents',
-    )
-
-    expect(label).toMatchObject({ numbers: ['12,354,083', '12,536,579'], pending: null })
-  })
-
-  it('never prints an application’s number, or a patent he has chosen not to show', () => {
-    const numbers = sticker('patents', 'complianceLabel').numbers.join(' ')
-    const one = {
+  it('leaves a filing off the label once he takes it off the site, and words a single one as one', () => {
+    const only = {
       ...content,
       patents: content.patents.map((patent) =>
-        patent.id === 'us-12536579' ? { ...patent, shown: false } : patent,
+        patent.id === 'us-12354083' ? patent : { ...patent, shown: false },
       ),
     }
-    const label = flattenStickers(lidStickers(one, deriveStats(one))).find(
+    const label = flattenStickers(lidStickers(only, deriveStats(only))).find(
       ({ id }) => id === 'patents',
     )
 
-    expect(numbers).not.toMatch(/2023|2024|\//)
-    expect(label).toMatchObject({ heading: 'U.S. PAT. NO.', numbers: ['12,354,083'] })
+    expect(label).toMatchObject({ heading: 'U.S. PATENT FILING', numbers: ['12,354,083'] })
   })
 
   it('strikes a medal for the NCR win: first of 300+ teams, as team Eth Heads', () => {

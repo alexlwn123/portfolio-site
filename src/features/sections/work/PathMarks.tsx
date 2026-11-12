@@ -2,14 +2,12 @@ import type { ReactElement } from 'react'
 
 import { cx } from '../../../lib/classNames'
 import { formatPartialDate, isoDate } from '../../../lib/formatDate'
-import { patentNumber } from '../../cv/describe'
 import { Lines } from '../../stickers/Lines'
-import metal from '../../stickers/metal.module.css'
 import voice from '../../stickers/voice.module.css'
 import { sectionAnchor } from '../sectionIds'
 import { Stuck } from '../Stuck'
 import { type Counted, workCopy } from './copy'
-import { filedOutcome, organizedLine, plural, winLine } from './describe'
+import { organizedLine, plural, winLine } from './describe'
 import { markSection, type PathMark } from './path'
 import styles from './PathMarks.module.css'
 
@@ -64,23 +62,7 @@ function OrganizedFace({ events }: MarkOf<'organized'>): ReactElement {
   )
 }
 
-function GrantedFace({ patents }: MarkOf<'granted'>): ReactElement {
-  return (
-    <span className={cx(metal.brushed, styles.face, styles.granted)}>
-      <Tally count={patents.length} words={workCopy.marks.granted}>
-        {patents.map((patent) => (
-          <span key={patent.id} className={styles.line}>
-            <span className={styles.name}>{patentNumber(patent.number)}</span>{' '}
-            <time dateTime={isoDate(patent.status.granted)}>
-              {formatPartialDate(patent.status.granted)}
-            </time>{' '}
-          </span>
-        ))}
-      </Tally>
-    </span>
-  )
-}
-
+/** A year's patent filings: how many, and the day each was filed. */
 function FiledFace({ patents }: MarkOf<'filed'>): ReactElement {
   return (
     <span className={cx(styles.face, styles.filed)}>
@@ -89,8 +71,7 @@ function FiledFace({ patents }: MarkOf<'filed'>): ReactElement {
           <span key={patent.id} className={styles.line}>
             <time className={styles.name} dateTime={isoDate(patent.filed)}>
               {formatPartialDate(patent.filed)}
-            </time>
-            : {filedOutcome(patent)}{' '}
+            </time>{' '}
           </span>
         ))}
       </Tally>
@@ -121,8 +102,6 @@ function MarkFace({ mark }: { readonly mark: PathMark }): ReactElement {
       return <WinsFace {...mark} />
     case 'organized':
       return <OrganizedFace {...mark} />
-    case 'granted':
-      return <GrantedFace {...mark} />
     case 'filed':
       return <FiledFace {...mark} />
     case 'firstTalk':

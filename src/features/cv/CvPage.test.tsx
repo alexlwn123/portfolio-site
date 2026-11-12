@@ -119,14 +119,17 @@ describe('CvPage', () => {
     expect(text).toContain('Big Dev Energy with Alex Lewin')
   })
 
-  it('has a patents section that lists granted patents and the pending application only', () => {
+  it('has a patents section that lists all four filings together, with no status', () => {
     const { container } = renderPage()
     const patents = container.querySelector('#patents')
 
+    expect(patents).toHaveTextContent('Named inventor on 4 patent filings.')
     expect(patents).toHaveTextContent('US 12,536,579 B2')
     expect(patents).toHaveTextContent('US 12,354,083 B2')
-    expect(patents).toHaveTextContent('Application US 2023/0032782 A1')
-    expect(document.body.textContent).not.toMatch(/2024\/0037539|non-fungible/i)
+    expect(patents).toHaveTextContent('US 2023/0032782 A1')
+    expect(patents).toHaveTextContent('US 2024/0037539 A1')
+    expect(patents?.querySelectorAll('li')).toHaveLength(content.patents.length)
+    expect(patents?.textContent).not.toMatch(/grant|pending|abandon|application/i)
   })
 
   it('names the right number of events beside each total', () => {

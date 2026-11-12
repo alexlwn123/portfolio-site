@@ -179,37 +179,49 @@ describe('bitcoin++ record', () => {
 })
 
 describe('patents', () => {
-  it('2 granted of 4 filings, with 1 still pending', () => {
-    expect(stats.patents).toEqual({ granted: 2, filings: 4, pending: 1, anyPending: true })
+  it('counts the filings the site shows, and nothing by status', () => {
+    expect(stats.patents).toEqual({ filings: 4 })
     expect(patentStats(content.patents)).toEqual(stats.patents)
   })
 
-  it('never counts an application as a granted patent', () => {
-    const { granted, pending, filings } = stats.patents
-
-    expect(granted).toBeLessThan(filings)
-    expect(granted + pending).toBeLessThan(filings)
+  it('counts every filing alike: the count is the number of records shown', () => {
+    expect(stats.patents.filings).toBe(publishablePatents(content.patents).length)
+    expect(new Set(content.patents.map((patent) => patent.status.kind)).size).toBeGreaterThan(1)
   })
 
-  it('reports nothing pending once no application is', () => {
-    const decided = content.patents.filter((patent) => patent.status.kind !== 'pending')
+  it('leaves out a filing he takes off the site, and is nothing when there are none', () => {
+    const oneHidden = content.patents.map((patent, index) =>
+      index === 0 ? { ...patent, shown: false } : patent,
+    )
 
-    expect(patentStats(decided)).toEqual({ granted: 2, filings: 3, pending: 0, anyPending: false })
-    expect(patentStats([])).toEqual({ granted: 0, filings: 0, pending: 0, anyPending: false })
+    expect(patentStats(oneHidden)).toEqual({ filings: 3 })
+    expect(patentStats([])).toEqual({ filings: 0 })
   })
 })
 
 describe('publishablePatents', () => {
-  it('drops the abandoned application, which the site does not show', () => {
+  it('is all four filings, in the order of the record, whatever became of each', () => {
     const shown = publishablePatents(content.patents)
 
-    expect(shown.map((patent) => patent.status.kind)).toEqual(['granted', 'granted', 'pending'])
+    expect(shown.map((patent) => patent.id)).toEqual(content.patents.map((patent) => patent.id))
+    expect(shown.map((patent) => patent.status.kind)).toEqual([
+      'granted',
+      'granted',
+      'pending',
+      'abandoned',
+    ])
   })
 
-  it('shows it again when its flag is flipped', () => {
-    const flipped: readonly Patent[] = content.patents.map((patent) => ({ ...patent, shown: true }))
+  it('drops a filing once its flag is turned off', () => {
+    const hidden: readonly Patent[] = content.patents.map((patent) =>
+      patent.id === 'us-20240037539' ? { ...patent, shown: false } : patent,
+    )
 
-    expect(publishablePatents(flipped)).toHaveLength(content.patents.length)
+    expect(publishablePatents(hidden).map((patent) => patent.id)).toEqual([
+      'us-12536579',
+      'us-12354083',
+      'us-20230032782',
+    ])
   })
 })
 

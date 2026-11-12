@@ -245,7 +245,7 @@ describe('Lid', () => {
       .filter((link) => link.getAttribute('href') === '/#patents')
     expect(toPatents.map((link) => link.textContent.trim())).toEqual([
       'INVENTOR',
-      'U.S. PAT. NOS. 12,354,083 · 12,536,579 ANOTHER PATENT PENDING',
+      'U.S. PATENT FILINGS 12,536,579 · 12,354,083 2023/0032782 · 2024/0037539',
     ])
     expect(toPatents[1]).toHaveAttribute('data-sticker', 'patents')
   })
@@ -261,10 +261,18 @@ describe('Lid', () => {
     expect(medal.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
   })
 
-  it('never calls the filings patents he does not hold', () => {
+  it('prints all four filings by number, and never calls them four patents', () => {
     const text = renderLid().textContent
 
-    expect(text).not.toMatch(/2023\/0032782|2024\/0037539|four patents|4 patents/i)
+    for (const { number } of content.patents) {
+      expect(text).toContain(number.serial)
+    }
+    expect(text).toContain('PATENT FILINGS')
+    expect(text).not.toMatch(/four patents|4 patents/i)
+  })
+
+  it('says nothing of what became of a filing: nothing is granted, pending or abandoned', () => {
+    expect(renderLid().textContent).not.toMatch(/granted|pending|abandoned/i)
   })
 
   it('reaches the plain CV through the asset tag', () => {

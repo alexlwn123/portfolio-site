@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, type Locator, test } from '@playwright/test'
 
 import { content, stats } from '../src/content'
 import { publishablePatents } from '../src/content/derive'
@@ -37,6 +37,61 @@ const STICKERS = `[aria-label="${patentsCopy.stickers.list}"] > li`
 /** A sticker is stuck on the plate when this much of it is, and over an edge when this much is not. */
 const ON_THE_PLATE = 1 / 3
 const OFF_THE_PLATE = 1 / 10
+
+/** What the plate never says of a filing: what became of it, or which kind of filing it is. */
+const STATUS_WORDS = /grant|pending|abandon|application|status/i
+/** A box may be a pixel off its place once its edges are rounded. */
+const HAIR_PX = 1
+
+/** One line of a row's fields: where it starts and ends, and the gaps between its boxes. */
+interface FieldLine {
+  readonly left: number
+  readonly right: number
+  readonly gaps: readonly number[]
+}
+
+/**
+ * A row's fields as they are laid out, line by line, against the edges of the
+ * row. Measured before the plate's tilt, so that boxes on one line share a top.
+ */
+async function fieldLines(row: Locator): Promise<{
+  readonly left: number
+  readonly right: number
+  readonly gap: number
+  readonly lines: readonly FieldLine[]
+}> {
+  return row.locator('dl').evaluate((fields) => {
+    const boxes = [...fields.children].flatMap((child) =>
+      child instanceof HTMLElement
+        ? [
+            {
+              top: child.offsetTop,
+              left: child.offsetLeft,
+              right: child.offsetLeft + child.offsetWidth,
+            },
+          ]
+        : [],
+    )
+    const tops = [...new Set(boxes.map((box) => box.top))].toSorted((one, other) => one - other)
+    const lines = tops.map((top) => {
+      const line = boxes
+        .filter((box) => box.top === top)
+        .toSorted((one, other) => one.left - other.left)
+      return {
+        left: line[0]?.left ?? 0,
+        right: line.at(-1)?.right ?? 0,
+        gaps: line.slice(1).map((box, index) => box.left - (line[index]?.right ?? 0)),
+      }
+    })
+    const list = fields as HTMLElement
+    return {
+      left: list.offsetLeft,
+      right: list.offsetLeft + list.offsetWidth,
+      gap: Number.parseFloat(getComputedStyle(list).columnGap),
+      lines,
+    }
+  })
+}
 
 /** How much of one thing lies on another, as a share of its own area. */
 function shareOn(thing: Drawn, ground: Drawn): number {
@@ -83,10 +138,34 @@ test.describe('the patents plate', () => {
       expect(await linksCoveredAtCentre(section)).toEqual([])
     })
 
+    test(`leaves no hole in a row: its fields run from edge to edge at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'patents')
+
+      for (const patent of shown) {
+        const { left, right, gap, lines } = await fieldLines(
+          section.locator(`li[data-patent="${patent.id}"]`),
+        )
+
+        expect(lines.length, patent.id).toBeGreaterThan(0)
+        for (const line of lines) {
+          expect(Math.abs(line.left - left), patent.id).toBeLessThanOrEqual(HAIR_PX)
+          expect(Math.abs(line.right - right), patent.id).toBeLessThanOrEqual(HAIR_PX)
+          for (const between of line.gaps) {
+            expect(Math.abs(between - gap), patent.id).toBeLessThanOrEqual(HAIR_PX)
+          }
+        }
+      }
+    })
+
     test(`keeps every sticker off the plate's print at ${String(width)} wide`, async ({ page }) => {
       const section = await openSection(page, width, 'patents')
       const rows = await Promise.all(
-        shown.map((patent) => pageBox(section.locator(`li[data-patent="${patent.id}"]`))),
+        [
+          section.locator('[data-count]'),
+          ...shown.map((patent) => section.locator(`li[data-patent="${patent.id}"]`)),
+        ].map((printed) => pageBox(printed)),
       )
       const stickers = await section
         .getByRole('list', { name: patentsCopy.stickers.list })
@@ -163,14 +242,45 @@ test.describe('the patents plate', () => {
     }
   })
 
-  test('counts two granted and one pending, from the derived numbers', async ({ page }) => {
+  test('sets a filing’s fields on one row on a laptop, the number first', async ({ page }) => {
     const section = await openSection(page, 1440, 'patents')
-    const counted = (label: string) =>
-      section.locator('[data-plate] dt', { hasText: label }).locator('xpath=following-sibling::dd')
 
-    await expect(counted('Patents granted')).toHaveText(String(stats.patents.granted))
-    await expect(counted('Application pending')).toHaveText(String(stats.patents.pending))
-    await expect(section).not.toContainText(/four patents|abandoned/i)
+    for (const patent of shown) {
+      const row = section.locator(`li[data-patent="${patent.id}"]`)
+
+      expect((await fieldLines(row)).lines, patent.id).toHaveLength(1)
+      await expect(row.locator('dt').first()).toHaveText(patentsCopy.plate.fields.number)
+    }
+  })
+
+  for (const { width } of SECTION_VIEWPORTS) {
+    test(`counts every filing in one box, from the derived number, at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'patents')
+      const count = section.locator('[data-count]')
+      const { label, many } = patentsCopy.plate.count
+
+      await expect(count).toHaveCount(1)
+      await expect(count.locator('dt')).toHaveText(label)
+      await expect(count.locator('[data-figure]')).toHaveText(String(stats.patents.filings))
+      await expect(count.locator('dd')).toHaveText(`${String(stats.patents.filings)} ${many}`)
+      // The figure and its words stay inside the box that holds them.
+      const box = await pageBox(count)
+      for (const part of await count.locator('dt, dd > span').all()) {
+        const inside = await pageBox(part)
+        expect(inside.left, await part.innerText()).toBeGreaterThanOrEqual(box.left)
+        expect(inside.right, await part.innerText()).toBeLessThanOrEqual(box.right)
+      }
+    })
+  }
+
+  test('never states a number of patents: what it counts is patent filings', async ({ page }) => {
+    const section = await openSection(page, 1440, 'patents')
+
+    expect(stats.patents.filings).toBe(shown.length)
+    await expect(section.locator('[data-count] dd')).toHaveText(/\d+\s+U\.S\. patent filings$/)
+    await expect(section).not.toContainText(/(four|4|three|3|two|2) patents/i)
     await expect(section).toContainText(content.profile.name)
   })
 
@@ -191,28 +301,32 @@ test.describe('the patents plate', () => {
         await expect(row).toContainText(inventor)
       }
       if (patent.filed !== null) {
-        await expect(row).toContainText(formatPartialDate(patent.filed))
-      }
-      if (patent.status.kind === 'granted') {
-        await expect(row).toContainText(`Granted ${formatPartialDate(patent.status.granted)}`)
-        await expect(row).toContainText('Patent no.')
-      } else {
-        await expect(row).toContainText('Application pending')
-        await expect(row).toContainText('Application no.')
-        await expect(row).not.toContainText('Patent no.')
+        await expect(row.locator('time')).toHaveText(formatPartialDate(patent.filed))
       }
     }
   })
 
-  test('leaves the abandoned application off the plate', async ({ page }) => {
+  test('lists every filing in the record the same way, with nothing about what became of it', async ({
+    page,
+  }) => {
     const section = await openSection(page, 1440, 'patents')
-    const hidden = content.patents.filter((patent) => !patent.shown)
+    const { number, filed, assignee, coInventors } = patentsCopy.plate.fields
 
-    expect(hidden.length).toBeGreaterThan(0)
-    for (const patent of hidden) {
-      await expect(section).not.toContainText(patent.number.serial)
-      await expect(section).not.toContainText(patent.title)
+    expect(shown.map((patent) => patent.id)).toEqual(content.patents.map((patent) => patent.id))
+    expect(new Set(content.patents.map((patent) => patent.status.kind)).size).toBeGreaterThan(1)
+    for (const patent of content.patents) {
+      const row = section.locator(`li[data-patent="${patent.id}"]`)
+
+      await expect(row.locator('dt')).toHaveText([
+        number,
+        filed,
+        assignee,
+        patent.coInventors.length === 1 ? coInventors.one : coInventors.many,
+      ])
+      // One date to a row: the day it was filed. A grant date would be a second.
+      await expect(row.locator('time')).toHaveCount(1)
     }
+    await expect(section).not.toContainText(STATUS_WORDS)
   })
 
   test('shows the focus ring on a number the keyboard reaches', async ({ page }) => {

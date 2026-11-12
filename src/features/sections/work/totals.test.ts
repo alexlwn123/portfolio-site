@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../../content'
-import { publishableProjects } from '../../../content/derive'
+import { publishablePatents, publishableProjects } from '../../../content/derive'
 import { pathTotals } from './totals'
 
 describe('pathTotals', () => {
@@ -15,7 +15,7 @@ describe('pathTotals', () => {
         count: publishableProjects(content.projects).length,
         section: 'projects',
       },
-      { kind: 'patents', count: stats.patents.granted, section: 'patents' },
+      { kind: 'patents', count: stats.patents.filings, section: 'patents' },
     ])
   })
 
@@ -26,18 +26,15 @@ describe('pathTotals', () => {
     expect(projects?.count).toBeGreaterThan(0)
   })
 
-  it('counts granted patents only: an application is never one', () => {
+  it('counts every patent filing shown, whatever became of it', () => {
     const patents = pathTotals(content, stats).find((total) => total.kind === 'patents')
 
-    expect(patents?.count).toBe(2)
-    expect(patents?.count).toBeLessThan(stats.patents.filings)
+    expect(patents?.count).toBe(4)
+    expect(patents?.count).toBe(publishablePatents(content.patents).length)
   })
 
   it('leaves out a total that is nothing yet', () => {
-    const none = pathTotals(
-      { projects: [] },
-      { ...stats, patents: { granted: 0, pending: 0, filings: 0, anyPending: false } },
-    )
+    const none = pathTotals({ projects: [] }, { ...stats, patents: { filings: 0 } })
 
     expect(none.map((total) => total.kind)).toEqual(['wins', 'organized', 'stage'])
   })

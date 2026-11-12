@@ -1,4 +1,4 @@
-import type { Education, HeldEvent, PartialDate, Patent, Profile, Win } from '../../../content'
+import type { Education, HeldEvent, PartialDate, Profile, Win } from '../../../content'
 import { formatDateSpan, formatPartialDate, isoDate } from '../../../lib/formatDate'
 import { resultLabel, winTitle } from '../../cv/describe'
 import { fieldFigure } from '../../lid/facts'
@@ -83,18 +83,6 @@ export function organizedLine(events: readonly HeldEvent[]): string {
     return online ? workCopy.marks.online : ''
   }
   return online ? `${cities} + ${workCopy.marks.online}` : cities
-}
-
-/** What became of a filing: "granted 2025", "pending" or "abandoned". */
-export function filedOutcome({ status }: Patent): string {
-  switch (status.kind) {
-    case 'granted':
-      return workCopy.marks.grantedIn(status.granted.year)
-    case 'pending':
-      return workCopy.marks.pending
-    case 'abandoned':
-      return workCopy.marks.abandoned
-  }
 }
 
 const yearOnly = ({ year }: PartialDate): PartialDate => ({ year, month: null, day: null })

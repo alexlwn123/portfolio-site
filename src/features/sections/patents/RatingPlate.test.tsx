@@ -45,24 +45,35 @@ describe('RatingPlate', () => {
     )
   })
 
-  it('counts patents and applications apart, from the derived numbers', () => {
+  it('counts the filings in one box, from the derived number, as patent filings', () => {
     const plate = renderPlate()
-    const counted = (label: string): string | undefined =>
-      within(plate).getByText(label, { selector: 'dt' }).nextElementSibling?.textContent
+    const counted = within(plate).getByText('Named inventor on', { selector: 'dt' })
 
-    expect(counted('Patents granted')).toBe(String(stats.patents.granted))
-    expect(counted('Application pending')).toBe(String(stats.patents.pending))
-    expect(plate.textContent).not.toMatch(/(four|4|three|3) patents/i)
+    expect(counted.nextElementSibling).toHaveTextContent(
+      new RegExp(`^${String(stats.patents.filings)} U\\.S\\. patent filings$`),
+    )
+    expect(plate.querySelectorAll('[data-count]')).toHaveLength(1)
+    expect(plate.querySelector('[data-count] [data-figure]')).toHaveTextContent(/^4$/)
+    expect(plate.textContent).not.toMatch(/(four|4|three|3|two|2) patents/i)
   })
 
-  it('lists the filings he shows, one row each, granted first', () => {
+  it('words a single filing as one, and counts nothing when there is none', () => {
+    const [first] = content.patents
+    const one = renderPlate(first ? [first] : [])
+
+    expect(one.querySelector('[data-count]')).toHaveTextContent(
+      /^Named inventor on1 U\.S\. patent filing$/,
+    )
+    expect(renderPlate([]).querySelector('[data-count]')).toBeNull()
+  })
+
+  it('lists every filing, one row each, in the record’s order', () => {
     const plate = renderPlate()
     const list = within(plate).getByRole('list', { name: patentsCopy.plate.list })
 
     expect(
       [...list.querySelectorAll(':scope > li')].map((item) => item.getAttribute('data-patent')),
-    ).toEqual(['us-12536579', 'us-12354083', 'us-20230032782'])
-    expect(plate).not.toHaveTextContent('non-fungible')
+    ).toEqual(['us-12536579', 'us-12354083', 'us-20230032782', 'us-20240037539'])
   })
 
   it('heads each row with the title of the filing', () => {
@@ -71,40 +82,58 @@ describe('RatingPlate', () => {
     expect(within(row(plate, 'us-12536579')).getByRole('heading', { level: 3 })).toHaveTextContent(
       'Methods and a system for in-store navigation',
     )
-    expect(within(plate).getAllByRole('heading')).toHaveLength(3)
+    expect(
+      within(row(plate, 'us-20240037539')).getByRole('heading', { level: 3 }),
+    ).toHaveTextContent(
+      'Methods and a system for managing and integrating non-fungible tokens (NFTs)',
+    )
+    expect(within(plate).getAllByRole('heading')).toHaveLength(content.patents.length)
   })
 
-  it('prints a granted patent in full: number, status, dates, assignee, co-inventor', () => {
+  it('prints a filing in full: publication number, filing date, assignee, co-inventor', () => {
     const item = row(renderPlate(), 'us-12536579')
 
-    expect(field(item, 'Patent no.')).toHaveTextContent('US 12,536,579 B2')
-    expect(field(item, 'Status')).toHaveTextContent(/^Granted Jan 27, 2026$/)
-    expect(field(item, 'Status')?.querySelector('time')).toHaveAttribute('datetime', '2026-01-27')
+    expect(field(item, 'Publication no.')).toHaveTextContent('US 12,536,579 B2')
     expect(field(item, 'Filed')).toHaveTextContent(/^Jul 2, 2021$/)
     expect(field(item, 'Filed')?.querySelector('time')).toHaveAttribute('datetime', '2021-07-02')
     expect(field(item, 'Assignee')).toHaveTextContent(/^NCR Voyix Corp$/)
     expect(field(item, 'Co-inventor')).toHaveTextContent(/^Christian Lee McDaniel$/)
   })
 
-  it('prints the second granted patent from its own record', () => {
-    const item = row(renderPlate(), 'us-12354083')
+  it('prints each of the other three from its own record', () => {
+    const plate = renderPlate()
+    const second = row(plate, 'us-12354083')
+    const third = row(plate, 'us-20230032782')
+    const fourth = row(plate, 'us-20240037539')
 
-    expect(field(item, 'Patent no.')).toHaveTextContent('US 12,354,083 B2')
-    expect(field(item, 'Status')).toHaveTextContent(/^Granted Jul 8, 2025$/)
-    expect(field(item, 'Filed')).toHaveTextContent(/^Apr 29, 2022$/)
-    expect(field(item, 'Assignee')).toHaveTextContent(/^Digital First Holdings LLC$/)
-    expect(field(item, 'Co-inventor')).toHaveTextContent(/^Bryan Walser Nonni$/)
+    expect(field(second, 'Publication no.')).toHaveTextContent('US 12,354,083 B2')
+    expect(field(second, 'Filed')).toHaveTextContent(/^Apr 29, 2022$/)
+    expect(field(second, 'Assignee')).toHaveTextContent(/^Digital First Holdings LLC$/)
+    expect(field(second, 'Co-inventor')).toHaveTextContent(/^Bryan Walser Nonni$/)
+    expect(field(third, 'Publication no.')).toHaveTextContent('US 2023/0032782 A1')
+    expect(field(third, 'Filed')).toHaveTextContent(/^Oct 14, 2022$/)
+    expect(field(third, 'Assignee')).toHaveTextContent(/^NCR Corp$/)
+    expect(field(fourth, 'Publication no.')).toHaveTextContent('US 2024/0037539 A1')
+    expect(field(fourth, 'Filed')).toHaveTextContent(/^Jul 29, 2022$/)
+    expect(field(fourth, 'Assignee')).toHaveTextContent(/^NCR Voyix Corp$/)
+    expect(field(fourth, 'Co-inventors')).toHaveTextContent(
+      /^Bryan Walser Nonni, Brent Vance Zucker$/,
+    )
   })
 
-  it('prints the application as an application: pending, with no grant date', () => {
-    const item = row(renderPlate(), 'us-20230032782')
+  it('gives every row the same fields, and none of them a status', () => {
+    const plate = renderPlate()
+    const labels = content.patents.map(({ id }) =>
+      [...row(plate, id).querySelectorAll('dt')].map((term) =>
+        term.textContent.replace(/Co-inventors?/, 'Co-inventor(s)'),
+      ),
+    )
 
-    expect(field(item, 'Application no.')).toHaveTextContent('US 2023/0032782 A1')
-    expect(field(item, 'Patent no.')).toBeNull()
-    expect(field(item, 'Status')).toHaveTextContent(/^Application pending$/)
-    expect(field(item, 'Status')?.querySelector('time')).toBeNull()
-    expect(field(item, 'Filed')).toHaveTextContent(/^Oct 14, 2022$/)
-    expect(field(item, 'Assignee')).toHaveTextContent(/^NCR Corp$/)
+    expect(new Set(labels.map((row) => row.join(' | ')))).toEqual(
+      new Set(['Publication no. | Filed | Assignee | Co-inventor(s)']),
+    )
+    expect(plate.querySelectorAll('li[data-patent] time')).toHaveLength(content.patents.length)
+    expect(plate.textContent).not.toMatch(/grant|pending|abandon|application|status|patent no/i)
   })
 
   it('makes every number a link to its public record, named for where it leads', () => {
@@ -115,20 +144,21 @@ describe('RatingPlate', () => {
       'https://patents.google.com/patent/US12536579B2/en',
       'https://patents.google.com/patent/US12354083B2/en',
       'https://patents.google.com/patent/US20230032782A1/en',
+      'https://patents.google.com/patent/US20240037539A1/en',
     ])
     expect(links[0]).toHaveAccessibleName('US 12,536,579 B2 on Google Patents')
     expect(links[2]).toHaveAccessibleName('US 2023/0032782 A1 on Google Patents')
     expect(plate).toHaveTextContent('Every number opens its public record on Google Patents.')
   })
 
-  it('shows an abandoned application as abandoned, once he chooses to show it', () => {
-    const flipped = content.patents.map((filing) => ({ ...filing, shown: true }))
-    const item = row(renderPlate(flipped), 'us-20240037539')
-
-    expect(field(item, 'Status')).toHaveTextContent(/^Application abandoned$/)
-    expect(field(item, 'Co-inventors')).toHaveTextContent(
-      /^Bryan Walser Nonni, Brent Vance Zucker$/,
+  it('leaves a filing off once he takes it off the site', () => {
+    const hidden = content.patents.map((filing) =>
+      filing.id === 'us-20240037539' ? { ...filing, shown: false } : filing,
     )
+    const plate = renderPlate(hidden)
+
+    expect(plate.querySelector('li[data-patent="us-20240037539"]')).toBeNull()
+    expect(plate.querySelector('[data-count] [data-figure]')).toHaveTextContent(/^3$/)
   })
 
   it('leaves out the fields a record does not have', () => {

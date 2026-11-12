@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test'
 
 import { content, stats } from '../src/content'
+import { publishablePatents } from '../src/content/derive'
+import {
+  NARROW_PHONE_PX,
+  PHONE_MAX_WIDTH_PX,
+  WIDE_MIN_WIDTH_PX,
+} from '../src/features/lid/placement/artboards'
 import { EMPLOYER_IDS } from '../src/features/lid/stickers'
 import { collectConsole, collectRequests, openLid } from './support'
 
@@ -10,6 +16,19 @@ const PAGES = ['/', '/cv/'] as const
  * runs a little off a phone's edge. "Whole" allows for that much.
  */
 const WHOLE = 0.95
+
+/**
+ * Where the compliance label is checked for holding its print: a width for
+ * each arrangement, and the narrowest the phone's and the wide one come at.
+ */
+const LABEL_WIDTHS = [1440, WIDE_MIN_WIDTH_PX, 728, 390, NARROW_PHONE_PX] as const
+/**
+ * How many lines the label's print takes: its heading over two rows of
+ * numbers, or on a phone two lines across. One more and the label has grown.
+ */
+const LABEL_LINES = { phone: 2, wider: 3 } as const
+/** A line may round up to a pixel past where it is set. */
+const HAIR_PX = 1
 
 /** Each ribbon on the badge, in the order it hangs, and the section of this page it must land on. */
 const RIBBONS = [
@@ -112,12 +131,22 @@ for (const width of [1440, 728, 390] as const) {
     await expect(page.locator('section#work')).toBeInViewport()
   })
 
-  test(`the compliance label reaches the patents at ${String(width)} wide`, async ({ page }) => {
+  test(`the compliance label lists every filing and reaches the patents at ${String(width)} wide`, async ({
+    page,
+  }) => {
     await openLid(page, width)
     const label = page.locator('a[data-sticker="patents"]')
+    const serials = publishablePatents(content.patents).map(({ number }) => number.serial)
 
-    await expect(label).toContainText('U.S. PAT. NOS. 12,354,083 · 12,536,579')
-    await expect(label).toContainText('ANOTHER PATENT PENDING')
+    expect(serials).toHaveLength(stats.patents.filings)
+    await expect(label).toContainText('U.S. PATENT FILINGS')
+    for (const serial of serials) {
+      await expect(label).toContainText(serial)
+    }
+    await expect(label).toHaveAccessibleName(
+      new RegExp(`^U\\.S\\. PATENT FILINGS .*${serials.at(-1) ?? ''}$`),
+    )
+    await expect(label).not.toContainText(/grant|pending|abandon/i)
     await label.click()
 
     await expect(page).toHaveURL(/\/#patents$/)
@@ -133,6 +162,46 @@ for (const width of [1440, 728, 390] as const) {
 
     await expect(page).toHaveURL(/\/#wins$/)
     await expect(page.locator('section#wins')).toBeInViewport()
+  })
+}
+
+for (const width of LABEL_WIDTHS) {
+  test(`the compliance label holds its print, and is no line taller, at ${String(width)} wide`, async ({
+    page,
+  }) => {
+    await openLid(page, width)
+    // Squared up, so that a run's box is the run itself and not the box around its tilt.
+    await page.addStyleTag({
+      content: '[data-lid] [data-sticker="patents"]{rotate:none!important}',
+    })
+
+    const print = await page.locator('a[data-sticker="patents"]').evaluate((label, hair) => {
+      const metal = label.querySelector('[data-sticker-face] > *')
+      if (!metal) {
+        return { spilt: ['the label has no face'], lines: 0 }
+      }
+      const box = metal.getBoundingClientRect()
+      const { paddingLeft, paddingRight, fontSize } = getComputedStyle(metal)
+      const left = box.left + Number.parseFloat(paddingLeft) - hair
+      const right = box.right - Number.parseFloat(paddingRight) + hair
+      const runs = [...metal.querySelectorAll('span')]
+        .filter((run) => run.children.length === 0 && run.getClientRects().length > 0)
+        .map((run) => ({ text: run.textContent.trim(), at: run.getBoundingClientRect() }))
+      // Runs share a line when their middles are within half a letter's height of each other.
+      const middles = runs
+        .map(({ at }) => (at.top + at.bottom) / 2)
+        .toSorted((one, other) => one - other)
+      const apart = Number.parseFloat(fontSize) / 2
+      return {
+        spilt: runs.flatMap(({ text, at }) => (at.left >= left && at.right <= right ? [] : [text])),
+        lines: middles.filter(
+          (middle, index) => middle - (middles[index - 1] ?? Number.NEGATIVE_INFINITY) > apart,
+        ).length,
+      }
+    }, HAIR_PX)
+
+    expect(print.spilt).toEqual([])
+    expect(print.lines).toBe(width <= PHONE_MAX_WIDTH_PX ? LABEL_LINES.phone : LABEL_LINES.wider)
   })
 }
 
@@ -156,7 +225,11 @@ test('the home page describes the whole career to a search engine', async ({ pag
   for (const { organization } of content.experience) {
     await expect(description).toHaveAttribute('content', new RegExp(organization))
   }
-  await expect(description).toHaveAttribute('content', /2 granted patents/)
+  await expect(description).toHaveAttribute(
+    'content',
+    new RegExp(`named inventor on ${String(stats.patents.filings)} patent filings`),
+  )
+  await expect(description).not.toHaveAttribute('content', /grant|pending|abandon/i)
 })
 
 test('the lid counts nine wins on the seal and on the ribbon', async ({ page }) => {

@@ -40,6 +40,18 @@ describe('workCopy', () => {
   it('fills its templates with what it is given', () => {
     expect(workCopy.marks.also(2023)).toBe('Also in 2023')
     expect(workCopy.marks.outOf('300+')).toBe('of 300+ teams')
-    expect(workCopy.marks.grantedIn(2025)).toBe('granted 2025')
+  })
+
+  it('counts patents as filings, on the path and in the running count', () => {
+    const filings = { one: 'patent filing', many: 'patent filings' }
+
+    expect(workCopy.marks.filed).toEqual(filings)
+    expect(workCopy.totals.patents).toEqual(filings)
+  })
+
+  it('has no word for what became of a filing', () => {
+    expect(
+      collectStrings(workCopy).filter((text) => /grant|pending|abandon|application/i.test(text)),
+    ).toEqual([])
   })
 })

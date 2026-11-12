@@ -59,10 +59,6 @@ export const LABELS = Object.freeze({
   bitcoinPlusPlus: 'bitcoin++',
   editionsList: 'bitcoin++ editions attended',
 
-  grantedList: 'Patents granted',
-  applications: 'Applications',
-  application: 'Application',
-  granted: 'Granted',
   filed: 'Filed',
 
   hackathonWin: 'Hackathon win',
@@ -84,10 +80,4 @@ export const TALK_ROLES = Object.freeze({
   panelist: 'Panelist',
   guest: 'Guest',
   coHost: 'Co-host',
-} as const)
-
-/** An application is labelled by its state. A granted patent needs no such label. */
-export const APPLICATION_STATES = Object.freeze({
-  pending: 'Pending',
-  abandoned: 'Abandoned',
 } as const)

@@ -33,11 +33,7 @@ describe('PathMarks', () => {
 
     const list = screen.getByRole('list', { name: 'Also in 2026' })
     const items = [...list.querySelectorAll(':scope > li')]
-    expect(items.map((item) => item.getAttribute('data-mark'))).toEqual([
-      'organized',
-      'wins',
-      'granted',
-    ])
+    expect(items.map((item) => item.getAttribute('data-mark'))).toEqual(['organized', 'wins'])
     for (const item of items) {
       expect(within(item as HTMLElement).getAllByRole('link')).toHaveLength(1)
     }
@@ -89,25 +85,30 @@ describe('PathMarks', () => {
     )
   })
 
-  it('prints a granted patent’s number and the day it was granted', () => {
-    const link = within(renderMark('2026', 'granted')).getByRole('link')
-    const day = within(link).getByText('Jan 27, 2026')
-
-    expect(link).toHaveAttribute('href', '/#patents')
-    expect(link).toHaveTextContent(/^1 patent granted/)
-    expect(link).toHaveTextContent('US 12,536,579 B2')
-    expect(day).toHaveAttribute('datetime', '2026-01-27')
-  })
-
-  it('calls a filing an application, and says what became of each', () => {
+  it('counts a year’s patent filings and gives the day each was filed, and no more', () => {
     const link = within(renderMark('2022', 'filed')).getByRole('link')
 
     expect(link).toHaveAttribute('href', '/#patents')
-    expect(link).toHaveTextContent(/^2 patent applications filed/)
-    expect(link).toHaveTextContent('Apr 29, 2022: granted 2025')
-    expect(link).toHaveTextContent('Oct 14, 2022: pending')
+    expect(link).toHaveTextContent(/^3 patent filings Apr 29, 2022 Jul 29, 2022 Oct 14, 2022$/)
     expect(within(link).getByText('Apr 29, 2022')).toHaveAttribute('datetime', '2022-04-29')
-    expect(link.textContent).not.toMatch(/patents? filed/)
+    expect(within(link).getByText('Jul 29, 2022')).toHaveAttribute('datetime', '2022-07-29')
+    expect(link.querySelectorAll('time')).toHaveLength(3)
+  })
+
+  it('words a single filing as one', () => {
+    const link = within(renderMark('2021', 'filed')).getByRole('link')
+
+    expect(link).toHaveTextContent(/^1 patent filing Jul 2, 2021$/)
+  })
+
+  it('says nothing of what became of a filing, and has no sticker for a grant', () => {
+    for (const { marks, year } of path) {
+      const { container, unmount } = render(<PathMarks marks={marks} year={year ?? 0} />)
+
+      expect(container.querySelector('[data-mark="granted"]')).toBeNull()
+      expect(container.textContent).not.toMatch(/grant|pending|abandon|application/i)
+      unmount()
+    }
   })
 
   it('names his first talk on record, where it was and when', () => {

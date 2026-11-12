@@ -70,9 +70,8 @@ describe('copy', () => {
   it('words the three additions: the inventor ribbon, the patent label and the medal', () => {
     expect(copy.lid.ribbons.inventor).toBe('INVENTOR')
     expect(copy.lid.patentLabel).toEqual({
-      one: 'U.S. PAT. NO.',
-      many: 'U.S. PAT. NOS.',
-      pending: { one: 'ANOTHER PATENT PENDING', many: 'OTHER PATENTS PENDING' },
+      one: 'U.S. PATENT FILING',
+      many: 'U.S. PATENT FILINGS',
     })
     expect(copy.lid.medal.outOf('300+')).toBe('OF 300+')
     expect(copy.lid.medal.teams).toBe('TEAMS')

@@ -356,18 +356,16 @@ describe('the lid’s two parts', () => {
 })
 
 describe('the additions to the lid', () => {
-  it('prints the granted patent numbers from the content, and no application’s', async () => {
+  it('prints the publication number of every filing on the compliance label, from the content', async () => {
     const page = await readPage('/')
     const label = page.querySelector('a[data-sticker="patents"]')
-    const granted = content.patents.filter((patent) => patent.status.kind === 'granted')
 
     expect(label?.getAttribute('href')).toBe('/#patents')
-    expect(granted).toHaveLength(2)
+    expect(content.patents).toHaveLength(4)
     for (const patent of content.patents) {
-      const printed = label?.textContent.includes(patent.number.serial) ?? false
-      expect(printed, patent.number.serial).toBe(patent.status.kind === 'granted')
+      expect(label?.textContent, patent.number.serial).toContain(patent.number.serial)
     }
-    expect(label?.textContent).toContain('ANOTHER PATENT PENDING')
+    expect(label?.textContent).toMatch(/^U\.S\. PATENT FILINGS /)
   })
 
   it('has six ribbons in the order of the page, the last of them to the patents', async () => {
@@ -409,7 +407,7 @@ describe('the additions to the lid', () => {
     for (const { organization } of content.experience) {
       expect(description).toContain(organization)
     }
-    expect(description).toContain('2 granted patents')
+    expect(description).toContain('named inventor on 4 patent filings')
     expect(description).toContain('9 hackathon wins')
   })
 

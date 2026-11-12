@@ -596,6 +596,8 @@ The record's own note that he ran the hackathon Lightning Welder won, and took n
 judging, is still printed beside that win. The workshop sticker joins the comparison's recorded
 departures, because its line no longer matches the mockup's.
 
+Since 2026-11-12 the compliance label prints `U.S. PATENT FILINGS` and all four publication numbers.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

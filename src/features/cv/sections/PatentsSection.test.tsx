@@ -6,6 +6,9 @@ import type { Patent } from '../../../content'
 import { patentStats } from '../../../content/derive'
 import { PatentsSection } from './PatentsSection'
 
+/** What the page never says of a filing: what became of it, or which kind of filing it is. */
+const STATUS_WORDS = /grant|pending|abandon|application/i
+
 function renderSection(patents: readonly Patent[] = content.patents) {
   render(<PatentsSection patents={patents} stats={patentStats(patents)} />)
   return within(screen.getByRole('region', { name: 'Patents' }))
@@ -18,65 +21,60 @@ describe('PatentsSection', () => {
     expect(screen.getByRole('region', { name: 'Patents' })).toHaveAttribute('id', 'patents')
   })
 
-  it('summarizes with derived numbers, keeping patents and applications apart', () => {
+  it('summarizes with the derived number, counted as patent filings', () => {
     const section = renderSection()
 
-    expect(section.getByText('2 patents granted and 1 application pending.')).toBeVisible()
+    expect(stats.patents.filings).toBe(4)
+    expect(section.getByText('Named inventor on 4 patent filings.')).toBeVisible()
   })
 
-  it('lists the granted patents first: number, title, grant date and a link', () => {
+  it('is one list of all four filings, in the order of the record, under no sub-heading', () => {
     const section = renderSection()
-    const granted = within(section.getByRole('list', { name: 'Patents granted' })).getAllByRole(
-      'listitem',
-    )
-    const [navigation, identity] = granted
 
-    expect(granted).toHaveLength(stats.patents.granted)
-    expect(navigation).toHaveTextContent('Granted Jan 27, 2026')
-    expect(navigation?.querySelector('time')).toHaveAttribute('datetime', '2026-01-27')
+    expect(section.getAllByRole('list')).toHaveLength(1)
+    expect(section.getAllByRole('heading')).toHaveLength(1)
+    expect(
+      section.getAllByRole('listitem').map((item) => item.querySelector('p')?.textContent),
+    ).toEqual(content.patents.map((patent) => patent.title))
+  })
+
+  it('prints each filing the same way: filed date, title, number, assignee, co-inventors, link', () => {
+    const [navigation, identity, consent, tokens] = renderSection().getAllByRole('listitem')
+
+    expect(navigation).toHaveTextContent('Filed Jul 2, 2021')
+    expect(navigation?.querySelector('time')).toHaveAttribute('datetime', '2021-07-02')
     expect(navigation).toHaveTextContent('Methods and a system for in-store navigation')
-    expect(navigation).toHaveTextContent('US 12,536,579 B2')
-    expect(navigation).toHaveTextContent('NCR Voyix Corp')
-    expect(navigation).toHaveTextContent('With Christian Lee McDaniel')
+    expect(navigation).toHaveTextContent(
+      'US 12,536,579 B2 · NCR Voyix Corp · With Christian Lee McDaniel',
+    )
     expect(navigation?.querySelector('a')).toHaveAttribute(
       'href',
       'https://patents.google.com/patent/US12536579B2/en',
     )
-    expect(identity).toHaveTextContent('Granted Jul 8, 2025')
-    expect(identity).toHaveTextContent('US 12,354,083 B2')
+    expect(identity).toHaveTextContent('Filed Apr 29, 2022')
     expect(identity).toHaveTextContent(
-      'Self-sovereign identity structured messaging for cross channel authentication',
+      'US 12,354,083 B2 · Digital First Holdings LLC · With Bryan Walser Nonni',
     )
-    expect(identity).toHaveTextContent('Digital First Holdings LLC')
-    expect(identity).toHaveTextContent('With Bryan Walser Nonni')
     expect(identity?.querySelector('a')).toHaveAttribute(
       'href',
       'https://patents.google.com/patent/US12354083B2/en',
     )
-  })
-
-  it('lists the pending application after them, labelled as an application', () => {
-    const section = renderSection()
-    const lists = section.getAllByRole('list')
-    const applications = within(section.getByRole('list', { name: 'Applications' })).getAllByRole(
-      'listitem',
-    )
-    const [consent] = applications
-
-    expect(lists).toHaveLength(2)
-    expect(lists[1]).toBe(section.getByRole('list', { name: 'Applications' }))
-    expect(applications).toHaveLength(1)
     expect(consent).toHaveTextContent('Filed Oct 14, 2022')
-    expect(consent).toHaveTextContent('Application US 2023/0032782 A1')
-    expect(consent).toHaveTextContent('Pending')
-    expect(consent).toHaveTextContent(
-      'Self-Sovereign Identity Verifiable Credentials for Consent Processing',
-    )
-    expect(consent).toHaveTextContent('NCR Corp')
-    expect(consent).not.toHaveTextContent(/granted/i)
+    expect(consent).toHaveTextContent('US 2023/0032782 A1 · NCR Corp · With Bryan Walser Nonni')
     expect(consent?.querySelector('a')).toHaveAttribute(
       'href',
       'https://patents.google.com/patent/US20230032782A1/en',
+    )
+    expect(tokens).toHaveTextContent('Filed Jul 29, 2022')
+    expect(tokens).toHaveTextContent(
+      'Methods and a system for managing and integrating non-fungible tokens (NFTs)',
+    )
+    expect(tokens).toHaveTextContent(
+      'US 2024/0037539 A1 · NCR Voyix Corp · With Bryan Walser Nonni and Brent Vance Zucker',
+    )
+    expect(tokens?.querySelector('a')).toHaveAttribute(
+      'href',
+      'https://patents.google.com/patent/US20240037539A1/en',
     )
   })
 
@@ -90,70 +88,51 @@ describe('PatentsSection', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not show the abandoned application', () => {
-    renderSection()
+  it('says nothing of what became of a filing, and gives no grant date', () => {
+    const section = renderSection()
     const text = screen.getByRole('region', { name: 'Patents' }).textContent
 
-    expect(text).not.toMatch(/abandoned|non-fungible|2024\/0037539/i)
-    expect(screen.queryByRole('link', { name: /non-fungible/i })).toBeNull()
+    expect(text).not.toMatch(STATUS_WORDS)
+    for (const item of section.getAllByRole('listitem')) {
+      // One date to a filing: the day it was filed.
+      expect(item.querySelectorAll('time')).toHaveLength(1)
+    }
   })
 
   it('never calls the filings four patents', () => {
     renderSection()
     const text = screen.getByRole('region', { name: 'Patents' }).textContent
 
-    expect(text).not.toMatch(/\b(four|4|three|3) patents\b/i)
+    expect(text).not.toMatch(/\b(four|4|three|3|two|2) patents\b/i)
   })
 
-  it('shows the abandoned application, labelled as abandoned, once its flag is flipped', () => {
-    const section = renderSection(content.patents.map((patent) => ({ ...patent, shown: true })))
-    const applications = within(section.getByRole('list', { name: 'Applications' })).getAllByRole(
-      'listitem',
-    )
-
-    expect(applications).toHaveLength(2)
-    expect(applications[1]).toHaveTextContent('Application US 2024/0037539 A1')
-    expect(applications[1]).toHaveTextContent('Abandoned')
-    expect(applications[1]).toHaveTextContent('With Bryan Walser Nonni and Brent Vance Zucker')
-  })
-
-  it('leaves out the applications heading when there is no application to show', () => {
+  it('leaves out a filing he has taken off the site, and counts without it', () => {
     const section = renderSection(
-      content.patents.filter((patent) => patent.status.kind === 'granted'),
+      content.patents.map((patent) =>
+        patent.id === 'us-20240037539' ? { ...patent, shown: false } : patent,
+      ),
     )
 
-    expect(section.queryByRole('list', { name: 'Applications' })).toBeNull()
-    expect(section.queryByRole('heading', { name: 'Applications' })).toBeNull()
+    expect(section.getAllByRole('listitem')).toHaveLength(3)
+    expect(section.getByText('Named inventor on 3 patent filings.')).toBeVisible()
+    expect(section.queryByText(/non-fungible/i)).toBeNull()
   })
 
-  it('prints no filing date for an application that records none', () => {
-    const undated = content.patents
-      .filter((patent) => patent.status.kind === 'pending')
-      .map((patent) => ({ ...patent, filed: null }))
+  it('prints no filing date for a filing that records none', () => {
+    const undated = content.patents.slice(2, 3).map((patent) => ({ ...patent, filed: null }))
     const section = renderSection(undated)
-    const [application] = section.getAllByRole('listitem')
+    const [filing] = section.getAllByRole('listitem')
 
-    expect(application?.querySelector('time')).toBeNull()
-    expect(application).not.toHaveTextContent(/filed/i)
-    expect(application).toHaveTextContent(/^Self-Sovereign Identity/)
+    expect(filing?.querySelector('time')).toBeNull()
+    expect(filing).not.toHaveTextContent(/filed/i)
+    expect(filing).toHaveTextContent(/^Self-Sovereign Identity/)
+    expect(section.getByText('Named inventor on 1 patent filing.')).toBeVisible()
   })
 
-  it('prints no summary when nothing is granted or pending', () => {
-    const abandoned = content.patents
-      .filter((patent) => patent.status.kind === 'abandoned')
-      .map((patent) => ({ ...patent, shown: true }))
-    const section = renderSection(abandoned)
+  it('prints no summary and no list when there is no filing to show', () => {
+    const section = renderSection([])
 
-    expect(section.queryByText(/granted|pending/i)).toBeNull()
-    expect(section.getAllByRole('listitem')).toHaveLength(1)
-  })
-
-  it('leaves out the granted list when nothing has been granted', () => {
-    const section = renderSection(
-      content.patents.filter((patent) => patent.status.kind === 'pending'),
-    )
-
-    expect(section.queryByRole('list', { name: 'Patents granted' })).toBeNull()
-    expect(section.getAllByRole('listitem')).toHaveLength(1)
+    expect(section.queryByText(/patent filing/i)).toBeNull()
+    expect(section.queryByRole('list')).toBeNull()
   })
 })

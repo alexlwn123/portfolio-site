@@ -34,14 +34,14 @@ describe('PathTotals', () => {
       `${String(stats.organized.count)} hackathons organized`,
       `${String(stats.bitcoinPlusPlus.stageSessions)} bitcoin++ stage sessions`,
       `${String(totals[3]?.count ?? 0)} projects`,
-      `${String(stats.patents.granted)} patents granted`,
+      `${String(stats.patents.filings)} patent filings`,
     ])
   })
 
   it('uses the word for one when there is one', () => {
     render(<PathTotals totals={[{ kind: 'patents', count: 1, section: 'patents' }]} />)
 
-    expect(screen.getByRole('link')).toHaveTextContent(/^1 patent granted$/)
+    expect(screen.getByRole('link')).toHaveTextContent(/^1 patent filing$/)
   })
 
   it('renders nothing when there is nothing to count', () => {

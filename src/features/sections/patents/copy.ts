@@ -12,22 +12,17 @@ export const patentsCopy = {
     heading: ['Inventor', 'rating plate'],
     holder: 'Named co-inventor',
     list: 'Patent filings',
-    counts: {
-      granted: { one: 'Patent granted', many: 'Patents granted' },
-      pending: { one: 'Application pending', many: 'Applications pending' },
+    /** The one count. Its noun is "patent filing": not every filing became a patent. */
+    count: {
+      label: 'Named inventor on',
+      one: 'U.S. patent filing',
+      many: 'U.S. patent filings',
     },
     fields: {
-      patentNumber: 'Patent no.',
-      applicationNumber: 'Application no.',
-      status: 'Status',
+      number: 'Publication no.',
       filed: 'Filed',
       assignee: 'Assignee',
       coInventors: { one: 'Co-inventor', many: 'Co-inventors' },
-    },
-    status: {
-      granted: 'Granted',
-      pending: 'Application pending',
-      abandoned: 'Application abandoned',
     },
     /** What follows a number in the name of its link: where it leads. */
     on: (source: string) => `on ${source}`,

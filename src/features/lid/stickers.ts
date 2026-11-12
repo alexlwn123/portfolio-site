@@ -14,9 +14,9 @@ import {
   compactSats,
   fieldFigure,
   fieldWin,
+  filingNumbers,
   findById,
   firstWeekSats,
-  grantedPatentNumbers,
   inPersonCity,
   latestPodiumWin,
   ownHackathon,
@@ -275,26 +275,16 @@ function medal(wins: Content['wins']): MedalSpec<StickerId> {
   }
 }
 
-/** The label's closing line: how many applications are pending, or null when none is. */
-function pendingLine({ anyPending, pending }: Stats['patents']): string | null {
-  const words = copy.lid.patentLabel.pending
-  if (!anyPending) {
-    return null
-  }
-  return pending === 1 ? words.one : words.many
-}
-
-/** The compliance label: the granted patents by number, and whether more are pending. */
-function patentLabel({ patents }: Content, stats: Stats): ComplianceLabelSpec<StickerId> {
+/** The compliance label: every filing that names him, by its publication number. */
+function patentLabel({ patents }: Content): ComplianceLabelSpec<StickerId> {
   const words = copy.lid.patentLabel
-  const numbers = grantedPatentNumbers(patents)
+  const numbers = filingNumbers(patents)
 
   return {
     id: 'patents',
     kind: 'complianceLabel',
     heading: numbers.length === 1 ? words.one : words.many,
     numbers,
-    pending: pendingLine(stats.patents),
     href: sectionAnchor('patents'),
   }
 }
@@ -398,7 +388,7 @@ function records(content: Content, stats: Stats): readonly Spec[] {
     nextSpot(content, stats),
     { id: 'tally', kind: 'tally', count: stats.organized.count },
     { id: 'bolt-bottom', kind: 'bolt' },
-    patentLabel(content, stats),
+    patentLabel(content),
   ]
 }
 

@@ -132,8 +132,10 @@ Alex is a named co-inventor on four US filings, each checked on Google Patents. 
 
 Notes:
 
-- Counts: 2 granted, 4 filings, 1 pending.
-- The abandoned application is kept in the data and is not shown on the site. Its record in `src/content/patents.ts` has `shown: false`; setting that to `true` lists it.
+- Counts: 4 filings, of which 2 are granted, 1 is pending and 1 is abandoned.
+- Alex's decision of 2026-11-12: all four filings are shown, listed together as filings he is named on as an inventor. None is labelled, grouped or counted by its status. The status of each, and the two grant dates, stay in the data (`status` in `src/content/patents.ts`, and the table above) and are not printed anywhere on the site.
+- Where the site counts them it says "patent filings" ("named inventor on 4 patent filings"), never a number of "patents": two of the four are published applications.
+- Every record in `src/content/patents.ts` has `shown: true`. Setting a record's `shown` to `false` takes that filing off the site and out of the count.
 - The filing dates of the two granted patents were read from the same Google Patents pages. Alex gave the grant dates.
 
 ## Press

@@ -105,18 +105,13 @@ export function coInventorsLabel(names: readonly string[]): string | null {
 }
 
 /**
- * "2 patents granted and 1 application pending." An application is never
- * counted as a patent. Null when there is nothing granted or pending to count.
+ * "Named inventor on 4 patent filings." Every filing shown is counted alike,
+ * so the noun is "patent filing". Null when there is none to count.
  */
-export function patentsSummary(patents: Stats['patents']): string | null {
-  const kinds = [
-    patents.granted > 0 ? plural(patents.granted, 'patent granted', 'patents granted') : null,
-    patents.pending > 0
-      ? plural(patents.pending, 'application pending', 'applications pending')
-      : null,
-  ].filter((kind) => kind !== null)
-
-  return kinds.length > 0 ? `${joinList(kinds)}.` : null
+export function patentsSummary({ filings }: Stats['patents']): string | null {
+  return filings === 0
+    ? null
+    : `Named inventor on ${plural(filings, 'patent filing', 'patent filings')}.`
 }
 
 export function locationLabel(location: EventLocation): string {

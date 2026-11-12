@@ -16,8 +16,8 @@ import type { HomeSectionId } from '../sectionIds'
  * The career as one path: a stop for the present and a stop for every year
  * back to the earliest on record. A job hangs from the year it began, because
  * no end date is recorded for any of them, and what else happened in a year
- * (wins, hackathons run, patents, the first talk) is worked out here from the
- * other records. Nothing on the path is typed in by hand.
+ * (wins, hackathons run, patent filings, the first talk) is worked out here
+ * from the other records. Nothing on the path is typed in by hand.
  */
 
 export type PathSource = Pick<
@@ -25,15 +25,13 @@ export type PathSource = Pick<
   'experience' | 'education' | 'wins' | 'organized' | 'talks' | 'patents'
 >
 
-/** A patent filing with the date it needs to sit on the path. */
-type Granted = Patent & { readonly status: Extract<Patent['status'], { kind: 'granted' }> }
+/** A patent filing with the date it needs to sit on the path: the day it was filed. */
 type Filed = Patent & { readonly filed: NonNullable<Patent['filed']> }
 
 /** Something else that happened in a year, from one of the other records. */
 export type PathMark =
   | { readonly kind: 'wins'; readonly wins: readonly Win[] }
   | { readonly kind: 'organized'; readonly events: readonly HeldEvent[] }
-  | { readonly kind: 'granted'; readonly patents: readonly Granted[] }
   | { readonly kind: 'filed'; readonly patents: readonly Filed[] }
   | { readonly kind: 'firstTalk'; readonly talk: Talk; readonly date: PartialDate }
 
@@ -58,7 +56,6 @@ export const NOW_KEY = 'now'
 const MARK_SECTIONS: Readonly<Record<PathMark['kind'], HomeSectionId>> = Object.freeze({
   wins: 'wins',
   organized: 'organized',
-  granted: 'patents',
   filed: 'patents',
   firstTalk: 'talks',
 })
@@ -88,10 +85,6 @@ export function firstStageTalk(
   return staged[0] ?? null
 }
 
-function isGranted(patent: Patent): patent is Granted {
-  return patent.status.kind === 'granted'
-}
-
 function isFiled(patent: Patent): patent is Filed {
   return patent.filed !== null
 }
@@ -100,16 +93,15 @@ function isFiled(patent: Patent): patent is Filed {
  * What else happened in a year, in one fixed order. A kind with nothing to
  * show is left out. The hackathons he ran come first: theirs is the longest
  * line, a list of cities, and the first sticker of a year is the one that is
- * given the most room.
+ * given the most room. A patent filing is marked once, in the year it was
+ * filed: what became of it afterwards is not the path's to say.
  */
 function marksOf(source: PathSource, year: number): readonly PathMark[] {
-  const shown = publishablePatents(source.patents)
   const wins = source.wins.filter((win) => win.year === year)
   const events = heldEvents(source.organized)
     .filter((event) => event.date.start.year === year)
     .toSorted((one, other) => byDate(one.date.start, other.date.start))
-  const granted = shown.filter(isGranted).filter(({ status }) => status.granted.year === year)
-  const filed = shown
+  const filed = publishablePatents(source.patents)
     .filter(isFiled)
     .filter((patent) => patent.filed.year === year)
     .toSorted((one, other) => byDate(one.filed, other.filed))
@@ -118,7 +110,6 @@ function marksOf(source: PathSource, year: number): readonly PathMark[] {
   return [
     ...(events.length > 0 ? [{ kind: 'organized', events } as const] : []),
     ...(wins.length > 0 ? [{ kind: 'wins', wins } as const] : []),
-    ...(granted.length > 0 ? [{ kind: 'granted', patents: granted } as const] : []),
     ...(filed.length > 0 ? [{ kind: 'filed', patents: filed } as const] : []),
     ...(first?.date.year === year ? [{ kind: 'firstTalk', ...first } as const] : []),
   ]
@@ -161,15 +152,15 @@ function schoolYear(school: Education): number {
 
 /** Every year anything on record is pinned to. */
 function pinnedYears(source: PathSource, jobs: readonly PathJob[]): readonly number[] {
-  const shown = publishablePatents(source.patents)
   const first = firstStageTalk(source.talks)
   return [
     ...jobs.flatMap(({ role }) => (role.current || role.start === null ? [] : [role.start.year])),
     ...source.education.map(schoolYear),
     ...source.wins.map((win) => win.year),
     ...heldEvents(source.organized).map((event) => event.date.start.year),
-    ...shown.filter(isGranted).map(({ status }) => status.granted.year),
-    ...shown.filter(isFiled).map((patent) => patent.filed.year),
+    ...publishablePatents(source.patents)
+      .filter(isFiled)
+      .map((patent) => patent.filed.year),
     ...(first === null ? [] : [first.date.year]),
   ]
 }

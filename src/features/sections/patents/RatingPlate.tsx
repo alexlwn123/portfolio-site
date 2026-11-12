@@ -12,10 +12,10 @@ import { patentsCopy } from './copy'
 import {
   coInventorsField,
   numberField,
-  plateCounts,
+  type PlateCount,
+  plateCount,
   plateFilings,
   recordSource,
-  statusOf,
 } from './plate'
 import styles from './RatingPlate.module.css'
 
@@ -42,10 +42,9 @@ function DateValue({ date }: { readonly date: NonNullable<Patent['filed']> }): R
   return <time dateTime={isoDate(date)}>{formatPartialDate(date)}</time>
 }
 
-/** One filing: its title, then its number, status, filing date, assignee and co-inventors. */
+/** One filing: its title, then its number, filing date, assignee and co-inventors. */
 function PlateRow({ patent }: { readonly patent: Patent }): ReactElement {
   const number = numberField(patent)
-  const status = statusOf(patent)
   const others = coInventorsField(patent)
 
   return (
@@ -61,15 +60,6 @@ function PlateRow({ patent }: { readonly patent: Patent }): ReactElement {
             </span>
           </a>
         </Field>
-        <Field label={patentsCopy.plate.fields.status}>
-          {status.label}
-          {status.date !== null && (
-            <>
-              {' '}
-              <DateValue date={status.date} />
-            </>
-          )}
-        </Field>
         {patent.filed !== null && (
           <Field label={patentsCopy.plate.fields.filed}>
             <DateValue date={patent.filed} />
@@ -82,13 +72,32 @@ function PlateRow({ patent }: { readonly patent: Patent }): ReactElement {
   )
 }
 
+/** The one count: a big figure, with the words that say what it counts either side of it. */
+function CountBox({ label, count, unit }: PlateCount): ReactElement {
+  return (
+    <dl className={cx(voice.label, styles.facts)}>
+      <div className={cx(styles.field, styles.count)} data-count="">
+        <dt className={styles.term}>{label}</dt>
+        <dd className={styles.value}>
+          <span className={styles.figure} data-figure="">
+            {count}
+          </span>{' '}
+          <span className={styles.unit}>{unit}</span>
+        </dd>
+      </div>
+    </dl>
+  )
+}
+
 interface PlateHeadProps {
   readonly holder: string
   readonly stats: Stats['patents']
 }
 
-/** The top of the plate: what it lists, whose name is on them, and how many of each. */
+/** The top of the plate: what it lists, whose name is on them, and how many there are. */
 function PlateHead({ holder, stats }: PlateHeadProps): ReactElement {
+  const count = plateCount(stats)
+
   return (
     <header className={styles.head}>
       <div className={styles.lead}>
@@ -101,13 +110,7 @@ function PlateHead({ holder, stats }: PlateHeadProps): ReactElement {
           </Field>
         </dl>
       </div>
-      <dl className={cx(voice.label, styles.facts)}>
-        {plateCounts(stats).map(({ kind, count, label }) => (
-          <Field key={kind} label={label} className={styles.count}>
-            {count}
-          </Field>
-        ))}
-      </dl>
+      {count !== null && <CountBox {...count} />}
     </header>
   )
 }
@@ -121,8 +124,8 @@ interface RatingPlateProps {
 
 /**
  * The rating plate on the underside of the machine: brushed metal, riveted at
- * the corners, a row to a filing. Patents and applications are counted apart
- * and labelled as what they are, and every number opens its public record.
+ * the corners, a row to a filing. Every filing that names him is counted and
+ * listed the same way, and every number opens its public record.
  */
 export function RatingPlate({ patents, stats, holder }: RatingPlateProps): ReactElement {
   const filings = plateFilings(patents)

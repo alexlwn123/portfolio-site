@@ -475,8 +475,11 @@ describe('patents', () => {
     })
   })
 
-  it('keeps the abandoned application in the data and off the site', () => {
-    expect(patents.filter((patent) => !patent.shown).map((patent) => patent.id)).toEqual([
+  it('shows all four: no filing that names him is held back', () => {
+    expect(patents.filter((patent) => patent.shown).map((patent) => patent.id)).toEqual([
+      'us-12536579',
+      'us-12354083',
+      'us-20230032782',
       'us-20240037539',
     ])
   })

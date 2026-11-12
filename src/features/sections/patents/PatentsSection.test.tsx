@@ -30,13 +30,21 @@ describe('PatentsSection', () => {
     )
   })
 
-  it('says two granted and one pending, never four patents', () => {
+  it('says he is a named inventor on four patent filings, never on four patents', () => {
     const section = renderSection()
 
-    expect(section).toHaveTextContent(/Patents granted\s*2/)
-    expect(section).toHaveTextContent(/Application pending\s*1/)
-    expect(section.textContent).not.toMatch(/four|abandoned/i)
-    expect(section).not.toHaveTextContent('2024/0037539')
+    expect(section).toHaveTextContent(/Named inventor on\s*4\s*U\.S\. patent filings/)
+    expect(section.textContent).not.toMatch(/(four|4) patents/i)
+  })
+
+  it('lists all four the same way, with not a word about what became of any', () => {
+    const section = renderSection()
+
+    for (const { number, title } of content.patents) {
+      expect(section).toHaveTextContent(number.serial)
+      expect(section).toHaveTextContent(title)
+    }
+    expect(section.textContent).not.toMatch(/grant|pending|abandon|application|status/i)
   })
 
   it('links every row to its public record and nowhere else', () => {

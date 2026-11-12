@@ -30,11 +30,30 @@ describe('patentsCopy', () => {
     expect(strings.filter((text) => /google|ncr|lewin/i.test(text))).toEqual([])
   })
 
-  it('never calls an application a patent', () => {
-    expect(patentsCopy.plate.status.pending).toMatch(/^Application/)
-    expect(patentsCopy.plate.status.abandoned).toMatch(/^Application/)
-    expect(patentsCopy.plate.counts.pending.one).not.toMatch(/patent/i)
-    expect(patentsCopy.plate.counts.pending.many).not.toMatch(/patent/i)
+  it('has no word for a status: nothing is granted, pending or abandoned, patent or application', () => {
+    const strings = collectStrings(patentsCopy)
+
+    expect(
+      strings.filter((text) => /grant|pending|abandon|application|status/i.test(text)),
+    ).toEqual([])
+  })
+
+  it('counts filings, never "patents": the noun after the count is "patent filing(s)"', () => {
+    expect(patentsCopy.plate.count).toEqual({
+      label: 'Named inventor on',
+      one: 'U.S. patent filing',
+      many: 'U.S. patent filings',
+    })
+  })
+
+  it('labels every filing’s number alike', () => {
+    expect(patentsCopy.plate.fields.number).toBe('Publication no.')
+    expect(Object.keys(patentsCopy.plate.fields)).toEqual([
+      'number',
+      'filed',
+      'assignee',
+      'coInventors',
+    ])
   })
 
   it('imitates no real regulatory mark', () => {

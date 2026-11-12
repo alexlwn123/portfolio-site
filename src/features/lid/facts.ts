@@ -166,21 +166,15 @@ export function fieldWin(win: Win): FieldWin {
   return { ...win, field: win.field, team: win.team }
 }
 
-function serialValue(serial: string): number {
-  return Number(serial.replaceAll(/\D/g, ''))
-}
-
 /**
- * The numbers of the granted patents he has chosen to show, lowest first, as
- * a compliance label lists them. An application's number is never among them.
+ * The publication numbers of the filings he shows, in the record's order, as
+ * the compliance label lists them. Every filing's number is printed alike:
+ * what became of a filing decides nothing here.
  */
-export function grantedPatentNumbers(patents: readonly Patent[]): readonly string[] {
-  const numbers = publishablePatents(patents)
-    .filter(({ status }) => status.kind === 'granted')
-    .map(({ number }) => number.serial)
-    .toSorted((one, other) => serialValue(one) - serialValue(other))
+export function filingNumbers(patents: readonly Patent[]): readonly string[] {
+  const numbers = publishablePatents(patents).map(({ number }) => number.serial)
   if (numbers.length === 0) {
-    throw new Error('There is no granted patent to print on the compliance label')
+    throw new Error('There is no patent filing to print on the compliance label')
   }
   return numbers
 }

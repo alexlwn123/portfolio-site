@@ -50,12 +50,8 @@ export const workCopy = {
     outOf: (field: Figure) => `of ${String(field)} teams`,
     organized: { one: 'hackathon organized', many: 'hackathons organized' },
     online: 'online',
-    granted: { one: 'patent granted', many: 'patents granted' },
-    filed: { one: 'patent application filed', many: 'patent applications filed' },
-    filedOn: 'Filed',
-    grantedIn: (year: Figure) => `granted ${String(year)}`,
-    pending: 'pending',
-    abandoned: 'abandoned',
+    /** A filing is counted in the year it was filed, and that is all that is said of it. */
+    filed: { one: 'patent filing', many: 'patent filings' },
     firstTalk: ['First talk', 'on record'],
   },
 
@@ -66,7 +62,7 @@ export const workCopy = {
     organized: { one: 'hackathon organized', many: 'hackathons organized' },
     stage: { one: 'bitcoin++ stage session', many: 'bitcoin++ stage sessions' },
     projects: { one: 'project', many: 'projects' },
-    patents: { one: 'patent granted', many: 'patents granted' },
+    patents: { one: 'patent filing', many: 'patent filings' },
   },
 } as const
 

@@ -15,11 +15,11 @@ const googlePatents = (publication: string): PatentInput['link'] => ({
 })
 
 /*
- * The four US filings that name him as a co-inventor, each checked against
- * its Google Patents page. Two are granted patents and two are applications:
- * never "four patents". Granted first, newest grant first, then the
- * applications. The abandoned application is kept for the record and is not
- * shown on the site: set `shown` to true to list it.
+ * The four US filings that name him as an inventor, each checked against its
+ * Google Patents page. All four are shown, listed together in this order as
+ * filings he is named on. What became of each is kept here, in `status`, so
+ * that the record stays true; the site neither prints it nor counts by it,
+ * and where it counts them it says "patent filings".
  */
 const records: readonly PatentInput[] = [
   {
@@ -64,8 +64,7 @@ const records: readonly PatentInput[] = [
     assignee: 'NCR Voyix Corp',
     coInventors: ['Bryan Walser Nonni', 'Brent Vance Zucker'],
     link: googlePatents('US20240037539A1'),
-    // Abandoned: in the data, off the site.
-    shown: false,
+    shown: true,
   },
 ]
 

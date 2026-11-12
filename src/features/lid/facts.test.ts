@@ -9,9 +9,9 @@ import {
   cvSection,
   fieldFigure,
   fieldWin,
+  filingNumbers,
   findById,
   firstWeekSats,
-  grantedPatentNumbers,
   inPersonCity,
   introOpening,
   latestPodiumWin,
@@ -212,26 +212,36 @@ describe('the win that was chosen from a field', () => {
   })
 })
 
-describe('grantedPatentNumbers', () => {
-  it('lists the numbers of the granted patents, lowest first', () => {
-    expect(grantedPatentNumbers(content.patents)).toEqual(['12,354,083', '12,536,579'])
-    expect(grantedPatentNumbers(content.patents.toReversed())).toEqual(['12,354,083', '12,536,579'])
+describe('filingNumbers', () => {
+  it('lists the publication number of every filing, in the record’s order', () => {
+    expect(filingNumbers(content.patents)).toEqual([
+      '12,536,579',
+      '12,354,083',
+      '2023/0032782',
+      '2024/0037539',
+    ])
   })
 
-  it('leaves out applications and anything he has chosen not to show', () => {
-    const allShown = content.patents.map((patent) => ({ ...patent, shown: true }))
+  it('takes every filing alike: what became of one decides nothing', () => {
+    const numbers = filingNumbers(content.patents)
+
+    expect(numbers).toEqual(content.patents.map((patent) => patent.number.serial))
+    expect(new Set(content.patents.map((patent) => patent.status.kind)).size).toBeGreaterThan(1)
+  })
+
+  it('leaves out a filing he has taken off the site', () => {
     const oneHidden = content.patents.map((patent) =>
       patent.id === 'us-12354083' ? { ...patent, shown: false } : patent,
     )
 
-    expect(grantedPatentNumbers(allShown)).toEqual(['12,354,083', '12,536,579'])
-    expect(grantedPatentNumbers(oneHidden)).toEqual(['12,536,579'])
+    expect(filingNumbers(oneHidden)).toEqual(['12,536,579', '2023/0032782', '2024/0037539'])
   })
 
-  it('stops the build when there is no granted patent to print', () => {
-    const applications = content.patents.filter((patent) => patent.status.kind !== 'granted')
+  it('stops the build when there is no filing to print', () => {
+    const noneShown = content.patents.map((patent) => ({ ...patent, shown: false }))
 
-    expect(() => grantedPatentNumbers(applications)).toThrow(/granted patent/)
+    expect(() => filingNumbers(noneShown)).toThrow(/patent filing/)
+    expect(() => filingNumbers([])).toThrow(/patent filing/)
   })
 })
 

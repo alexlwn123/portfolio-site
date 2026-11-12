@@ -136,28 +136,24 @@ describe('what a patent prints', () => {
     expect(coInventorsLabel([])).toBeNull()
   })
 
-  it('summarizes granted patents and pending applications apart, from the derived stats', () => {
-    expect(patentsSummary(stats.patents)).toBe('2 patents granted and 1 application pending.')
+  it('summarizes with one count of every filing, from the derived stats', () => {
+    expect(patentsSummary(stats.patents)).toBe('Named inventor on 4 patent filings.')
+    expect(patentsSummary(stats.patents)).toContain(String(stats.patents.filings))
   })
 
-  it('never folds applications into the count of patents', () => {
+  it('counts filings, never a number of patents, and says nothing of their status', () => {
     const summary = patentsSummary(stats.patents)
 
-    expect(summary).not.toMatch(/\b[34] patents\b|four|three/i)
-    expect(summary).not.toContain(String(stats.patents.filings))
+    expect(summary).not.toMatch(/\b(\d+|two|three|four) patents\b/i)
+    expect(summary).not.toMatch(/grant|pending|abandon|application/i)
   })
 
-  it('leaves out what there is none of, and uses singulars', () => {
-    const base = { granted: 1, pending: 0, filings: 1, anyPending: false }
-
-    expect(patentsSummary(base)).toBe('1 patent granted.')
-    expect(patentsSummary({ ...base, granted: 0, pending: 2, anyPending: true })).toBe(
-      '2 applications pending.',
-    )
+  it('uses the singular for one filing', () => {
+    expect(patentsSummary({ filings: 1 })).toBe('Named inventor on 1 patent filing.')
   })
 
-  it('says nothing at all when nothing is granted or pending', () => {
-    expect(patentsSummary({ granted: 0, pending: 0, filings: 1, anyPending: false })).toBeNull()
+  it('says nothing at all when there is no filing to count', () => {
+    expect(patentsSummary({ filings: 0 })).toBeNull()
   })
 })
 

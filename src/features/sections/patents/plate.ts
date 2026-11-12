@@ -11,61 +11,32 @@ export interface PlateField {
   readonly value: string
 }
 
+/** The plate's one count: how many filings, and the words either side of the figure. */
 export interface PlateCount {
-  readonly kind: 'granted' | 'pending'
-  readonly count: number
   readonly label: string
+  readonly count: number
+  readonly unit: string
 }
-
-type GrantDate = Extract<Patent['status'], { kind: 'granted' }>['granted']
 
 const NAME_SEPARATOR = ', '
 
-/** The filings he has chosen to show, in the record's order: granted first. */
+/** The filings he shows, in the record's order. Every one is listed the same way. */
 export function plateFilings(patents: readonly Patent[]): readonly Patent[] {
   return publishablePatents(patents)
 }
 
 /**
- * The plate's two counts, kept apart: patents granted, and applications
- * pending. An application is never counted as a patent, and a count of
- * nothing is left off.
+ * The plate's one count: every filing shown, counted alike and worded as
+ * "patent filings". Null when there is nothing to count.
  */
-export function plateCounts(stats: Stats['patents']): readonly PlateCount[] {
-  const { counts } = patentsCopy.plate
-  const all: readonly PlateCount[] = [
-    {
-      kind: 'granted',
-      count: stats.granted,
-      label: stats.granted === 1 ? counts.granted.one : counts.granted.many,
-    },
-    {
-      kind: 'pending',
-      count: stats.pending,
-      label: stats.pending === 1 ? counts.pending.one : counts.pending.many,
-    },
-  ]
-  return all.filter(({ count }) => count > 0)
+export function plateCount({ filings }: Stats['patents']): PlateCount | null {
+  const { label, one, many } = patentsCopy.plate.count
+  return filings === 0 ? null : { label, count: filings, unit: filings === 1 ? one : many }
 }
 
-/** The filing's number, labelled as what it is: a patent's, or an application's. */
-export function numberField({ number, status }: Patent): PlateField {
-  const { fields } = patentsCopy.plate
-  return {
-    label: status.kind === 'granted' ? fields.patentNumber : fields.applicationNumber,
-    value: patentNumber(number),
-  }
-}
-
-/** Where a filing stands. Only a granted patent has a date to go with it. */
-export function statusOf({ status }: Patent): {
-  readonly label: string
-  readonly date: GrantDate | null
-} {
-  return {
-    label: patentsCopy.plate.status[status.kind],
-    date: status.kind === 'granted' ? status.granted : null,
-  }
+/** The filing's publication number, under the one label every filing's number takes. */
+export function numberField({ number }: Patent): PlateField {
+  return { label: patentsCopy.plate.fields.number, value: patentNumber(number) }
 }
 
 /** The other named inventors. Null when he is the only one. */

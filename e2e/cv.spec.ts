@@ -66,23 +66,27 @@ test.describe('/cv/', () => {
     })
   }
 
-  test('lists the granted patents, then the pending application, and no abandoned one', async ({
+  test('lists all four patent filings together, each with its public record and no status', async ({
     page,
   }) => {
     await page.goto('/cv/#patents')
     const patents = page.locator('section#patents')
 
     await expect(patents).toBeInViewport()
-    await expect(
-      patents.getByRole('list', { name: 'Patents granted' }).getByRole('listitem'),
-    ).toHaveText([/US 12,536,579 B2/, /US 12,354,083 B2/])
-    await expect(
-      patents.getByRole('list', { name: 'Applications' }).getByRole('listitem'),
-    ).toHaveText([/Application US 2023\/0032782 A1/])
+    await expect(patents.getByRole('list')).toHaveCount(1)
+    await expect(patents.getByRole('listitem')).toHaveText([
+      /US 12,536,579 B2/,
+      /US 12,354,083 B2/,
+      /US 2023\/0032782 A1/,
+      /US 2024\/0037539 A1/,
+    ])
+    await expect(patents).toContainText('Named inventor on 4 patent filings.')
     await expect(
       patents.getByRole('link', { name: /^Google Patents\s*: Methods and a system for in-store/ }),
     ).toHaveAttribute('href', 'https://patents.google.com/patent/US12536579B2/en')
-    await expect(page.getByText(/abandoned|non-fungible/i)).toHaveCount(0)
+    await expect(patents.getByRole('link')).toHaveCount(4)
+    await expect(patents).not.toContainText(/grant|pending|abandon|application/i)
+    await expect(patents).not.toContainText(/(four|4) patents/i)
   })
 
   test('shows the ninth win, the corrected AI4All row and the merged talk', async ({ page }) => {

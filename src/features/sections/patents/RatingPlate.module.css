@@ -149,21 +149,33 @@
   white-space: nowrap;
 }
 
-/* The two counts: big figures, each in a box of its own, never added together. */
+/* The one count: a big figure, and beside it what it is a count of. */
 .count {
-  gap: 0.5em;
-  align-items: center;
+  gap: 0.7em;
   justify-content: space-between;
-  min-width: 13em;
-  padding: 0.9em 1.2em 0.7em;
-  text-align: center;
+  padding: 0.9em 1.6em 0.9em 1.4em;
 }
 
 .count .value {
+  display: flex;
+  gap: 1.1em;
+  align-items: center;
+  font-size: 1em;
+}
+
+.figure {
   font-family: var(--font-display);
   font-size: 7.4em;
   font-weight: var(--weight-regular);
   line-height: 0.82;
+}
+
+/* Two lines beside the figure, and a box no wider than they are: the first line sets its width. */
+.unit {
+  max-width: 5em;
+  font-size: 2.7em;
+  line-height: 1.02;
+  letter-spacing: 0.04em;
 }
 
 /* ---------- a row to a filing ---------- */
@@ -189,9 +201,12 @@
   text-wrap: balance;
 }
 
+/* The number is as wide as it is stamped, and the other fields share what is left of the row. */
 .fields {
   display: grid;
-  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  grid-template-columns: auto;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
   gap: 0.8em;
   align-items: stretch;
 }
@@ -293,26 +308,23 @@
     font-size: 3.5em;
   }
 
-  .count {
-    min-width: 10.4em;
+  .figure {
+    font-size: 5.8em;
   }
 
-  .count .value {
-    font-size: 5.6em;
+  .unit {
+    font-size: 2.2em;
   }
 
-  /* The number and the status lead; the rest fall in under them. */
+  /* Two abreast: the number and the filing date, then who holds it and who else is named. */
   .fields {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
   }
 
-  .fields .field {
-    grid-column: span 2;
-  }
-
-  .fields .numberField,
-  .fields .numberField + .field {
-    grid-column: span 3;
+  /* An odd field out takes the whole row, so none is left half empty. */
+  .fields .field:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }
 
@@ -366,27 +378,28 @@
     gap: 0.35em;
   }
 
+  /* The count takes the plate's width, its figure and words set on the middle. */
   .count {
     flex: 1 1 0;
-    min-width: 0;
+    align-items: center;
   }
 
-  .count .value {
+  .figure {
     font-size: 5.4em;
   }
 
-  .fields {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .unit {
+    font-size: 2.3em;
   }
 
-  .fields .field {
-    grid-column: span 1;
-  }
-
+  /* The number has a row to itself, and so does a last field left on its own. */
   .fields .numberField,
-  .fields .numberField + .field,
-  .fields .field:nth-child(5) {
+  .fields .field:last-child:nth-child(even) {
     grid-column: 1 / -1;
+  }
+
+  .fields .field:last-child:nth-child(odd) {
+    grid-column: auto;
   }
 
   .title {

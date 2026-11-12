@@ -23,7 +23,7 @@ describe('buildMeta', () => {
     expect(home.description).toContain(profile.location.city)
   })
 
-  it('describes the whole career on the home page: the job, every employer before it, the patents', () => {
+  it('describes the whole career on the home page: the job, every employer before it, the patent filings', () => {
     const [current, ...earlier] = content.experience
 
     expect(home.description).toContain(`${profile.role.title} at ${profile.role.organization}`)
@@ -31,27 +31,32 @@ describe('buildMeta', () => {
     for (const { organization } of earlier) {
       expect(home.description).toContain(organization)
     }
-    expect(home.description).toContain(`${String(stats.patents.granted)} granted patents`)
+    expect(home.description).toContain(
+      `named inventor on ${String(stats.patents.filings)} patent filings`,
+    )
     expect(home.description).toBe(
-      'Minister of Development at Finite Computer in Atlanta, Georgia. ' +
-        'Before that: Fedi, Zion, BlockSpaces, and NCR Corporation. ' +
-        '2 granted patents, 9 hackathon wins, 16 hackathons organized in 8 countries.',
+      'Minister of Development at Finite Computer in Atlanta. ' +
+        'Earlier: Fedi, Zion, BlockSpaces, NCR Corporation. ' +
+        '9 hackathon wins, 16 hackathons organized in 8 countries, ' +
+        'named inventor on 4 patent filings.',
     )
   })
 
-  it('follows the records: one employer, one patent, no "before that" with nothing before', () => {
+  it('follows the records: one employer, one filing, no "earlier" with nothing before', () => {
     const [current] = content.experience
     const early = { ...content, experience: current ? [current] : [] }
-    const one = { ...stats, patents: { ...stats.patents, granted: 1 } }
+    const one = { ...stats, patents: { filings: 1 } }
 
-    expect(buildMeta('home', early, stats).description).not.toContain('Before that')
-    expect(buildMeta('home', content, one).description).toContain('1 granted patent,')
-    expect(buildMeta('home', content, one).description).not.toContain('1 granted patents')
+    expect(buildMeta('home', early, stats).description).not.toContain('Earlier')
+    expect(buildMeta('home', content, one).description).toContain(
+      'named inventor on 1 patent filing.',
+    )
+    expect(buildMeta('home', content, one).description).not.toContain('1 patent filings')
   })
 
-  it('never counts an application or a hidden filing as a patent', () => {
-    expect(home.description).not.toMatch(/(3|4|three|four) (granted )?patents/i)
-    expect(stats.patents.filings).toBeGreaterThan(stats.patents.granted)
+  it('counts filings, never a number of patents, and says nothing of what became of them', () => {
+    expect(home.description).not.toMatch(/\b(\d+|two|three|four) (granted )?patents\b/i)
+    expect(home.description).not.toMatch(/grant|pending|abandon|application/i)
   })
 
   it('stays short enough to be shown whole in a search result', () => {

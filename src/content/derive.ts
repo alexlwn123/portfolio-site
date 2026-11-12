@@ -50,13 +50,11 @@ export interface BitcoinPlusPlusStats {
 }
 
 export interface PatentStats {
-  /** Patents granted. An application is never counted here. */
-  readonly granted: number
-  /** Applications still pending. */
-  readonly pending: number
-  /** Every filing that names him: granted, pending and abandoned, shown or not. */
+  /**
+   * The filings shown that name him as an inventor. They are counted alike,
+   * whatever became of each, so the noun for this number is "patent filings".
+   */
   readonly filings: number
-  readonly anyPending: boolean
 }
 
 export interface Stats {
@@ -147,18 +145,9 @@ export function bitcoinPlusPlusStats(record: BitcoinPlusPlus): BitcoinPlusPlusSt
   }
 }
 
-/** Counts every filing in the record, whether or not the site shows it. */
+/** Counts the filings the site shows. A filing's status has no part in it. */
 export function patentStats(patents: readonly Patent[]): PatentStats {
-  const withStatus = (kind: Patent['status']['kind']): number =>
-    patents.filter(({ status }) => status.kind === kind).length
-  const pending = withStatus('pending')
-
-  return {
-    granted: withStatus('granted'),
-    pending,
-    filings: patents.length,
-    anyPending: pending > 0,
-  }
+  return { filings: publishablePatents(patents).length }
 }
 
 export function deriveStats(
@@ -172,7 +161,7 @@ export function deriveStats(
   }
 }
 
-/** Filings that may be shown. The others stay in the data until he flips their flag. */
+/** Filings that may be shown. One whose flag is off stays in the data and off the site. */
 export function publishablePatents(patents: readonly Patent[]): readonly Patent[] {
   return patents.filter((patent) => patent.shown)
 }

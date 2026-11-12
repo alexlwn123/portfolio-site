@@ -1,13 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import { content } from '../../../content'
-import type { HeldEvent, Patent, Win } from '../../../content'
+import type { HeldEvent, Win } from '../../../content'
 import { heldEvents } from '../../../content/derive'
 import {
   assetCode,
   attendedYears,
   barcodeText,
-  filedOutcome,
   initials,
   organizedLine,
   plural,
@@ -19,14 +18,6 @@ function win(id: string): Win {
   const found = content.wins.find((candidate) => candidate.id === id)
   if (!found) {
     throw new Error(`No win has the id "${id}"`)
-  }
-  return found
-}
-
-function patent(id: string): Patent {
-  const found = content.patents.find((candidate) => candidate.id === id)
-  if (!found) {
-    throw new Error(`No patent has the id "${id}"`)
   }
   return found
 }
@@ -130,18 +121,6 @@ describe('organizedLine', () => {
 
   it('has nothing to say about no hackathons', () => {
     expect(organizedLine([])).toBe('')
-  })
-})
-
-describe('filedOutcome', () => {
-  it('says what became of a filing: granted, with the year, or still pending', () => {
-    expect(filedOutcome(patent('us-12354083'))).toBe('granted 2025')
-    expect(filedOutcome(patent('us-12536579'))).toBe('granted 2026')
-    expect(filedOutcome(patent('us-20230032782'))).toBe('pending')
-  })
-
-  it('says so when an application was abandoned, should he choose to show one', () => {
-    expect(filedOutcome(patent('us-20240037539'))).toBe('abandoned')
   })
 })
 

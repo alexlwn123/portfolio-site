@@ -31,4 +31,11 @@ describe('CV labels', () => {
 
     expect(texts.filter((text) => /\d/.test(text))).toEqual([])
   })
+
+  it('has no word for what became of a patent filing: only that it was filed', () => {
+    expect(
+      Object.values(LABELS).filter((text) => /grant|pending|abandon|application/i.test(text)),
+    ).toEqual([])
+    expect(LABELS.filed).toBe('Filed')
+  })
 })

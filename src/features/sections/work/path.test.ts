@@ -153,19 +153,37 @@ describe('careerPath', () => {
     )
   })
 
-  it('marks a patent in the year it was granted and in the year it was filed', () => {
-    expect(ids(markOf('2026', 'granted')?.patents ?? [])).toEqual(['us-12536579'])
-    expect(ids(markOf('2025', 'granted')?.patents ?? [])).toEqual(['us-12354083'])
-    expect(ids(markOf('2022', 'filed')?.patents ?? [])).toEqual(['us-12354083', 'us-20230032782'])
+  it('marks a patent filing once, in the year it was filed, the earliest first', () => {
+    expect(ids(markOf('2021', 'filed')?.patents ?? [])).toEqual(['us-12536579'])
+    expect(ids(markOf('2022', 'filed')?.patents ?? [])).toEqual([
+      'us-12354083',
+      'us-20240037539',
+      'us-20230032782',
+    ])
+    expect(allMarks('filed').flatMap((mark) => mark.patents)).toHaveLength(stats.patents.filings)
   })
 
-  it('never marks a filing he has not chosen to show', () => {
-    const marked = [...allMarks('granted'), ...allMarks('filed')].flatMap((mark) =>
-      ids(mark.patents),
+  it('has no mark for what became of a filing: nothing in the years two were granted', () => {
+    const kinds = new Set<string>(path.flatMap((stop) => stop.marks.map((mark) => mark.kind)))
+
+    expect([...kinds].toSorted()).toEqual(['filed', 'firstTalk', 'organized', 'wins'])
+    expect(markOf('2025', 'filed')).toBeUndefined()
+    expect(markOf('2026', 'filed')).toBeUndefined()
+    expect(stopOf(path, '2025').marks.map((mark) => mark.kind)).toEqual(['organized'])
+  })
+
+  it('never marks a filing he has taken off the site', () => {
+    const hidden = careerPath({
+      ...content,
+      patents: content.patents.map((patent) =>
+        patent.id === 'us-20240037539' ? { ...patent, shown: false } : patent,
+      ),
+    })
+    const marked = hidden.flatMap((stop) =>
+      stop.marks.flatMap((mark) => (mark.kind === 'filed' ? ids(mark.patents) : [])),
     )
 
-    expect(marked).not.toContain('us-20240037539')
-    expect(allMarks('granted').flatMap((mark) => mark.patents)).toHaveLength(stats.patents.granted)
+    expect(marked).toEqual(['us-12354083', 'us-20230032782', 'us-12536579'])
   })
 
   it('marks the year he first took a stage, which a podcast is not', () => {
@@ -189,23 +207,19 @@ describe('careerPath', () => {
     expect(allMarks('organized').flatMap((mark) => mark.events)).toHaveLength(stats.organized.count)
   })
 
-  it('sets the marks of a year down in one order: organized, wins, granted, filed, first talk', () => {
-    const order: readonly PathMark['kind'][] = [
-      'organized',
-      'wins',
-      'granted',
-      'filed',
-      'firstTalk',
-    ]
+  it('sets the marks of a year down in one order: organized, wins, filed, first talk', () => {
+    const order: readonly PathMark['kind'][] = ['organized', 'wins', 'filed', 'firstTalk']
 
     for (const stop of path) {
       const kinds = stop.marks.map((mark) => mark.kind)
       expect(kinds, stop.key).toEqual(order.filter((kind) => kinds.includes(kind)))
     }
-    expect(stopOf(path, '2026').marks.map((mark) => mark.kind)).toEqual([
+    expect(stopOf(path, '2026').marks.map((mark) => mark.kind)).toEqual(['organized', 'wins'])
+    expect(stopOf(path, '2022').marks.map((mark) => mark.kind)).toEqual(['wins', 'filed'])
+    expect(stopOf(path, '2021').marks.map((mark) => mark.kind)).toEqual([
       'organized',
       'wins',
-      'granted',
+      'filed',
     ])
   })
 
@@ -310,7 +324,6 @@ describe('markSection', () => {
   it('sends every mark to the section that tells the rest', () => {
     expect(markSection('wins')).toBe('wins')
     expect(markSection('organized')).toBe('organized')
-    expect(markSection('granted')).toBe('patents')
     expect(markSection('filed')).toBe('patents')
     expect(markSection('firstTalk')).toBe('talks')
   })

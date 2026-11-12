@@ -11,28 +11,62 @@
     inset 0 0 0 0.34em var(--ink);
 }
 
+/*
+ * The heading has a line to itself, and under it the numbers stand in columns
+ * of two, read down: the label is narrow, and two of the longer numbers do
+ * not fit across it.
+ */
 .print {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.8em;
   font-size: 1.06em;
   line-height: 1.16;
 }
 
-/* The heading and the numbers share a line where there is room, and part where there is not. */
-.statement {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 0.42em;
+.heading {
+  flex-basis: 100%;
 }
 
-/* A number is never broken across lines. */
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* A number is never broken across lines, and neither is the heading. */
 .run {
   display: block;
   white-space: nowrap;
 }
 
+/* Numbers one above the other need nothing between them. */
+.separator {
+  display: none;
+}
+
+/*
+ * A phone's label is wide and shallow, so each pair is a line of it instead,
+ * with a dot between the two. The heading and the first pair share a line
+ * where there is room, and part where there is not.
+ */
 @container lid (max-width: 560px) {
   .print {
+    column-gap: 0.42em;
     font-size: 1.2em;
+  }
+
+  .heading {
+    flex-basis: auto;
+  }
+
+  .group {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .group > .run,
+  .separator {
+    display: inline;
   }
 }
 

@@ -122,9 +122,8 @@ export interface MedalSpec<Id extends string> extends LinkSpec<'medal', Id> {
 
 export interface ComplianceLabelSpec<Id extends string> extends LinkSpec<'complianceLabel', Id> {
   readonly heading: string
+  /** The publication numbers it lists, in the order it lists them. */
   readonly numbers: readonly string[]
-  /** The line about filings still pending, or null when none is. */
-  readonly pending: string | null
 }
 
 export type BoltSpec<Id extends string> = Spec<'bolt', Id>

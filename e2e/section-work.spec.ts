@@ -315,7 +315,10 @@ test.describe('the career path', () => {
     await expect(total('organized')).toHaveText(String(stats.organized.count))
     await expect(total('stage')).toHaveText(String(stats.bitcoinPlusPlus.stageSessions))
     await expect(total('projects')).toHaveText(String(publishableProjects(content.projects).length))
-    await expect(total('patents')).toHaveText(String(stats.patents.granted))
+    await expect(total('patents')).toHaveText(String(stats.patents.filings))
+    await expect(section.locator('li[data-total="patents"]')).toHaveText(
+      new RegExp(`^${String(stats.patents.filings)}\\s*patent filings$`),
+    )
   })
 
   test('puts what else happened at its year', async ({ page }) => {
@@ -326,18 +329,37 @@ test.describe('the career path', () => {
     await expect(mark('2021', 'wins')).toContainText('NCR Global Hackathon')
     await expect(mark('2021', 'wins')).toContainText('1st of 300+ teams')
     await expect(mark('2025', 'organized').locator('[data-figure]')).toHaveText('8')
-    await expect(mark('2026', 'granted')).toContainText('US 12,536,579 B2')
-    await expect(mark('2022', 'filed').locator('[data-figure]')).toHaveText('2')
+    await expect(mark('2022', 'filed').locator('[data-figure]')).toHaveText('3')
+    await expect(mark('2022', 'filed')).toContainText('patent filings')
+    await expect(mark('2022', 'filed').locator('time')).toHaveText([
+      'Apr 29, 2022',
+      'Jul 29, 2022',
+      'Oct 14, 2022',
+    ])
+    await expect(mark('2021', 'filed')).toHaveText(/^1\s*patent filing\s*Jul 2, 2021\s*$/)
     await expect(mark('2023', 'firstTalk')).toContainText(
       'Extending Bitcoin with Zero-knowledge Proofs',
     )
     await expect(section.locator('li[data-stop="2019"] li[data-mark]')).toHaveCount(0)
   })
 
+  test('marks a patent filing once, in the year it was filed, and says nothing of what became of it', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'work')
+    const filed = section.locator('li[data-mark="filed"]')
+
+    await expect(filed).toHaveCount(2)
+    await expect(filed.locator('time')).toHaveCount(stats.patents.filings)
+    await expect(section.locator('li[data-mark="granted"]')).toHaveCount(0)
+    await expect(section).not.toContainText(/grant|pending|abandon|patent application/i)
+    await expect(section).not.toContainText(/(four|4) patents/i)
+  })
+
   for (const [kind, target] of [
     ['wins', 'wins'],
     ['organized', 'organized'],
-    ['granted', 'patents'],
+    ['filed', 'patents'],
     ['firstTalk', 'talks'],
   ] as const) {
     test(`a ${kind} sticker leads to the ${target} section`, async ({ page }) => {
