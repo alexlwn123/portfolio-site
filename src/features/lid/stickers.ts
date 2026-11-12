@@ -145,7 +145,6 @@ function badge({ profile }: Content, stats: Stats): BadgeSpec<StickerId> {
     givenName: profile.givenName,
     familyName: profile.familyName,
     title: role.title,
-    titleNote: words.titleNote,
     organization: `${role.organization} · ${location.city}, ${location.regionCode}`,
     ribbonsLabel: nav.sections,
     ribbons: sectionRibbons(stats),

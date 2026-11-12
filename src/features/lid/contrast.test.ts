@@ -36,7 +36,6 @@ const SMALL_PRINT: readonly Pairing[] = [
   ['hi', 'ink', 'job title, Pleb FM name, arcade button title'],
   ['white', 'deep', 'parking sign'],
   ['white', 'cobalt', 'the saved spot, written on the lid itself'],
-  ['gum-dark', 'white', '"real title" scrawl'],
 ]
 
 /** What the mockup did, and the lid does not. */

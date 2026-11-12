@@ -162,7 +162,8 @@ Each word is given its length from a table of the label face's widths
 
 ## Kept as it was, but worth a look
 
-- "real title ↓" still sits over the last two letters of "LEWIN" on the badge, as in the mockup.
+- "real title ↓" sat over the last two letters of "LEWIN" on the badge, as in the mockup, until
+  round 3, when it was taken off (see "The badge's scrawl is gone" below).
 
 ## Additions since the mockup
 
@@ -560,6 +561,14 @@ What guards the first screen now is `e2e/lid-cover.spec.ts`, at 1440 × 900, 192
 name, the hello tag and the cue wholly on it, the badge's photo and name on it, and no sticker of
 the pile showing. `e2e/lid-arrival.spec.ts` guards the motion, and that nothing stays hidden with
 the script, without it, or with motion reduced.
+
+### The badge's scrawl is gone
+
+Alex asked for the "real title ↓" note on the badge to be removed. The badge now prints his title
+with nothing scrawled beside it, and the "(real title)" that a screen reader heard after the title
+went with it. The rows above about the scrawl's colour, its arrow and how it is read out describe
+the lid before this. The badge was already one of the comparison's recorded departures; without
+the note the lid differs from the mockup by 1.99% of pixels, against 2.70% allowed.
 
 ### What could not be checked here
 

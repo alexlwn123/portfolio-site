@@ -65,7 +65,6 @@ export const copy = deepFreeze({
     lanyard: { loop: ['HACK', 'ORGANIZE', 'REPEAT'], city: 'ATL' },
     badge: {
       roles: ['Hacker', 'Organizer', 'Speaker'],
-      titleNote: 'real title',
       photoAlt: (name: string) => `${name}, smiling, in a cap`,
     },
     ribbons: {

@@ -2,7 +2,6 @@ import type { ReactElement } from 'react'
 
 import { cx } from '../../lib/classNames'
 import foil from '../stickers/foil.module.css'
-import { ArrowDown } from '../stickers/illustrations/Glyphs'
 import { paintRef, svgId } from '../stickers/svgIds'
 import voice from '../stickers/voice.module.css'
 import styles from './Badge.module.css'
@@ -21,8 +20,6 @@ export interface BadgeProps {
   readonly familyName: string
   /** His job title, exactly as it is printed on his business card. */
   readonly title: string
-  /** The scrawl that says the title is real. */
-  readonly titleNote: string
   readonly organization: string
   readonly ribbonsLabel: string
   readonly ribbons: readonly Ribbon[]
@@ -76,7 +73,7 @@ function Clip({ id }: { readonly id: string }): ReactElement {
 type CardProps = Omit<BadgeProps, 'id' | 'ribbonsLabel' | 'ribbons'>
 
 function Card(props: CardProps): ReactElement {
-  const { roles, photo, photoAlt, givenName, familyName, title, titleNote, organization } = props
+  const { roles, photo, photoAlt, givenName, familyName, title, organization } = props
 
   return (
     <div className={styles.card}>
@@ -90,10 +87,7 @@ function Card(props: CardProps): ReactElement {
         <span className={cx(voice.display, styles.given)}>{givenName}</span>{' '}
         <span className={cx(voice.label, styles.family)}>{familyName}</span>
       </p>
-      <p className={cx(voice.label, styles.title)}>
-        {title}
-        <span className={voice.srOnly}> ({titleNote})</span>
-      </p>
+      <p className={cx(voice.label, styles.title)}>{title}</p>
       <p className={styles.organization}>{organization}</p>
     </div>
   )
@@ -110,9 +104,6 @@ export function Badge({ id, ribbonsLabel, ribbons, ...card }: BadgeProps): React
       <div className={styles.badge} data-badge-card="">
         <div className={styles.sleeve}>
           <Card {...card} />
-          <span className={cx(voice.marker, styles.titleNote)} aria-hidden="true">
-            {card.titleNote} <ArrowDown className={styles.arrow} />
-          </span>
         </div>
         <SectionRibbons label={ribbonsLabel} ribbons={ribbons} />
       </div>

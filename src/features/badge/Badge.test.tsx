@@ -48,13 +48,11 @@ describe('Badge', () => {
     expect(screen.getByText('Finite Computer · Atlanta, GA')).toBeInTheDocument()
   })
 
-  it('tells a reader who cannot see the scrawl that the title is real', () => {
-    renderBadge()
+  it('prints the title as it is, with no note scrawled beside it', () => {
+    const { container } = renderBadge()
 
-    expect(screen.getByText(content.profile.role.title)).toHaveTextContent(
-      'Minister of Development (real title)',
-    )
-    expect(screen.getByText('real title')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByText(content.profile.role.title).textContent).toBe('Minister of Development')
+    expect(container).not.toHaveTextContent(/real title/i)
   })
 
   it('lists what he does at these events', () => {

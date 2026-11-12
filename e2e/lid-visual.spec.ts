@@ -49,7 +49,7 @@ const MAX_DIFFERENCE = 0.027
 const DEPARTED = [
   'name', // each letter a piece of its own, set without kerning: the E sits two units to the right
   'lanyard', // lettering in ink, stars drawn
-  'badge', // photo through the image pipeline, "real title" in the darker pink, arrow drawn
+  'badge', // photo through the image pipeline, and no "real title" scrawled beside the name
   'hello', // HELLO in ink, the highlighter a stroke of its own
   'cv', // arrow drawn
   'wins-count', // figure in ink

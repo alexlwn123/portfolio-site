@@ -47,7 +47,6 @@ export interface BadgeSpec<Id extends string> extends Spec<'badge', Id> {
   readonly givenName: string
   readonly familyName: string
   readonly title: string
-  readonly titleNote: string
   readonly organization: string
   readonly ribbonsLabel: string
   readonly ribbons: readonly RibbonSpec[]

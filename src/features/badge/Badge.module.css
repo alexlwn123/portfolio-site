@@ -188,31 +188,6 @@ svg.clip {
   font-weight: var(--weight-bold);
 }
 
-/*
- * "real title", scrawled beside the name with an arrow down to it. The darker
- * pink is 5.3:1 on the white card. The mockup's bubblegum was 3:1.
- */
-.titleNote {
-  position: absolute;
-  right: 0.9em;
-  bottom: 5.3em;
-  z-index: 5;
-  color: var(--gum-dark);
-  font-size: 1.7em;
-  white-space: nowrap;
-  text-shadow:
-    0 0 0.12em var(--white),
-    0 0 0.12em var(--white),
-    0 0 0.2em var(--white);
-  rotate: -9deg;
-}
-
-.arrow {
-  width: 0.645em;
-  height: 0.8em;
-  vertical-align: -0.08em;
-}
-
 @container lid (max-width: 560px) {
   .roles {
     font-size: 1.2em;
