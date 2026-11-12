@@ -6,10 +6,8 @@ import { SECTION_IDS, sectionAnchor } from '../sections/sectionIds'
 import { navCopy } from './copy'
 import { PinnedStrap } from './PinnedStrap'
 
-const WORDS = ['alex.example', 'ATL'] as const
-
 function renderStrap() {
-  const { container } = render(<PinnedStrap words={WORDS} />)
+  const { container } = render(<PinnedStrap />)
   return { container, nav: screen.getByRole('navigation') }
 }
 
@@ -47,11 +45,20 @@ describe('PinnedStrap', () => {
     expect(links.map((link) => link.getAttribute('data-to'))).toEqual(SECTION_IDS)
   })
 
-  it('is one list, so a screen reader can say how many stops there are', () => {
+  it('lists the sections as one list, so a screen reader can say how many there are', () => {
     const { nav } = renderStrap()
 
     expect(within(nav).getAllByRole('list')).toHaveLength(1)
-    expect(within(nav).getAllByRole('listitem')).toHaveLength(SECTION_IDS.length + 1)
+    expect(within(nav).getAllByRole('listitem')).toHaveLength(SECTION_IDS.length)
+  })
+
+  it('keeps the way back out of the list that scrolls, so no link can slide under it', () => {
+    const { nav } = renderStrap()
+    const back = within(nav).getByRole('link', { name: navCopy.top })
+    const list = within(nav).getByRole('list')
+
+    expect(list).not.toContainElement(back)
+    expect(back.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('keeps every label short enough for a phone', () => {
@@ -74,12 +81,13 @@ describe('PinnedStrap', () => {
     expect(nav.textContent).not.toMatch(/[←-⇿✦★☆]/)
   })
 
-  it('weaves the lanyard’s words into the rest of the strap, for the eye only', () => {
+  it('prints its links and nothing else: the rest of the strap is bare', () => {
     const { container, nav } = renderStrap()
-    const weave = container.querySelector('[aria-hidden="true"]:not(svg)')
+    const labels = [navCopy.top, ...SECTION_IDS.map((id) => navCopy.sections[id])]
 
-    expect(weave?.textContent).toContain('alex.exampleATL')
-    expect(weave?.querySelectorAll('a')).toHaveLength(0)
+    expect(nav.textContent).toBe(labels.join(''))
+    expect(container.querySelector('[aria-hidden="true"]:not(svg)')).toBeNull()
+    expect(nav.children).toHaveLength(2)
     expect(within(nav).getAllByRole('link')).toHaveLength(SECTION_IDS.length + 1)
     expect(nav).toHaveAccessibleName(navCopy.label)
   })

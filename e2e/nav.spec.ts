@@ -8,7 +8,8 @@ import { openLid } from './support'
 /*
  * The strap pinned to the top of the home page: the lanyard's strap laid
  * flat, with the way back to the top and a link to each section. It is CSS
- * and nothing else, so every test here also holds with JavaScript off.
+ * and nothing else, with one exception: the page's script brings a link the
+ * keyboard reaches wholly into view where the links scroll sideways.
  */
 
 const MIN_TARGET_PX = 24
@@ -187,26 +188,69 @@ test('a link reached by keyboard is never left under the strap', async ({ page }
   expect(hidden).toEqual([])
 })
 
-test('on a phone, a strap link reached by keyboard is clear of the buckle', async ({ page }) => {
+test('on a phone, a strap link reached by keyboard is brought wholly into view', async ({
+  page,
+}) => {
   await openLid(page, NARROW_PHONE_PX)
   await page.locator('section#work').evaluate((section) => {
     section.scrollIntoView()
   })
+  const list = await strap(page).getByRole('list').boundingBox()
   const buckle = await strap(page).getByRole('link', { name: navCopy.top }).boundingBox()
+  // The buckle is beside the list, not over it: nothing in the list can be under it.
+  expect((buckle?.x ?? 0) + (buckle?.width ?? 0)).toBeLessThanOrEqual(list?.x ?? 0)
   await strap(page).getByRole('link').last().focus()
 
-  const covered: string[] = []
+  const cutOff: string[] = []
   for (const id of SECTION_IDS.toReversed().slice(1)) {
     await page.keyboard.press('Shift+Tab')
     const link = strap(page).locator(`a[data-to="${id}"]`)
     await expect(link).toBeFocused()
     const box = await link.boundingBox()
-    if ((box?.x ?? 0) < (buckle?.x ?? 0) + (buckle?.width ?? 0)) {
-      covered.push(id)
+    const left = box?.x ?? 0
+    const right = left + (box?.width ?? 0)
+    if (left < (list?.x ?? 0) - 1 || right > (list?.x ?? 0) + (list?.width ?? 0) + 1) {
+      cutOff.push(`${id} ${String(Math.round(left))}-${String(Math.round(right))}`)
     }
   }
 
-  expect(covered).toEqual([])
+  // The page's script moves a half-hidden link the rest of the way: a browser alone does not.
+  expect(cutOff).toEqual([])
+})
+
+test('on a phone, a strap link pressed while half in view stays put and is followed', async ({
+  page,
+}) => {
+  await openLid(page, NARROW_PHONE_PX)
+  await page.locator('section#work').evaluate((section) => {
+    section.scrollIntoView()
+  })
+  const list = strap(page).getByRole('list')
+  await list.evaluate((run) => {
+    run.scrollTo({ left: run.scrollWidth, behavior: 'instant' })
+  })
+  // The first link the list's edge cuts through: part of it shows, part does not.
+  const half = await list.evaluate((run) => {
+    const edge = run.getBoundingClientRect().left
+    const cut = [...run.querySelectorAll('a')].find((link) => {
+      const { left, right } = link.getBoundingClientRect()
+      return left < edge && right > edge + 1
+    })
+    return cut
+      ? { id: cut.getAttribute('data-to'), right: cut.getBoundingClientRect().right }
+      : null
+  })
+  if (half === null) {
+    // No link happens to be cut at this width: there is nothing to press.
+    return
+  }
+  const box = await strap(page).getByRole('list').boundingBox()
+  const before = await list.evaluate((run) => run.scrollLeft)
+
+  await page.mouse.click(half.right - 2, (box?.y ?? 0) + (box?.height ?? 0) / 2)
+
+  await expect(page).toHaveURL(new RegExp(`/#${half.id ?? ''}$`))
+  expect(await list.evaluate((run) => run.scrollLeft)).toBe(before)
 })
 
 test('every strap link is a full-height target, in type no smaller than the lid allows', async ({

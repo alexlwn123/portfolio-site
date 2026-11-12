@@ -7,8 +7,6 @@
  */
 .strap {
   --strap-edge: 0.1875rem;
-  /* The buckle's width and a little more: how far in a link is scrolled to, to be seen. */
-  --buckle-room: 6rem;
 
   position: sticky;
   top: 0;
@@ -36,11 +34,10 @@
 
 /*
  * The links. Where they do not all fit, as on a phone, they scroll sideways
- * inside the strap and the page itself never does. The buckle stays put.
+ * inside this list and the page itself never does. The buckle is beside the
+ * list, not in it, so nothing scrolls under it.
  */
 .run {
-  /* A link the keyboard reaches stops clear of the buckle, which stays put over the run's start. */
-  scroll-padding-inline-start: var(--buckle-room);
   display: flex;
   flex: 0 1 auto;
   min-width: 0;
@@ -95,8 +92,7 @@
 
 /* The buckle: brushed metal over the strap's end, with the way back to the top. */
 .buckle {
-  position: sticky;
-  left: 0;
+  position: relative;
   z-index: 1;
   margin-right: 0.2em;
   border-right: var(--strap-edge) solid var(--metal-dark);
@@ -121,22 +117,6 @@
   width: 1em;
   height: 1em;
   rotate: -90deg;
-}
-
-/* The rest of the strap: the lanyard's words, only where there is strap to spare. */
-.weave {
-  display: flex;
-  flex: 1 1 0;
-  gap: 0.9em;
-  align-items: center;
-  min-width: 0;
-  padding: 0.0625rem 0 0 0.9em;
-  overflow: hidden;
-  opacity: 0.55;
-}
-
-.weave .star {
-  color: var(--ink);
 }
 
 @media (min-width: 1100px) {

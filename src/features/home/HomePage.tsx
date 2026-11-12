@@ -1,9 +1,7 @@
 import type { ReactElement } from 'react'
 
 import type { Content, Stats } from '../../content'
-import { copy } from '../../content/copy'
 import type { BadgePhotoImage } from '../badge/photoSources'
-import { siteHost } from '../lid/facts'
 import { Lid } from '../lid/Lid'
 import { PinnedStrap } from '../nav/PinnedStrap'
 import { Sections } from '../sections/Sections'
@@ -23,13 +21,10 @@ interface HomePageProps {
  * makes the lid move, and everything here is whole without it.
  */
 export function HomePage({ content, stats, photo }: HomePageProps): ReactElement {
-  /* The strap is printed with what the lanyard's own strap says. */
-  const woven = [siteHost(content.profile.site), copy.lid.lanyard.city]
-
   return (
     <main className={styles.page}>
       <Lid content={content} stats={stats} photo={photo} />
-      <PinnedStrap words={woven} />
+      <PinnedStrap />
       <Sections content={content} stats={stats} />
     </main>
   )

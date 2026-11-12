@@ -1,4 +1,4 @@
-import { Fragment, type ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import { cx } from '../../lib/classNames'
 import { lidAnchor } from '../lid/anchor'
@@ -7,46 +7,25 @@ import { ArrowRight, Star } from '../stickers/illustrations/Glyphs'
 import { navCopy } from './copy'
 import styles from './PinnedStrap.module.css'
 
-interface PinnedStrapProps {
-  /** What is woven into the strap where it carries no link: the lanyard's own words. */
-  readonly words: readonly string[]
-}
-
-/** Enough repeats of the words to run off the end of the widest screen. */
-const REPEATS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth']
-
-/** The rest of the strap, printed like the lanyard it is. Decoration: it says nothing new. */
-function Weave({ words }: PinnedStrapProps): ReactElement {
-  return (
-    <span className={styles.weave} aria-hidden="true">
-      {REPEATS.map((repeat) =>
-        words.map((word) => (
-          <Fragment key={`${repeat}-${word}`}>
-            <Star className={styles.star} />
-            <span>{word}</span>
-          </Fragment>
-        )),
-      )}
-    </span>
-  )
-}
-
 /**
  * The lanyard's strap laid flat across the page: the way back to the top and
  * a link to each section. It lies between the lid and the first section, and
- * stays at the top of the screen from there down. CSS does all of it: no
- * script knows this is here.
+ * stays at the top of the screen from there down. Past its last link the
+ * strap is bare. The way back is a buckle at the strap's end, beside the
+ * list and not in it: where the links do not all fit they scroll sideways
+ * inside the list, and none of them can slide under the buckle. CSS does all
+ * of it: no script knows this is here.
  */
-export function PinnedStrap({ words }: PinnedStrapProps): ReactElement {
+export function PinnedStrap(): ReactElement {
   return (
     <nav className={styles.strap} aria-label={navCopy.label} data-pinned-strap="">
+      <div className={cx(styles.item, styles.buckle)}>
+        <a className={styles.link} href={lidAnchor()}>
+          <ArrowRight className={styles.up} />
+          {navCopy.top}
+        </a>
+      </div>
       <ul className={styles.run} role="list">
-        <li className={cx(styles.item, styles.buckle)}>
-          <a className={styles.link} href={lidAnchor()}>
-            <ArrowRight className={styles.up} />
-            {navCopy.top}
-          </a>
-        </li>
         {SECTION_IDS.map((id) => (
           <li key={id} className={styles.item}>
             <Star className={styles.star} />
@@ -56,7 +35,6 @@ export function PinnedStrap({ words }: PinnedStrapProps): ReactElement {
           </li>
         ))}
       </ul>
-      <Weave words={words} />
     </nav>
   )
 }
