@@ -177,7 +177,7 @@ From his GitHub profile, in the order he lists them. Descriptions are his.
 |---|---|---|
 | BTC Plinko | Plinko with sats. | https://github.com/alexlwn123/btc-plinko |
 | Cargo Leaderboard | A Rust competition for the biggest builds, biggest cleans, and longest compile times. | https://github.com/alexlwn123/cargo-leaderboard |
-| Finite Computer | Open-source AI agent platform spanning chat, private compute, hosted sites, search, and skills. (His employer.) | https://github.com/finitecomputer/finite-mono |
+| Finite Computer | Open-source AI agent platform spanning chat, private compute, hosted sites, search, and skills. (His employer.) | https://github.com/finitecomputer/fragment |
 | Clawthing Store | AI-designed crab merch and apparel. Marketed towards agents. | https://clawthing.store |
 | Fedimint SDK | Tools for developing Fedimint clients. | https://github.com/fedimint/fedimint-sdk |
 | Web to SVG Extension | Chromium extension to capture any DOM element as PNG, JPEG, or SVG. | https://github.com/alexlwn123/web-to-svg-extension |

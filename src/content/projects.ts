@@ -64,7 +64,7 @@ const records: readonly ProjectInput[] = [
     'finite-computer',
     'Finite Computer',
     'Open-source AI agent platform spanning chat, private compute, hosted sites, search, and skills.',
-    [code('https://github.com/finitecomputer/finite-mono')],
+    [code('https://github.com/finitecomputer/fragment')],
     { note: 'His employer.' },
   ),
   project(
