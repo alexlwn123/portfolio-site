@@ -72,17 +72,25 @@
 }
 
 /* The address: an ink plate lettered in highlighter, the whole of it the link. */
+/*
+ * The link keeps its place and the ink bar inside it lifts, so a pointer
+ * resting on the bar's edge stays on the link.
+ */
 .email {
+  display: block;
+  margin-top: 1.9em;
+  color: var(--hi);
+  text-decoration: none;
+}
+
+.bar {
   display: flex;
   flex-wrap: wrap;
   gap: 0.2em 1em;
   align-items: center;
-  margin-top: 1.9em;
   padding: 1.3em 2em 1.2em;
   border-radius: 1em;
   background: var(--ink);
-  color: var(--hi);
-  text-decoration: none;
   transition:
     translate var(--duration-hover) var(--ease-slap),
     scale var(--duration-hover) var(--ease-slap);
@@ -113,8 +121,8 @@
   transition: translate 0.2s;
 }
 
-.email:hover,
-.email:focus-visible {
+.email:hover > .bar,
+.email:focus-visible > .bar {
   translate: 0 -0.25em;
   scale: 1.012;
 }
@@ -202,8 +210,11 @@
   }
 
   .email {
-    gap: 0.25em 0.8em;
     margin-top: 1.5em;
+  }
+
+  .bar {
+    gap: 0.25em 0.8em;
     padding: 1.2em 1.2em 1.1em;
   }
 
@@ -226,7 +237,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .email,
+  .bar,
   .arrow {
     transition: none;
   }

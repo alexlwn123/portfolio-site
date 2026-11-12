@@ -28,7 +28,6 @@
   filter: drop-shadow(
     calc(var(--cast-x) * 0.56) calc(var(--cast-y) * 0.56) 0.22em rgba(var(--shadow-rgb), 0.45)
   );
-  transition: translate 0.25s var(--ease-slap);
   translate: calc(var(--o, 0) * 0.1em) 0;
   rotate: var(--rr, 0deg);
 }
@@ -90,9 +89,14 @@
   z-index: 1;
 }
 
-.ribbon:hover,
-.ribbon:focus-visible {
-  translate: calc(var(--o, 0) * 0.1em + 0.9em) 0;
+/*
+ * A ribbon slides out a little under the pointer. Its face slides, inside it:
+ * the ribbon keeps its place, so a pointer on its end stays on it. The face's
+ * type is 1.85 times the ribbon's, and the slide is 0.9 of the ribbon's em.
+ */
+.ribbon:hover > .face,
+.ribbon:focus-visible > .face {
+  translate: calc(0.9em / 1.85) 0;
 }
 
 .item .ribbon:focus-visible {
@@ -125,6 +129,7 @@
   -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% /
     0.46em 100%;
   mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 0.46em 100%;
+  transition: translate 0.25s var(--ease-slap);
 }
 
 .count {
@@ -134,7 +139,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ribbon {
+  .face {
     transition: none;
   }
 }

@@ -54,9 +54,11 @@ function PlateRow({ patent }: { readonly patent: Patent }): ReactElement {
       <dl className={cx(voice.label, styles.fields)}>
         <Field label={number.label} className={styles.numberField}>
           <a className={styles.number} href={patent.link.url}>
-            <span>{number.value}</span>{' '}
-            <span className={voice.srOnly}>{patentsCopy.plate.on(patent.link.label)}</span>
-            <ArrowRight className={styles.arrow} />
+            <span className={styles.stamp}>
+              <span>{number.value}</span>{' '}
+              <span className={voice.srOnly}>{patentsCopy.plate.on(patent.link.label)}</span>
+              <ArrowRight className={styles.arrow} />
+            </span>
           </a>
         </Field>
         <Field label={patentsCopy.plate.fields.status}>

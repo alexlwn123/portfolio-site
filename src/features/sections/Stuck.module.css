@@ -20,12 +20,27 @@
     drop-shadow(var(--cast-x) var(--cast-y) 0.5em rgba(var(--shadow-rgb), 0.38));
 }
 
-/* A sticker that is a link lifts under the pointer and under keyboard focus. */
+/*
+ * A sticker that is a link lifts under the pointer and under keyboard focus.
+ * Its face lifts, inside it. The link keeps its place, so hovering on its
+ * very edge holds: nothing slides away from the pointer and drops back.
+ */
 .lifts {
+  transition: filter var(--duration-hover);
+}
+
+.face {
+  position: relative;
+  display: block;
   transition:
     translate var(--duration-hover) var(--ease-slap),
-    scale var(--duration-hover) var(--ease-slap),
-    filter var(--duration-hover);
+    scale var(--duration-hover) var(--ease-slap);
+}
+
+.lifts:hover > .face,
+.lifts:focus-visible > .face {
+  translate: 0 -0.35em;
+  scale: 1.035;
 }
 
 .lifts:hover,
@@ -33,8 +48,6 @@
   --lift: 1;
 
   z-index: 2;
-  translate: 0 -0.35em;
-  scale: 1.035;
   filter: drop-shadow(
       calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
     )
@@ -85,7 +98,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lifts {
+  .lifts,
+  .face {
     transition: none;
   }
 }

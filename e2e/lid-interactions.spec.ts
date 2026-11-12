@@ -273,6 +273,9 @@ test.describe('one lamp for the whole lid', () => {
   })
 })
 
+/** How many points across a dropped sticker are looked under. */
+const POINTS_ACROSS = 9
+
 test.describe('pick up, throw, re-stick', () => {
   test('dragging moves and raises a sticker without navigating', async ({ page }) => {
     await openLivelyLid(page, 1280)
@@ -286,18 +289,25 @@ test.describe('pick up, throw, re-stick', () => {
     const after = await boxOf(cv)
     expect(after.x - before.x).toBeGreaterThan(400)
     expect(page.url()).toBe(url)
-    // Where it was dropped it lies on top of whatever was there.
-    const onTop = await cv.evaluate((element) => {
+    // Where it was dropped it lies on top of whatever was there. It is on top at its middle,
+    // and somewhere across it there is another sticker underneath: the tags it was dropped on
+    // have gaps between them, so one point alone could fall in a gap.
+    const onTop = await cv.evaluate((element, across) => {
       const { left, top, width, height } = element.getBoundingClientRect()
-      const stack = document.elementsFromPoint(left + width / 2, top + height / 2)
+      const middle = document.elementsFromPoint(left + width / 2, top + height / 2)
+      const stacks = Array.from({ length: across }, (_, index) =>
+        document.elementsFromPoint(left + ((index + 0.5) * width) / across, top + height / 2),
+      )
       return {
-        first: element.contains(stack[0] ?? null),
-        overAnother: stack.some((under) => {
-          const other = under.closest('[data-sticker]')
-          return other !== null && other !== element
-        }),
+        first: element.contains(middle[0] ?? null),
+        overAnother: stacks.some((stack) =>
+          stack.some((under) => {
+            const other = under.closest('[data-sticker]')
+            return other !== null && other !== element
+          }),
+        ),
       }
-    })
+    }, POINTS_ACROSS)
     expect(onTop).toEqual({ first: true, overAnother: true })
   })
 

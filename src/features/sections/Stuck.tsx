@@ -24,6 +24,9 @@ export interface StuckProps {
  * pressed on: the page's script finds it by that, and presses it on the first
  * time it scrolls into view (src/features/lid/enhance/arriveDom.ts). Without
  * the script it is simply there.
+ *
+ * A link's lift is its face's, inside it: the link keeps its place, so a
+ * pointer resting on its edge stays on it.
  */
 export function Stuck({ as = 'div', href, label, className, children }: StuckProps): ReactElement {
   const linked = href !== undefined
@@ -36,6 +39,8 @@ export function Stuck({ as = 'div', href, label, className, children }: StuckPro
       href,
       'aria-label': label,
     },
-    children,
+    linked
+      ? createElement('span', { className: styles.face, 'data-stuck-face': '' }, children)
+      : children,
   )
 }

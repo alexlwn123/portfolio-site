@@ -46,11 +46,18 @@ function buttonProps(control: StickerControl, toggle: boolean): Record<string, u
   }
 }
 
+/** A face is a div where a div is allowed, and a span where only words are. */
+function faceTag(tag: string): 'div' | 'span' {
+  return tag === 'div' || tag === 'nav' ? 'div' : 'span'
+}
+
 /**
  * The placed, shadowed thing on the lid that every sticker is. It lifts under
- * the pointer and, when it is or holds a link, under keyboard focus. A sticker
- * that is not flat can be picked up, which the page's script reads from
- * data-grab.
+ * the pointer and, when it is or holds a link, under keyboard focus. What
+ * lifts is its face, inside it: the sticker itself keeps its place, so a
+ * pointer resting on its edge stays on it and the lift cannot slide it out
+ * from under the pointer and back again. A sticker that is not flat can be
+ * picked up, which the page's script reads from data-grab.
  */
 export function Sticker({
   id,
@@ -86,6 +93,8 @@ export function Sticker({
       'aria-hidden': decorative ? true : undefined,
       ...(tag === 'button' && control !== undefined ? buttonProps(control, toggle) : {}),
     },
-    children,
+    flat
+      ? children
+      : createElement(faceTag(tag), { className: styles.face, 'data-sticker-face': '' }, children),
   )
 }

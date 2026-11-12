@@ -57,6 +57,19 @@
   animation: var(--entrance, none);
 }
 
+/*
+ * The face: everything the sticker shows, and the part of it that lifts. The
+ * sticker around it never moves under the pointer, so hovering on its very
+ * edge holds: nothing slides away from the pointer and drops back under it.
+ */
+.face {
+  position: relative;
+  display: block;
+  transition:
+    translate var(--duration-hover) var(--ease-slap),
+    scale var(--duration-hover) var(--ease-slap);
+}
+
 /* A sticker with no width of its own in the placement data sizes itself. */
 .selfSized {
   width: max-content;
@@ -76,16 +89,14 @@
 }
 
 /*
- * Lifted off the lid: under the pointer, or holding keyboard focus. --at-x
- * and --at-y are where the sticker has been carried to, when it has been.
+ * Lifted off the lid: under the pointer, or holding keyboard focus. The
+ * sticker comes to the front and its shadow lengthens; its face rises.
  */
 .sticker:hover,
 .sticker:focus-visible {
   --lift: 1;
 
   z-index: 40;
-  translate: var(--at-x, 0) calc(var(--at-y, 0em) - 0.35em);
-  scale: 1.035;
   filter: drop-shadow(
       calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
     )
@@ -100,14 +111,23 @@
   --lift: 1;
 
   z-index: 40;
-  translate: var(--at-x, 0) calc(var(--at-y, 0em) - 0.35em);
-  scale: 1.035;
   filter: drop-shadow(
       calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
     )
     drop-shadow(
       calc(var(--cast-x) * 2.6) calc(var(--cast-y) * 2.6) 1em rgba(var(--shadow-rgb), 0.42)
     );
+}
+
+.sticker:hover > .face,
+.sticker:focus-visible > .face {
+  translate: 0 -0.35em;
+  scale: 1.035;
+}
+
+.sticker:has(:focus-visible) > .face {
+  translate: 0 -0.35em;
+  scale: 1.035;
 }
 
 /* Highlighter ring with an ink edge on both sides: visible on the cobalt lid
@@ -136,12 +156,6 @@
   transform: rotate(var(--swing, 0deg));
 }
 
-.sticker[data-carry]:hover,
-.sticker[data-carry]:focus-visible,
-.sticker[data-carry]:has(:focus-visible) {
-  translate: var(--at-x) calc(var(--at-y) - 0.35em);
-}
-
 /* In the hand: it follows the pointer exactly, so nothing eases. */
 .sticker[data-carry='held'],
 .sticker[data-carry='thrown'] {
@@ -155,6 +169,14 @@
     drop-shadow(
       calc(var(--cast-x) * 2.6) calc(var(--cast-y) * 2.6) 1em rgba(var(--shadow-rgb), 0.42)
     );
+  transition: none;
+}
+
+/* The hand has already lifted it: its face does not rise a second time. */
+.sticker[data-carry='held'] > .face,
+.sticker[data-carry='thrown'] > .face {
+  translate: none;
+  scale: none;
   transition: none;
 }
 
@@ -266,5 +288,9 @@
   .sticker[data-carry='stuck'] {
     transition: none;
     animation: none;
+  }
+
+  .face {
+    transition: none;
   }
 }

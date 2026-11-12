@@ -58,4 +58,21 @@ describe('Stuck', () => {
     expect(screen.getByText('Asset tag')).not.toHaveAttribute('hidden')
     expect(screen.getByText('Asset tag')).not.toHaveAttribute('style')
   })
+  it('lifts a link by its face, so that the link itself never moves under the pointer', () => {
+    render(
+      <>
+        <Stuck href="/cv/">Plain CV</Stuck>
+        <Stuck>Asset tag</Stuck>
+      </>,
+    )
+
+    const link = screen.getByRole('link', { name: 'Plain CV' })
+    const face = screen.getByText('Plain CV')
+    expect(face).not.toBe(link)
+    expect(face.parentElement).toBe(link)
+    expect(face).toHaveClass(styles.face ?? '')
+    expect(face).toHaveAttribute('data-stuck-face')
+    // What is not a link does not lift, and has no face to lift by.
+    expect(screen.getByText('Asset tag')).toHaveAttribute('data-stuck')
+  })
 })

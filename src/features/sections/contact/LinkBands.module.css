@@ -127,9 +127,15 @@
     flex-basis: 55%;
   }
 
+  /* The link, the face it lifts by (Stuck.tsx) and the band all stretch to the row's height. */
   .link,
+  .link > [data-stuck-face],
   .band {
     display: flex;
+  }
+
+  .link > [data-stuck-face] {
+    flex: 1;
   }
 
   .band {

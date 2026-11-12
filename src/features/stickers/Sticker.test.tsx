@@ -4,11 +4,20 @@ import { describe, expect, it } from 'vitest'
 import { Sticker } from './Sticker'
 import styles from './Sticker.module.css'
 
+/** The sticker some words are printed on: the words sit on its face, inside it. */
+function stickerOf(words: string): HTMLElement {
+  const sticker = screen.getByText(words).closest<HTMLElement>('[data-sticker]')
+  if (!sticker) {
+    throw new Error(`Nothing with "${words}" on it is a sticker`)
+  }
+  return sticker
+}
+
 describe('Sticker', () => {
   it('carries its id for the placement stylesheet, and no inline style', () => {
     render(<Sticker id="hello">hi</Sticker>)
 
-    const sticker = screen.getByText('hi')
+    const sticker = stickerOf('hi')
     expect(sticker).toHaveAttribute('data-sticker', 'hello')
     expect(sticker).not.toHaveAttribute('style')
     expect(sticker.tagName).toBe('DIV')
@@ -91,11 +100,42 @@ describe('Sticker', () => {
       </>,
     )
 
-    expect(screen.getByText('stuck')).toHaveClass(styles.placed ?? '', styles.sticker ?? '')
-    expect(screen.getByText('drawn')).toHaveClass(styles.placed ?? '')
-    expect(screen.getByText('drawn')).not.toHaveClass(styles.sticker ?? '')
-    expect(screen.getByText('sized')).toHaveClass(styles.selfSized ?? '')
-    expect(screen.getByText('stuck')).not.toHaveClass(styles.selfSized ?? '')
+    expect(stickerOf('stuck')).toHaveClass(styles.placed ?? '', styles.sticker ?? '')
+    expect(stickerOf('drawn')).toHaveClass(styles.placed ?? '')
+    expect(stickerOf('drawn')).not.toHaveClass(styles.sticker ?? '')
+    expect(stickerOf('sized')).toHaveClass(styles.selfSized ?? '')
+    expect(stickerOf('stuck')).not.toHaveClass(styles.selfSized ?? '')
+  })
+
+  it('lifts by its face, so that the sticker itself never moves under the pointer', () => {
+    render(
+      <>
+        <Sticker id="hello">stuck</Sticker>
+        <Sticker id="cv" href="/cv/">
+          linked
+        </Sticker>
+        <Sticker id="tidy" control="tidy">
+          pressed
+        </Sticker>
+        <Sticker id="tally" flat>
+          drawn
+        </Sticker>
+      </>,
+    )
+
+    for (const words of ['stuck', 'linked', 'pressed']) {
+      const face = screen.getByText(words)
+      expect(face).toHaveClass(styles.face ?? '')
+      expect(face).toHaveAttribute('data-sticker-face')
+      expect(face.parentElement).toBe(stickerOf(words))
+      expect(stickerOf(words).children).toHaveLength(1)
+    }
+    // A div where a div is allowed, a span where only words are.
+    expect(screen.getByText('stuck').tagName).toBe('DIV')
+    expect(screen.getByText('linked').tagName).toBe('SPAN')
+    expect(screen.getByText('pressed').tagName).toBe('SPAN')
+    // What is drawn straight onto the lid does not lift, and has no face to lift by.
+    expect(screen.getByText('drawn')).toBe(stickerOf('drawn'))
   })
 
   it('says it can be picked up, unless it is drawn straight onto the lid', () => {
@@ -108,8 +148,8 @@ describe('Sticker', () => {
       </>,
     )
 
-    expect(screen.getByText('stuck')).toHaveAttribute('data-grab')
-    expect(screen.getByText('drawn')).not.toHaveAttribute('data-grab')
+    expect(stickerOf('stuck')).toHaveAttribute('data-grab')
+    expect(stickerOf('drawn')).not.toHaveAttribute('data-grab')
   })
 
   it('is a button, hidden until the script that works it shows it, when it is a control', () => {
@@ -124,7 +164,7 @@ describe('Sticker', () => {
       </>,
     )
 
-    const tidy = screen.getByText('Tidy the lid')
+    const tidy = stickerOf('Tidy the lid')
     const sound = screen.getByLabelText('Sound')
     expect(tidy.tagName).toBe('BUTTON')
     expect(tidy).toHaveAttribute('type', 'button')

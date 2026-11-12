@@ -328,7 +328,9 @@ test.describe('the pile', () => {
       expect(title.left).toBeCloseTo(section.left, 0)
       // The same label as a section's: the same type at the same size.
       const sizes = await page
-        .locator('[data-sticker="pile-title"] span span, [data-section] h2 span span')
+        .locator(
+          '[data-sticker="pile-title"] > [data-sticker-face] span span, [data-section] h2 span span',
+        )
         .evaluateAll((words) => words.slice(0, 2).map((word) => getComputedStyle(word).fontSize))
       expect(new Set(sizes).size).toBe(1)
     })

@@ -243,9 +243,11 @@ test.describe('the lid', () => {
   test('keyboard focus lifts a sticker exactly as the pointer does', async ({ page }) => {
     await openLid(page, 728)
     const tag = page.locator('[data-sticker="cv"]')
+    // What lifts is the sticker's face. The sticker keeps its place (see hover.spec.ts).
     const lifted = (): Promise<{ translate: string; scale: string; lift: string }> =>
       tag.evaluate((element) => {
-        const { translate, scale } = getComputedStyle(element)
+        const face = element.querySelector(':scope > [data-sticker-face]')
+        const { translate, scale } = getComputedStyle(face ?? element)
         return { translate, scale, lift: getComputedStyle(element).getPropertyValue('--lift') }
       })
 

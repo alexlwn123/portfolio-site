@@ -33,9 +33,11 @@ export function ReturnLabel({ profile }: ReturnLabelProps): ReactElement {
             <span className={cx(voice.display, styles.name)}>{profile.name}</span>{' '}
             <span className={cx(voice.label, styles.city)}>{cityLine(profile.location)}</span>{' '}
             <a className={styles.email} href={mailto(profile.email)}>
-              <span className={cx(voice.label, styles.hint)}>{contactCopy.label.email}</span>{' '}
-              <span className={styles.to}>{profile.email}</span>
-              <ArrowRight className={styles.arrow} />
+              <span className={styles.bar}>
+                <span className={cx(voice.label, styles.hint)}>{contactCopy.label.email}</span>{' '}
+                <span className={styles.to}>{profile.email}</span>
+                <ArrowRight className={styles.arrow} />
+              </span>
             </a>
           </address>{' '}
           <p className={cx(voice.marker, styles.reward)}>{contactCopy.label.reward}</p>

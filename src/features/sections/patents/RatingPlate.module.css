@@ -214,7 +214,21 @@
   text-shadow: none;
 }
 
+/*
+ * The link keeps its place and the ink stamp inside it lifts, so a pointer
+ * resting on the stamp's edge stays on the link.
+ */
 .number {
+  display: flex;
+  flex: 1;
+  color: var(--hi);
+  font-size: 1.95em;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.stamp {
   display: flex;
   flex: 1;
   gap: 0.5em;
@@ -223,11 +237,6 @@
   padding: 0.2em 0.75em 0.15em;
   border-radius: 0.3em;
   background: var(--ink);
-  color: var(--hi);
-  font-size: 1.95em;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  white-space: nowrap;
   transition:
     translate var(--duration-hover) var(--ease-slap),
     box-shadow var(--duration-hover);
@@ -239,8 +248,8 @@
   transition: translate 0.2s;
 }
 
-.number:hover,
-.number:focus-visible {
+.number:hover > .stamp,
+.number:focus-visible > .stamp {
   box-shadow: 0 0.2em 0 rgba(23, 18, 43, 0.35);
   translate: 0 -0.1em;
 }
@@ -393,8 +402,11 @@
   }
 
   .number {
-    min-height: 2.6em;
     font-size: 1.9em;
+  }
+
+  .stamp {
+    min-height: 2.6em;
   }
 
   .footnote {
@@ -403,7 +415,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .number,
+  .stamp,
   .arrow {
     transition: none;
   }
