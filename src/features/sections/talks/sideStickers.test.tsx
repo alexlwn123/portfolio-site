@@ -122,7 +122,7 @@ describe('BackstagePass', () => {
 
     expect(sticker).toHaveTextContent('Backstage')
     expect(sticker).toHaveTextContent('Workshop')
-    expect(sticker).toHaveTextContent('a real workshop I teach')
+    expect(sticker).toHaveTextContent('a workshop I teach')
   })
 
   it('counts the times it was given from the records, and says where and when', () => {
@@ -188,7 +188,7 @@ describe('Clipping', () => {
     expect(cutting).toHaveTextContent(
       'Coverage of AI Hack for Freedom III in Washington, DC, a hackathon he helped organize.',
     )
-    expect(cutting).toHaveTextContent('The piece names neither the event nor him.')
+    expect(cutting).not.toHaveTextContent(/names neither|does not name/i)
     expect(cutting).not.toHaveTextContent(/as heard on|featured|interview/i)
     expect(cutting).toHaveAttribute('data-press', 'npr-all-things-considered')
   })
@@ -202,16 +202,15 @@ describe('Clipping', () => {
         name: 'Announcement of the AI Hack for Freedom I winners, with Stringer Safety placed 1st.',
       }),
     ).toHaveAttribute('href', hrf.url)
-    expect(cutting).toHaveTextContent('The announcement does not name him.')
+    expect(cutting).not.toHaveTextContent(/does not name/i)
     expect(cutting).not.toHaveTextContent('Reported by')
     expect(cutting.textContent.match(/Announcement of/g)).toHaveLength(1)
   })
 
-  it('prints no date and no note when the record has neither', () => {
-    render(<Clipping clipping={{ ...hrf, date: null, naming: null }} />)
+  it('prints no date when the record has none', () => {
+    render(<Clipping clipping={{ ...hrf, date: null }} />)
 
     expect(screen.getByRole('article').querySelector('time')).toBeNull()
-    expect(screen.getByRole('article')).not.toHaveTextContent('does not name')
   })
 })
 

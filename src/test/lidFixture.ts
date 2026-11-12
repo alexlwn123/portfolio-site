@@ -82,7 +82,7 @@ const MARKUP = `
           <button type="button" hidden data-sticker="sound" data-grab data-control="sound"
             aria-pressed="false" aria-label="Sound"></button>
           <button type="button" hidden data-sticker="tidy" data-grab data-control="tidy">
-            Tidy the lid
+            Reset stickers
           </button>
         </section>
       </div>

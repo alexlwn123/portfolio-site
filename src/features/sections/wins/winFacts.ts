@@ -12,7 +12,7 @@ import {
   winTitle,
 } from '../../cv/describe'
 import { LABELS } from '../../cv/labels'
-import { fieldFigure, latestPodiumWin, shortEventName } from '../../lid/facts'
+import { fieldFigure, shortEventName } from '../../lid/facts'
 import { winsCopy } from './copy'
 
 /*
@@ -34,7 +34,6 @@ export interface WinLink {
 /** A piece of press about the win, worded by pressClaim and by nothing else. */
 export interface WinPress extends WinLink {
   readonly claim: string
-  readonly naming: string | null
 }
 
 /** The few words lettered on the sticker itself. */
@@ -65,13 +64,9 @@ export interface WinFacts {
   readonly description: string | null
   /** Printed small under the description, one sentence to a line. */
   readonly lines: readonly string[]
-  /** A line in his handwriting. */
-  readonly hand: string | null
   readonly links: readonly WinLink[]
   readonly press: readonly WinPress[]
   readonly sticker: StickerText
-  /** True for the win whose sticker is on the lid: its slot on the sheet is empty. */
-  readonly peeled: boolean
 }
 
 type Sources = Pick<Content, 'wins' | 'projects' | 'press' | 'organized'>
@@ -96,14 +91,6 @@ function linesOf(win: Win): readonly string[] {
     ...(win.firstWeekSats === null ? [] : [firstWeekNote(win.firstWeekSats)]),
     ...win.notes,
   ]
-}
-
-/** What he wrote beside it: that he ran that hackathon too, or that a prize is not a place. */
-function handOf(win: Win): string | null {
-  if (win.alsoOrganizedId !== null) {
-    return winsCopy.hand.ownHackathon
-  }
-  return win.result.kind === 'prize' ? winsCopy.hand.trackPrize : null
 }
 
 /** The project's links, then the win's own, each address once. */
@@ -141,15 +128,8 @@ function stickerOf(win: Win): StickerText {
   }
 }
 
-/** The win whose sticker is on the lid: the newest with a place. Null when none has one. */
-function onTheLid(wins: readonly Win[]): string | null {
-  return wins.some(({ result }) => result.kind === 'place') ? latestPodiumWin(wins).id : null
-}
-
 /** The facts of every win, in the record's order: newest first. */
 export function winFacts(sources: Sources): readonly WinFacts[] {
-  const peeledId = onTheLid(sources.wins)
-
   return sources.wins.map((win) => ({
     id: win.id,
     title: winTitle(win),
@@ -163,11 +143,9 @@ export function winFacts(sources: Sources): readonly WinFacts[] {
     field: win.field === null ? null : fieldLabel(win.field),
     description: win.description,
     lines: linesOf(win),
-    hand: handOf(win),
     links: linksOf(win, sources),
     press: pressOf(win, sources),
     sticker: stickerOf(win),
-    peeled: win.id === peeledId,
   }))
 }
 

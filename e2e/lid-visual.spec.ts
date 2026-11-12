@@ -51,7 +51,8 @@ const DEPARTED = [
   'lanyard', // lettering in ink, stars drawn
   'badge', // photo through the image pipeline, and no "real title" scrawled beside the name
   'hello', // HELLO in ink, the highlighter a stroke of its own
-  'cv', // arrow drawn
+  'cv', // arrow drawn, and the line over it reworded
+  'workshop', // the line under the title no longer says the workshop is a "real" one
   'wins-count', // figure in ink
   'organized-count', // stars drawn
   'bitcoin-plus-plus', // mark in ink

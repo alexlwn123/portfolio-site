@@ -21,8 +21,6 @@ export interface ClippingSpec {
   readonly date: PartialDate | null
   /** The only thing the page may say the piece is. */
   readonly claim: string
-  /** Who the piece names, when that needs saying. */
-  readonly naming: string | null
   readonly url: string
 }
 
@@ -40,7 +38,7 @@ export interface PressCuttings {
 }
 
 function toClipping(item: Press, sources: Sources): ClippingSpec {
-  const { claim, naming } = pressClaim(item, sources)
+  const { claim } = pressClaim(item, sources)
 
   return {
     id: item.id,
@@ -50,7 +48,6 @@ function toClipping(item: Press, sources: Sources): ClippingSpec {
     byline: item.reporter === null ? null : `${LABELS.reportedBy} ${item.reporter}`,
     date: item.date,
     claim,
-    naming,
     url: item.url,
   }
 }

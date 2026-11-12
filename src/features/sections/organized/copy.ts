@@ -32,8 +32,6 @@ const words = deepFreeze({
   projects: (count: Figure) => counted(count, 'project', 'projects'),
   usdPrizes: (amount: string) => `${amount} prizes`,
   satsPrizes: (millions: string) => `${millions}M sats in prizes`,
-  headCountNotPublic: 'head count not public',
-  prizesNotPublic: 'prizes not public',
 
   /** The press link's name: what it is, then what the piece covered. */
   linkName: (label: string, subject: string) => `${label}: ${subject}`,

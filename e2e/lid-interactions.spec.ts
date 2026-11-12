@@ -257,7 +257,7 @@ test.describe('one lamp for the whole lid', () => {
     // Tidy still works, and a carried sticker sticks where it is let go.
     await carry(page, 'wins-count', { x: -120, y: 90 })
     expect(await stickerPlaces(page)).not.toEqual(before)
-    await page.getByRole('button', { name: 'Tidy the lid' }).click()
+    await page.getByRole('button', { name: 'Reset stickers' }).click()
     await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
     await page.evaluate(() => {
       window.scrollTo(0, 0)
@@ -432,7 +432,7 @@ test.describe('pick up, throw, re-stick', () => {
     await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
     expect(withoutSwingers(await stickerPlaces(page))).not.toEqual(before)
 
-    await page.getByRole('button', { name: 'Tidy the lid' }).focus()
+    await page.getByRole('button', { name: 'Reset stickers' }).focus()
     await page.keyboard.press('Enter')
     await page.locator(':focus').blur()
 
@@ -453,7 +453,7 @@ test.describe('pick up, throw, re-stick', () => {
     await carry(page, 'workshop', { x: 200, y: 120 })
     expect((await linksNotUnderTheirOwnCentre(page)).length).toBeGreaterThan(0)
     await (await cornerOf(page, 'ncr-win')).click()
-    await page.getByRole('button', { name: 'Tidy the lid' }).click()
+    await page.getByRole('button', { name: 'Reset stickers' }).click()
     await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
 
     expect(await linksNotUnderTheirOwnCentre(page)).toEqual([])
@@ -700,7 +700,7 @@ test.describe('the buttons', () => {
     await page.getByRole('button', { name: 'Tilt me' }).tap()
 
     await expect(page.locator('[data-control="tilt"]')).toBeHidden()
-    await expect(page.getByRole('button', { name: 'Tidy the lid' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Reset stickers' })).toBeVisible()
     expect(output()).toEqual([])
     await context.close()
   })
@@ -710,7 +710,7 @@ test.describe('the buttons', () => {
 
     await expect(page.locator('[data-control="tilt"]')).toBeHidden()
     await expect(page.getByRole('button', { name: 'Sound' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Tidy the lid' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Reset stickers' })).toBeVisible()
   })
 })
 
@@ -780,7 +780,7 @@ test.describe('sound, off until asked', () => {
     const ribbon = await boxOf(page.locator('[data-sticker="badge"] nav a').first())
     await page.mouse.move(ribbon.x + ribbon.width / 2, ribbon.y + ribbon.height / 2, { steps: 4 })
     await page.keyboard.press('Escape')
-    await page.getByRole('button', { name: 'Tidy the lid' }).click()
+    await page.getByRole('button', { name: 'Reset stickers' }).click()
     await page.waitForTimeout(500)
 
     expect(output()).toEqual([])

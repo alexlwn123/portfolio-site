@@ -14,7 +14,9 @@ export interface Counted {
  */
 export const workCopy = {
   title: ['Career', 'path'],
-  kicker: 'every job left its tag, stuck where the job began. the current one sits up top.',
+  /** The line under the heading. The count and both employers come from the records. */
+  kicker: (roles: Figure, first: string, latest: string) =>
+    `${String(roles)} roles, from ${first} to ${latest}. newest first.`,
 
   /** The steel rule the tags hang off. */
   rule: {

@@ -7,7 +7,7 @@ type Figure = number | string
  */
 export const projectsCopy = Object.freeze({
   title: ['Things', 'I built'],
-  kicker: 'serious tech, shipped as toys. freshly cut.',
+  kicker: 'serious tech, shipped as toys.',
   /** What the list of stickers is, for a reader who cannot see the mat. */
   list: 'Projects',
   /** Written beside the sticker of the project that is also his job. */
@@ -25,6 +25,6 @@ export const projectsCopy = Object.freeze({
   /** The scribbles on the mat itself. */
   mat: {
     knife: 'cut here',
-    offcuts: 'weeded bits',
+    offcuts: 'offcuts',
   },
 } as const)

@@ -55,7 +55,6 @@ test.describe('the patents plate', () => {
       const section = await openSection(page, width, 'patents')
 
       await expect(section.getByRole('heading', { level: 2 })).toBeVisible()
-      await expect(section.getByText(patentsCopy.kicker)).toBeVisible()
       await expect(section.locator('[data-plate]')).toBeVisible()
       await expect(section.locator('li[data-patent]')).toHaveCount(shown.length)
       for (const patent of shown) {

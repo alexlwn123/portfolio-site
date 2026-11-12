@@ -12,12 +12,13 @@ function renderSection(): HTMLElement {
 }
 
 describe('PatentsSection', () => {
-  it('is the patents section, on the lid, with a line in his hand under the title', () => {
+  it('is the patents section, on the lid, with the plate straight under the title', () => {
     const section = renderSection()
 
     expect(section).toHaveAttribute('id', 'patents')
     expect(section).toHaveAttribute('data-surface', 'lid')
-    expect(within(section).getByText(patentsCopy.kicker)).toBeInTheDocument()
+    // No line under the title: the plate says it all.
+    expect(section.querySelector('h2')?.closest('header')?.querySelector('p') ?? null).toBeNull()
   })
 
   it('holds one plate with a row for every filing he shows', () => {

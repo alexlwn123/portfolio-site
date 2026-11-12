@@ -55,8 +55,8 @@ function Chips({ chips }: { readonly chips: readonly Chip[] }): ReactElement | n
   )
 }
 
-/** The press piece: a link named by the claim, then who the piece names. */
-function PressItem({ label, href, claim, naming }: PressLine): ReactElement {
+/** The press piece: a link named by the claim. */
+function PressItem({ label, href, claim }: PressLine): ReactElement {
   return (
     <p className={styles.press}>
       <a
@@ -66,8 +66,7 @@ function PressItem({ label, href, claim, naming }: PressLine): ReactElement {
       >
         {label}
         <ArrowUpRight className={styles.arrow} />
-      </a>{' '}
-      {naming !== null && <span className={styles.naming}>{naming}</span>}
+      </a>
     </p>
   )
 }

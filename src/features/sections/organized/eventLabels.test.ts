@@ -116,21 +116,12 @@ describe('eventLabels', () => {
     expect(chipTexts('ai-hack-for-freedom-ii')).toEqual(['8 teams', '$50,000 prizes'])
   })
 
-  it('says "about" for an approximate head count, and that the prizes are not public', () => {
-    expect(chipTexts('btcpp-florianopolis-2026')).toEqual([
-      'about 60 participants',
-      '21 projects',
-      organizedCopy.prizesNotPublic,
-    ])
-    expect(label('btcpp-florianopolis-2026').chips.at(-1)?.kind).toBe('unknown')
+  it('says "about" for an approximate head count, and leaves out a prize nobody published', () => {
+    expect(chipTexts('btcpp-florianopolis-2026')).toEqual(['about 60 participants', '21 projects'])
   })
 
-  it('keeps a prize in sats in sats, and says the head count is not public', () => {
-    expect(chipTexts('btcpp-toronto-2026')).toEqual([
-      '16 projects',
-      '17.542M sats in prizes',
-      organizedCopy.headCountNotPublic,
-    ])
+  it('keeps a prize in sats in sats, and leaves out a head count nobody published', () => {
+    expect(chipTexts('btcpp-toronto-2026')).toEqual(['16 projects', '17.542M sats in prizes'])
   })
 
   it('words a non-monetary prize as one, with no amount', () => {
@@ -143,7 +134,7 @@ describe('eventLabels', () => {
     expect(turbo.chips.at(-1)?.text).not.toMatch(/\d|\$/)
   })
 
-  it('says once that the figures are not public when neither is', () => {
+  it('prints no pill at all when no figure was published', () => {
     const silent: HeldEvent = {
       ...(record('btcpp-toronto-2026') as HeldEvent),
       participants: null,
@@ -151,17 +142,14 @@ describe('eventLabels', () => {
       projects: null,
     }
 
-    expect(labelOf(silent).chips).toEqual([
-      { kind: 'unknown', text: organizedCopy.figuresNotPublic },
-    ])
+    expect(labelOf(silent).chips).toEqual([])
   })
 
-  it('puts what is known first: counts, then the prize, then what is not public', () => {
-    expect(label('btcpp-toronto-2026').chips.map(({ kind }) => kind)).toEqual([
-      'count',
-      'prize',
-      'unknown',
-    ])
+  it('puts the counts first, then the prize, and never a pill for what is not on record', () => {
+    expect(label('btcpp-toronto-2026').chips.map(({ kind }) => kind)).toEqual(['count', 'prize'])
+    for (const event of heldEvents(content.organized)) {
+      expect(JSON.stringify(label(event.id).chips), event.id).not.toMatch(/not public/i)
+    }
   })
 
   it('adds a line more where the record has one: his role, and its own note', () => {
@@ -171,12 +159,11 @@ describe('eventLabels', () => {
     expect(label('btcpp-riga-2025').about).toEqual([])
   })
 
-  it('writes that he also won one, on the hackathon a win points back to', () => {
+  it('writes nothing by hand beside a hackathon that has been held, his own win there included', () => {
     const own = content.wins.flatMap((win) => win.alsoOrganizedId ?? [])
 
     expect(own).toEqual(['btcpp-berlin-2024'])
-    expect(label('btcpp-berlin-2024').scrawl).toBe(organizedCopy.ownWin)
-    for (const event of heldEvents(content.organized).filter(({ id }) => !own.includes(id))) {
+    for (const event of heldEvents(content.organized)) {
       expect(label(event.id).scrawl, event.id).toBeNull()
     }
   })
@@ -193,10 +180,8 @@ describe('eventLabels', () => {
         label: organizedCopy.coveredBy('NPR'),
         href: npr.url,
         claim: claim.claim,
-        naming: claim.naming,
       },
     ])
-    expect(claim.naming).toBe('The piece names neither the event nor him.')
   })
 
   it('attaches press to no other hackathon', () => {

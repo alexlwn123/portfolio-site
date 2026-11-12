@@ -40,16 +40,8 @@ describe('EventNote', () => {
     renderNote('btcpp-toronto-2026')
 
     const chips = within(screen.getByRole('list')).getAllByRole('listitem')
-    expect(chips.map((chip) => chip.textContent)).toEqual([
-      '16 projects',
-      '17.542M sats in prizes',
-      organizedCopy.headCountNotPublic,
-    ])
-    expect(chips.map((chip) => chip.getAttribute('data-chip'))).toEqual([
-      'count',
-      'prize',
-      'unknown',
-    ])
+    expect(chips.map((chip) => chip.textContent)).toEqual(['16 projects', '17.542M sats in prizes'])
+    expect(chips.map((chip) => chip.getAttribute('data-chip'))).toEqual(['count', 'prize'])
   })
 
   it('adds the line more that the record has', () => {
@@ -65,7 +57,7 @@ describe('EventNote', () => {
     )
   })
 
-  it('links the NPR piece, named by the claim and followed by who it names', () => {
+  it('links the NPR piece, named by the claim, and says no more about it', () => {
     const note = renderNote('ai-hack-for-freedom-iii')
     const [press] = label('ai-hack-for-freedom-iii').press
     const link = screen.getByRole('link')
@@ -73,8 +65,7 @@ describe('EventNote', () => {
     expect(link).toHaveAttribute('href', press?.href)
     expect(link).toHaveAccessibleName(`covered by NPR: ${press?.claim ?? ''}`)
     expect(link).toHaveAttribute('aria-label', `covered by NPR: ${press?.claim ?? ''}`)
-    expect(note).toHaveTextContent('The piece names neither the event nor him.')
-    expect(note.textContent).not.toMatch(/as heard on|featured on/i)
+    expect(note.textContent).not.toMatch(/as heard on|featured on|names neither|does not name/i)
   })
 
   it('has no link where there is no press', () => {
@@ -83,12 +74,11 @@ describe('EventNote', () => {
     expect(screen.queryByRole('link')).toBeNull()
   })
 
-  it('writes the awkward part by hand, on the one he also won', () => {
-    expect(renderNote('btcpp-berlin-2024')).toHaveTextContent(organizedCopy.ownWin)
-    expect(renderNote('btcpp-riga-2025')).not.toHaveTextContent(organizedCopy.ownWin)
+  it('writes nothing by hand beside one that has been held, the one he also won included', () => {
+    expect(renderNote('btcpp-berlin-2024')).not.toHaveTextContent(/awkward|also won/i)
   })
 
-  it('says the next one is upcoming, with its dates, and that its band is still on the roll', () => {
+  it('says the next one is upcoming, with its dates, and to save the date', () => {
     const note = renderNote('ai-hack-for-freedom-iv')
 
     expect(note).toHaveTextContent(/^San Francisco, CA\s*upcoming · Dec 2–4, 2026 · USA/)

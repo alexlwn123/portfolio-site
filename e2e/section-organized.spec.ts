@@ -283,8 +283,9 @@ test.describe('the "organized" section', () => {
     await expect(link).toHaveAccessibleName(
       `${organizedCopy.coveredBy(piece.outlet)}: ${claim.claim}`,
     )
-    await expect(section).toContainText(claim.naming ?? '')
-    await expect(section).not.toContainText(/as heard on|featured on|interviewed/i)
+    await expect(section).not.toContainText(
+      /as heard on|featured on|interviewed|names neither|does not name/i,
+    )
   })
 
   test('is all there with JavaScript turned off', async ({ browser }) => {

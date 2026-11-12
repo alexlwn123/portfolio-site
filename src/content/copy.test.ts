@@ -83,9 +83,9 @@ describe('copy', () => {
   })
 
   it('words the cover and the pile under it: a cue in his hand, a heading over two lines', () => {
-    expect(copy.lid.cue.text).toBe('scroll, it gets stickier')
-    expect(copy.lid.pile.title).toEqual(['Stuck on', 'so far'])
-    expect(copy.lid.pile.kicker).toMatch(/^jobs, wins, projects, cities\./)
+    expect(copy.lid.cue.text).toBe('scroll for the highlights')
+    expect(copy.lid.pile.title).toEqual(['At a', 'glance'])
+    expect(copy.lid.pile.kicker).toMatch(/^the short version\./)
     // Voice only: no figure a reader could check is typed into either.
     expect(`${copy.lid.cue.text} ${copy.lid.pile.kicker}`).not.toMatch(/\d/)
   })

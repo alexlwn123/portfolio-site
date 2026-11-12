@@ -16,39 +16,40 @@ const npr = pressItem('npr-all-things-considered')
 
 describe('pressClaim', () => {
   it('claims only that a hackathon he helped organize was covered', () => {
-    const { claim, naming } = pressClaim(npr, content)
-
-    expect(claim).toBe(
-      'Coverage of AI Hack for Freedom III in Washington, DC, a hackathon he helped organize.',
-    )
-    expect(naming).toBe('The piece names neither the event nor him.')
+    expect(pressClaim(npr, content)).toEqual({
+      claim:
+        'Coverage of AI Hack for Freedom III in Washington, DC, a hackathon he helped organize.',
+    })
   })
 
   it('never says he was featured, profiled, interviewed or named', () => {
-    const { claim, naming } = pressClaim(npr, content)
+    const { claim } = pressClaim(npr, content)
 
-    expect(`${claim} ${naming ?? ''}`).not.toMatch(
-      /featur|profil|interview|quoted|appear|names him\b/i,
-    )
+    expect(claim).not.toMatch(/featur|profil|interview|quoted|appear|names him\b/i)
   })
 
   it.each([
-    [true, false, 'The piece names the event but not him.'],
-    [false, true, 'The piece names him but not the event.'],
-    [true, true, 'The piece names both the event and him.'],
-  ])('states who is named (event: %s, him: %s)', (namesEvent, namesOwner, expected) => {
-    const item: Press = {
-      ...npr,
-      subject: {
-        kind: 'organizedEvent',
-        organizedId: 'ai-hack-for-freedom-iii',
-        namesEvent,
-        namesOwner,
-      },
-    }
+    [true, false],
+    [false, true],
+    [true, true],
+    [false, false],
+  ])(
+    'says the same of a piece whoever it names, and nothing about who that is (event: %s, him: %s)',
+    (namesEvent, namesOwner) => {
+      const item: Press = {
+        ...npr,
+        subject: {
+          kind: 'organizedEvent',
+          organizedId: 'ai-hack-for-freedom-iii',
+          namesEvent,
+          namesOwner,
+        },
+      }
 
-    expect(pressClaim(item, content).naming).toBe(expected)
-  })
+      expect(pressClaim(item, content)).toEqual(pressClaim(npr, content))
+      expect(JSON.stringify(pressClaim(item, content))).not.toMatch(/\bnames?\b|does not/i)
+    },
+  )
 
   it.each([
     ['btcpp-nairobi-2026', 'Coverage of bitcoin++ open source edition in Nairobi, a hackathon'],
@@ -110,23 +111,25 @@ describe('pressClaim', () => {
   it('describes a winners announcement by event, project and result', () => {
     expect(pressClaim(pressItem('hrf-winners-announcement'), content)).toEqual({
       claim: 'Announcement of the AI Hack for Freedom I winners, with Stringer Safety placed 1st.',
-      naming: 'The announcement does not name him.',
     })
   })
 
-  it('adds no naming caveat when a winners announcement names him', () => {
-    const item: Press = {
+  it('says the same of a winners announcement whether or not it names him', () => {
+    const named: Press = {
       ...npr,
       subject: { kind: 'win', winId: 'stringer-safety', namesOwner: true },
     }
+    const unnamed: Press = {
+      ...npr,
+      subject: { kind: 'win', winId: 'stringer-safety', namesOwner: false },
+    }
 
-    expect(pressClaim(item, content).naming).toBeNull()
+    expect(pressClaim(named, content)).toEqual(pressClaim(unnamed, content))
   })
 
   it('says only what a plain reference page lists', () => {
     expect(pressClaim(pressItem('ai-hack-for-freedom-winners'), content)).toEqual({
       claim: 'Winners of all three editions',
-      naming: null,
     })
   })
 

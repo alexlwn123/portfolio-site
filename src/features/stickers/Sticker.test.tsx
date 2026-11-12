@@ -156,7 +156,7 @@ describe('Sticker', () => {
     render(
       <>
         <Sticker id="tidy" control="tidy">
-          Tidy the lid
+          Reset stickers
         </Sticker>
         <Sticker id="sound" control="sound" toggle label="Sound">
           <svg aria-hidden="true" />
@@ -164,7 +164,7 @@ describe('Sticker', () => {
       </>,
     )
 
-    const tidy = stickerOf('Tidy the lid')
+    const tidy = stickerOf('Reset stickers')
     const sound = screen.getByLabelText('Sound')
     expect(tidy.tagName).toBe('BUTTON')
     expect(tidy).toHaveAttribute('type', 'button')

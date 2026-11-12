@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 import { content, stats } from '../src/content'
 import { publishableProjects } from '../src/content/derive'
 import { MIN_TEXT_PX } from '../src/features/lid/placement/artboards'
-import { workCopy } from '../src/features/sections/work/copy'
+import { workKicker } from '../src/features/sections/work/WorkSection'
 import { careerPath, NOW_KEY } from '../src/features/sections/work/path'
 import { pathTotals } from '../src/features/sections/work/totals'
 import { formatPartialDate } from '../src/lib/formatDate'
@@ -57,7 +57,7 @@ test.describe('the career path', () => {
       const section = await openSection(page, width, 'work')
 
       await expect(section.getByRole('heading', { level: 2 })).toBeVisible()
-      await expect(section.getByText(workCopy.kicker)).toBeVisible()
+      await expect(section.getByText(workKicker(content) ?? '')).toBeVisible()
       await expect(section.locator('li[data-stop]')).toHaveCount(stops.length)
       await expect(section.locator(`li[data-stop="${NOW_KEY}"] [data-year]`)).toBeVisible()
       for (const year of years) {

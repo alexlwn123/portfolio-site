@@ -29,7 +29,7 @@ const lifting = (shape: StickerShape): StickerLook => ({ shape, lifting: true })
 
 /** The stickers as drawn, by the win each is for. */
 export const HAND_SET_LOOKS: Readonly<Record<string, StickerLook>> = Object.freeze({
-  'stringer-safety': flat('slab'),
+  'stringer-safety': flat('burst'),
   'lightning-welder': flat('hex'),
   'bitdevs-upgrade': flat(PRIZE_SHAPE),
   'auntie-ln': flat('round'),

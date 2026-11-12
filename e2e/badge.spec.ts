@@ -137,7 +137,7 @@ test('tidying the lid puts the badge back from wherever it was left swinging', a
   await pull(page, rest, { x: -200, y: 60 })
   await page.mouse.up()
 
-  await page.getByRole('button', { name: 'Tidy the lid' }).click()
+  await page.getByRole('button', { name: 'Reset stickers' }).click()
 
   expect(await sticker(page, 'badge').getAttribute('style')).toBeNull()
   await expect(sticker(page, 'badge')).not.toHaveAttribute('data-hang-moving')

@@ -52,7 +52,7 @@ export const talksCopy = Object.freeze({
   pass: {
     band: 'Backstage',
     access: 'All access',
-    note: 'a real workshop I teach',
+    note: 'a workshop I teach',
     given: (times: Figure) => `given ×${String(times)}`,
   },
 

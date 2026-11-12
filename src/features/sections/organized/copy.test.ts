@@ -22,7 +22,6 @@ describe('organizedCopy', () => {
     expect(Object.isFrozen(organizedCopy)).toBe(true)
     expect(organizedCopy.title).toEqual(copy.wristbands.title)
     expect(organizedCopy.subtitle).toBe(copy.wristbands.subtitle)
-    expect(organizedCopy.ownWin).toBe(copy.wristbands.ownWin)
   })
 
   it('holds no numbers and no addresses: every figure is handed to it', () => {
@@ -59,17 +58,8 @@ describe('organizedCopy', () => {
     expect(organizedCopy.satsPrizes('17.542')).toBe('17.542M sats in prizes')
   })
 
-  it('has a wording of its own for each figure that is not public', () => {
-    const wordings = [
-      organizedCopy.figuresNotPublic,
-      organizedCopy.headCountNotPublic,
-      organizedCopy.prizesNotPublic,
-    ]
-
-    expect(new Set(wordings).size).toBe(wordings.length)
-    for (const wording of wordings) {
-      expect(wording).toMatch(/not public$/)
-    }
+  it('has no words for a figure that is not public: such a figure is simply left out', () => {
+    expect(JSON.stringify(organizedCopy)).not.toMatch(/not public/i)
   })
 
   it('describes the hand for those who cannot see it', () => {

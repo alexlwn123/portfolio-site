@@ -19,7 +19,7 @@ interface ClippingProps {
  * piece has to do with him. That sentence is never reworded here.
  */
 export function Clipping({ clipping }: ClippingProps): ReactElement {
-  const { id, outlet, programme, headline, byline, date, claim, naming, url } = clipping
+  const { id, outlet, programme, headline, byline, date, claim, url } = clipping
   const titleId = svgId('talks', svgId(id, 'outlet'))
 
   return (
@@ -46,7 +46,6 @@ export function Clipping({ clipping }: ClippingProps): ReactElement {
             </p>
           )}
           {headline !== null && <p className={styles.claim}>{claim}</p>}
-          {naming !== null && <p className={styles.naming}>{naming}</p>}
         </div>
       </Stuck>
     </article>

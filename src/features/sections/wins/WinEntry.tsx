@@ -4,7 +4,7 @@ import { cx } from '../../../lib/classNames'
 import { formatDateSpan, isoDate } from '../../../lib/formatDate'
 import voice from '../../stickers/voice.module.css'
 import { winsCopy } from './copy'
-import { EmptySlot, PrizeSticker } from './PrizeSticker'
+import { PrizeSticker } from './PrizeSticker'
 import type { StickerLook } from './stickerLooks'
 import styles from './WinEntry.module.css'
 import type { WinFacts } from './winFacts'
@@ -73,13 +73,6 @@ function Links({ win }: { readonly win: WinFacts }): ReactElement | null {
           </li>
         ))}
       </ul>
-      {press.map(({ href, naming }) =>
-        naming === null ? null : (
-          <p key={href} className={styles.naming}>
-            {naming}
-          </p>
-        ),
-      )}
     </>
   )
 }
@@ -94,11 +87,7 @@ export function WinEntry({ win, look }: WinEntryProps): ReactElement {
   return (
     <li className={styles.entry} data-win={win.id} data-shape={look.shape} data-finish={win.finish}>
       <div className={styles.slot}>
-        {win.peeled ? (
-          <EmptySlot shape={look.shape} note={winsCopy.hand.peeled} />
-        ) : (
-          <PrizeSticker win={win} look={look} />
-        )}
+        <PrizeSticker win={win} look={look} />
       </div>
       <div className={styles.facts}>
         <h3 className={cx(voice.label, styles.title)}>{win.title}</h3>
@@ -113,7 +102,6 @@ export function WinEntry({ win, look }: WinEntryProps): ReactElement {
             {line}
           </p>
         ))}
-        {win.hand !== null && <p className={cx(voice.marker, styles.hand)}>{win.hand}</p>}
         <Links win={win} />
       </div>
     </li>

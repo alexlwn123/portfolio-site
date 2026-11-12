@@ -2,7 +2,6 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content } from '../../../content'
-import { winsCopy } from './copy'
 import { stickerLook } from './stickerLooks'
 import { WinEntry } from './WinEntry'
 import { type WinFacts, winFacts } from './winFacts'
@@ -110,36 +109,35 @@ describe('WinEntry', () => {
 
     expect(links.at(-1)).toHaveAttribute('href', press?.href)
     expect(links.at(-1)).toHaveAccessibleName(`${press?.label ?? ''}: ${press?.claim ?? ''}`)
-    expect(entry).toHaveTextContent('The announcement does not name him.')
+    expect(entry).not.toHaveTextContent(/does not name/i)
   })
 
-  it('writes his own line by hand where there is one', () => {
-    expect(renderEntry('lightning-welder')).toHaveTextContent(winsCopy.hand.ownHackathon)
+  it('writes nothing in the margin: the record’s own lines say what needs saying', () => {
+    const entry = renderEntry('lightning-welder')
+
+    expect(entry).toHaveTextContent('took no part in the judging')
+    expect(entry).not.toHaveTextContent(/awkward/i)
   })
 
-  it('says by hand that the prize was not a place', () => {
+  it('words a prize as a prize, with no aside about what it was not', () => {
     const entry = renderEntry('bitdevs-upgrade')
 
-    expect(entry).toHaveTextContent(winsCopy.hand.trackPrize)
+    expect(entry).not.toHaveTextContent(/not a place|podium/i)
     expect(entry).toHaveTextContent(
       'Prize winner: Bitcoin Education Track · AI4All · Jul 1–31, 2023',
     )
     expect(entry).toHaveTextContent('Announced as “BitDevs Upgraded”.')
   })
 
-  it('shows the sticker on the sheet for a win that is still there', () => {
-    const entry = renderEntry('pleb-fm')
+  it.each([
+    ['pleb-fm', 'Pleb FM'],
+    ['stringer-safety', 'Stringer Safety'],
+  ])('shows the sticker on the sheet for %s: no slot is left empty', (id, name) => {
+    const entry = renderEntry(id)
 
     expect(entry.querySelector('[data-prize][aria-hidden="true"]')).not.toBeNull()
     expect(entry.querySelector('[data-peeled]')).toBeNull()
-  })
-
-  it('leaves an empty outline, with his note, for the one that is on the lid', () => {
-    const entry = renderEntry('stringer-safety')
-
-    expect(entry.querySelector('[data-peeled]')).toHaveTextContent(winsCopy.hand.peeled)
-    expect(entry.querySelector('[data-prize][aria-hidden="true"]')).toBeNull()
-    expect(within(entry).getByRole('heading', { level: 3 })).toHaveTextContent('Stringer Safety')
+    expect(within(entry).getByRole('heading', { level: 3 })).toHaveTextContent(name)
   })
 
   it('types no arrow or star', () => {

@@ -338,7 +338,7 @@ test.describe('the "wins" section', () => {
 
       await expect(entry).not.toContainText(/1st|2nd|3rd/)
       await expect(entry.locator('[data-prize]')).toHaveAttribute('data-finish', 'prize')
-      await expect(entry).toContainText(winsCopy.hand.trackPrize)
+      await expect(entry).not.toContainText(/not a place|podium/i)
     }
   })
 
@@ -348,23 +348,19 @@ test.describe('the "wins" section', () => {
 
     for (const win of wins) {
       const slot = section.locator(`[data-win="${win.id}"] [data-prize]`)
-      const peeled = (await slot.getAttribute('data-peeled')) !== null
-      if (!peeled && win.result.kind === 'place') {
+      if (win.result.kind === 'place') {
         await expect(slot, win.id).toHaveAttribute('data-finish', finishes[win.result.place])
       }
     }
-    await expect(section.locator('[data-peeled]')).toHaveCount(1)
   })
 
-  test('leaves an empty outline for the sticker that is on the lid', async ({ page }) => {
+  test('has a sticker for every win, the newest included: no slot is left empty', async ({
+    page,
+  }) => {
     const section = await openSection(page, 1440, 'wins')
-    const peeled = section.locator('[data-win]').filter({ has: page.locator('[data-peeled]') })
-    const onTheLid = page.locator('[data-sticker="latest-win"]')
 
-    await expect(peeled).toHaveCount(1)
-    await expect(peeled.locator('[data-peeled]')).toContainText(winsCopy.hand.peeled)
-    const name = (await peeled.getByRole('heading', { level: 3 }).textContent()) ?? ''
-    await expect(onTheLid).toContainText(name)
+    await expect(section.locator('[data-win] [data-prize]')).toHaveCount(wins.length)
+    await expect(section.locator('[data-peeled]')).toHaveCount(0)
   })
 
   test('is all there with JavaScript turned off', async ({ browser }) => {

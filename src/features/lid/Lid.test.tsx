@@ -57,7 +57,7 @@ describe('Lid', () => {
     expect(headings.map(({ tagName }) => tagName)).toEqual(['H1', 'H2'])
     expect(headings[0]).toHaveAccessibleName(content.profile.name)
     expect(headings[0]?.textContent).toBe(content.profile.name)
-    expect(headings[1]?.textContent).toBe('Stuck on so far ')
+    expect(headings[1]?.textContent).toBe('At a glance ')
     expect(headings[1]?.querySelector('br')).toBeNull()
   })
 
@@ -81,12 +81,12 @@ describe('Lid', () => {
     renderLid()
 
     // jsdom's name computation drops the space that ends each line of the title.
-    const pile = screen.getByRole('region', { name: /^Stuck on\s*so far$/ })
+    const pile = screen.getByRole('region', { name: /^At a\s*glance$/ })
     expect(pile.tagName).toBe('SECTION')
     expect(pile.id).toBe('pile')
     expect(pile).toHaveAttribute('data-lid-pile')
     expect(screen.getByRole('heading', { level: 2 }).id).toBe(pile.getAttribute('aria-labelledby'))
-    expect(screen.getByRole('link', { name: 'scroll, it gets stickier' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'scroll for the highlights' })).toHaveAttribute(
       'href',
       '/#pile',
     )
@@ -434,7 +434,7 @@ describe('Lid', () => {
       'false',
     )
     expect(container.querySelector('[data-control="sound"]')).toHaveAttribute('aria-label', 'Sound')
-    expect(container.querySelector('[data-control="tidy"]')).toHaveTextContent('Tidy the lid')
+    expect(container.querySelector('[data-control="tidy"]')).toHaveTextContent('Reset stickers')
     expect(container.querySelector('[data-control="tidy"]')).not.toHaveAttribute('aria-pressed')
     expect(container.querySelector('[data-control="tilt"]')).toHaveTextContent('Tilt me')
   })

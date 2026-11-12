@@ -25,9 +25,9 @@ describe('SoundFace', () => {
 
 describe('WordsFace', () => {
   it('prints its words so that they read as one name', () => {
-    const { container } = render(<WordsFace lines={['Tidy', 'the lid']} tone="white" />)
+    const { container } = render(<WordsFace lines={['Reset', 'stickers']} tone="white" />)
 
-    expect(container).toHaveTextContent('Tidy the lid')
+    expect(container).toHaveTextContent('Reset stickers')
     expect(container.firstElementChild).toHaveClass(tones.white ?? '')
     expect(container.querySelector('br')).toBeNull()
   })

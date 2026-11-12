@@ -484,33 +484,6 @@
   content: '';
 }
 
-/* ---------- the outline a peeled sticker leaves ---------- */
-.empty .cut::after {
-  background:
-    linear-gradient(
-      118deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(255, 255, 255, 0) 38%,
-      rgba(255, 255, 255, 0) 62%,
-      rgba(255, 255, 255, 0.7) 100%
-    ),
-    var(--liner, var(--metal-light));
-}
-
-.gone {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 0.6em 1.4em;
-  color: var(--deep);
-  font-size: 1.75em;
-  line-height: 1.1;
-  text-align: center;
-  rotate: -3deg;
-  text-wrap: balance;
-}
-
 @container section (max-width: 1099px) {
   .sticker {
     --size: 1.3em;

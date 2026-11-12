@@ -63,20 +63,20 @@ describe('WinsSection', () => {
     expect(section).toHaveTextContent(winsCopy.tally.prize(stats.wins.prizes))
   })
 
-  it('has a sticker on the sheet for every win but the one on the lid', () => {
+  it('has a sticker on the sheet for every win, the newest included', () => {
     const section = renderSection()
 
     expect(section.querySelectorAll('[data-prize][aria-hidden="true"]')).toHaveLength(
-      stats.wins.total - 1,
+      stats.wins.total,
     )
-    expect(section.querySelectorAll('[data-peeled]')).toHaveLength(1)
+    expect(section.querySelectorAll('[data-peeled]')).toHaveLength(0)
   })
 
-  it('cuts as many foil stickers as there are firsts still on the sheet, and a silver one per second', () => {
+  it('cuts a foil sticker for every first, and a silver one per second', () => {
     const section = renderSection()
 
     expect(section.querySelectorAll('[data-prize][data-finish="first"]')).toHaveLength(
-      stats.wins.firsts - 1,
+      stats.wins.firsts,
     )
     expect(section.querySelectorAll('[data-prize][data-finish="second"]')).toHaveLength(
       stats.wins.seconds,

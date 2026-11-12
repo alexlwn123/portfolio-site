@@ -11,7 +11,7 @@ import { organizedCopy } from './copy'
  */
 
 /** A count, a prize, or a figure the organizers never published. */
-export type ChipKind = 'count' | 'prize' | 'unknown'
+export type ChipKind = 'count' | 'prize'
 
 export interface Chip {
   readonly kind: ChipKind
@@ -23,7 +23,6 @@ export interface PressLine {
   readonly label: string
   readonly href: string
   readonly claim: string
-  readonly naming: string | null
 }
 
 export interface EventLabel {
@@ -94,20 +93,7 @@ function prize({ prizes }: Organized): Chip | null {
   }
 }
 
-/** What the organizers never published, said once when it is both figures. */
-function gaps(event: Organized): readonly Chip[] {
-  const noHeadCount = event.participants === null
-  const noPrize = event.prizes === null
-  if (noHeadCount && noPrize) {
-    return [{ kind: 'unknown', text: organizedCopy.figuresNotPublic }]
-  }
-  return [
-    ...(noHeadCount ? [organizedCopy.headCountNotPublic] : []),
-    ...(noPrize ? [organizedCopy.prizesNotPublic] : []),
-  ].map((text) => ({ kind: 'unknown', text }))
-}
-
-/** What is known first: the counts, then the prize, then what is not public. */
+/** What is on record: the counts, then the prize. A figure nobody published is left out. */
 function chipsOf(event: Organized): readonly Chip[] {
   if (event.status === 'upcoming') {
     return []
@@ -117,14 +103,12 @@ function chipsOf(event: Organized): readonly Chip[] {
       ? []
       : [{ kind: 'count', text: organizedCopy.projects(formatNumber(event.projects)) }]
 
-  return [headCount(event), ...projects, prize(event)]
-    .filter((chip) => chip !== null)
-    .concat(gaps(event))
+  return [headCount(event), ...projects, prize(event)].filter((chip) => chip !== null)
 }
 
 function pressLine(item: Press, sources: Sources): PressLine {
-  const { claim, naming } = pressClaim(item, sources)
-  return { label: organizedCopy.coveredBy(item.outlet), href: item.url, claim, naming }
+  const { claim } = pressClaim(item, sources)
+  return { label: organizedCopy.coveredBy(item.outlet), href: item.url, claim }
 }
 
 function pressOf(event: Organized, sources: Sources): readonly PressLine[] {
@@ -133,13 +117,9 @@ function pressOf(event: Organized, sources: Sources): readonly PressLine[] {
     .map((item) => pressLine(item, sources))
 }
 
-function scrawlOf(event: Organized, { wins }: Sources): string | null {
-  if (event.status === 'upcoming') {
-    return organizedCopy.blank
-  }
-  return wins.some(({ alsoOrganizedId }) => alsoOrganizedId === event.id)
-    ? organizedCopy.ownWin
-    : null
+/** The one thing written by hand: beside a hackathon still to come. */
+function scrawlOf(event: Organized): string | null {
+  return event.status === 'upcoming' ? organizedCopy.blank : null
 }
 
 /**
@@ -170,6 +150,6 @@ export function eventLabels(sources: Sources): readonly EventLabel[] {
     about: [event.role, event.note].filter((line) => line !== null),
     chips: chipsOf(event),
     press: pressOf(event, sources),
-    scrawl: scrawlOf(event, sources),
+    scrawl: scrawlOf(event),
   }))
 }

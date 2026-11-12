@@ -33,11 +33,11 @@ export const copy = deepFreeze({
       now: (employer: string) => `I build AI agents at ${employer}.`,
     },
     /** The cover's cue to scroll, in his handwriting. Its arrow is drawn. */
-    cue: { text: 'scroll, it gets stickier' },
+    cue: { text: 'scroll for the highlights' },
     /** The pile under the cover: its heading sticker and the line under it. */
     pile: {
-      title: ['Stuck on', 'so far'],
-      kicker: 'jobs, wins, projects, cities. the long versions are further down.',
+      title: ['At a', 'glance'],
+      kicker: 'the short version. every sticker links to the full story.',
     },
     /** The asset tags his employers left on the lid. Names and years come from the records. */
     employers: {
@@ -46,7 +46,7 @@ export const copy = deepFreeze({
       issued: (year: Figure) => `Issued ${String(year)}`,
       inService: 'In service',
     },
-    cvSticker: { kicker: 'The serious version', label: 'Plain CV' },
+    cvSticker: { kicker: 'Short on time?', label: 'Plain CV' },
     winsSeal: {
       top: 'HACKATHON',
       bottom: 'WINNER',
@@ -92,7 +92,7 @@ export const copy = deepFreeze({
         `${String(rank)} of ${String(field)} teams, ${event}, team ${team}`,
     },
     cities: { label: 'Cities I have run hackathons in' },
-    bumper: { note: 'a real workshop I teach at bitcoin++' },
+    bumper: { note: 'a workshop I teach at bitcoin++' },
     projects: { label: 'Projects' },
     button: { firstWeek: (sats: Figure) => `${String(sats)} SATS IN WEEK ONE` },
     parkingSign: { letter: 'P' },
@@ -120,7 +120,7 @@ export const copy = deepFreeze({
     /** The three stickers that are buttons. They appear once the page's script runs. */
     controls: {
       sound: 'Sound',
-      tidy: ['Tidy', 'the lid'],
+      tidy: ['Reset', 'stickers'],
       tilt: ['Tilt', 'me'],
     },
   },
@@ -132,7 +132,7 @@ export const copy = deepFreeze({
    */
   wristbands: {
     title: ['HACKATHONS', 'ORGANIZED'],
-    subtitle: 'one wristband each. newest at the wrist.',
+    subtitle: 'I don’t just enter them. newest first.',
     participants: 'participants',
     prizes: 'in prizes',
     participantsFootnote: (events: Figure) => `${String(events)} events with a public head count`,
@@ -141,12 +141,10 @@ export const copy = deepFreeze({
       role: 'ORGANIZER',
       since: (sinceYear: Figure) => `SINCE ${String(sinceYear)}`,
     },
-    blank: 'still on the roll',
+    blank: 'save the date',
     notAnnounced: 'not announced',
-    figuresNotPublic: 'figures not public',
     nonMonetary: 'non-monetary prizes',
     coveredBy: (outlet: string) => `covered by ${outlet}`,
-    ownWin: 'I also won this one. Awkward. Haven’t entered my own since.',
     roomForMore: 'room for more',
   },
 })

@@ -34,10 +34,7 @@ describe('winsCopy', () => {
   })
 
   it('never words a prize as a place', () => {
-    expect(`${winsCopy.rank.prize} ${winsCopy.hand.trackPrize}`).not.toMatch(
-      /1st|2nd|3rd|first|second|third/i,
-    )
-    expect(winsCopy.hand.trackPrize).toMatch(/not a place/)
+    expect(winsCopy.rank.prize).not.toMatch(/1st|2nd|3rd|first|second|third/i)
   })
 
   it('counts the pieces on the sheet, and the years they span', () => {

@@ -13,7 +13,7 @@ import { RatingPlate } from './RatingPlate'
  * a row to a filing, and the inspection stickers it left the factory with.
  */
 export const PatentsSection: FunctionComponent<SectionProps> = ({ content, stats }) => (
-  <SectionFrame id="patents" surface="lid" title={patentsCopy.title} kicker={patentsCopy.kicker}>
+  <SectionFrame id="patents" surface="lid" title={patentsCopy.title}>
     <div className={styles.underside}>
       <RatingPlate patents={content.patents} stats={stats.patents} holder={content.profile.name} />
       <InspectionStickers initials={initials(content.profile)} />

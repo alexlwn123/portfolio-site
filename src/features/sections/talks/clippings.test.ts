@@ -34,13 +34,14 @@ describe('pressCuttings', () => {
 
   it('words every clipping only as the press claim allows', () => {
     for (const item of content.press.filter(({ subject }) => subject.kind !== 'reference')) {
-      const { claim, naming } = pressClaim(item, content)
+      const { claim } = pressClaim(item, content)
 
-      expect(clipping(item.id)).toMatchObject({ claim, naming, url: item.url })
+      expect(clipping(item.id)).toMatchObject({ claim, url: item.url })
+      expect(clipping(item.id)).not.toHaveProperty('naming')
     }
   })
 
-  it('says of the NPR piece that it covered a hackathon he helped organize, and names neither', () => {
+  it('says of the NPR piece that it covered a hackathon he helped organize, and no more', () => {
     const npr = clipping('npr-all-things-considered')
 
     expect(npr).toMatchObject({
@@ -50,10 +51,9 @@ describe('pressCuttings', () => {
       byline: 'Reported by Jenna McLaughlin',
       claim:
         'Coverage of AI Hack for Freedom III in Washington, DC, a hackathon he helped organize.',
-      naming: 'The piece names neither the event nor him.',
       date: { year: 2026, month: 10, day: 27 },
     })
-    expect(JSON.stringify(npr)).not.toMatch(/as heard on|featured (on|in)/i)
+    expect(JSON.stringify(npr)).not.toMatch(/as heard on|featured (on|in)|names neither/i)
   })
 
   it('has no headline, programme or byline to print for the announcement', () => {
@@ -63,7 +63,6 @@ describe('pressCuttings', () => {
       headline: null,
       byline: null,
       claim: 'Announcement of the AI Hack for Freedom I winners, with Stringer Safety placed 1st.',
-      naming: 'The announcement does not name him.',
     })
   })
 

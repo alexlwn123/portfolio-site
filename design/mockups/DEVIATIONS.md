@@ -570,6 +570,32 @@ went with it. The rows above about the scrawl's colour, its arrow and how it is 
 the lid before this. The badge was already one of the comparison's recorded departures; without
 the note the lid differs from the mockup by 1.99% of pixels, against 2.70% allowed.
 
+### The words were gone over
+
+Alex asked for the copy to be gone over for anything "out of place for a portfolio site designed
+to make me look good", and for the lines about who a press piece names to come off. What changed:
+
+| Where                         | Before                                                                 | Now                                                               |
+| ----------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Press, everywhere             | The claim, then "The piece names neither the event nor him." or the like | The claim alone. Who a piece names stays in the record, unprinted |
+| The cover's cue               | "scroll, it gets stickier"                                             | "scroll for the highlights"                                       |
+| The pile's heading and line   | "Stuck on / so far", "the long versions are further down"              | "At a / glance", "every sticker links to the full story"          |
+| The CV tag on the lid         | "The serious version"                                                  | "Short on time?"                                                  |
+| The button that puts it back  | "Tidy the lid"                                                         | "Reset stickers"                                                  |
+| The workshop sticker and pass | "a real workshop I teach"                                              | "a workshop I teach"                                              |
+| Career path, under the title  | A line about where each tag is stuck                                   | How many roles, from the first employer to the current one        |
+| Wins                          | The newest win an empty outline with a note; two asides in his hand    | Every win has its sticker; no asides                              |
+| Organized, under the title    | "one wristband each. newest at the wrist."                             | "I don't just enter them. newest first."                          |
+| Organized, each label         | Dashed pills for figures "not public"; an aside on the one he also won | A figure nobody published is left out; no aside                   |
+| Organized, the upcoming one   | "still on the roll"                                                    | "save the date"                                                   |
+| Projects, under the title     | "serious tech, shipped as toys. freshly cut."                          | "serious tech, shipped as toys."                                  |
+| Patents, under the title      | "flip the laptop over. it's all on the rating plate."                  | No line: the plate is straight under the title                    |
+| Contact                       | "that's the whole lid. the rest is a conversation.", a line about stickers harmed | "got something worth building? let's talk.", a thank-you |
+
+The record's own note that he ran the hackathon Lightning Welder won, and took no part in the
+judging, is still printed beside that win. The workshop sticker joins the comparison's recorded
+departures, because its line no longer matches the mockup's.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

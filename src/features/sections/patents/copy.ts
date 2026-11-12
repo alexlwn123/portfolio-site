@@ -6,7 +6,6 @@ import { deepFreeze } from '../../../lib/deepFreeze'
  */
 export const patentsCopy = {
   title: ['Patents', ''],
-  kicker: 'flip the laptop over. it’s all on the rating plate.',
 
   /** The rating plate riveted to the underside. */
   plate: {

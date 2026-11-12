@@ -32,7 +32,8 @@ describe('PressSection', () => {
     expect(npr).toHaveTextContent(
       'Coverage of AI Hack for Freedom III in Washington, DC, a hackathon he helped organize.',
     )
-    expect(npr).toHaveTextContent('The piece names neither the event nor him.')
+    // What the piece is, and no more: nothing about who it names, and no more than is true.
+    expect(npr).not.toHaveTextContent(/names neither|does not name/i)
     expect(npr).not.toHaveTextContent(/featur|profil|interview/i)
   })
 
@@ -49,7 +50,7 @@ describe('PressSection', () => {
         name: 'Announcement of the AI Hack for Freedom I winners, with Stringer Safety placed 1st.',
       }),
     ).toBeVisible()
-    expect(section.getByText('The announcement does not name him.')).toBeVisible()
+    expect(section.queryByText(/does not name/i)).toBeNull()
   })
 
   it('never repeats the claim when the claim is already the link', () => {

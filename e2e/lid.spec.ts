@@ -212,7 +212,10 @@ test.describe('the lid', () => {
       expect(visited[corner - 1], id).toBe(face)
     }
     // The buttons that work the lid come last, after everything there is to read.
-    expect(visited.slice(-SHOWN_CONTROLS.length)).toEqual(['button: Sound', 'button: Tidy the lid'])
+    expect(visited.slice(-SHOWN_CONTROLS.length)).toEqual([
+      'button: Sound',
+      'button: Reset stickers',
+    ])
   })
 
   test('focus ring is visible on every link and button, in a colour that shows', async ({

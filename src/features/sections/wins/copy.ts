@@ -39,13 +39,6 @@ const words = deepFreeze({
     field: (figure: string) => `of ${figure} teams`,
   },
 
-  /** In his handwriting, on the sheet. */
-  hand: {
-    peeled: 'peeled this one off. it’s on the lid, up top.',
-    ownHackathon: 'yes, I ran this one too. Awkward.',
-    trackPrize: 'a prize for the track, not a place on the podium.',
-  },
-
   /** A link's name: its label, then what it belongs to, so "Code" is never ambiguous. */
   linkName: (label: string, subject: string) => `${label}: ${subject}`,
 })

@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../../content'
 import type { Win } from '../../../content'
 import { pressClaim } from '../../../content/pressClaim'
-import { latestPodiumWin } from '../../lid/facts'
 import { winsCopy } from './copy'
 import { type WinFacts, winFacts, winsSpan, winsTally } from './winFacts'
 
@@ -96,7 +95,6 @@ describe('winFacts', () => {
     expect(ncr.lines).toEqual([
       'With Bryan W. Nonni, Sam (Abdulwahab) Jarkas, Christian McDaniel, Stefan Bjelcevic and Jay Arcement.',
     ])
-    expect(ncr.hand).toBeNull()
   })
 
   it('gives the field only where the record has one', () => {
@@ -118,20 +116,13 @@ describe('winFacts', () => {
     expect(fact('arion-parking').lines).toEqual([])
   })
 
-  it('says in the record’s own words that he ran the hackathon he won, and adds his own', () => {
+  it('says in the record’s own words that he ran the hackathon he won, and adds nothing of its own', () => {
     const welder = fact('lightning-welder')
 
     expect(record('lightning-welder').alsoOrganizedId).not.toBeNull()
     expect(welder.lines).toEqual(record('lightning-welder').notes)
     expect(welder.lines.join(' ')).toContain('took no part in the judging')
-    expect(welder.hand).toBe(winsCopy.hand.ownHackathon)
-  })
-
-  it('writes by hand that the prize was for a track, on the prize alone', () => {
-    expect(fact('bitdevs-upgrade').hand).toBe(winsCopy.hand.trackPrize)
-    expect(facts.filter(({ hand }) => hand === winsCopy.hand.trackPrize)).toHaveLength(
-      stats.wins.prizes,
-    )
+    expect(welder).not.toHaveProperty('hand')
   })
 
   it('lends a win its project’s links, then its own, each address once', () => {
@@ -165,20 +156,18 @@ describe('winFacts', () => {
     if (!announcement) {
       throw new Error('Expected a press item about a win')
     }
-    const { claim, naming } = pressClaim(announcement, content)
+    const { claim } = pressClaim(announcement, content)
 
     expect(fact('stringer-safety').press).toEqual([
-      { label: announcement.outlet, href: announcement.url, claim, naming },
+      { label: announcement.outlet, href: announcement.url, claim },
     ])
-    expect(naming).toBe('The announcement does not name him.')
     expect(facts.filter(({ press }) => press.length > 0)).toHaveLength(1)
   })
 
-  it('marks the one win whose sticker is on the lid: its slot on the sheet is empty', () => {
-    const onTheLid = latestPodiumWin(content.wins)
-
-    expect(facts.filter(({ peeled }) => peeled).map(({ id }) => id)).toEqual([onTheLid.id])
-    expect(fact('stringer-safety').peeled).toBe(true)
+  it('marks no win as missing from the sheet: every one has its sticker', () => {
+    for (const win of facts) {
+      expect(win, win.id).not.toHaveProperty('peeled')
+    }
   })
 
   it('letters each sticker with the name, a short event and the year', () => {

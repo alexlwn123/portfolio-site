@@ -325,7 +325,7 @@ describe('the lid’s two parts', () => {
 
     expect(ids).toEqual(PILE_IDS)
     expect(pile?.getAttribute('aria-labelledby')).toBe(title?.id)
-    expect(title?.textContent.trim()).toBe('Stuck on so far')
+    expect(title?.textContent.trim()).toBe('At a glance')
     expect(pile?.firstElementChild).toBe(title)
   })
 

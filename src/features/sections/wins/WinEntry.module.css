@@ -108,9 +108,7 @@
 .title,
 .result,
 .what,
-.line,
-.hand,
-.naming {
+.line {
   margin: 0;
 }
 
@@ -150,15 +148,6 @@
   line-height: 1.3;
 }
 
-/* Written on the sheet afterwards, in ballpoint. */
-.hand {
-  margin-top: 0.5em;
-  color: var(--deep);
-  font-size: 1.7em;
-  line-height: 1.12;
-  rotate: -1.5deg;
-}
-
 .links {
   display: flex;
   flex-wrap: wrap;
@@ -190,13 +179,6 @@
   outline-offset: 0.15em;
   border-radius: 0.2em;
   background: var(--hi);
-}
-
-.naming {
-  color: var(--color-text-muted);
-  font-size: 1.25em;
-  font-weight: var(--weight-medium);
-  line-height: 1.3;
 }
 
 /* A tablet: one win to a line, the stickers on one side and then the other. */

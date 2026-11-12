@@ -3,8 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import { content } from '../../../content'
 import foil from '../../stickers/foil.module.css'
-import { winsCopy } from './copy'
-import { EmptySlot, PrizeSticker } from './PrizeSticker'
+import { PrizeSticker } from './PrizeSticker'
 import styles from './PrizeSticker.module.css'
 import type { StickerShape } from './stickerLooks'
 import { type WinFacts, winFacts } from './winFacts'
@@ -91,25 +90,5 @@ describe('PrizeSticker', () => {
 
     expect(sticker).not.toHaveAttribute('data-sticker')
     expect(sticker.querySelector('[data-sticker], [data-note], [data-peelable]')).toBeNull()
-  })
-})
-
-describe('EmptySlot', () => {
-  it('is the outline a sticker left, with his note in it', () => {
-    const { container } = render(<EmptySlot shape="slab" note={winsCopy.hand.peeled} />)
-    const slot = container.firstElementChild
-
-    expect(slot).toHaveAttribute('data-prize', 'slab')
-    expect(slot).toHaveAttribute('data-peeled')
-    expect(slot).toHaveClass(styles.empty ?? '', styles.slab ?? '')
-    expect(slot).not.toHaveAttribute('aria-hidden')
-    expect(screen.getByText(winsCopy.hand.peeled)).toBeInTheDocument()
-  })
-
-  it('has no face: the sticker is gone', () => {
-    const { container } = render(<EmptySlot shape="slab" note={winsCopy.hand.peeled} />)
-
-    expect(container.querySelector(`.${styles.face ?? ''}`)).toBeNull()
-    expect(container.querySelector(`.${styles.cut ?? ''}`)).toHaveAttribute('aria-hidden', 'true')
   })
 })

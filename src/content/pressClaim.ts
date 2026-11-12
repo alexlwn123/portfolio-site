@@ -2,11 +2,9 @@ import { ordinal } from '../lib/formatNumber'
 import type { Content, Organized, Press, Win } from './schema'
 import { winName } from './winName'
 
-/** What a page may say about a press item: the claim, and who the piece names. */
+/** What a page may say about a press item: what the piece is, and no more. */
 export interface PressClaim {
   readonly claim: string
-  /** Null when there is nothing to add about who is named. */
-  readonly naming: string | null
 }
 
 type Sources = Pick<Content, 'organized' | 'wins'>
@@ -31,19 +29,6 @@ function eventWithPlace(event: Organized): string {
   return `${event.name} in ${region === null ? city : `${city}, ${region}`}`
 }
 
-function namingOfCoverage(namesEvent: boolean, namesOwner: boolean): string {
-  if (namesEvent && namesOwner) {
-    return 'The piece names both the event and him.'
-  }
-  if (namesEvent) {
-    return 'The piece names the event but not him.'
-  }
-  if (namesOwner) {
-    return 'The piece names him but not the event.'
-  }
-  return 'The piece names neither the event nor him.'
-}
-
 function resultPhrase(win: Win): string {
   return win.result.kind === 'place'
     ? `placed ${ordinal(win.result.place)}`
@@ -51,9 +36,11 @@ function resultPhrase(win: Win): string {
 }
 
 /**
- * Builds the only sentences a page may print about a press item. They come
+ * Builds the only sentence a page may print about a press item. It comes
  * from the record's structure, so the wording cannot claim more than is true:
- * a piece about an event he helped organize is never a piece about him.
+ * a piece about an event he helped organize is said to be exactly that, and
+ * never a piece about him. Whether the piece names him stays in the record
+ * (namesOwner, namesEvent) and is not printed.
  */
 export function pressClaim(item: Press, sources: Sources): PressClaim {
   const { subject } = item
@@ -62,17 +49,15 @@ export function pressClaim(item: Press, sources: Sources): PressClaim {
       const event = findById(sources.organized, subject.organizedId, 'organized')
       return {
         claim: `Coverage of ${eventWithPlace(event)}, a hackathon he helped organize.`,
-        naming: namingOfCoverage(subject.namesEvent, subject.namesOwner),
       }
     }
     case 'win': {
       const win = findById(sources.wins, subject.winId, 'win')
       return {
         claim: `Announcement of the ${win.event} winners, with ${winName(win)} ${resultPhrase(win)}.`,
-        naming: subject.namesOwner ? null : 'The announcement does not name him.',
       }
     }
     case 'reference':
-      return { claim: subject.label, naming: null }
+      return { claim: subject.label }
   }
 }

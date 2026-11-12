@@ -2,7 +2,6 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../../content'
-import { workCopy } from './copy'
 import { WorkSection } from './WorkSection'
 
 function renderSection(): HTMLElement {
@@ -16,7 +15,9 @@ describe('WorkSection', () => {
 
     expect(section).toHaveAttribute('id', 'work')
     expect(section).toHaveAttribute('data-surface', 'mat')
-    expect(within(section).getByText(workCopy.kicker)).toBeInTheDocument()
+    expect(
+      within(section).getByText('5 roles, from NCR Corporation to Finite Computer. newest first.'),
+    ).toBeInTheDocument()
   })
 
   it('prints every job on record: who for, as what', () => {

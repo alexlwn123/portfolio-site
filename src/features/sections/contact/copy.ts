@@ -6,7 +6,7 @@ import { deepFreeze } from '../../../lib/deepFreeze'
  */
 export const contactCopy = {
   title: ['Say', 'hello'],
-  kicker: 'that’s the whole lid. the rest is a conversation.',
+  kicker: 'got something worth building? let’s talk.',
 
   /** The label on the underside that gets a lost laptop home. */
   label: {
@@ -21,7 +21,7 @@ export const contactCopy = {
   /** The asset tag that leads to the plain CV. */
   cv: { kicker: 'No stickers, all facts', label: 'Plain CV' },
 
-  smallPrint: 'No stickers were harmed in the making of this lid. A few were repositioned.',
+  smallPrint: 'Thanks for scrolling this far.',
 } as const
 
 /* Frozen all the way down, so no component can rewrite the voice. */

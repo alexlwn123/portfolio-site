@@ -60,8 +60,8 @@ describe('lidStickers', () => {
   })
 
   it('heads the pile with a title over two lines and a line in his hand under it', () => {
-    expect(sticker('pile-title', 'heading').lines).toEqual(['Stuck on', 'so far'])
-    expect(sticker('pile-kicker', 'scrawl').text).toMatch(/further down\.$/)
+    expect(sticker('pile-title', 'heading').lines).toEqual(['At a', 'glance'])
+    expect(sticker('pile-kicker', 'scrawl').text).toMatch(/the full story\.$/)
     expect(PILE_IDS.slice(0, 2)).toEqual(['pile-title', 'pile-kicker'])
   })
 
@@ -69,7 +69,7 @@ describe('lidStickers', () => {
     expect(sticker('cue', 'cue')).toEqual({
       id: 'cue',
       kind: 'cue',
-      text: 'scroll, it gets stickier',
+      text: 'scroll for the highlights',
       href: '/#pile',
     })
   })
@@ -86,7 +86,7 @@ describe('lidStickers', () => {
     expect(STICKER_IDS.slice(-CONTROL_IDS.length)).toEqual(CONTROL_IDS)
     expect(stickers.filter(isControl).map(({ id }) => id)).toEqual(['tilt', 'sound', 'tidy'])
     expect(sticker('sound', 'sound')).toEqual({ id: 'sound', kind: 'sound', label: 'Sound' })
-    expect(sticker('tidy', 'tidy').lines).toEqual(['Tidy', 'the lid'])
+    expect(sticker('tidy', 'tidy').lines).toEqual(['Reset', 'stickers'])
     expect(sticker('tilt', 'tilt').lines).toEqual(['Tilt', 'me'])
     expect(stickers.filter(isControl).flatMap(linksOf)).toEqual([])
   })

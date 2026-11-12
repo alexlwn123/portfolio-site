@@ -40,7 +40,6 @@
 }
 
 .city,
-.naming,
 .scrawl {
   flex: 0 0 100%;
 }
@@ -50,7 +49,6 @@
   order: 2;
 }
 
-.naming,
 .scrawl {
   order: 3;
 }
@@ -130,15 +128,6 @@
   rotate: 1.5deg;
 }
 
-/* A figure nobody published: an empty outline where the pill would be. */
-.unknown {
-  background: none;
-  box-shadow: none;
-  outline: 1px dashed rgba(255, 255, 255, 0.8);
-  color: var(--white);
-  rotate: 0deg;
-}
-
 /*
  * ---------- the press piece ----------
  *
@@ -175,13 +164,6 @@
 .arrow {
   width: 0.9em;
   height: 0.9em;
-}
-
-.naming {
-  margin-top: 0.4em;
-  font-size: 1.1em;
-  font-weight: var(--weight-medium);
-  line-height: 1.2;
 }
 
 .scrawl {
@@ -243,10 +225,6 @@
   /* A target of 24px or more on a 360px phone, where a chip's type is about 11px. */
   .pressLink {
     min-height: 2.3em;
-  }
-
-  .naming {
-    font-size: 1.2em;
   }
 }
 

@@ -27,8 +27,7 @@ function PrintersMarks(): ReactElement {
 /**
  * Hackathon wins: a sheet of kiss-cut prize stickers lying on the lid, as the
  * sticker shop sent it, its edges on the edges of the column. Every win is a
- * sticker still on the sheet, with its facts printed beside it, except the
- * newest, which has been peeled off and stuck on the lid above.
+ * sticker on the sheet, with its facts printed beside it.
  */
 export const WinsSection: FunctionComponent<SectionProps> = ({ content, stats }) => {
   const wins = winFacts(content)

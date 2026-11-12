@@ -46,7 +46,7 @@ describe('stickerLook', () => {
 
   it('cuts no first place in a low, wide shape, which would make it the smallest on the sheet', () => {
     const onTheSheet = facts.flatMap((win, index) =>
-      win.finish === 'first' && !win.peeled ? [stickerLook(win, index)] : [],
+      win.finish === 'first' ? [stickerLook(win, index)] : [],
     )
 
     expect(onTheSheet.length).toBeGreaterThan(0)

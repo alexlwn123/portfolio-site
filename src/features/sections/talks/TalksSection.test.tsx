@@ -95,7 +95,7 @@ describe('TalksSection', () => {
     const section = renderSection()
 
     expect(section).toHaveTextContent('a hackathon he helped organize')
-    expect(section).toHaveTextContent('The piece names neither the event nor him.')
+    expect(section).not.toHaveTextContent(/names neither|does not name/i)
     expect(section).not.toHaveTextContent(/as heard on npr/i)
     for (const { url } of content.press) {
       expect(section.querySelector(`a[href="${url}"]`)).not.toBeNull()

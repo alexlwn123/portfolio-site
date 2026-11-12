@@ -4,7 +4,7 @@ import { cx } from '../../../lib/classNames'
 import foil from '../../stickers/foil.module.css'
 import voice from '../../stickers/voice.module.css'
 import styles from './PrizeSticker.module.css'
-import type { StickerLook, StickerShape } from './stickerLooks'
+import type { StickerLook } from './stickerLooks'
 import type { WinFacts } from './winFacts'
 
 interface PrizeStickerProps {
@@ -47,31 +47,6 @@ export function PrizeSticker({ win, look }: PrizeStickerProps): ReactElement {
           </span>
         </span>
       </span>
-    </span>
-  )
-}
-
-interface EmptySlotProps {
-  /** The shape of the sticker that was here. */
-  readonly shape: StickerShape
-  /** What he wrote in the gap. */
-  readonly note: string
-}
-
-/**
- * The outline a sticker leaves on the sheet once it has been peeled off:
- * the kiss-cut line, the bare backing inside it, and his note about where
- * the sticker went.
- */
-export function EmptySlot({ shape, note }: EmptySlotProps): ReactElement {
-  return (
-    <span
-      className={cx(styles.sticker, styles[shape], styles.empty)}
-      data-prize={shape}
-      data-peeled=""
-    >
-      <span className={styles.cut} aria-hidden="true" />
-      <span className={cx(voice.marker, styles.gone)}>{note}</span>
     </span>
   )
 }
