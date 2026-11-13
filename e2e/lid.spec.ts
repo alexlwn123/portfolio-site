@@ -422,8 +422,15 @@ test.describe('the lid', () => {
 
     expect(families.length).toBeGreaterThan(0)
     for (const family of families) {
-      expect(WEB_FONTS.some((font) => family.startsWith(font))).toBe(true)
+      expect(
+        WEB_FONTS.some((font) => family.startsWith(font)),
+        family,
+      ).toBe(true)
     }
+    // The one thing left to the system is the one emoji, and the system draws it with an emoji face.
+    const emoji = page.getByRole('main').locator(`[${SYSTEM_DRAWN}]`)
+    await expect(emoji).toHaveCount(1)
+    expect(await emoji.evaluate((glyph) => getComputedStyle(glyph).fontFamily)).toMatch(/emoji/i)
   })
 
   test('sets each letter of the name as wide as the browser draws it', async ({ page }) => {
@@ -556,10 +563,17 @@ interface DomNode {
   readonly nodeType: number
   readonly nodeName: string
   readonly nodeValue: string
+  /** An element's attributes, as the protocol lists them: a name, its value, the next name. */
+  readonly attributes?: readonly string[]
   readonly children?: readonly DomNode[]
 }
 
 const TEXT_NODE = 3
+/**
+ * What marks an emoji. No typeface the site ships has one, and it is meant
+ * to be drawn by the visitor's own system, so it is left out of the count.
+ */
+const SYSTEM_DRAWN = 'data-emoji'
 
 /** The elements under a node that hold text of their own, by id. */
 function textHolders(node: DomNode, inMain = false): readonly number[] {
@@ -568,8 +582,9 @@ function textHolders(node: DomNode, inMain = false): readonly number[] {
   const holdsText = children.some(
     (child) => child.nodeType === TEXT_NODE && child.nodeValue.trim() !== '',
   )
+  const systemDrawn = node.attributes?.includes(SYSTEM_DRAWN) === true
   return [
-    ...(within && holdsText ? [node.nodeId] : []),
+    ...(within && holdsText && !systemDrawn ? [node.nodeId] : []),
     ...children.flatMap((child) => textHolders(child, within)),
   ]
 }
