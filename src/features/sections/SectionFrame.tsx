@@ -14,8 +14,16 @@ export interface SectionFrameProps {
   readonly title: readonly [string, string]
   /** A line in his handwriting under the heading. */
   readonly kicker?: string | undefined
+  /**
+   * How wide the section is set. Every section is set in the page's column,
+   * but one that is a surface to spread things out on may take the screen's
+   * width: its heading moves out to the margin with what is under it.
+   */
+  readonly measure?: SectionMeasure
   readonly children?: ReactNode
 }
+
+export type SectionMeasure = 'column' | 'wide'
 
 /**
  * One full-width band of the home page: a surface, a heading that is a
@@ -24,7 +32,7 @@ export interface SectionFrameProps {
  * from the lid can be used here at the size it has there.
  */
 export function SectionFrame(props: SectionFrameProps): ReactElement {
-  const { id, surface, title, kicker, children } = props
+  const { id, surface, title, kicker, measure = 'column', children } = props
 
   return (
     <section
@@ -34,7 +42,11 @@ export function SectionFrame(props: SectionFrameProps): ReactElement {
       data-section={id}
       data-surface={surface}
     >
-      <div className={styles.units} data-units="">
+      <div
+        className={cx(styles.units, measure === 'wide' && styles.wide)}
+        data-units=""
+        data-measure={measure}
+      >
         <header className={styles.header}>
           <h2 id={titleId(id)} className={styles.title}>
             <Stuck as="span">

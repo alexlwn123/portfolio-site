@@ -92,6 +92,21 @@
   rotate: -1.5deg;
 }
 
+/*
+ * A wider measure, for a section that is a surface to spread things out on:
+ * the screen from margin to margin, up to half as wide again as the column.
+ * The unit is the column's, so nothing is drawn larger: there is only more
+ * room across. The heading moves out with the rest, and still stands on the
+ * left edge of what is under it. On a tablet and a phone the column is the
+ * screen already.
+ */
+@container section (min-width: 1100px) {
+  .wide {
+    max-width: 150em;
+    padding-inline: 3.2em;
+  }
+}
+
 @container section (max-width: 1099px) {
   .units {
     padding: 6em 3em 8em;

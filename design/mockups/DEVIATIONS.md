@@ -944,6 +944,32 @@ Since 2026-11-13, at the owner's request:
   draws it (`--font-emoji`), and its white edge is the glyph's outline grown outwards with hard
   white shadows, so it follows whichever emoji face is used. The quality check stays.
 
+### Two bands take the screen's width: the pile and the projects
+
+Round 3 set the whole page in one column. Since 2026-11-13, at the owner's request, two bands leave
+it on a laptop, "so that it feels a bit wider and more like a bulletin board". Every other section
+keeps the column and its margins. A tablet and a phone are unchanged: there the column is the
+screen already.
+
+- **The pile ("At a glance") takes the whole screen.** Its stickers keep the size they were drawn
+  at and spread out across the screen instead. The wide board is still drawn in the column
+  (`placement/wide.ts`); `placement/spread.ts` gives each sticker a share: how far across its free
+  room it was drawn. On the page it stands the same share of the way across the room the screen
+  gives it, between two margins of 32 units. So the sticker on the column's left edge stands on the
+  left margin at any width, the one on its right edge on the right margin, and the rest spread
+  between them as the screen widens. The pile's unit still stops growing at 1440px, as the
+  sections' does.
+- **Its heading moved out with it.** "At a glance" stands on the screen's left margin on a laptop,
+  not on the sections' left edge, so that nothing is stuck to the left of the board's own title.
+- **Three stickers stop short** of the place the badge's ribbons land (the Finite Computer tag and
+  the two buttons): that place hangs from the column's right edge, not the screen's.
+- **Self-sizing stickers have a recorded width** (`WIDE_SPANS`), because a share needs one. A browser
+  test holds each to what the page draws.
+- **The projects ("Things I built") are set on a wider measure:** the screen from margin to margin
+  (32 units each side), up to half as wide again as the column. `SectionFrame` takes
+  `measure="wide"` for it. The rows are the same rows; each has more room across, and the heading
+  stands on the same left edge as the first sticker of each row.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

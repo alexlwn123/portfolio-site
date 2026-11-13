@@ -8,6 +8,7 @@ import {
   PHONE_MAX_WIDTH_PX,
   WIDE_MIN_WIDTH_PX,
 } from '../src/features/lid/placement/artboards'
+import { SPREAD_MARGIN, WIDE_SPANS } from '../src/features/lid/placement/spread'
 import { COVER_IDS, PILE_IDS } from '../src/features/lid/stickers'
 import {
   type Edges,
@@ -375,9 +376,7 @@ test.describe('the pile', () => {
       expect(await stickersCoveringLinks(page, SAMPLES_PER_SIDE)).toEqual([])
     })
 
-    test(`starts with a heading sticker on the sections’ left edge at ${named(screen)}`, async ({
-      page,
-    }) => {
+    test(`starts with a heading sticker on its left edge at ${named(screen)}`, async ({ page }) => {
       await openCover(page, screen)
       const headings = page.getByRole('heading', { level: 2 })
       const title = await layoutEdges(page, '[data-sticker="pile-title"]')
@@ -385,7 +384,17 @@ test.describe('the pile', () => {
 
       await expect(headings.first()).toHaveText(copy.lid.pile.title.join(' '))
       await expect(headings.first()).toHaveAttribute('data-sticker', 'pile-title')
-      expect(title.left).toBeCloseTo(section.left, 0)
+      if (screen.width >= WIDE_MIN_WIDTH_PX) {
+        // On a laptop the pile takes the screen's width, so its heading stands on the screen's margin.
+        const unit = await page
+          .locator('[data-lid-pile]')
+          .evaluate((pile) => Number.parseFloat(getComputedStyle(pile).fontSize) / 10)
+        expect(title.left).toBeCloseTo(SPREAD_MARGIN * unit, 0)
+        expect(title.left).toBeLessThan(section.left)
+      } else {
+        // On a tablet and a phone the column is the screen: the heading stands where a section's does.
+        expect(title.left).toBeCloseTo(section.left, 0)
+      }
       // The same label as a section's: the same type at the same size.
       const sizes = await page
         .locator(
@@ -427,7 +436,7 @@ test.describe('the pile', () => {
     })
   }
 
-  test('stops growing where the sections stop, and sits in the middle of the lid', async ({
+  test('is as wide as the lid at any width, while its unit stops growing where the sections’ stops', async ({
     page,
   }) => {
     const pileAt = async (
@@ -444,15 +453,63 @@ test.describe('the pile', () => {
     expect((await pileAt(WIDE_MIN_WIDTH_PX)).unit).toBeCloseTo(WIDE_MIN_WIDTH_PX / ems, 2)
     expect(await pileAt(MAX_ARTBOARD_WIDTH_PX)).toMatchObject({ left: 0 })
     const beyond = await pileAt(2560)
+    // Nothing is drawn larger past that width: the stickers keep their size and spread out.
     expect(beyond.unit).toBeCloseTo(MAX_ARTBOARD_WIDTH_PX / ems, 2)
-    expect(beyond.width).toBe(MAX_ARTBOARD_WIDTH_PX)
-    expect(beyond.left).toBe((2560 - MAX_ARTBOARD_WIDTH_PX) / 2)
+    expect(beyond).toMatchObject({ left: 0, width: 2560 })
     // The sections' own unit, at any width: one page, one measure.
     const section = await page
       .locator('[data-section] [data-units]')
       .first()
       .evaluate((units) => Number.parseFloat(getComputedStyle(units).fontSize))
     expect(beyond.unit).toBeCloseTo(section, 2)
+  })
+
+  for (const width of [WIDE_MIN_WIDTH_PX, MAX_ARTBOARD_WIDTH_PX, 1728, 1920, 2560]) {
+    test(`its stickers take the screen from margin to margin, and none leaves it, at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      await openCover(page, { width, height: 900 })
+      const { unit, lefts, rights } = await page.locator('[data-lid-pile]').evaluate((pile) => {
+        const shown = [...pile.querySelectorAll<HTMLElement>('[data-sticker]')].filter(
+          (sticker) => sticker.getClientRects().length > 0,
+        )
+        return {
+          unit: Number.parseFloat(getComputedStyle(pile).fontSize) / 10,
+          // Where each is placed, before its tilt.
+          lefts: shown.map((sticker) => sticker.offsetLeft),
+          rights: shown.map((sticker) => sticker.offsetLeft + sticker.offsetWidth),
+        }
+      })
+      const margin = SPREAD_MARGIN * unit
+
+      expect(Math.min(...lefts)).toBeCloseTo(margin, 0)
+      expect(Math.max(...rights)).toBeGreaterThan(width - margin - 4 * unit)
+      expect(Math.max(...rights)).toBeLessThanOrEqual(width - margin + HAIR_PX)
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        ),
+      ).toBeLessThanOrEqual(0)
+    })
+  }
+
+  test('spreads by the widths its self-sizing stickers really draw', async ({ page }) => {
+    await openCover(page, { width: MAX_ARTBOARD_WIDTH_PX, height: 900 })
+    const drawn = await page.locator('[data-lid-pile]').evaluate((pile) => {
+      const unit = Number.parseFloat(getComputedStyle(pile).fontSize) / 10
+      return Object.fromEntries(
+        [...pile.querySelectorAll<HTMLElement>('[data-sticker]')].map((sticker) => [
+          sticker.getAttribute('data-sticker') ?? '',
+          sticker.offsetWidth / unit,
+        ]),
+      )
+    })
+    /** A span may be this many units out before the sticker it stands for is noticeably misplaced. */
+    const slack = 6
+
+    for (const [id, span] of Object.entries(WIDE_SPANS)) {
+      expect(Math.abs((drawn[id] ?? 0) - span), id).toBeLessThanOrEqual(slack)
+    }
   })
 
   test('uses the arrangement that belongs to each width', async ({ page }) => {

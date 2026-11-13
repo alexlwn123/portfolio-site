@@ -20,6 +20,8 @@ describe('ProjectsSection', () => {
 
     expect(section.id).toBe('projects')
     expect(section).toHaveAttribute('data-surface', 'mat')
+    // The mat is set wider than the page's column, so the rows have room to spread.
+    expect(section.querySelector('[data-units]')).toHaveAttribute('data-measure', 'wide')
     // No line under the title: the stickers say it.
     expect(section.querySelector('h2')?.closest('header')?.querySelector('p') ?? null).toBeNull()
     expect(projectsCopy).not.toHaveProperty('kicker')

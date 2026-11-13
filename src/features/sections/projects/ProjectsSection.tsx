@@ -16,7 +16,8 @@ const KNIFE_AFTER = 7
 
 /**
  * "Things I built": every project that may be shown, freshly cut and stood in
- * rows on the cutting mat, each a sticker of a different shape. The knife
+ * rows on the cutting mat, each a sticker of a different shape. The mat is
+ * set wider than the page's column, so the rows have room to spread. The knife
  * lies over the first row and the weeded scraps are swept to the end of the
  * last. Static HTML and CSS.
  */
@@ -31,7 +32,7 @@ export const ProjectsSection: FunctionComponent<SectionProps> = ({ content }) =>
       ))
 
   return (
-    <SectionFrame id="projects" surface="mat" title={projectsCopy.title}>
+    <SectionFrame id="projects" surface="mat" title={projectsCopy.title} measure="wide">
       <MatRuler edge="top" />
       <MatRuler edge="left" />
       <ul className={styles.stickers} aria-label={projectsCopy.list} role="list">

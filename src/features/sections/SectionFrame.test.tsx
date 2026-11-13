@@ -34,6 +34,24 @@ describe('SectionFrame', () => {
     expect(screen.getByText('newest first')).toBeInTheDocument()
   })
 
+  it('is set in the page’s column unless it is given a wider measure', () => {
+    const { container, rerender } = render(
+      <SectionFrame id="wins" surface="lid" title={['Wins', '']} />,
+    )
+    const units = (): Element | null => container.querySelector('[data-units]')
+    const inColumn = units()?.className
+
+    expect(units()).toHaveAttribute('data-measure', 'column')
+
+    rerender(
+      <SectionFrame id="projects" surface="mat" title={['Things', 'I built']} measure="wide" />,
+    )
+    expect(units()).toHaveAttribute('data-measure', 'wide')
+    // The wider measure is one more class on the same element: the heading moves out with the rest.
+    expect(units()?.className).not.toBe(inColumn)
+    expect(units()?.contains(screen.getByRole('heading', { level: 2 }))).toBe(true)
+  })
+
   it('holds what it is given, inside the part that sets the design unit', () => {
     render(
       <SectionFrame id="projects" surface="mat" title={['Things', 'I built']}>

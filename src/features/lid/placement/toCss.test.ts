@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { HIDDEN } from './schema'
+import { spreadPlan } from './spread'
 import { toCss } from './toCss'
 
 const FRAME = {
@@ -23,14 +24,22 @@ const FRAME = {
 
 const ORDER = ['name', 'pill', 'bolt'] as const
 
+/** Drawn on the wide board: one on its left edge, one half way across, one beside the landing. */
+const WIDE = {
+  name: { x: 20, y: 18, w: 500, r: -3, z: 6 },
+  pill: { x: 515, y: 700, r: 4, z: 3 },
+  bolt: { x: 375, y: 90, w: 60, r: -12, z: 8 },
+} as const
+
+const BOARD = { width: 1100, gutter: 50, landing: { width: 280, height: 130 } } as const
+
+const SPREAD = spreadPlan(WIDE, { spans: { pill: 70 }, underLanding: ['bolt'], board: BOARD })
+
 const css = toCss(
   {
     order: ORDER,
-    wide: {
-      name: { x: 20, y: 18, w: 500, r: -3, z: 6 },
-      pill: { x: 40, y: 700, r: 4, z: 3 },
-      bolt: { x: 1012, y: 990, w: 60, r: -12, z: 8 },
-    },
+    wide: WIDE,
+    spread: SPREAD,
     desktop: {
       name: { x: 14, y: 30, w: 470, r: -4, z: 6 },
       pill: { x: 8, y: 770, r: -7, z: 3 },
@@ -78,12 +87,28 @@ describe('toCss', () => {
     expect(css.match(/@container/g)).toHaveLength(2)
     expect(wideCss.trimStart().startsWith('{')).toBe(true)
     expect(css.trimEnd().endsWith('}')).toBe(true)
+    expect(rulesFor(wideCss, 'name')).toHaveLength(1)
+    expect(rulesFor(wideCss, 'bolt')).toHaveLength(1)
+  })
+
+  it('spreads the wide board’s stickers across the screen, each by its share of the room it has', () => {
+    // On the column's left edge: it stands on the margin, at any width.
     expect(rulesFor(wideCss, 'name')).toEqual([
-      '[data-sticker="name"]{left:2em;top:1.8em;width:50em;rotate:-3deg;z-index:6}',
+      '[data-sticker="name"]{left:3.2em;top:1.8em;width:50em;rotate:-3deg;z-index:6}',
     ])
+    // Half way across its room: the screen between the margins, less its own width.
+    expect(rulesFor(wideCss, 'pill')).toEqual([
+      '[data-sticker="pill"]{left:calc(3.2em + 0.5 * (100cqw - 13.4em));top:70em;rotate:4deg;z-index:3}',
+    ])
+    // Beside the landing: its room ends at the landing, which hangs from the middle of the screen.
     expect(rulesFor(wideCss, 'bolt')).toEqual([
-      '[data-sticker="bolt"]{left:101.2em;top:99em;width:6em;rotate:-12deg;z-index:8}',
+      '[data-sticker="bolt"]{left:calc(3.2em + 0.5 * (50cqw + 11.8em));top:9em;width:6em;rotate:-12deg;z-index:8}',
     ])
+  })
+
+  it('spreads nothing on a tablet or a phone: those boards are the width of the screen already', () => {
+    expect(desktopCss).not.toContain('cqw -')
+    expect(phoneCss).not.toContain('calc(3.2em')
   })
 
   it('writes placements in em, ten design units to the em', () => {
@@ -99,9 +124,7 @@ describe('toCss', () => {
     expect(rulesFor(phoneCss, 'pill')).toEqual([
       '[data-sticker="pill"]{left:-0.6em;top:83.85em;rotate:0deg;z-index:3}',
     ])
-    expect(rulesFor(wideCss, 'pill')).toEqual([
-      '[data-sticker="pill"]{left:4em;top:70em;rotate:4deg;z-index:3}',
-    ])
+    expect(rulesFor(wideCss, 'pill').join('')).not.toContain('width:')
   })
 
   it('takes a sticker hidden on the phone out of the page, whatever its own styles say', () => {
@@ -122,12 +145,13 @@ describe('toCss', () => {
     expect(css).not.toContain('[data-lid-stage]{')
   })
 
-  it('stops the wide artboard growing where the sections stop, and centres it on the lid', () => {
+  it('stops the wide board’s unit growing where the sections’ stops, and leaves the pile the width of the lid', () => {
     expect(wideCss).toContain(
-      '[data-lid-pile]{font-size:min(calc(100cqw / 110),calc(1440px / 110));height:108em;max-width:1440px;margin-inline:auto}',
+      '[data-lid-pile]{font-size:min(calc(100cqw / 110),calc(1440px / 110));height:108em}',
     )
-    expect(desktopCss).not.toContain('max-width')
-    expect(phoneCss).not.toContain('margin-inline')
+    // The stickers go on spreading past that width: the pile is not held to it.
+    expect(css).not.toContain('max-width:1440px')
+    expect(css).not.toContain('margin-inline')
   })
 
   it('is a plain stylesheet: no markup and no style attributes', () => {
@@ -141,16 +165,33 @@ describe('toCss', () => {
 
   it('gives one sticker a rule of its own', () => {
     const name = { name: { x: 0, y: 0, r: 0, z: 1 } }
-    const single = toCss({ order: ['name'], wide: name, desktop: name, phone: name }, FRAME)
+    const spread = spreadPlan(name, { spans: { name: 100 }, underLanding: [], board: BOARD })
+    const single = toCss({ order: ['name'], wide: name, spread, desktop: name, phone: name }, FRAME)
 
     expect(single).toContain('[data-sticker="name"]{left:0em;top:0em;rotate:0deg;z-index:1}')
+  })
+
+  it('fails loudly when a sticker of the wide board has no place in the spread', () => {
+    const place = {
+      name: { x: 0, y: 0, w: 10, r: 0, z: 1 },
+      pill: { x: 0, y: 0, w: 10, r: 0, z: 1 },
+    }
+    const spread = spreadPlan({ name: place.name }, { spans: {}, underLanding: [], board: BOARD })
+    const layouts = { order: ['name', 'pill'], wide: place, spread, desktop: place, phone: place }
+
+    expect(() => toCss(layouts, FRAME)).toThrow(/pill/)
   })
 
   it.each(['wide', 'desktop', 'phone'] as const)(
     'fails loudly when a sticker in the order has no placement: %s',
     (missing) => {
       const place = { name: { x: 0, y: 0, r: 0, z: 1 }, pill: { x: 0, y: 0, r: 0, z: 1 } }
-      const broken = { order: ['name', 'pill'], wide: place, desktop: place, phone: place }
+      const spread = spreadPlan(place, {
+        spans: { name: 100, pill: 100 },
+        underLanding: [],
+        board: BOARD,
+      })
+      const broken = { order: ['name', 'pill'], wide: place, spread, desktop: place, phone: place }
 
       expect(() => toCss({ ...broken, [missing]: { name: place.name } }, FRAME)).toThrow(/pill/)
     },

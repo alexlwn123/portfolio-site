@@ -382,9 +382,25 @@ describe('lidPlacementCss', () => {
     expect(css.match(/\[data-lid\]\{container:lid \/ inline-size\}/g)).toHaveLength(1)
   })
 
-  it('never caps or pads the lid itself: only the wide pile and the cover’s column stop growing', () => {
+  it('never caps or pads the lid itself, nor the pile: only the units and the cover’s column stop growing', () => {
     expect(css).not.toContain('data-lid-desk')
-    expect(css.match(/max-width:1440px/g)).toHaveLength(1)
+    // The pile is the width of the lid at any width: its stickers spread across all of it.
+    expect(css).not.toContain('max-width:1440px')
+    expect(css).not.toContain('margin-inline')
     expect(css).not.toContain('1920')
+  })
+
+  it('spreads the wide pile across the screen: every sticker but those on the left margin stands by the lid’s width', () => {
+    const [, afterQuery = ''] = css.split('@container lid (min-width:1100px)')
+    // The pile's wide rules, up to the brace that closes their query. The cover's come after.
+    const [wideCss = ''] = afterQuery.split('\n}')
+    const pile = wideCss.split('\n').filter((line) => line.startsWith('[data-sticker="'))
+    const spread = pile.filter((line) => /left:calc\(3\.2em \+ [\d.]+ \* \((100|50)cqw /.test(line))
+    const onTheMargin = pile.filter((line) => line.includes('{left:3.2em;'))
+
+    expect(pile.length).toBeGreaterThan(30)
+    expect(spread.length + onTheMargin.length).toBe(pile.length)
+    expect(onTheMargin.length).toBeGreaterThan(0)
+    expect(spread.length).toBeGreaterThan(onTheMargin.length)
   })
 })
