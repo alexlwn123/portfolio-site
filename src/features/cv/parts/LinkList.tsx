@@ -1,6 +1,7 @@
 import { Fragment, type ReactElement } from 'react'
 
 import type { Link } from '../../../content'
+import { linkTo } from '../../../lib/linkTo'
 import styles from '../cv.module.css'
 
 const SEPARATOR = ' · '
@@ -22,7 +23,7 @@ export function LinkList({ links, context }: LinkListProps): ReactElement | null
       {links.map((link, index) => (
         <Fragment key={link.url}>
           {index > 0 && SEPARATOR}
-          <a href={link.url}>
+          <a {...linkTo(link.url)}>
             {link.label}
             <span className={styles.visuallyHidden}>: {context}</span>
           </a>

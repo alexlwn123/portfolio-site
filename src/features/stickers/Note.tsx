@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { cx } from '../../lib/classNames'
+import { linkTo } from '../../lib/linkTo'
 import styles from './Note.module.css'
 import voice from './voice.module.css'
 
@@ -36,7 +37,7 @@ export function Note({ id, title, lines, links }: NoteProps): ReactElement {
       <ul className={styles.links} role="list">
         {links.map(({ label, href }) => (
           <li key={href}>
-            <a className={styles.link} href={href}>
+            <a className={styles.link} {...linkTo(href)}>
               {label}
               <span className={voice.srOnly}>: {title}</span>
             </a>

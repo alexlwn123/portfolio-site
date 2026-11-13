@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 
 import type { Profile } from '../../content'
+import { linkTo } from '../../lib/linkTo'
 import { PATHS } from '../../lib/paths'
 import styles from './cv.module.css'
 import { displayUrl, placeLine, roleLine } from './describe'
@@ -23,7 +24,7 @@ export function CvHeader({ profile }: CvHeaderProps): ReactElement {
       <p className={styles.reach}>
         <a href={`mailto:${profile.email}`}>{profile.email}</a>
         {' · '}
-        <a href={profile.site}>{displayUrl(profile.site)}</a>
+        <a {...linkTo(profile.site)}>{displayUrl(profile.site)}</a>
       </p>
       <p className={styles.field}>{profile.field}</p>
       <p className={styles.words}>{profile.selfDescription.join(' ')}</p>

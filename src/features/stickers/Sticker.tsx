@@ -1,6 +1,7 @@
 import { createElement, type ReactElement, type ReactNode } from 'react'
 
 import { cx } from '../../lib/classNames'
+import { linkTo } from '../../lib/linkTo'
 import styles from './Sticker.module.css'
 
 type StickerTag = 'div' | 'h1' | 'h2' | 'nav' | 'p' | 'span'
@@ -88,7 +89,7 @@ export function Sticker({
         tag === 'button' && styles.control,
         className,
       ),
-      href,
+      ...(href === undefined ? {} : linkTo(href)),
       'aria-label': label,
       'aria-hidden': decorative ? true : undefined,
       ...(tag === 'button' && control !== undefined ? buttonProps(control, toggle) : {}),

@@ -47,12 +47,27 @@ describe('Note', () => {
     expect(screen.getByRole('link', { name: 'Code: Arion Parking' })).toHaveTextContent('Code')
   })
 
-  it('carries no inline style and opens no new window', () => {
+  it('carries no inline style, and keeps a link within the site in its tab', () => {
     const { container } = render(
       <Note id="n" title="T" lines={['one']} links={[{ label: 'Site', href: '/' }]} />,
     )
 
     expect(container.querySelectorAll('[style]')).toHaveLength(0)
     expect(container.querySelector('a[target]')).toBeNull()
+  })
+
+  it('opens a link that leaves the site in a new tab', () => {
+    render(
+      <Note
+        id="n"
+        title="T"
+        lines={[]}
+        links={[{ label: 'Code', href: 'https://example.test/code' }]}
+      />,
+    )
+
+    const link = screen.getByRole('link', { name: 'Code: T' })
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener')
   })
 })

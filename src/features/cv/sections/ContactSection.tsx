@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 
 import type { Profile } from '../../../content'
+import { linkTo } from '../../../lib/linkTo'
 import styles from '../cv.module.css'
 import { displayUrl } from '../describe'
 import { LABELS } from '../labels'
@@ -20,11 +21,11 @@ export function ContactSection({ profile }: ContactSectionProps): ReactElement {
         </li>
         <li>
           <span className={styles.term}>{LABELS.site}</span>{' '}
-          <a href={profile.site}>{displayUrl(profile.site)}</a>
+          <a {...linkTo(profile.site)}>{displayUrl(profile.site)}</a>
         </li>
         {profile.links.map((link) => (
           <li key={link.id}>
-            <a href={link.url}>{link.label}</a>
+            <a {...linkTo(link.url)}>{link.label}</a>
           </li>
         ))}
       </ul>

@@ -21,6 +21,17 @@ describe('Wristband', () => {
     expect(links.map((link) => link.getAttribute('href'))).toEqual(LINKS.map(({ href }) => href))
   })
 
+  it('opens each link that leaves the site in a new tab', () => {
+    render(<Wristband tone="gum" links={[...LINKS, { label: 'Plain CV', href: '/cv/' }]} />)
+
+    for (const { label } of LINKS) {
+      const link = screen.getByRole('link', { name: label })
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link).toHaveAttribute('rel', 'noopener')
+    }
+    expect(screen.getByRole('link', { name: 'Plain CV' })).not.toHaveAttribute('target')
+  })
+
   it('draws a star between neighbours, never before the first', () => {
     const { container } = render(<Wristband tone="gum" links={LINKS} />)
 

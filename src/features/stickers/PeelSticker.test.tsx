@@ -59,6 +59,14 @@ describe('PeelSticker', () => {
     expect(face).toHaveTextContent('face')
   })
 
+  it('opens its face in a new tab when it leaves the site', () => {
+    renderSticker()
+
+    const face = screen.getByRole('link', { name: 'Pleb FM, a jukebox' })
+    expect(face).toHaveAttribute('target', '_blank')
+    expect(face).toHaveAttribute('rel', 'noopener')
+  })
+
   it('has a corner that peels: a button that waits, hidden, and points at the note', () => {
     const placed = renderSticker()
 

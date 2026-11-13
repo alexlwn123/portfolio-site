@@ -3,6 +3,7 @@ import type { ReactElement, ReactNode } from 'react'
 import type { Patent, Stats } from '../../../content'
 import { cx } from '../../../lib/classNames'
 import { formatPartialDate, isoDate } from '../../../lib/formatDate'
+import { linkTo } from '../../../lib/linkTo'
 import { ArrowRight } from '../../stickers/illustrations/Glyphs'
 import { Lines } from '../../stickers/Lines'
 import metal from '../../stickers/metal.module.css'
@@ -52,7 +53,7 @@ function PlateRow({ patent }: { readonly patent: Patent }): ReactElement {
       <h3 className={styles.title}>{patent.title}</h3>
       <dl className={cx(voice.label, styles.fields)}>
         <Field label={number.label} className={styles.numberField}>
-          <a className={styles.number} href={patent.link.url}>
+          <a className={styles.number} {...linkTo(patent.link.url)}>
             <span className={styles.stamp}>
               <span>{number.value}</span>{' '}
               <span className={voice.srOnly}>{patentsCopy.plate.on(patent.link.label)}</span>

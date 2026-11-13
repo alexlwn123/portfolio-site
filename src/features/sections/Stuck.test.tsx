@@ -26,6 +26,20 @@ describe('Stuck', () => {
     expect(link).toHaveClass(styles.stuck ?? '', styles.lifts ?? '')
   })
 
+  it('opens a link that leaves the site in a new tab, and keeps any other in its own', () => {
+    render(
+      <>
+        <Stuck href="https://pleb.fm">Pleb FM</Stuck>
+        <Stuck href="/#wins">Wins</Stuck>
+      </>,
+    )
+
+    const out = screen.getByRole('link', { name: 'Pleb FM' })
+    expect(out).toHaveAttribute('target', '_blank')
+    expect(out).toHaveAttribute('rel', 'noopener')
+    expect(screen.getByRole('link', { name: 'Wins' })).not.toHaveAttribute('target')
+  })
+
   it('can be another element, and takes a class for where and how it sits', () => {
     render(
       <Stuck as="li" className="tilted">

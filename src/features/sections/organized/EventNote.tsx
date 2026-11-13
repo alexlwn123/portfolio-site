@@ -2,6 +2,7 @@ import { Fragment, type ReactElement, type ReactNode } from 'react'
 
 import { cx } from '../../../lib/classNames'
 import { formatDateSpan, isoDate } from '../../../lib/formatDate'
+import { linkTo } from '../../../lib/linkTo'
 import { ArrowUpRight } from './ArrowUpRight'
 import voice from '../../stickers/voice.module.css'
 import { organizedCopy } from './copy'
@@ -61,7 +62,7 @@ function PressItem({ label, href, claim }: PressLine): ReactElement {
     <p className={styles.press}>
       <a
         className={cx(voice.label, styles.chip, styles.pressLink)}
-        href={href}
+        {...linkTo(href)}
         aria-label={organizedCopy.linkName(label, claim)}
       >
         {label}

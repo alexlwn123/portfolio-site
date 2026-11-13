@@ -2,6 +2,7 @@ import { Fragment, type ReactElement } from 'react'
 
 import type { Talk } from '../../../content'
 import { cx } from '../../../lib/classNames'
+import { linkTo } from '../../../lib/linkTo'
 import { ArrowRight, Star } from '../../stickers/illustrations/Glyphs'
 import { Lines } from '../../stickers/Lines'
 import voice from '../../stickers/voice.module.css'
@@ -87,14 +88,14 @@ function TourLine({ date }: { readonly date: TourDate }): ReactElement {
         {link === null ? (
           <span className={cx(voice.label, styles.title)}>{title}</span>
         ) : (
-          <a className={cx(voice.label, styles.title, styles.linked)} href={link.url}>
+          <a className={cx(voice.label, styles.title, styles.linked)} {...linkTo(link.url)}>
             {title}
             <span className={voice.srOnly}> {talksCopy.tour.leadsTo(link.label)}</span>
             <ArrowRight className={styles.arrow} />
           </a>
         )}
         {more.map((extra) => (
-          <a key={extra.url} className={cx(voice.label, styles.more)} href={extra.url}>
+          <a key={extra.url} className={cx(voice.label, styles.more)} {...linkTo(extra.url)}>
             {extra.label}
             <span className={voice.srOnly}>: {title}</span>
           </a>

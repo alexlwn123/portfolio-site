@@ -2,6 +2,7 @@ import type { ReactElement } from 'react'
 
 import type { Content, Press } from '../../../content'
 import { pressClaim } from '../../../content/pressClaim'
+import { linkTo } from '../../../lib/linkTo'
 import styles from '../cv.module.css'
 import { LABELS } from '../labels'
 import { DateText } from '../parts/DateText'
@@ -28,7 +29,7 @@ function PressEntry({ item, sources }: PressEntryProps): ReactElement {
         {item.programme !== null && `, ${item.programme}`}
       </p>
       <p>
-        <a href={item.url}>{item.title ?? claim}</a>
+        <a {...linkTo(item.url)}>{item.title ?? claim}</a>
       </p>
       <MetaLine
         parts={[

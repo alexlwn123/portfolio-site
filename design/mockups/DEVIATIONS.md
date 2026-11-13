@@ -598,6 +598,15 @@ departures, because its line no longer matches the mockup's.
 
 Since 2026-11-12 the compliance label prints `U.S. PATENT FILINGS` and all four publication numbers.
 
+### Links that leave the site open a new tab
+
+Since 2026-11-13, at the owner's request, every link to another host opens in a new tab
+(`target="_blank"` with `rel="noopener"`), on the home page and the plain CV, so the tab the visitor
+was reading stays where it was. Before, no link opened a new window. Links within the site (the
+ribbons, the strap, the count stickers, the plain CV) and mail addresses stay in their tab. One
+function decides it, `linkTo` in `src/lib/linkTo.ts`; `tests/build/links.test.ts` checks every anchor
+in the built pages and `e2e/outbound.spec.ts` follows the links in a browser.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

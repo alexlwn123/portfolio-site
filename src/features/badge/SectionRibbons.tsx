@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { cx } from '../../lib/classNames'
+import { linkTo } from '../../lib/linkTo'
 import { type Tone, toneClass } from '../stickers/tones'
 import voice from '../stickers/voice.module.css'
 import styles from './SectionRibbons.module.css'
@@ -26,7 +27,7 @@ export function SectionRibbons({ label, ribbons }: SectionRibbonsProps): ReactEl
       <ul className={styles.list} role="list">
         {ribbons.map((ribbon) => (
           <li key={ribbon.href} className={styles.item}>
-            <a className={cx(styles.ribbon, toneClass(ribbon.tone))} href={ribbon.href}>
+            <a className={cx(styles.ribbon, toneClass(ribbon.tone))} {...linkTo(ribbon.href)}>
               <span className={cx(voice.display, styles.face)}>
                 {ribbon.label}
                 {ribbon.count !== null && (

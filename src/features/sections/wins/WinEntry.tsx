@@ -2,6 +2,7 @@ import { Fragment, type ReactElement, type ReactNode } from 'react'
 
 import { cx } from '../../../lib/classNames'
 import { formatDateSpan, isoDate } from '../../../lib/formatDate'
+import { linkTo } from '../../../lib/linkTo'
 import voice from '../../stickers/voice.module.css'
 import { winsCopy } from './copy'
 import { PrizeSticker } from './PrizeSticker'
@@ -60,14 +61,22 @@ function Links({ win }: { readonly win: WinFacts }): ReactElement | null {
       <ul className={styles.links} role="list">
         {links.map(({ label, href }) => (
           <li key={href}>
-            <a className={styles.link} href={href} aria-label={winsCopy.linkName(label, title)}>
+            <a
+              className={styles.link}
+              {...linkTo(href)}
+              aria-label={winsCopy.linkName(label, title)}
+            >
               {label}
             </a>
           </li>
         ))}
         {press.map(({ label, href, claim }) => (
           <li key={href}>
-            <a className={styles.link} href={href} aria-label={winsCopy.linkName(label, claim)}>
+            <a
+              className={styles.link}
+              {...linkTo(href)}
+              aria-label={winsCopy.linkName(label, claim)}
+            >
               {label}
             </a>
           </li>

@@ -1,6 +1,7 @@
 import { createElement, type ReactElement, type ReactNode } from 'react'
 
 import { cx } from '../../lib/classNames'
+import { linkTo } from '../../lib/linkTo'
 import styles from './Stuck.module.css'
 
 type StuckTag = 'article' | 'div' | 'li' | 'p' | 'span'
@@ -36,7 +37,7 @@ export function Stuck({ as = 'div', href, label, className, children }: StuckPro
     {
       className: cx(styles.stuck, linked && styles.lifts, className),
       'data-stuck': '',
-      href,
+      ...(href === undefined ? {} : linkTo(href)),
       'aria-label': label,
     },
     linked

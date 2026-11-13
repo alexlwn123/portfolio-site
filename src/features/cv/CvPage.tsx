@@ -3,6 +3,7 @@ import './print.css'
 import type { ReactElement } from 'react'
 
 import type { Content, Stats } from '../../content'
+import { linkTo } from '../../lib/linkTo'
 import { PATHS } from '../../lib/paths'
 import styles from './cv.module.css'
 import { CvHeader } from './CvHeader'
@@ -56,7 +57,7 @@ export function CvPage({ content, stats }: CvPageProps): ReactElement {
         <p>
           {profile.name}
           {' · '}
-          <a href={address}>{displayUrl(address)}</a>
+          <a {...linkTo(address)}>{displayUrl(address)}</a>
         </p>
       </footer>
     </div>

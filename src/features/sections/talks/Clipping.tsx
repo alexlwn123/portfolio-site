@@ -2,6 +2,7 @@ import type { ReactElement } from 'react'
 
 import { cx } from '../../../lib/classNames'
 import { formatPartialDate, isoDate } from '../../../lib/formatDate'
+import { linkTo } from '../../../lib/linkTo'
 import { svgId } from '../../stickers/svgIds'
 import voice from '../../stickers/voice.module.css'
 import { Stuck } from '../Stuck'
@@ -33,7 +34,7 @@ export function Clipping({ clipping }: ClippingProps): ReactElement {
             )}
           </h3>
           <p className={styles.headline}>
-            <a className={styles.link} href={url}>
+            <a className={styles.link} {...linkTo(url)}>
               {headline ?? claim}
             </a>
           </p>
@@ -66,7 +67,7 @@ export function SeeAlso({ references }: SeeAlsoProps): ReactElement | null {
     <p className={styles.seeAlso}>
       <span className={cx(voice.label, styles.lead)}>{talksCopy.press.seeAlso} </span>
       {references.map(({ id, outlet, label, url }) => (
-        <a key={id} className={styles.reference} href={url}>
+        <a key={id} className={styles.reference} {...linkTo(url)}>
           {label}
           <span className={voice.srOnly}>: {outlet}</span>
         </a>

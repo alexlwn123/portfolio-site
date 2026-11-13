@@ -30,7 +30,32 @@ describe('Sticker', () => {
       </Sticker>,
     )
 
-    expect(screen.getByRole('link', { name: 'Plain CV' })).toHaveAttribute('href', '/cv/')
+    const link = screen.getByRole('link', { name: 'Plain CV' })
+    expect(link).toHaveAttribute('href', '/cv/')
+    expect(link).not.toHaveAttribute('target')
+    expect(link).not.toHaveAttribute('rel')
+  })
+
+  it('opens an address that leaves the site in a new tab', () => {
+    render(
+      <Sticker id="github" href="https://example.test/code">
+        Code
+      </Sticker>,
+    )
+
+    const link = screen.getByRole('link', { name: 'Code' })
+    expect(link).toHaveAttribute('href', 'https://example.test/code')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener')
+  })
+
+  it('has no address, and nothing about a tab, when it is not a link', () => {
+    render(<Sticker id="plain">plain</Sticker>)
+
+    const sticker = stickerOf('plain')
+    expect(sticker).not.toHaveAttribute('href')
+    expect(sticker).not.toHaveAttribute('target')
+    expect(sticker).not.toHaveAttribute('rel')
   })
 
   it('takes its accessible name from the label when its face is a drawing', () => {

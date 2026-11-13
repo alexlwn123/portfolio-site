@@ -339,10 +339,17 @@ describe('Lid', () => {
     expect(hello?.querySelectorAll('mark')).toHaveLength(1)
   })
 
-  it('opens no link in a new window', () => {
+  it('opens every link that leaves the site in a new tab, and no other', () => {
     const container = renderLid()
+    const links = [...container.querySelectorAll('a[href]')]
+    const out = links.filter((link) => /^https?:/.test(link.getAttribute('href') ?? ''))
+    const within = links.filter((link) => !out.includes(link))
 
-    expect(container.querySelector('a[target]')).toBeNull()
+    expect(out.length).toBeGreaterThan(0)
+    expect(within.length).toBeGreaterThan(0)
+    expect(out.filter((link) => link.getAttribute('target') !== '_blank')).toEqual([])
+    expect(out.filter((link) => link.getAttribute('rel') !== 'noopener')).toEqual([])
+    expect(within.filter((link) => link.hasAttribute('target'))).toEqual([])
   })
 
   it('gives every SVG definition an id of its own', () => {

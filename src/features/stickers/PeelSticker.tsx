@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from 'react'
 
 import { cx } from '../../lib/classNames'
+import { linkTo } from '../../lib/linkTo'
 import { Note, type NoteProps } from './Note'
 import styles from './PeelSticker.module.css'
 import sticker from './Sticker.module.css'
@@ -54,7 +55,7 @@ export function PeelSticker({
       )}
     >
       <span className={styles.flap}>
-        <a className={styles.face} href={href} aria-label={label}>
+        <a className={styles.face} {...linkTo(href)} aria-label={label}>
           {children}
         </a>
         <button

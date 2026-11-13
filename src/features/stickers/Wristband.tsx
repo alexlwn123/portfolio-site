@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { cx } from '../../lib/classNames'
+import { linkTo } from '../../lib/linkTo'
 import { Star } from './illustrations/Glyphs'
 import { type Tone, toneClass } from './tones'
 import styles from './Wristband.module.css'
@@ -26,7 +27,7 @@ export function Wristband({ tone, links }: WristbandProps): ReactElement {
         {links.map(({ label, href }, index) => (
           <li key={href} className={styles.item}>
             {index > 0 && <Star className={styles.star} />}
-            <a className={styles.link} href={href}>
+            <a className={styles.link} {...linkTo(href)}>
               {label}
             </a>
           </li>
