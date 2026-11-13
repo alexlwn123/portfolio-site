@@ -10,14 +10,7 @@ import metal from '../../stickers/metal.module.css'
 import voice from '../../stickers/voice.module.css'
 import { Stuck } from '../Stuck'
 import { patentsCopy } from './copy'
-import {
-  coInventorsField,
-  numberField,
-  type PlateCount,
-  plateCount,
-  plateFilings,
-  recordSource,
-} from './plate'
+import { numberField, type PlateCount, plateCount, plateFilings, recordSource } from './plate'
 import styles from './RatingPlate.module.css'
 
 /** A rivet to a corner. */
@@ -43,10 +36,9 @@ function DateValue({ date }: { readonly date: NonNullable<Patent['filed']> }): R
   return <time dateTime={isoDate(date)}>{formatPartialDate(date)}</time>
 }
 
-/** One filing: its title, then its number, filing date, assignee and co-inventors. */
+/** One filing: its title, its number and the day it was filed. */
 function PlateRow({ patent }: { readonly patent: Patent }): ReactElement {
   const number = numberField(patent)
-  const others = coInventorsField(patent)
 
   return (
     <li className={styles.row} data-patent={patent.id}>
@@ -66,8 +58,6 @@ function PlateRow({ patent }: { readonly patent: Patent }): ReactElement {
             <DateValue date={patent.filed} />
           </Field>
         )}
-        <Field label={patentsCopy.plate.fields.assignee}>{patent.assignee}</Field>
-        {others !== null && <Field label={others.label}>{others.value}</Field>}
       </dl>
     </li>
   )
@@ -124,9 +114,10 @@ interface RatingPlateProps {
 }
 
 /**
- * The rating plate on the underside of the machine: brushed metal, riveted at
- * the corners, a row to a filing. Every filing that names him is counted and
- * listed the same way, and every number opens its public record.
+ * The plate on the underside of the machine, his patent records: brushed
+ * metal, riveted at the corners, a row to a filing. Every filing that names
+ * him is counted and listed the same way, and every number opens its public
+ * record.
  */
 export function RatingPlate({ patents, stats, holder }: RatingPlateProps): ReactElement {
   const filings = plateFilings(patents)

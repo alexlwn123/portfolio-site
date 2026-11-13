@@ -73,8 +73,6 @@ const validPatent = {
   title: 'Methods and a system for examples',
   filed: { year: 2021, month: 7, day: 2 },
   status: { kind: 'granted', granted: { year: 2026, month: 1, day: 27 } },
-  assignee: 'Example Corp',
-  coInventors: ['A. N. Other'],
   link: { label: 'Google Patents', url: 'https://patents.google.com/patent/US12345678B2/en' },
   shown: true,
 }
@@ -292,6 +290,14 @@ describe('educationSchema', () => {
 })
 
 describe('patentSchema', () => {
+  it('refuses an assignee or co-inventors: the site carries neither', () => {
+    const assigned = { ...validPatent, assignee: 'Example Corp' }
+    const shared = { ...validPatent, coInventors: ['A. N. Other'] }
+
+    expect(patentSchema.safeParse(assigned).success).toBe(false)
+    expect(patentSchema.safeParse(shared).success).toBe(false)
+  })
+
   it('accepts a granted patent', () => {
     expect(patentSchema.safeParse(validPatent).success).toBe(true)
   })

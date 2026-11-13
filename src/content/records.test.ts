@@ -421,14 +421,19 @@ describe('patents', () => {
     expect(new Set(patents.map((patent) => patent.number.office))).toEqual(new Set(['US']))
   })
 
-  it('records each granted patent with its title, grant date, assignee and co-inventor', () => {
+  it('records neither who a filing is assigned to nor who else it names: the site prints neither', () => {
+    for (const patent of patents) {
+      expect(patent).not.toHaveProperty('assignee')
+      expect(patent).not.toHaveProperty('coInventors')
+    }
+  })
+
+  it('records each granted patent with its title, its filing date and its grant date', () => {
     expect(byId(patents, 'us-12536579')).toMatchObject({
       number: { office: 'US', serial: '12,536,579', kindCode: 'B2' },
       title: 'Methods and a system for in-store navigation',
       filed: { year: 2021, month: 7, day: 2 },
       status: { kind: 'granted', granted: { year: 2026, month: 1, day: 27 } },
-      assignee: 'NCR Voyix Corp',
-      coInventors: ['Christian Lee McDaniel'],
       link: {
         label: 'Google Patents',
         url: 'https://patents.google.com/patent/US12536579B2/en',
@@ -439,8 +444,6 @@ describe('patents', () => {
       title: 'Self-sovereign identity structured messaging for cross channel authentication',
       filed: { year: 2022, month: 4, day: 29 },
       status: { kind: 'granted', granted: { year: 2025, month: 7, day: 8 } },
-      assignee: 'Digital First Holdings LLC',
-      coInventors: ['Bryan Walser Nonni'],
       link: {
         label: 'Google Patents',
         url: 'https://patents.google.com/patent/US12354083B2/en',
@@ -454,8 +457,6 @@ describe('patents', () => {
       title: 'Self-Sovereign Identity Verifiable Credentials for Consent Processing',
       filed: { year: 2022, month: 10, day: 14 },
       status: { kind: 'pending' },
-      assignee: 'NCR Corp',
-      coInventors: ['Bryan Walser Nonni'],
       link: {
         label: 'Google Patents',
         url: 'https://patents.google.com/patent/US20230032782A1/en',
@@ -466,8 +467,6 @@ describe('patents', () => {
       title: 'Methods and a system for managing and integrating non-fungible tokens (NFTs)',
       filed: { year: 2022, month: 7, day: 29 },
       status: { kind: 'abandoned' },
-      assignee: 'NCR Voyix Corp',
-      coInventors: ['Bryan Walser Nonni', 'Brent Vance Zucker'],
       link: {
         label: 'Google Patents',
         url: 'https://patents.google.com/patent/US20240037539A1/en',

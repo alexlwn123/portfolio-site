@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../../content'
 import type { Patent } from '../../../content'
 import { patentStats } from '../../../content/derive'
-import { coInventorsField, numberField, plateCount, plateFilings, recordSource } from './plate'
+import { numberField, plateCount, plateFilings, recordSource } from './plate'
 
 function patent(id: string): Patent {
   const found = content.patents.find((candidate) => candidate.id === id)
@@ -70,26 +70,6 @@ describe('numberField', () => {
     expect(new Set(content.patents.map((filing) => numberField(filing).label))).toEqual(
       new Set(['Publication no.']),
     )
-  })
-})
-
-describe('coInventorsField', () => {
-  it('names the one other inventor', () => {
-    expect(coInventorsField(patent('us-12536579'))).toEqual({
-      label: 'Co-inventor',
-      value: 'Christian Lee McDaniel',
-    })
-  })
-
-  it('names several, under a plural label', () => {
-    expect(coInventorsField(patent('us-20240037539'))).toEqual({
-      label: 'Co-inventors',
-      value: 'Bryan Walser Nonni, Brent Vance Zucker',
-    })
-  })
-
-  it('is nothing when he is the only inventor', () => {
-    expect(coInventorsField({ ...patent('us-12536579'), coInventors: [] })).toBeNull()
   })
 })
 

@@ -32,7 +32,8 @@ import {
 
 const shown = publishablePatents(content.patents)
 const RIVETS = 4
-const INSPECTION_STICKERS = 3
+/** The die-cut emoji and the quality check. */
+const STICKERS_ON_THE_PLATE = 2
 const STICKERS = `[aria-label="${patentsCopy.stickers.list}"] > li`
 /** A sticker is stuck on the plate when this much of it is, and over an edge when this much is not. */
 const ON_THE_PLATE = 1 / 3
@@ -119,7 +120,7 @@ test.describe('the patents plate', () => {
       await expect(section.locator('[data-rivet]')).toHaveCount(RIVETS)
       await expect(
         section.getByRole('list', { name: patentsCopy.stickers.list }).getByRole('listitem'),
-      ).toHaveCount(INSPECTION_STICKERS)
+      ).toHaveCount(STICKERS_ON_THE_PLATE)
     })
 
     test(`spills nothing sideways at ${String(width)} wide`, async ({ page }) => {
@@ -212,7 +213,7 @@ test.describe('the patents plate', () => {
       const plate = await drawnOne(section, '[data-plate]')
       const stickers = await drawnEach(section, STICKERS)
 
-      expect(stickers).toHaveLength(INSPECTION_STICKERS)
+      expect(stickers).toHaveLength(STICKERS_ON_THE_PLATE)
       for (const [index, sticker] of stickers.entries()) {
         const on = shareOn(sticker, plate)
         expect(on, `sticker ${String(index + 1)} is on the plate`).toBeGreaterThanOrEqual(
@@ -296,10 +297,6 @@ test.describe('the patents plate', () => {
       await expect(link).toHaveAccessibleName(
         `${patentNumber(patent.number)} on ${patent.link.label}`,
       )
-      await expect(row).toContainText(patent.assignee)
-      for (const inventor of patent.coInventors) {
-        await expect(row).toContainText(inventor)
-      }
       if (patent.filed !== null) {
         await expect(row.locator('time')).toHaveText(formatPartialDate(patent.filed))
       }
@@ -310,23 +307,87 @@ test.describe('the patents plate', () => {
     page,
   }) => {
     const section = await openSection(page, 1440, 'patents')
-    const { number, filed, assignee, coInventors } = patentsCopy.plate.fields
+    const { number, filed } = patentsCopy.plate.fields
 
     expect(shown.map((patent) => patent.id)).toEqual(content.patents.map((patent) => patent.id))
     expect(new Set(content.patents.map((patent) => patent.status.kind)).size).toBeGreaterThan(1)
     for (const patent of content.patents) {
       const row = section.locator(`li[data-patent="${patent.id}"]`)
 
-      await expect(row.locator('dt')).toHaveText([
-        number,
-        filed,
-        assignee,
-        patent.coInventors.length === 1 ? coInventors.one : coInventors.many,
-      ])
+      // Its number and the day it was filed, and nothing else.
+      await expect(row.locator('dt')).toHaveText([number, filed])
       // One date to a row: the day it was filed. A grant date would be a second.
       await expect(row.locator('time')).toHaveCount(1)
     }
     await expect(section).not.toContainText(STATUS_WORDS)
+  })
+
+  test('is headed "Patent records", and names no assignee, no other inventor and no caution', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'patents')
+
+    await expect(section.locator('[data-plate]')).toContainText(/^\s*Patent\s+records/i)
+    await expect(section).not.toContainText(/rating plate/i)
+    await expect(section).not.toContainText(/assignee|NCR|Voyix|Digital First/i)
+    await expect(section).not.toContainText(/Nonni|McDaniel|Zucker/i)
+    await expect(section).not.toContainText(/caution|novel|non-obvious/i)
+    for (const patent of shown) {
+      await expect(section.locator(`li[data-patent="${patent.id}"]`)).not.toContainText(/inventor/i)
+    }
+  })
+
+  test('on a laptop, a row is one line: the title on the left and the two fields in columns at its right end', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'patents')
+    const rows = await section.locator('li[data-patent]').evaluateAll((items) =>
+      items.flatMap((item) => {
+        const title = item.querySelector<HTMLElement>('h3')
+        const fields = item.querySelector<HTMLElement>('dl')
+        if (!(item instanceof HTMLElement) || !title || !fields) {
+          return []
+        }
+        return [
+          {
+            rowRight: item.offsetLeft + item.offsetWidth,
+            titleLeft: title.offsetLeft - item.offsetLeft,
+            titleMiddle: title.offsetTop + title.offsetHeight / 2,
+            titleRight: title.offsetLeft + title.offsetWidth,
+            fieldsLeft: fields.offsetLeft,
+            fieldsRight: fields.offsetLeft + fields.offsetWidth,
+            fieldsMiddle: fields.offsetTop + fields.offsetHeight / 2,
+          },
+        ]
+      }),
+    )
+
+    expect(rows).toHaveLength(shown.length)
+    for (const row of rows) {
+      expect(row.titleLeft).toBeLessThanOrEqual(HAIR_PX)
+      expect(row.titleRight).toBeLessThanOrEqual(row.fieldsLeft)
+      expect(Math.abs(row.fieldsRight - row.rowRight)).toBeLessThanOrEqual(HAIR_PX)
+      expect(Math.abs(row.titleMiddle - row.fieldsMiddle)).toBeLessThanOrEqual(HAIR_PX)
+    }
+    // The fields stand in columns: every row's start at the same place.
+    expect(new Set(rows.map(({ fieldsLeft }) => Math.round(fieldsLeft))).size).toBe(1)
+  })
+
+  test('sticks on a die-cut emoji: the system’s own, with a white edge grown round it', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'patents')
+    const emoji = section.getByRole('img', { name: patentsCopy.stickers.emoji.name })
+
+    await expect(emoji).toBeVisible()
+    await expect(emoji).toHaveText(patentsCopy.stickers.emoji.glyph)
+    const drawn = await emoji.evaluate((glyph) => {
+      const { fontFamily, filter } = getComputedStyle(glyph)
+      return { fontFamily, edges: filter.match(/drop-shadow/g)?.length ?? 0, white: filter }
+    })
+    expect(drawn.fontFamily).toMatch(/emoji/i)
+    expect(drawn.edges).toBeGreaterThanOrEqual(4)
+    expect(drawn.white).toContain('rgb(255, 255, 255)')
   })
 
   test('shows the focus ring on a number the keyboard reaches', async ({ page }) => {

@@ -927,6 +927,23 @@ Since 2026-11-13, at the owner's request:
 - The lid's two wristbands (GitHub, X, LinkedIn; Devpost, Book 30 min) and the plain CV's list of
   links were not asked about and are unchanged.
 
+### The patents plate is "Patent records", and says less
+
+Since 2026-11-13, at the owner's request:
+
+- **The plate is headed "Patent records"**, where it was "Inventor rating plate".
+- **A row is a filing's title, its publication number and the day it was filed.** Who each filing
+  is assigned to and who else it names are gone from the plate and from the plain CV, and from the
+  records too (`src/content/patents.ts`): the schema now refuses both. Each number still opens its
+  public record, which has them.
+- **A row is one line on a laptop:** the title from the plate's left edge, and the number and the
+  date at its right end, in columns down the plate. On a tablet the title has a line to itself and
+  the two fields share the next. On a phone each has a line.
+- **Two stickers, not three.** The "Caution: novel, useful, non-obvious" strip is gone. The pink
+  "Named inventor" seal is replaced by a die-cut emoji, a light bulb: the visitor's own system
+  draws it (`--font-emoji`), and its white edge is the glyph's outline grown outwards with hard
+  white shadows, so it follows whichever emoji face is used. The quality check stays.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

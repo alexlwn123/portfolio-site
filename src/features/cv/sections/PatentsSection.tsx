@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import type { Patent, Stats } from '../../../content'
 import { publishablePatents } from '../../../content/derive'
 import styles from '../cv.module.css'
-import { coInventorsLabel, patentNumber, patentsSummary } from '../describe'
+import { patentNumber, patentsSummary } from '../describe'
 import { LABELS } from '../labels'
 import { DateText } from '../parts/DateText'
 import { Entry } from '../parts/Entry'
@@ -11,7 +11,7 @@ import { LinkList } from '../parts/LinkList'
 import { MetaLine } from '../parts/MetaLine'
 import { Section } from '../parts/Section'
 
-/** One filing: when it was filed, its title, its number, who holds it and who else is named. */
+/** One filing: when it was filed, its title, its number and its public record. */
 function FilingEntry({ patent }: { readonly patent: Patent }): ReactElement {
   const filed =
     patent.filed !== null ? (
@@ -23,9 +23,7 @@ function FilingEntry({ patent }: { readonly patent: Patent }): ReactElement {
   return (
     <Entry when={filed}>
       <p className={styles.entryTitle}>{patent.title}</p>
-      <MetaLine
-        parts={[patentNumber(patent.number), patent.assignee, coInventorsLabel(patent.coInventors)]}
-      />
+      <MetaLine parts={[patentNumber(patent.number)]} />
       <LinkList links={[patent.link]} context={patent.title} />
     </Entry>
   )

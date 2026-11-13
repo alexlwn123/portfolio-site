@@ -49,6 +49,8 @@
   --font-body:
     'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
   --font-marker: 'Permanent Marker', 'Marker Felt', 'Bradley Hand', 'Comic Sans MS', cursive;
+  /* an emoji is drawn by whichever colour emoji face the visitor's system has */
+  --font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 
   /* the condensed, shouted label style the mockup calls .cd */
   --label-stretch: 75%;

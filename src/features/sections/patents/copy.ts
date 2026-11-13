@@ -7,9 +7,9 @@ import { deepFreeze } from '../../../lib/deepFreeze'
 export const patentsCopy = {
   title: ['Patents', ''],
 
-  /** The rating plate riveted to the underside. */
+  /** The plate riveted to the underside: his patent records. */
   plate: {
-    heading: ['Inventor', 'rating plate'],
+    heading: ['Patent', 'records'],
     holder: 'Named co-inventor',
     list: 'Patent filings',
     /** The one count. Its noun is "patent filing": not every filing became a patent. */
@@ -18,23 +18,19 @@ export const patentsCopy = {
       one: 'U.S. patent filing',
       many: 'U.S. patent filings',
     },
-    fields: {
-      number: 'Publication no.',
-      filed: 'Filed',
-      assignee: 'Assignee',
-      coInventors: { one: 'Co-inventor', many: 'Co-inventors' },
-    },
+    /** What a row prints of a filing: its number, and the day it was filed. */
+    fields: { number: 'Publication no.', filed: 'Filed' },
     /** What follows a number in the name of its link: where it leads. */
     on: (source: string) => `on ${source}`,
     footnote: (source: string) => `Every number opens its public record on ${source}.`,
   },
 
-  /** The made-up inspection stickers around the plate. */
+  /** The two stickers on the plate: a die-cut emoji, and a made-up quality check. */
   stickers: {
-    list: 'Inspection stickers',
+    list: 'Stickers',
+    /** The emoji, and the name it is read out by: the bulb that stands for an idea. */
+    emoji: { glyph: '💡', name: 'Light bulb' },
     quality: { stamp: 'QC', verdict: 'passed' },
-    seal: { over: 'Named', word: 'Inventor' },
-    caution: { head: 'Caution', lines: ['Novel.', 'Useful.', 'Non-obvious.'] },
   },
 } as const
 

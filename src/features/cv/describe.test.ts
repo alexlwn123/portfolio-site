@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../content'
 import {
   bitcoinPlusPlusSummary,
-  coInventorsLabel,
   displayUrl,
   eventLabel,
   experienceWhen,
@@ -126,14 +125,6 @@ describe('what a patent prints', () => {
     expect(patentNumber({ office: 'US', serial: '2023/0032782', kindCode: 'A1' })).toBe(
       'US 2023/0032782 A1',
     )
-  })
-
-  it('names the other inventors', () => {
-    expect(coInventorsLabel(['Bryan Walser Nonni'])).toBe('With Bryan Walser Nonni')
-    expect(coInventorsLabel(['Bryan Walser Nonni', 'Brent Vance Zucker'])).toBe(
-      'With Bryan Walser Nonni and Brent Vance Zucker',
-    )
-    expect(coInventorsLabel([])).toBeNull()
   })
 
   it('summarizes with one count of every filing, from the derived stats', () => {

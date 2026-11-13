@@ -19,7 +19,12 @@ function collectStrings(value: unknown): readonly string[] {
 describe('patentsCopy', () => {
   it('is frozen all the way down', () => {
     expect(Object.isFrozen(patentsCopy)).toBe(true)
-    expect(Object.isFrozen(patentsCopy.plate.fields.coInventors)).toBe(true)
+    expect(Object.isFrozen(patentsCopy.plate.fields)).toBe(true)
+    expect(Object.isFrozen(patentsCopy.stickers.emoji)).toBe(true)
+  })
+
+  it('heads the plate as the patent records', () => {
+    expect(patentsCopy.plate.heading).toEqual(['Patent', 'records'])
   })
 
   it('holds no numbers, names or addresses: those are the record’s', () => {
@@ -48,12 +53,14 @@ describe('patentsCopy', () => {
 
   it('labels every filing’s number alike', () => {
     expect(patentsCopy.plate.fields.number).toBe('Publication no.')
-    expect(Object.keys(patentsCopy.plate.fields)).toEqual([
-      'number',
-      'filed',
-      'assignee',
-      'coInventors',
-    ])
+    // A filing's number and the day it was filed, and nothing else: no assignee, no other inventor.
+    expect(patentsCopy.plate.fields).toEqual({ number: 'Publication no.', filed: 'Filed' })
+  })
+
+  it('sticks two stickers on the plate: a die-cut emoji and the quality check', () => {
+    expect(Object.keys(patentsCopy.stickers)).toEqual(['list', 'emoji', 'quality'])
+    expect(patentsCopy.stickers.emoji).toEqual({ glyph: '💡', name: 'Light bulb' })
+    expect(collectStrings(patentsCopy.stickers).join(' ')).not.toMatch(/caution|novel|inventor/i)
   })
 
   it('imitates no real regulatory mark', () => {

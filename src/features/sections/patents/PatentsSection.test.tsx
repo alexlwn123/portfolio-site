@@ -55,7 +55,20 @@ describe('PatentsSection', () => {
     expect(hrefs).toEqual(publishablePatents(content.patents).map(({ link }) => link.url))
   })
 
-  it('sticks the inspection stickers down after the plate, signed with his initials', () => {
+  it('names no assignee and no other inventor, cautions nothing, and has its emoji', () => {
+    const section = renderSection()
+
+    expect(section.textContent).not.toMatch(
+      /assignee|NCR|Voyix|Digital First|Nonni|McDaniel|Zucker/i,
+    )
+    expect(section.textContent).not.toMatch(/caution|novel|non-obvious|rating plate/i)
+    expect(
+      within(section).getByRole('img', { name: patentsCopy.stickers.emoji.name }),
+    ).toBeVisible()
+    expect(section).toHaveTextContent(/Patent records/)
+  })
+
+  it('sticks the stickers down after the plate, signed with his initials', () => {
     const section = renderSection()
     const plate = section.querySelector('[data-plate]')
     const stickers = within(section).getByRole('list', { name: patentsCopy.stickers.list })

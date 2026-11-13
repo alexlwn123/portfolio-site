@@ -9,8 +9,8 @@ import styles from './PatentsSection.module.css'
 import { RatingPlate } from './RatingPlate'
 
 /**
- * The patents, on the rating plate under the machine: one riveted plate with
- * a row to a filing, and the inspection stickers it left the factory with.
+ * The patents, on the plate under the machine: one riveted plate with a row
+ * to a filing, and the two stickers stuck on it.
  */
 export const PatentsSection: FunctionComponent<SectionProps> = ({ content, stats }) => (
   <SectionFrame id="patents" surface="lid" title={patentsCopy.title}>

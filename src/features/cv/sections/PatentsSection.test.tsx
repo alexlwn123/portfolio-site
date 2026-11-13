@@ -38,29 +38,25 @@ describe('PatentsSection', () => {
     ).toEqual(content.patents.map((patent) => patent.title))
   })
 
-  it('prints each filing the same way: filed date, title, number, assignee, co-inventors, link', () => {
+  it('prints each filing the same way: filed date, title, number, link', () => {
     const [navigation, identity, consent, tokens] = renderSection().getAllByRole('listitem')
 
     expect(navigation).toHaveTextContent('Filed Jul 2, 2021')
     expect(navigation?.querySelector('time')).toHaveAttribute('datetime', '2021-07-02')
     expect(navigation).toHaveTextContent('Methods and a system for in-store navigation')
-    expect(navigation).toHaveTextContent(
-      'US 12,536,579 B2 · NCR Voyix Corp · With Christian Lee McDaniel',
-    )
+    expect(navigation).toHaveTextContent('US 12,536,579 B2')
     expect(navigation?.querySelector('a')).toHaveAttribute(
       'href',
       'https://patents.google.com/patent/US12536579B2/en',
     )
     expect(identity).toHaveTextContent('Filed Apr 29, 2022')
-    expect(identity).toHaveTextContent(
-      'US 12,354,083 B2 · Digital First Holdings LLC · With Bryan Walser Nonni',
-    )
+    expect(identity).toHaveTextContent('US 12,354,083 B2')
     expect(identity?.querySelector('a')).toHaveAttribute(
       'href',
       'https://patents.google.com/patent/US12354083B2/en',
     )
     expect(consent).toHaveTextContent('Filed Oct 14, 2022')
-    expect(consent).toHaveTextContent('US 2023/0032782 A1 · NCR Corp · With Bryan Walser Nonni')
+    expect(consent).toHaveTextContent('US 2023/0032782 A1')
     expect(consent?.querySelector('a')).toHaveAttribute(
       'href',
       'https://patents.google.com/patent/US20230032782A1/en',
@@ -69,13 +65,19 @@ describe('PatentsSection', () => {
     expect(tokens).toHaveTextContent(
       'Methods and a system for managing and integrating non-fungible tokens (NFTs)',
     )
-    expect(tokens).toHaveTextContent(
-      'US 2024/0037539 A1 · NCR Voyix Corp · With Bryan Walser Nonni and Brent Vance Zucker',
-    )
+    expect(tokens).toHaveTextContent('US 2024/0037539 A1')
     expect(tokens?.querySelector('a')).toHaveAttribute(
       'href',
       'https://patents.google.com/patent/US20240037539A1/en',
     )
+  })
+
+  it('names no assignee and no other inventor', () => {
+    renderSection()
+    const text = screen.getByRole('region', { name: 'Patents' }).textContent
+
+    expect(text).not.toMatch(/NCR|Voyix|Digital First|Nonni|McDaniel|Zucker/i)
+    expect(text).not.toMatch(/assign|co-inventor|\bwith\b/i)
   })
 
   it('names each link for the filing it belongs to', () => {

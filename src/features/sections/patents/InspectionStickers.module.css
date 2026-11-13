@@ -1,12 +1,12 @@
 /*
- * Three made-up stickers from the end of an assembly line: a seal, a quality
- * check signed off in marker, and a caution strip. None of them copies a
- * real regulatory mark.
+ * The two stickers on the plate: an emoji cut out along its own outline, and
+ * a made-up quality check signed off in marker, which copies no real
+ * regulatory mark.
  *
- * They are stuck on the plate, each over an edge of it, where the plate is
- * bare: the seal over the top edge beside the right-hand rivet, the caution
- * strip and the quality check over the foot, one toward each corner. The
- * list is laid over the plate and lets the pointer through to its links.
+ * Each is stuck over an edge of the plate, where the plate is bare: the emoji
+ * over the top edge beside the right-hand rivet, the quality check over the
+ * foot towards the right-hand corner. The list is laid over the plate and
+ * lets the pointer through to its links.
  */
 .stickers {
   position: absolute;
@@ -18,39 +18,36 @@
   pointer-events: none;
 }
 
-/* ---------- "named inventor": a round seal ---------- */
+/* ---------- the emoji: die-cut, with a white edge all the way round ---------- */
 
-.stickers > .seal {
+.stickers > .emoji {
   position: absolute;
-  top: -5em;
-  right: 7em;
-  rotate: 8deg;
+  top: -6.4em;
+  right: 6.4em;
+  rotate: 9deg;
 }
 
-.sealFace {
-  display: grid;
-  place-content: center;
-  width: 15.5em;
-  height: 15.5em;
-  border: 0.5em solid var(--white);
-  border-radius: 50%;
-  outline: 0.16em dashed var(--ink);
-  outline-offset: -1.05em;
-  background: var(--gum);
-  color: var(--ink);
-  text-align: center;
-}
+/*
+ * The emoji is the system's own. Its white edge is its own outline grown
+ * outwards: a hard white shadow thrown each way in turn, each on top of the
+ * last, so the edge follows the glyph whichever face draws it.
+ */
+.glyph {
+  --edge: 0.045em;
+  --corner: 0.032em;
 
-.sealOver {
   display: block;
-  font-size: 1.5em;
-  letter-spacing: 0.2em;
-}
-
-.sealWord {
-  display: block;
-  font-size: 2.05em;
-  line-height: 1.05;
+  padding: 0.12em 0.14em;
+  font-family: var(--font-emoji);
+  font-size: 11.5em;
+  line-height: 1;
+  filter: drop-shadow(var(--edge) 0 0 var(--white))
+    drop-shadow(calc(var(--edge) * -1) 0 0 var(--white)) drop-shadow(0 var(--edge) 0 var(--white))
+    drop-shadow(0 calc(var(--edge) * -1) 0 var(--white))
+    drop-shadow(var(--corner) var(--corner) 0 var(--white))
+    drop-shadow(calc(var(--corner) * -1) calc(var(--corner) * -1) 0 var(--white))
+    drop-shadow(var(--corner) calc(var(--corner) * -1) 0 var(--white))
+    drop-shadow(calc(var(--corner) * -1) var(--corner) 0 var(--white));
 }
 
 /* ---------- "QC passed": an oval, filled in by hand ---------- */
@@ -107,49 +104,6 @@
   line-height: 1;
 }
 
-/* ---------- "caution": a hazard strip ---------- */
-
-.stickers > .caution {
-  position: absolute;
-  bottom: -5em;
-  left: 5.4em;
-  rotate: 3deg;
-}
-
-.cautionFace {
-  display: flex;
-  width: 19em;
-  overflow: hidden;
-  border: 0.4em solid var(--white);
-  border-radius: 0.6em;
-  background: var(--hi);
-  color: var(--ink);
-}
-
-.hazard {
-  flex: none;
-  width: 3.4em;
-  background: repeating-linear-gradient(-45deg, var(--ink) 0 0.8em, var(--hi) 0.8em 1.6em);
-}
-
-.cautionWords {
-  display: block;
-  padding: 0.8em 1em 0.75em;
-}
-
-.cautionHead {
-  display: block;
-  font-size: 2.1em;
-  line-height: 1;
-}
-
-.cautionLines {
-  display: block;
-  margin-top: 0.35em;
-  font-size: 1.4em;
-  line-height: 1.15;
-}
-
 @container section (max-width: 1099px) {
   /* In a row across the foot of the plate, each half on it and half off. */
   .stickers {
@@ -164,21 +118,20 @@
     padding: 0 4.8em;
   }
 
-  .stickers > :is(.seal, .quality, .caution) {
+  .stickers > :is(.emoji, .quality) {
     position: relative;
     inset: auto;
   }
 
-  .sealFace {
-    width: 14em;
-    height: 14em;
+  .glyph {
+    font-size: 10.5em;
   }
 }
 
 /*
- * A phone has no room for three across the foot. The seal and the caution
- * strip keep it, and the quality check goes over the top edge, in the bare
- * corner beside the first line of the plate's heading.
+ * A phone has no room for two across the foot. The emoji keeps it, on the
+ * middle, and the quality check goes over the top edge, in the bare corner
+ * beside the first line of the plate's heading.
  */
 @container section (max-width: 560px) {
   .stickers {
@@ -189,15 +142,6 @@
     padding: 0 3em;
   }
 
-  /* The seal is stuck over the end of the caution strip, so the two fit between the rivets. */
-  .stickers > .seal {
-    z-index: 1;
-  }
-
-  .stickers > .caution {
-    margin-left: -1.4em;
-  }
-
   .stickers > .quality {
     position: absolute;
     top: -3.2em;
@@ -205,18 +149,8 @@
     rotate: 6deg;
   }
 
-  .sealFace {
-    width: 11.6em;
-    height: 11.6em;
-    outline-offset: -0.9em;
-  }
-
-  .sealOver {
-    font-size: 1.25em;
-  }
-
-  .sealWord {
-    font-size: 1.5em;
+  .glyph {
+    font-size: 9em;
   }
 
   .qualityFace {
@@ -234,9 +168,5 @@
 
   .signed {
     font-size: 1.6em;
-  }
-
-  .cautionFace {
-    width: 19.6em;
   }
 }

@@ -39,7 +39,7 @@ describe('RatingPlate', () => {
   it('is headed by what it lists and whose name is on them', () => {
     const plate = renderPlate()
 
-    expect(plate).toHaveTextContent(/^Inventor rating plate/)
+    expect(plate).toHaveTextContent(/^Patent records/)
     expect(within(plate).getByText(patentsCopy.plate.holder).nextElementSibling).toHaveTextContent(
       content.profile.name,
     )
@@ -90,14 +90,12 @@ describe('RatingPlate', () => {
     expect(within(plate).getAllByRole('heading')).toHaveLength(content.patents.length)
   })
 
-  it('prints a filing in full: publication number, filing date, assignee, co-inventor', () => {
+  it('prints a filing with its publication number and the day it was filed', () => {
     const item = row(renderPlate(), 'us-12536579')
 
     expect(field(item, 'Publication no.')).toHaveTextContent('US 12,536,579 B2')
     expect(field(item, 'Filed')).toHaveTextContent(/^Jul 2, 2021$/)
     expect(field(item, 'Filed')?.querySelector('time')).toHaveAttribute('datetime', '2021-07-02')
-    expect(field(item, 'Assignee')).toHaveTextContent(/^NCR Voyix Corp$/)
-    expect(field(item, 'Co-inventor')).toHaveTextContent(/^Christian Lee McDaniel$/)
   })
 
   it('prints each of the other three from its own record', () => {
@@ -108,32 +106,31 @@ describe('RatingPlate', () => {
 
     expect(field(second, 'Publication no.')).toHaveTextContent('US 12,354,083 B2')
     expect(field(second, 'Filed')).toHaveTextContent(/^Apr 29, 2022$/)
-    expect(field(second, 'Assignee')).toHaveTextContent(/^Digital First Holdings LLC$/)
-    expect(field(second, 'Co-inventor')).toHaveTextContent(/^Bryan Walser Nonni$/)
     expect(field(third, 'Publication no.')).toHaveTextContent('US 2023/0032782 A1')
     expect(field(third, 'Filed')).toHaveTextContent(/^Oct 14, 2022$/)
-    expect(field(third, 'Assignee')).toHaveTextContent(/^NCR Corp$/)
     expect(field(fourth, 'Publication no.')).toHaveTextContent('US 2024/0037539 A1')
     expect(field(fourth, 'Filed')).toHaveTextContent(/^Jul 29, 2022$/)
-    expect(field(fourth, 'Assignee')).toHaveTextContent(/^NCR Voyix Corp$/)
-    expect(field(fourth, 'Co-inventors')).toHaveTextContent(
-      /^Bryan Walser Nonni, Brent Vance Zucker$/,
-    )
   })
 
-  it('gives every row the same fields, and none of them a status', () => {
+  it('gives every row the same two fields, and none of them a status', () => {
     const plate = renderPlate()
     const labels = content.patents.map(({ id }) =>
-      [...row(plate, id).querySelectorAll('dt')].map((term) =>
-        term.textContent.replace(/Co-inventors?/, 'Co-inventor(s)'),
-      ),
+      [...row(plate, id).querySelectorAll('dt')].map((term) => term.textContent),
     )
 
     expect(new Set(labels.map((row) => row.join(' | ')))).toEqual(
-      new Set(['Publication no. | Filed | Assignee | Co-inventor(s)']),
+      new Set(['Publication no. | Filed']),
     )
     expect(plate.querySelectorAll('li[data-patent] time')).toHaveLength(content.patents.length)
     expect(plate.textContent).not.toMatch(/grant|pending|abandon|application|status|patent no/i)
+  })
+
+  it('names no assignee and no other inventor', () => {
+    const plate = renderPlate()
+    const rows = [...plate.querySelectorAll('li[data-patent]')].map((item) => item.textContent)
+
+    expect(rows.join(' ')).not.toMatch(/assign|inventor|NCR|Voyix|Digital First/i)
+    expect(plate.textContent).not.toMatch(/Nonni|McDaniel|Zucker|Voyix|Digital First/i)
   })
 
   it('makes every number a link to its public record, named for where it leads', () => {
@@ -163,11 +160,11 @@ describe('RatingPlate', () => {
 
   it('leaves out the fields a record does not have', () => {
     const [first] = content.patents
-    const bare = first ? [{ ...first, filed: null, coInventors: [] }] : []
+    const bare = first ? [{ ...first, filed: null }] : []
     const item = row(renderPlate(bare), 'us-12536579')
 
     expect(field(item, 'Filed')).toBeNull()
-    expect(field(item, 'Co-inventor')).toBeNull()
+    expect(item.querySelectorAll('dt')).toHaveLength(1)
     expect(item.querySelectorAll('dd:empty')).toHaveLength(0)
   })
 

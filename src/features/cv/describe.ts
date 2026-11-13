@@ -99,11 +99,6 @@ export function patentNumber({ office, serial, kindCode }: PatentNumber): string
   return `${office} ${serial} ${kindCode}`
 }
 
-/** "With Bryan Walser Nonni and Brent Vance Zucker". Null when he is the only inventor. */
-export function coInventorsLabel(names: readonly string[]): string | null {
-  return names.length === 0 ? null : `With ${joinList(names)}`
-}
-
 /**
  * "Named inventor on 4 patent filings." Every filing shown is counted alike,
  * so the noun is "patent filing". Null when there is none to count.

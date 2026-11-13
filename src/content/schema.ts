@@ -340,10 +340,7 @@ export const patentSchema = z
     title: text,
     filed: exactDateSchema.nullable(),
     status: patentStatusSchema,
-    assignee: text,
-    /** The other named inventors. */
-    coInventors: z.array(text),
-    /** Its public record. */
+    /** Its public record. Who it is assigned to and who else it names are there, not here. */
     link: linkSchema,
     /** False keeps a filing in the data and off the site. His to flip. */
     shown: z.boolean(),

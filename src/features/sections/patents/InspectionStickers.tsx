@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react'
 
 import { cx } from '../../../lib/classNames'
-import { Lines } from '../../stickers/Lines'
 import paint from '../../stickers/paint.module.css'
 import voice from '../../stickers/voice.module.css'
 import { Stuck } from '../Stuck'
@@ -29,18 +28,18 @@ function Tick(): ReactElement {
 }
 
 /**
- * The stickers a machine picks up on its way out of the factory. All three
- * are made up, and none imitates a real regulatory mark.
+ * The two stickers on the plate: an emoji cut out along its own outline, and
+ * a quality check signed off in marker. The quality check is made up, and
+ * imitates no real regulatory mark.
  */
 export function InspectionStickers({ initials }: InspectionStickersProps): ReactElement {
-  const { quality, seal, caution } = patentsCopy.stickers
+  const { quality, emoji } = patentsCopy.stickers
 
   return (
     <ul className={styles.stickers} role="list" aria-label={patentsCopy.stickers.list}>
-      <Stuck as="li" className={styles.seal}>
-        <span className={styles.sealFace}>
-          <span className={cx(voice.label, styles.sealOver)}>{seal.over}</span>{' '}
-          <span className={cx(voice.display, styles.sealWord)}>{seal.word}</span>
+      <Stuck as="li" className={styles.emoji}>
+        <span className={styles.glyph} role="img" aria-label={emoji.name} data-emoji="">
+          {emoji.glyph}
         </span>
       </Stuck>
       <Stuck as="li" className={styles.quality}>
@@ -51,17 +50,6 @@ export function InspectionStickers({ initials }: InspectionStickersProps): React
               {quality.verdict} <Tick />
             </span>{' '}
             <span className={cx(voice.marker, styles.signed)}>{initials}</span>
-          </span>
-        </span>
-      </Stuck>
-      <Stuck as="li" className={styles.caution}>
-        <span className={styles.cautionFace}>
-          <span className={styles.hazard} aria-hidden="true" />
-          <span className={styles.cautionWords}>
-            <span className={cx(voice.display, styles.cautionHead)}>{caution.head}</span>{' '}
-            <span className={cx(voice.label, styles.cautionLines)}>
-              <Lines lines={caution.lines} />
-            </span>
           </span>
         </span>
       </Stuck>

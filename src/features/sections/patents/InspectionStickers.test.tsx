@@ -5,11 +5,11 @@ import { patentsCopy } from './copy'
 import { InspectionStickers } from './InspectionStickers'
 
 describe('InspectionStickers', () => {
-  it('is a short list of made-up stickers, none of them a link', () => {
+  it('is a short list of two stickers, neither of them a link', () => {
     render(<InspectionStickers initials="AL" />)
 
     const list = screen.getByRole('list', { name: patentsCopy.stickers.list })
-    expect(within(list).getAllByRole('listitem')).toHaveLength(3)
+    expect(within(list).getAllByRole('listitem')).toHaveLength(2)
     expect(within(list).queryByRole('link')).toBeNull()
   })
 
@@ -21,20 +21,28 @@ describe('InspectionStickers', () => {
     expect(quality?.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
   })
 
-  it('seals him as a named inventor, which the record says he is', () => {
+  it('sticks on a die-cut emoji, a picture with a name of its own', () => {
     render(<InspectionStickers initials="AL" />)
 
-    expect(screen.getByText(patentsCopy.stickers.seal.word).closest('li')).toHaveTextContent(
-      /^Named Inventor$/,
-    )
+    const emoji = screen.getByRole('img', { name: patentsCopy.stickers.emoji.name })
+    expect(emoji).toHaveTextContent(patentsCopy.stickers.emoji.glyph)
+    expect(emoji.textContent).toBe('💡')
+    expect(emoji.closest('li')).not.toBeNull()
+    expect(emoji).toHaveAttribute('data-emoji')
   })
 
-  it('cautions that what is inside is novel, useful and non-obvious', () => {
+  it('comes first, where the seal was, with the quality check after it', () => {
     render(<InspectionStickers initials="AL" />)
+    const [first, second] = screen.getAllByRole('listitem')
 
-    expect(screen.getByText(patentsCopy.stickers.caution.head).closest('li')).toHaveTextContent(
-      /^Caution Novel\. Useful\. Non-obvious\.$/,
-    )
+    expect(first).toContainElement(screen.getByRole('img'))
+    expect(second).toHaveTextContent(/^QC passed AL$/)
+  })
+
+  it('seals nothing and cautions nothing: those two stickers are gone', () => {
+    const { container } = render(<InspectionStickers initials="AL" />)
+
+    expect(container.textContent).not.toMatch(/named|inventor|caution|novel|useful|non-obvious/i)
   })
 
   it('imitates no regulatory mark and types no tick', () => {

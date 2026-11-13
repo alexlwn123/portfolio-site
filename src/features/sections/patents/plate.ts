@@ -18,8 +18,6 @@ export interface PlateCount {
   readonly unit: string
 }
 
-const NAME_SEPARATOR = ', '
-
 /** The filings he shows, in the record's order. Every one is listed the same way. */
 export function plateFilings(patents: readonly Patent[]): readonly Patent[] {
   return publishablePatents(patents)
@@ -37,18 +35,6 @@ export function plateCount({ filings }: Stats['patents']): PlateCount | null {
 /** The filing's publication number, under the one label every filing's number takes. */
 export function numberField({ number }: Patent): PlateField {
   return { label: patentsCopy.plate.fields.number, value: patentNumber(number) }
-}
-
-/** The other named inventors. Null when he is the only one. */
-export function coInventorsField({ coInventors }: Patent): PlateField | null {
-  if (coInventors.length === 0) {
-    return null
-  }
-  const { one, many } = patentsCopy.plate.fields.coInventors
-  return {
-    label: coInventors.length === 1 ? one : many,
-    value: coInventors.join(NAME_SEPARATOR),
-  }
 }
 
 /**
