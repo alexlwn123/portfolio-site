@@ -9,6 +9,7 @@ import { organizedCopy } from './copy'
 import { EventBand } from './EventBand'
 import type { EventLabel } from './eventLabels'
 import { EventNote } from './EventNote'
+import { Invitation } from './Invitation'
 import styles from './Wristbands.module.css'
 
 interface WristbandsProps {
@@ -26,7 +27,9 @@ function sideOf(index: number): 'left' | 'right' {
 /**
  * The forearm and everything on it: one wristband per hackathon, newest at
  * the wrist, each with its label lettered on the lid beside it. An ordered
- * list that counts down, so the last row is the first hackathon he ran.
+ * list that counts down, so the last row is the first hackathon he ran. Under
+ * it the arm says there is room for more, and an invitation is stuck across
+ * its end for whoever would like the next one to be theirs.
  */
 export function Wristbands({ events, labels }: WristbandsProps): ReactElement {
   return (
@@ -64,6 +67,7 @@ export function Wristbands({ events, labels }: WristbandsProps): ReactElement {
         {organizedCopy.roomForMore}
         <ArrowDown className={styles.arrow} />
       </p>
+      <Invitation />
     </div>
   )
 }

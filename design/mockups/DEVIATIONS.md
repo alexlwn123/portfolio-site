@@ -970,6 +970,32 @@ screen already.
   `measure="wide"` for it. The rows are the same rows; each has more room across, and the heading
   stands on the same left edge as the first sticker of each row.
 
+### A press on a sticker with a note peels it
+
+Since 2026-11-13, at the owner's request. A sticker with a note under it used to be left by a press
+on its face: the face was a link, and only the corner peeled it. Now a plain press anywhere on the
+face peels it, as the corner does, and a second sticks it back.
+
+- **The face is still a link in the markup.** With no script it is followed as before. With the
+  script, `enhance/peelDom.ts` keeps a plain press and peels the sticker instead, and tells a
+  reader the face is a button that opens the note (`role`, `aria-expanded`, `aria-controls`). A
+  press that asks for a new tab (with a modifier key, or another mouse button) is left to the
+  browser. Space presses it, as it does a button.
+- **The note's links are the way on.** Each still lists the record's own links (site, code, video),
+  which open in a new tab. Its last link was "More in the CV" and led to the plain CV. It is "Full
+  story" now and leads to the section of this page the sticker belongs to, because the three win
+  stickers used to lead there themselves when pressed.
+- A drag still picks the sticker up: the click that ends a drag never reaches the peel.
+
+### An invitation at the end of the arm
+
+Since 2026-11-13, at the owner's request, "Hackathons organized" ends with something for the
+visitor: a label stuck across the end of the arm, under "room for more", that asks "Want to plan
+your own hackathon?", says "Planning it, funding it, running it: I can help with any of them." and
+leads to the contact section ("Reach out"). The whole label is the link. It is cut as the address
+label at the foot of the page is, white stock in a tangerine border, because that is where it
+leads. It stands outside the numbered list: it is not one of the hackathons.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

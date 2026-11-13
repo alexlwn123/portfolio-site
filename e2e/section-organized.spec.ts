@@ -288,6 +288,59 @@ test.describe('the "organized" section', () => {
     )
   })
 
+  for (const width of [1440, 900, NARROW_PHONE_PX]) {
+    test(`ends with an invitation across the arm, clear of every label, that leads to the contact section, at ${String(width)} wide`, async ({
+      page,
+    }) => {
+      const section = await openSection(page, width, 'organized')
+      const { question, offer, action } = organizedCopy.invitation
+      const invitation = section.locator('[data-invitation]')
+      const link = invitation.getByRole('link')
+
+      await expect(invitation).toBeVisible()
+      await expect(link).toHaveAccessibleName(`${question} ${offer} ${action}`)
+      await expect(link).toHaveAttribute('href', '/#contact')
+
+      const boxes = await section.evaluate((root) => {
+        const boxOf = (element: Element | null): DOMRect | null =>
+          element?.getBoundingClientRect() ?? null
+        const card = boxOf(root.querySelector('[data-invitation] a'))
+        const rows = [...root.querySelectorAll('li[data-side]')]
+        const lastBand = boxOf(rows.at(-1)?.querySelector('[data-band]') ?? null)
+        const labels = rows.map((row) => boxOf(row.lastElementChild)).filter((box) => box !== null)
+        const frame = root.getBoundingClientRect()
+        if (!card || !lastBand) {
+          return null
+        }
+        return {
+          belowTheLastBand: card.top >= lastBand.bottom,
+          insideTheSection: card.left >= frame.left && card.right <= frame.right,
+          aboveItsFoot: card.bottom <= frame.bottom,
+          covered: labels.filter(
+            (label) =>
+              label.left < card.right &&
+              label.right > card.left &&
+              label.top < card.bottom &&
+              label.bottom > card.top,
+          ).length,
+          height: card.height,
+        }
+      })
+      expect(boxes).toEqual({
+        belowTheLastBand: true,
+        insideTheSection: true,
+        aboveItsFoot: true,
+        covered: 0,
+        height: expect.any(Number),
+      })
+      expect(boxes?.height).toBeGreaterThanOrEqual(MIN_TARGET_PX)
+
+      await link.click()
+      await expect(page).toHaveURL(/\/#contact$/)
+      await expect(page.locator('section#contact')).toBeInViewport()
+    })
+  }
+
   test('is all there with JavaScript turned off', async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce' })
     const plain = await context.newPage()

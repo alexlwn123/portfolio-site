@@ -148,18 +148,43 @@ describe('/', () => {
     expect(css).toMatch(/container:\s*lid\s*\/\s*inline-size/)
   })
 
-  it('links only to CV sections that exist, and only from the notes under its stickers', async () => {
+  it('links to no part of the CV: the note under a sticker leads on to a section of this page', async () => {
     const home = await readPage('/')
-    const cv = await readPage('/cv/')
-    const toTheCv = [...home.querySelectorAll('a[href^="/cv/#"]')]
-    const anchors = toTheCv.map((link) => link.getAttribute('href')?.split('#')[1] ?? '')
+    const notes = [...home.querySelectorAll('[data-note]')]
+    const fullStories = notes.map((note) => [...note.querySelectorAll('a')].at(-1))
 
-    expect(new Set(anchors)).toEqual(new Set(['wins', 'projects']))
-    for (const anchor of anchors) {
-      expect(cv.getElementById(anchor), anchor).not.toBeNull()
+    expect(home.querySelectorAll('a[href^="/cv/#"]')).toHaveLength(0)
+    expect(notes.length).toBeGreaterThan(0)
+    for (const link of fullStories) {
+      const href = link?.getAttribute('href') ?? ''
+      expect(href).toMatch(/^\/#(wins|projects)$/)
+      expect(home.getElementById(href.split('#')[1] ?? ''), href).not.toBeNull()
+      expect(link?.textContent).toMatch(/^Full story/)
     }
-    expect(toTheCv.every((link) => link.closest('[data-note]') !== null)).toBe(true)
     expect(home.querySelector('a[href^="#"]')).toBeNull()
+  })
+
+  it('marks the face of every sticker with a note, for the script that makes a press on it peel', async () => {
+    const home = await readPage('/')
+    const peelable = [...home.querySelectorAll('[data-peelable]')]
+
+    expect(peelable.length).toBeGreaterThan(0)
+    for (const sticker of peelable) {
+      const faces = sticker.querySelectorAll('a[data-peel-face][href]')
+      expect(faces, sticker.getAttribute('data-sticker') ?? '').toHaveLength(1)
+      // In the page as built it is only a link: with no script it is followed.
+      expect(faces[0]?.hasAttribute('role')).toBe(false)
+    }
+  })
+
+  it('ends the hackathons he organized with an invitation that leads to the contact section', async () => {
+    const home = await readPage('/')
+    const invitation = home.querySelector('section#organized [data-invitation]')
+
+    expect(invitation?.querySelectorAll('a')).toHaveLength(1)
+    expect(invitation?.querySelector('a')?.getAttribute('href')).toBe('/#contact')
+    expect(invitation?.textContent).toContain('Want to plan your own hackathon?')
+    expect(home.getElementById('contact')).not.toBeNull()
   })
 
   it('links to every section of its own, and to none it does not have', async () => {
@@ -351,7 +376,11 @@ describe('the lid’s two parts', () => {
 
     // The build works the divisions out, so the unit is written as a share of the screen's height.
     expect(css).toMatch(/\[data-lid-cover\]\{[^}]*[\d.]+svh/)
-    expect(css).toMatch(/\[data-lid-pile\]\{[^}]*1440px/)
+    // The pile's unit is a share of the page's width that stops growing: 1440px over 110 to the em.
+    expect(css).toMatch(/\[data-lid-pile\]\{[^}]*font-size:min\([\d.]+cqw,13\.09\d*px\)/)
+    // The pile itself is as wide as the lid, and on a laptop its stickers stand by the lid's width.
+    expect(css).not.toMatch(/\[data-lid-pile\]\{[^}]*max-width/)
+    expect(css).toMatch(/\[data-sticker="?latest-win"?\]\{[^}]*left:calc\([\d.]+cqw/)
     // One screen tall, with the older height for a browser that has no small viewport.
     expect(css).toMatch(/\{[^{}]*height:\s*100svh[^{}]*\}/)
     expect(css).toMatch(/@supports not \(height:\s*100svh\)\{[^}]*height:\s*100vh/)

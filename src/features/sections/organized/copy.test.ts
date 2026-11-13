@@ -62,6 +62,14 @@ describe('organizedCopy', () => {
     expect(organizedCopy.satsPrizes('17.542')).toBe('17.542M sats in prizes')
   })
 
+  it('invites whoever wants a hackathon of their own, in three short parts', () => {
+    expect(organizedCopy.invitation).toEqual({
+      question: 'Want to plan your own hackathon?',
+      offer: 'Planning it, funding it, running it: I can help with any of them.',
+      action: 'Reach out',
+    })
+  })
+
   it('has no words for a figure that is not public: such a figure is simply left out', () => {
     expect(JSON.stringify(organizedCopy)).not.toMatch(/not public/i)
   })

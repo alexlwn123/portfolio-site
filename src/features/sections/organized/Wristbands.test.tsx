@@ -81,11 +81,25 @@ describe('Wristbands', () => {
     expect(arm.textContent).not.toMatch(/[←-⇿✦]/)
   })
 
-  it('has one link in all: the press piece', () => {
+  it('has two kinds of link in all: the press piece, and the invitation at the end of the arm', () => {
     renderArm()
+    const press = content.press.filter(({ subject }) => subject.kind === 'organizedEvent').length
 
-    expect(screen.getAllByRole('link')).toHaveLength(
-      content.press.filter(({ subject }) => subject.kind === 'organizedEvent').length,
-    )
+    expect(screen.getAllByRole('link')).toHaveLength(press + 1)
+    expect(screen.getAllByRole('link').at(-1)).toHaveAttribute('href', '/#contact')
+  })
+
+  it('sticks the invitation across the end of the arm, after the list and the tattoo', () => {
+    const arm = renderArm()
+    const invitation = arm.querySelector('[data-invitation]')
+    const tattoo = screen.getByText(organizedCopy.roomForMore)
+
+    expect(invitation).toHaveTextContent(organizedCopy.invitation.question)
+    expect(arm.firstElementChild?.lastElementChild).toBe(invitation)
+    expect(
+      invitation && tattoo.compareDocumentPosition(invitation) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    // It is not one of the hackathons: it stands outside the numbered list.
+    expect(invitation?.closest('ol')).toBeNull()
   })
 })

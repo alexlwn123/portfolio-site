@@ -36,6 +36,16 @@ const words = deepFreeze({
   /** The press link's name: what it is, then what the piece covered. */
   linkName: (label: string, subject: string) => `${label}: ${subject}`,
 
+  /**
+   * The invitation stuck across the end of the arm, for whoever would like a
+   * hackathon of their own: what it asks, what he offers, and the way to him.
+   */
+  invitation: {
+    question: 'Want to plan your own hackathon?',
+    offer: 'Planning it, funding it, running it: I can help with any of them.',
+    action: 'Reach out',
+  },
+
   listLabel: 'Hackathons organized, newest first',
   bandNumber: (number: Figure) => `Number ${String(number)}:`,
   hand: (stamp: string) => `A hand held up for a high five. The stamp on it reads: ${stamp}.`,
