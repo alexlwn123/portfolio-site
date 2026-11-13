@@ -21,7 +21,11 @@ describe('organizedCopy', () => {
   it('is frozen, and carries the approved mockup’s words unchanged', () => {
     expect(Object.isFrozen(organizedCopy)).toBe(true)
     expect(organizedCopy.title).toEqual(copy.wristbands.title)
-    expect(organizedCopy.subtitle).toBe(copy.wristbands.subtitle)
+  })
+
+  it('has no line to go under the title', () => {
+    expect(organizedCopy).not.toHaveProperty('subtitle')
+    expect(collectStrings(organizedCopy).filter((text) => /enter them/i.test(text))).toEqual([])
   })
 
   it('holds no numbers and no addresses: every figure is handed to it', () => {

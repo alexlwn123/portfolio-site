@@ -585,10 +585,10 @@ to make me look good", and for the lines about who a press piece names to come o
 | The workshop sticker and pass | "a real workshop I teach"                                              | "a workshop I teach"                                              |
 | Career path, under the title  | A line about where each tag is stuck                                   | How many roles, from the first employer to the current one        |
 | Wins                          | The newest win an empty outline with a note; two asides in his hand    | Every win has its sticker; no asides                              |
-| Organized, under the title    | "one wristband each. newest at the wrist."                             | "I don't just enter them. newest first."                          |
+| Organized, under the title    | "one wristband each. newest at the wrist."                             | No line: the totals are straight under the title                  |
 | Organized, each label         | Dashed pills for figures "not public"; an aside on the one he also won | A figure nobody published is left out; no aside                   |
 | Organized, the upcoming one   | "still on the roll"                                                    | "save the date"                                                   |
-| Projects, under the title     | "serious tech, shipped as toys. freshly cut."                          | "serious tech, shipped as toys."                                  |
+| Projects, under the title     | "serious tech, shipped as toys. freshly cut."                          | No line: the stickers are straight under the title                |
 | Patents, under the title      | "flip the laptop over. it's all on the rating plate."                  | No line: the plate is straight under the title                    |
 | Contact                       | "that's the whole lid. the rest is a conversation.", a line about stickers harmed | "got something worth building? let's talk.", a thank-you |
 

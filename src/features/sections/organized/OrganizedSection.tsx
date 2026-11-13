@@ -19,12 +19,7 @@ export const OrganizedSection: FunctionComponent<SectionProps> = ({ content, sta
   const totals = organizedTotals(stats.organized)
 
   return (
-    <SectionFrame
-      id="organized"
-      surface="lid"
-      title={organizedCopy.title}
-      kicker={organizedCopy.subtitle}
-    >
+    <SectionFrame id="organized" surface="lid" title={organizedCopy.title}>
       <div className={styles.scene}>
         <div className={styles.top}>
           <Totals totals={totals} />

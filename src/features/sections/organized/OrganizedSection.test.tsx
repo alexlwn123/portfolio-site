@@ -20,7 +20,8 @@ describe('OrganizedSection', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
       /^HACKATHONS\s*ORGANIZED\s*$/,
     )
-    expect(section).toHaveTextContent(organizedCopy.subtitle)
+    // No line under the title: the totals say it.
+    expect(section.querySelector('h2')?.closest('header')?.querySelector('p') ?? null).toBeNull()
   })
 
   it('prints every total from the derived numbers', () => {

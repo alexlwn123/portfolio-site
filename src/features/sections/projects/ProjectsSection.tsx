@@ -31,12 +31,7 @@ export const ProjectsSection: FunctionComponent<SectionProps> = ({ content }) =>
       ))
 
   return (
-    <SectionFrame
-      id="projects"
-      surface="mat"
-      title={projectsCopy.title}
-      kicker={projectsCopy.kicker}
-    >
+    <SectionFrame id="projects" surface="mat" title={projectsCopy.title}>
       <MatRuler edge="top" />
       <MatRuler edge="left" />
       <ul className={styles.stickers} aria-label={projectsCopy.list} role="list">

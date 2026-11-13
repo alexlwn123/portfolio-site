@@ -20,7 +20,9 @@ describe('ProjectsSection', () => {
 
     expect(section.id).toBe('projects')
     expect(section).toHaveAttribute('data-surface', 'mat')
-    expect(within(section).getByText(projectsCopy.kicker)).toBeVisible()
+    // No line under the title: the stickers say it.
+    expect(section.querySelector('h2')?.closest('header')?.querySelector('p') ?? null).toBeNull()
+    expect(projectsCopy).not.toHaveProperty('kicker')
   })
 
   it('lays out one sticker for every publishable project, the lead first', () => {

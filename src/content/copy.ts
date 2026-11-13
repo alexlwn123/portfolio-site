@@ -133,7 +133,6 @@ export const copy = deepFreeze({
    */
   wristbands: {
     title: ['HACKATHONS', 'ORGANIZED'],
-    subtitle: 'I don’t just enter them. newest first.',
     participants: 'participants',
     prizes: 'in prizes',
     participantsFootnote: (events: Figure) => `${String(events)} events with a public head count`,
