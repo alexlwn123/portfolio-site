@@ -4,10 +4,14 @@
  * the components print it without knowing where it came from.
  */
 
+import { type Ribbon, ribbonHrefs } from '../badge/ribbons'
 import type { PropertyTagCut } from '../stickers/PropertyTag'
 import type { Tone } from '../stickers/tones'
 
 export type { PropertyTagCut, Tone }
+
+/** A ribbon under the badge: one link, or a heading for the pins stuck on it. */
+export type RibbonSpec = Ribbon
 
 interface Spec<Kind extends string, Id extends string> {
   readonly id: Id
@@ -21,12 +25,6 @@ interface LinkSpec<Kind extends string, Id extends string> extends Spec<Kind, Id
 export interface TextLink {
   readonly label: string
   readonly href: string
-}
-
-export interface RibbonSpec extends TextLink {
-  /** "×16", or null for a ribbon without a count. */
-  readonly count: string | null
-  readonly tone: Tone
 }
 
 export interface NameSpec<Id extends string> extends Spec<'name', Id> {
@@ -278,7 +276,7 @@ export function isControl(spec: StickerSpec): boolean {
 /** Every address a sticker links to, in the order it presents them. */
 export function linksOf(spec: StickerSpec): readonly string[] {
   if (spec.kind === 'badge') {
-    return spec.ribbons.map(({ href }) => href)
+    return spec.ribbons.flatMap(ribbonHrefs)
   }
   if (spec.kind === 'wristband') {
     return spec.links.map(({ href }) => href)

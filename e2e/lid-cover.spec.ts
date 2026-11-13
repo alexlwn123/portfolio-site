@@ -177,8 +177,8 @@ test.describe('the cover', () => {
         screen.height,
       )
       expect(showing).toEqual([])
-      // No buttons, no counts, no tags: its only links are the six ribbons, the way to the
-      // contact section and the cue.
+      // No buttons, no counts, no tags: its only links are the six under the badge (four
+      // ribbons and two pins), the way to the contact section and the cue.
       await expect(page.locator('[data-lid-cover]').getByRole('link')).toHaveCount(8)
       await expect(page.locator('[data-lid-cover]').getByRole('button')).toHaveCount(0)
     })

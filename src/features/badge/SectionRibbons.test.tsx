@@ -2,11 +2,12 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../content'
-import { SECTION_IDS, sectionAnchor } from '../sections/sectionIds'
 import { flattenStickers } from '../lid/stickerSpecs'
 import { lidStickers } from '../lid/stickers'
+import { SECTION_IDS, sectionAnchor } from '../sections/sectionIds'
 import tones from '../stickers/tones.module.css'
-import { type Ribbon, SectionRibbons } from './SectionRibbons'
+import type { Ribbon } from './ribbons'
+import { SectionRibbons } from './SectionRibbons'
 
 function lidRibbons(): readonly Ribbon[] {
   const badge = flattenStickers(lidStickers(content, stats)).find(({ kind }) => kind === 'badge')
@@ -16,6 +17,20 @@ function lidRibbons(): readonly Ribbon[] {
 function renderRibbons() {
   render(<SectionRibbons label="Sections" ribbons={lidRibbons()} />)
   return within(screen.getByRole('navigation', { name: 'Sections' }))
+}
+
+/** The ribbons themselves: the items of the landmark's own list, not of a list on one of them. */
+function ribbonItems(): readonly HTMLElement[] {
+  const nav = screen.getByRole('navigation', { name: 'Sections' })
+  return [...nav.querySelectorAll<HTMLElement>(':scope > ul > li')]
+}
+
+function hackathons(): HTMLElement {
+  const item = ribbonItems().find((ribbon) => ribbon.querySelector('[data-pin]') !== null)
+  if (!item) {
+    throw new Error('Expected a ribbon with pins on it')
+  }
+  return item
 }
 
 describe('SectionRibbons', () => {
@@ -30,35 +45,78 @@ describe('SectionRibbons', () => {
     expect(stats.wins.total).toBe(content.wins.length)
   })
 
-  it('leads each ribbon to a section this page really has, in the order of the page', () => {
+  it('leads to every section this page has but the contact one', () => {
     const nav = renderRibbons()
-    const sections = SECTION_IDS.map(sectionAnchor)
     const hrefs = nav.getAllByRole('link').map((link) => link.getAttribute('href'))
 
-    expect(hrefs).toEqual(['/#work', '/#wins', '/#projects', '/#organized', '/#talks', '/#patents'])
-    expect(hrefs).toEqual(sections.slice(0, hrefs.length))
+    // The two sections about hackathons share a ribbon, so they come together.
+    expect(hrefs).toEqual(['/#work', '/#wins', '/#organized', '/#projects', '/#talks', '/#patents'])
+    expect(hrefs.toSorted()).toEqual(
+      SECTION_IDS.filter((id) => id !== 'contact')
+        .map(sectionAnchor)
+        .toSorted(),
+    )
   })
 
-  it('names the six ribbons for what he is: engineer first', () => {
-    const nav = renderRibbons()
+  it('hangs five ribbons for what he is: engineer first, inventor last', () => {
+    renderRibbons()
 
-    expect(nav.getAllByRole('link').map((link) => link.textContent.replace(/\s+/g, ' '))).toEqual([
+    expect(ribbonItems()).toHaveLength(5)
+    expect(ribbonItems().map((item) => item.querySelector('[data-ribbon]')?.textContent)).toEqual([
       'ENGINEER',
-      `WINNER ×${String(stats.wins.total)}`,
+      'HACKATHONS',
       'BUILDER',
-      `ORGANIZER ×${String(stats.organized.count)}`,
       'SPEAKER',
       'INVENTOR',
     ])
   })
 
-  it('is a list of links inside one navigation landmark', () => {
-    const nav = renderRibbons()
+  it('makes one ribbon of the hackathons, with a pin for each thing he does at them', () => {
+    renderRibbons()
+    const ribbon = hackathons()
+    const pins = within(ribbon).getAllByRole('link')
 
-    expect(within(nav.getByRole('list')).getAllByRole('listitem')).toHaveLength(6)
+    expect(pins.map((pin) => pin.textContent.replace(/\s+/g, ' '))).toEqual([
+      `WINNER ×${String(stats.wins.total)}`,
+      `ORGANIZER ×${String(stats.organized.count)}`,
+    ])
+    expect(pins.map((pin) => pin.getAttribute('href'))).toEqual(['/#wins', '/#organized'])
+    expect(pins.every((pin) => pin.hasAttribute('data-pin'))).toBe(true)
   })
 
-  it('ends with the inventor ribbon, which leads to the patents and carries no count', () => {
+  it('does not make the hackathons ribbon a link: its pins are the ways in', () => {
+    renderRibbons()
+    const ribbon = hackathons()
+    const word = within(ribbon).getByText('HACKATHONS')
+
+    expect(word.closest('a')).toBeNull()
+    expect(ribbon.querySelectorAll('a')).toHaveLength(2)
+    // The pins are a list of their own, on the ribbon, read after its word.
+    const pins = within(ribbon).getByRole('list')
+    expect(within(pins).getAllByRole('listitem')).toHaveLength(2)
+    expect(word.compareDocumentPosition(pins) & Node.DOCUMENT_POSITION_FOLLOWING).toBeGreaterThan(0)
+  })
+
+  it('makes every other ribbon one link, with nothing pinned to it', () => {
+    renderRibbons()
+    const plain = ribbonItems().filter((item) => item.querySelector('[data-pin]') === null)
+
+    expect(plain).toHaveLength(4)
+    for (const item of plain) {
+      expect(item.querySelectorAll('a')).toHaveLength(1)
+      expect(item.querySelector('a')).toHaveAttribute('data-ribbon')
+      expect(item.querySelector('ul')).toBeNull()
+    }
+  })
+
+  it('is a list of ribbons inside one navigation landmark', () => {
+    const nav = renderRibbons()
+
+    expect(nav.getAllByRole('list')).toHaveLength(2)
+    expect(nav.getAllByRole('link')).toHaveLength(6)
+  })
+
+  it('ends with the inventor ribbon, which leads to the patents', () => {
     const nav = renderRibbons()
     const inventor = nav.getAllByRole('link').at(-1)
 
@@ -73,16 +131,30 @@ describe('SectionRibbons', () => {
     expect(nav.getByRole('link', { name: 'ENGINEER' })).toHaveClass(tones.ink ?? '')
   })
 
-  it('prints no count on a ribbon that has none', () => {
+  it('cuts each ribbon and each pin from its own colour', () => {
     const nav = renderRibbons()
 
-    expect(nav.getByRole('link', { name: 'SPEAKER' })).toHaveTextContent(/^SPEAKER$/)
-  })
-
-  it('cuts each ribbon from its own colour', () => {
-    const nav = renderRibbons()
-
+    // The ribbon itself is what is cut from a colour, not the word printed on it.
+    expect(hackathons().firstElementChild).toHaveClass(tones.hi ?? '')
+    expect(nav.getByRole('link', { name: /WINNER/ })).toHaveClass(tones.ink ?? '')
     expect(nav.getByRole('link', { name: /ORGANIZER/ })).toHaveClass(tones.tang ?? '')
     expect(nav.getByRole('link', { name: 'BUILDER' })).toHaveClass(tones.gum ?? '')
+    expect(nav.getByRole('link', { name: 'SPEAKER' })).toHaveClass(tones.mint ?? '')
+  })
+
+  it('keeps every link in its own tab and carries no inline style', () => {
+    const nav = renderRibbons()
+
+    expect(nav.getAllByRole('link').filter((link) => link.hasAttribute('target'))).toEqual([])
+    expect(screen.getByRole('navigation').querySelectorAll('[style]')).toHaveLength(0)
+  })
+
+  it('lifts a pin by what is inside it, so the pin itself never moves under the pointer', () => {
+    renderRibbons()
+
+    for (const pin of hackathons().querySelectorAll('[data-pin]')) {
+      expect(pin.children).toHaveLength(1)
+      expect(pin.firstElementChild?.tagName).toBe('SPAN')
+    }
   })
 })

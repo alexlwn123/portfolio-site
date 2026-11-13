@@ -109,7 +109,8 @@ describe('Lid', () => {
     expect(cover?.querySelectorAll('button')).toHaveLength(0)
     expect(cover?.querySelector('[data-sticker="cv"]')).toBeNull()
     expect(cover?.querySelectorAll('ul[aria-label]')).toHaveLength(0)
-    // Its only links are the six ribbons, the way to the contact section and the cue.
+    // Its only links are the six under the badge (four ribbons and two pins), the way to the
+    // contact section and the cue.
     expect(within(cover ?? container).getAllByRole('link')).toHaveLength(8)
   })
 

@@ -30,12 +30,16 @@ const LABEL_LINES = { phone: 2, wider: 3 } as const
 /** A line may round up to a pixel past where it is set. */
 const HAIR_PX = 1
 
-/** Each ribbon on the badge, in the order it hangs, and the section of this page it must land on. */
+/**
+ * Each way into the page under the badge, in the order they hang, and the
+ * section it must land on: a ribbon, or one of the two pins on the ribbon for
+ * the hackathons.
+ */
 const RIBBONS = [
   { name: 'ENGINEER', section: 'work' },
   { name: /^WINNER/, section: 'wins' },
-  { name: 'BUILDER', section: 'projects' },
   { name: /^ORGANIZER/, section: 'organized' },
+  { name: 'BUILDER', section: 'projects' },
   { name: 'SPEAKER', section: 'talks' },
   { name: 'INVENTOR', section: 'patents' },
 ] as const
@@ -66,23 +70,39 @@ test('home reaches /cv/ through the asset-tag sticker, and the CV leads back', a
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(content.profile.name)
 })
 
-test('the ribbons are the six things he is, in the order of the page', async ({ page }) => {
+test('the ribbons are the five things he is, with a pin on the hackathons for each count', async ({
+  page,
+}) => {
   await openLid(page, 728)
-  const ribbons = page.getByRole('navigation', { name: 'Sections' }).getByRole('link')
+  const nav = page.getByRole('navigation', { name: 'Sections' })
+  const links = nav.getByRole('link')
 
-  await expect(ribbons).toHaveCount(RIBBONS.length)
-  await expect(ribbons).toHaveText([
+  await expect(nav.locator('[data-ribbon]')).toHaveText([
     'ENGINEER',
-    `WINNER ×${String(stats.wins.total)}`,
+    'HACKATHONS',
     'BUILDER',
-    `ORGANIZER ×${String(stats.organized.count)}`,
     'SPEAKER',
     'INVENTOR',
   ])
+  await expect(links).toHaveCount(RIBBONS.length)
+  await expect(links).toHaveText([
+    'ENGINEER',
+    `WINNER ×${String(stats.wins.total)}`,
+    `ORGANIZER ×${String(stats.organized.count)}`,
+    'BUILDER',
+    'SPEAKER',
+    'INVENTOR',
+  ])
+  // The hackathons ribbon is not a link itself: its two pins are.
+  await expect(nav.locator('[data-pin]')).toHaveCount(2)
+  await expect(nav.getByText('HACKATHONS')).toBeVisible()
+  expect(await nav.getByText('HACKATHONS').evaluate((word) => word.closest('a'))).toBeNull()
 })
 
 for (const { name, section } of RIBBONS) {
-  test(`the ${section} ribbon reaches its section of this page`, async ({ page }) => {
+  test(`the way to ${section} under the badge reaches its section of this page`, async ({
+    page,
+  }) => {
     await openLid(page, 390)
 
     await page.getByRole('navigation', { name: 'Sections' }).getByRole('link', { name }).click()
@@ -232,7 +252,7 @@ test('the home page describes the whole career to a search engine', async ({ pag
   await expect(description).not.toHaveAttribute('content', /grant|pending|abandon/i)
 })
 
-test('the lid counts nine wins on the seal and on the ribbon', async ({ page }) => {
+test('the lid counts nine wins on the seal and on the pin', async ({ page }) => {
   await openLid(page, 728)
 
   await expect(

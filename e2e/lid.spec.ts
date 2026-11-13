@@ -189,13 +189,13 @@ test.describe('the lid', () => {
     const links = visited.filter((stop) => !stop.startsWith('button: '))
 
     expect(links).toEqual(hrefs.map((href) => resolved(href, baseURL)))
-    // The ribbons in the order of the page, the way to the contact section, the cue down to
-    // the pile, then the plain CV and the employers' tags.
+    // The ribbons as they hang, the two pins on the hackathons one together, then the way to
+    // the contact section, the cue down to the pile, the plain CV and the employers' tags.
     expect(links.slice(0, 10).map((href) => new URL(href).hash)).toEqual([
       '#work',
       '#wins',
-      '#projects',
       '#organized',
+      '#projects',
       '#talks',
       '#patents',
       '#contact',

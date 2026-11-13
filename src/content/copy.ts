@@ -71,6 +71,8 @@ export const copy = deepFreeze({
     },
     ribbons: {
       engineer: 'ENGINEER',
+      /** One ribbon for both hackathon sections. The next two are the pins stuck on it. */
+      hackathons: 'HACKATHONS',
       organizer: 'ORGANIZER',
       winner: 'WINNER',
       speaker: 'SPEAKER',

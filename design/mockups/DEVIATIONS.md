@@ -615,7 +615,31 @@ the foot of the page, for a visitor who came to write to him. It is deliberately
 the cue to scroll is in highlighter, about three quarters of its size, on one line, and its arrow
 does not nod. It is the sticker `contact` (a `cue` that is `quiet`), placed in all four compositions
 against the same line of the screen as the hello tag, so the two stay together on a screen of any
-height. The cover's links are now eight: the six ribbons, this one and the cue.
+height. The cover's links are now eight: the six under the badge, this one and the cue.
+
+### One ribbon for the hackathons, with two pins
+
+Since 2026-11-13, at the owner's request, the `WINNER ×9` and `ORGANIZER ×16` ribbons are one
+ribbon, `HACKATHONS`, cut from highlighter yellow, with two enamel pins stuck on it: `WINNER ×9` in
+ink and `ORGANIZER ×16` in orange, each in a metal rim. The badge now hangs five ribbons: ENGINEER,
+HACKATHONS, BUILDER, SPEAKER, INVENTOR.
+
+- **The pins are the links.** `WINNER ×9` leads to the wins and `ORGANIZER ×16` to the hackathons
+  he organized. The ribbon itself is not a link: it stands for two sections, so its word is a
+  heading for the pins. The ways in under the badge are still six, and they still reach every
+  section but the contact one. They are no longer in the order of the page: the two about
+  hackathons come together.
+- **The stack is as long as it was.** The ribbon is two ribbons deep, less the tuck between them, so
+  the ribbons trail exactly as far as six did, and nothing placed around them moved.
+- **A pin lifts by its enamel.** The link keeps its place and is as deep as a fingertip needs
+  (31px on a 360px phone, where its lettering is 11px).
+- **The comparison with the mockup** leaves the whole ribbon out, where it used to leave out only
+  the `WINNER` ribbon's count: the mockup has two ribbons there. What is left out is now 3.6% of the
+  picture (the allowance went from 2% to 4%), and the difference over the rest is 2.20% against a
+  tolerance of 2.70%. An empty item keeps the second ribbon's turn in the dressed page, so SPEAKER
+  and BUILDER still lean as the mockup's third and fourth ribbons did.
+- Code: `src/features/badge/ribbons.ts` (a ribbon is a link, or carries pins) and
+  `src/features/badge/SectionRibbons.tsx`.
 
 ### What could not be checked here
 

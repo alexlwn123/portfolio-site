@@ -78,14 +78,20 @@ const MOCKUP_HELLO = {
   after: ' around the world.',
 } as const
 
-/** The mockup's four ribbons, in the order it hung them, by the section each leads to. */
+/**
+ * The mockup's four ribbons, in the order it hung them, by the section each
+ * leads to. Its first two, for the hackathons he organized and the ones he
+ * won, are one ribbon now, two ribbons deep, so it takes the room of both.
+ */
 const MOCKUP_RIBBONS = (['organized', 'wins', 'talks', 'projects'] as const).map(sectionAnchor)
 
 /*
- * The ninth win changed two counts, and a picture that predates it cannot
- * match them. Their places are left out of the comparison: not compared,
- * counted in neither the difference nor the total it is a share of, and
- * painted blue on lid-728-difference.png.
+ * Two things a picture of the mockup cannot match. The ninth win changed the
+ * figure on the wins seal. And the mockup's ribbons for the hackathons he
+ * organized and the ones he won are one ribbon now, with a pin for each
+ * (design/mockups/DEVIATIONS.md). Their places are left out of the
+ * comparison: not compared, counted in neither the difference nor the total
+ * it is a share of, and painted blue on lid-728-difference.png.
  */
 
 /** How far past its box a place is left out, in px. */
@@ -101,9 +107,10 @@ const NONE: Margin = { top: 0, side: 0, bottom: 0 }
 
 /**
  * The left-out places must stay a small part of the page, or the comparison
- * means nothing. The two counts come to 1.6% of it.
+ * means nothing. The seal's figure and the ribbon for the hackathons, which
+ * is two ribbons deep, come to 3.6% of it.
  */
-const MAX_EXCLUDED = 0.02
+const MAX_EXCLUDED = 0.04
 
 /**
  * One box around every matched element and everything that shows inside them,
@@ -148,19 +155,20 @@ async function stickerRegions(page: Page): Promise<readonly Region[]> {
   return Promise.all(ids.map((id) => boxAround(page.locator(`[data-sticker="${id}"]`), id)))
 }
 
-/** Where the ninth win changed a count: the seal's figure and the ribbon's. */
+/** What the mockup cannot match: the wins seal's figure, and the ribbon that carries the pins. */
 async function changedCounts(page: Page): Promise<readonly Region[]> {
-  const { winsSeal, ribbons: words } = copy.lid
+  const { winsSeal } = copy.lid
   const figure = page
     .locator('[data-sticker="wins-count"]')
     .locator('text', { hasText: winsSeal.times(stats.wins.total) })
-  const count = page
+  const pinned = page
     .getByRole('navigation', { name: copy.lid.nav.sections })
-    .getByText(words.times(stats.wins.total), { exact: true })
+    .locator('li', { has: page.locator('[data-pin]') })
+    .first()
 
   return Promise.all([
     boxAround(figure, 'changed count: wins seal', LETTERING),
-    boxAround(count, 'changed count: winner ribbon', LETTERING),
+    boxAround(pinned, 'one ribbon for the hackathons, with pins', LETTERING),
   ])
 }
 
@@ -189,7 +197,12 @@ async function printAsMockup(page: Page): Promise<void> {
       if (found.length !== ribbons.length) {
         throw new Error('A ribbon of the mockup is no longer on the badge')
       }
-      list.replaceChildren(...found)
+      // Two of the mockup's ribbons are one now, two ribbons deep. It is hung once, where the
+      // first of them was, and an empty item keeps the second one's turn, so that the ribbons
+      // after it lean as the mockup's third and fourth did.
+      const [first, ...rest] = [...new Set(found)]
+      const turn = document.createElement('li')
+      list.replaceChildren(...(first ? [first, turn] : []), ...rest)
     },
     { hello: MOCKUP_HELLO, ribbons: MOCKUP_RIBBONS },
   )
@@ -321,5 +334,5 @@ test('dressing the lid as the mockup puts every sticker where the mockup had it'
   await expect(page.locator('[data-sticker="hello"]')).toContainText(MOCKUP_HELLO.marked)
   await expect(
     page.getByRole('navigation', { name: copy.lid.nav.sections }).getByRole('link'),
-  ).toHaveText([/^ORGANIZER/, /^WINNER/, 'SPEAKER', 'BUILDER'])
+  ).toHaveText([/^WINNER/, /^ORGANIZER/, 'SPEAKER', 'BUILDER'])
 })

@@ -7,7 +7,8 @@ import voice from '../stickers/voice.module.css'
 import styles from './Badge.module.css'
 import { BadgePhoto } from './BadgePhoto'
 import type { BadgePhotoImage } from './photoSources'
-import { type Ribbon, SectionRibbons } from './SectionRibbons'
+import type { Ribbon } from './ribbons'
+import { SectionRibbons } from './SectionRibbons'
 
 export interface BadgeProps {
   /** The sticker id the badge is placed under. Its SVG ids are built from it. */

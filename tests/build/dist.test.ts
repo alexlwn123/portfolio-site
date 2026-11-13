@@ -372,20 +372,32 @@ describe('the additions to the lid', () => {
     expect(label?.textContent).toMatch(/^U\.S\. PATENT FILINGS /)
   })
 
-  it('has six ribbons in the order of the page, the last of them to the patents', async () => {
+  it('has five ribbons, the hackathons one with two pins, and a way to every section but contact', async () => {
     const page = await readPage('/')
-    const ribbons = [...page.querySelectorAll('nav[aria-label="Sections"] a')]
+    const nav = page.querySelector('nav[aria-label="Sections"]')
+    const links = [...(nav?.querySelectorAll('a') ?? [])]
 
-    expect(ribbons.map((ribbon) => ribbon.getAttribute('href'))).toEqual([
+    expect(nav?.querySelectorAll(':scope > ul > li')).toHaveLength(5)
+    expect([...(nav?.querySelectorAll('[data-ribbon]') ?? [])].map((r) => r.textContent)).toEqual([
+      'ENGINEER',
+      'HACKATHONS',
+      'BUILDER',
+      'SPEAKER',
+      'INVENTOR',
+    ])
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
       '/#work',
       '/#wins',
-      '/#projects',
       '/#organized',
+      '/#projects',
       '/#talks',
       '/#patents',
     ])
-    expect(ribbons[0]?.textContent).toBe('ENGINEER')
-    expect(ribbons.at(-1)?.textContent).toBe('INVENTOR')
+    expect(
+      [...(nav?.querySelectorAll('a[data-pin]') ?? [])].map((pin) => pin.getAttribute('href')),
+    ).toEqual(['/#wins', '/#organized'])
+    expect(links[0]?.textContent).toBe('ENGINEER')
+    expect(links.at(-1)?.textContent).toBe('INVENTOR')
   })
 
   it('sticks an asset tag on the lid for every employer in the record', async () => {

@@ -101,6 +101,8 @@ describe('copy', () => {
       inService: 'In service',
     })
     expect(copy.lid.ribbons.engineer).toBe('ENGINEER')
+    // One ribbon for the hackathons: what he does at them is on the pins stuck to it.
+    expect(copy.lid.ribbons.hackathons).toBe('HACKATHONS')
   })
 
   it('types no arrows or stars on the lid: those glyphs are drawn', () => {

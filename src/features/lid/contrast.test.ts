@@ -26,13 +26,13 @@ type Pairing = readonly [text: string, surface: string, where: string]
 
 const SMALL_PRINT: readonly Pairing[] = [
   ['ink', 'white', 'hello tag, pills, badge card, bumper note, inventor ribbon'],
-  ['ink', 'tang', 'hello tag bar, wins seal, bitcoin++ record, Istanbul pill, organizer ribbon'],
+  ['ink', 'tang', 'hello tag bar, wins seal, bitcoin++ record, Istanbul pill, organizer pin'],
   ['ink', 'gum', 'lanyard, Nairobi and Austin pills, builder ribbon, first wristband'],
-  ['ink', 'hi', 'bumper, Taipei and Toronto pills, winner ribbon, second wristband, NCR medal'],
+  ['ink', 'hi', 'bumper, Taipei and Toronto pills, hackathons ribbon, second wristband, NCR medal'],
   ['ink', 'mint', 'organized seal, Berlin pill, phrase pill, speaker ribbon'],
   ['ink', 'holo-2', 'foil win, hex badge, badge roles: the darkest foil stop'],
   ['ink', 'metal-mid', 'asset tag and compliance label: the darkest of their metal'],
-  ['white', 'ink', 'Florianópolis pill, Pleb FM, crab caption, arcade button'],
+  ['white', 'ink', 'Florianópolis pill, Pleb FM, crab caption, arcade button, winner pin'],
   ['hi', 'ink', 'job title, Pleb FM name, arcade button title'],
   ['white', 'deep', 'parking sign'],
   ['white', 'cobalt', 'the saved spot, written on the lid itself'],

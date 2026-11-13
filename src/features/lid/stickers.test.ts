@@ -263,21 +263,29 @@ describe('lidStickers', () => {
     expect(find('tally')).toMatchObject({ count: 14 })
   })
 
-  it('hangs six ribbons, in the order of the page, with the same counts', () => {
+  it('hangs five ribbons, one of them for the hackathons with a pin for each count', () => {
     expect(sticker('badge', 'badge').ribbons).toEqual([
-      { label: 'ENGINEER', count: null, href: '/#work', tone: 'ink' },
-      { label: 'WINNER', count: '×9', href: '/#wins', tone: 'hi' },
-      { label: 'BUILDER', count: null, href: '/#projects', tone: 'gum' },
-      { label: 'ORGANIZER', count: '×16', href: '/#organized', tone: 'tang' },
-      { label: 'SPEAKER', count: null, href: '/#talks', tone: 'mint' },
-      { label: 'INVENTOR', count: null, href: '/#patents', tone: 'white' },
+      { label: 'ENGINEER', href: '/#work', tone: 'ink' },
+      {
+        label: 'HACKATHONS',
+        tone: 'hi',
+        pins: [
+          { label: 'WINNER', count: '×9', href: '/#wins', tone: 'ink' },
+          { label: 'ORGANIZER', count: '×16', href: '/#organized', tone: 'tang' },
+        ],
+      },
+      { label: 'BUILDER', href: '/#projects', tone: 'gum' },
+      { label: 'SPEAKER', href: '/#talks', tone: 'mint' },
+      { label: 'INVENTOR', href: '/#patents', tone: 'white' },
     ])
   })
 
-  it('leads each ribbon to a section of this page, leaving only the contact section to the strap', () => {
-    const led = sticker('badge', 'badge').ribbons.map(({ href }) => href.replace('/#', ''))
+  it('leads the ribbons and their pins to every section of this page but the contact one', () => {
+    const led = linksOf(sticker('badge', 'badge')).map((href) => href.replace('/#', ''))
 
-    expect(led).toEqual(SECTION_IDS.filter((id) => id !== 'contact'))
+    expect(led.toSorted()).toEqual(SECTION_IDS.filter((id) => id !== 'contact').toSorted())
+    // The two sections about hackathons share a ribbon, so they come together.
+    expect(led).toEqual(['work', 'wins', 'organized', 'projects', 'talks', 'patents'])
   })
 
   it('prints every filing’s publication number on the compliance label, in the record’s order', () => {

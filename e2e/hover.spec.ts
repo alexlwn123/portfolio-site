@@ -25,6 +25,7 @@ const MOVERS = [
   ['a sticker on the lid that is a link', '[data-lid] a[data-sticker="cv"]'],
   ['a sticker on the lid that is not', '[data-lid] [data-sticker="hello"]'],
   ['a ribbon on the badge', '[data-badge-card] nav a'],
+  ['a pin on a ribbon of the badge', '[data-badge-card] nav a[data-pin]'],
   ['a sticker in a section that is a link', 'section[data-section] a[data-stuck]'],
   ['the address on the return label', 'section#contact a[href^="mailto:"]'],
   ['a patent number on the plate', 'section#patents a[href*="patents.google"]'],

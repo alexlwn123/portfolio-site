@@ -152,19 +152,30 @@ function badge({ profile }: Content, stats: Stats): BadgeSpec<StickerId> {
   }
 }
 
-/** The badge's ribbons: what he is, one to a section, in the order the page has them. */
+/**
+ * The badge's ribbons: what he is. Each leads to the section that shows it,
+ * but the one for the hackathons, which stands for two sections: it carries a
+ * pin for the ones he has won and a pin for the ones he has organized, each
+ * with its count, and each pin leads to its own section.
+ */
 function sectionRibbons(stats: Stats): readonly RibbonSpec[] {
   const { ribbons } = copy.lid
   const won = ribbons.times(stats.wins.total)
   const ran = ribbons.times(stats.organized.count)
 
   return [
-    { label: ribbons.engineer, count: null, href: sectionAnchor('work'), tone: 'ink' },
-    { label: ribbons.winner, count: won, href: sectionAnchor('wins'), tone: 'hi' },
-    { label: ribbons.builder, count: null, href: sectionAnchor('projects'), tone: 'gum' },
-    { label: ribbons.organizer, count: ran, href: sectionAnchor('organized'), tone: 'tang' },
-    { label: ribbons.speaker, count: null, href: sectionAnchor('talks'), tone: 'mint' },
-    { label: ribbons.inventor, count: null, href: sectionAnchor('patents'), tone: 'white' },
+    { label: ribbons.engineer, href: sectionAnchor('work'), tone: 'ink' },
+    {
+      label: ribbons.hackathons,
+      tone: 'hi',
+      pins: [
+        { label: ribbons.winner, count: won, href: sectionAnchor('wins'), tone: 'ink' },
+        { label: ribbons.organizer, count: ran, href: sectionAnchor('organized'), tone: 'tang' },
+      ],
+    },
+    { label: ribbons.builder, href: sectionAnchor('projects'), tone: 'gum' },
+    { label: ribbons.speaker, href: sectionAnchor('talks'), tone: 'mint' },
+    { label: ribbons.inventor, href: sectionAnchor('patents'), tone: 'white' },
   ]
 }
 
