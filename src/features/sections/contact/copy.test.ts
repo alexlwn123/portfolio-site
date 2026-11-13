@@ -17,7 +17,11 @@ function collectStrings(value: unknown): readonly string[] {
 describe('contactCopy', () => {
   it('is frozen all the way down', () => {
     expect(Object.isFrozen(contactCopy)).toBe(true)
-    expect(Object.isFrozen(contactCopy.label.plea)).toBe(true)
+    expect(Object.isFrozen(contactCopy.label)).toBe(true)
+  })
+
+  it('words the label with the hint beside the address and nothing more', () => {
+    expect(contactCopy.label).toEqual({ email: 'Write to' })
   })
 
   it('holds no address, link, name or number: those are the record’s', () => {

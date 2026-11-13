@@ -910,6 +910,23 @@ HACKATHONS, BUILDER, SPEAKER, INVENTOR.
 - Code: `src/features/badge/ribbons.ts` (a ribbon is a link, or carries pins) and
   `src/features/badge/SectionRibbons.tsx`.
 
+### The contact section offers four ways to reach him
+
+Since 2026-11-13, at the owner's request:
+
+- **Four strips, in his order:** X, GitHub, Book 30 min, LinkedIn. The section used to print a strip
+  for every link in the profile. His Devpost, his bitcoin++ community profile and his business-card
+  page are still in the record, and are no longer offered here. The four and their order are
+  `CONTACT_LINK_IDS` in `src/features/sections/contact/links.ts`.
+- **The label is his address and nothing more:** his name, his city and the work address. The line
+  across its top ("If found, please return to") and the one at its foot ("Reward: one sticker,
+  hardly used.") are gone, so the address sits in the middle of the label.
+- **The layout was reset for four strips.** On a laptop they are a ladder as tall as the label, each
+  a little deeper than before. On a tablet they are two rows of two, each row the width of the
+  column. On a phone they are a ladder again.
+- The lid's two wristbands (GitHub, X, LinkedIn; Devpost, Book 30 min) and the plain CV's list of
+  links were not asked about and are unchanged.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

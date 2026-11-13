@@ -2,7 +2,6 @@ import { render, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content } from '../../../content'
-import { contactCopy } from './copy'
 import { ReturnLabel } from './ReturnLabel'
 
 function renderLabel(): HTMLElement {
@@ -15,11 +14,19 @@ function renderLabel(): HTMLElement {
 }
 
 describe('ReturnLabel', () => {
-  it('asks to be returned to him, by name, in his city', () => {
+  it('is addressed to him, by name, in his city, and says nothing before that', () => {
     const label = renderLabel()
 
-    expect(label).toHaveTextContent(/^If found, please return to Alex Lewin Atlanta, GA/)
+    expect(label).toHaveTextContent(/^Alex Lewin Atlanta, GA/)
     expect(within(label).getByText(content.profile.name)).toBeInTheDocument()
+  })
+
+  it('is the address and nothing else: no plea to be returned, no reward', () => {
+    const label = renderLabel()
+
+    expect(label).not.toHaveTextContent(/if found|return to|reward/i)
+    expect(label.querySelectorAll('p')).toHaveLength(0)
+    expect(label.textContent.trim()).toMatch(new RegExp(`${content.profile.email}$`))
   })
 
   it('holds his contact details in an address element', () => {
@@ -44,10 +51,6 @@ describe('ReturnLabel', () => {
     const addresses = renderLabel().textContent.match(/[\w.+-]+@[\w.-]+/g)
 
     expect(addresses).toEqual([content.profile.email])
-  })
-
-  it('offers a reward, in his hand', () => {
-    expect(within(renderLabel()).getByText(contactCopy.label.reward)).toBeInTheDocument()
   })
 
   it('carries no heading of its own, no inline style and no line break', () => {

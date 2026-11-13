@@ -5,6 +5,7 @@ import { content, stats } from '../../../content'
 import { PATHS } from '../../../lib/paths'
 import { ContactSection } from './ContactSection'
 import { contactCopy } from './copy'
+import { contactBands } from './links'
 
 function renderSection(): HTMLElement {
   render(<ContactSection content={content} stats={stats} />)
@@ -20,7 +21,7 @@ describe('ContactSection', () => {
     expect(within(section).getByText(contactCopy.kicker)).toBeInTheDocument()
   })
 
-  it('leads with the return label: his name, his city and the work address', () => {
+  it('leads with the address label: his name, his city and the work address', () => {
     const section = renderSection()
     const label = section.querySelector('[data-return-label]')
     const [first] = within(section).getAllByRole('link')
@@ -39,14 +40,31 @@ describe('ContactSection', () => {
     expect(section.innerHTML).not.toMatch(/gmail|outlook|icloud|proton/i)
   })
 
-  it('has a wristband strip for every link in the profile', () => {
+  it('has a wristband strip for each of the four ways to reach him, in his order', () => {
     const list = within(renderSection()).getByRole('list', { name: contactCopy.bands.list })
+    const strips = within(list).getAllByRole('link')
 
-    expect(
-      within(list)
-        .getAllByRole('link')
-        .map((link) => link.getAttribute('href')),
-    ).toEqual(content.profile.links.map(({ url }) => url))
+    expect(strips.map((link) => link.textContent.trim())).toEqual([
+      'X',
+      'GitHub',
+      'Book 30 min',
+      'LinkedIn',
+    ])
+    expect(strips.map((link) => link.getAttribute('href'))).toEqual(
+      contactBands(content.profile.links).map(({ href }) => href),
+    )
+  })
+
+  it('links to no other profile: not Devpost, not the bitcoin++ one, not the business-card page', () => {
+    const section = renderSection()
+    const hrefs = [...section.querySelectorAll('a')].map((link) => link.getAttribute('href') ?? '')
+
+    expect(hrefs.filter((href) => /devpost|btcpp|qr\.lwn\.lol/.test(href))).toEqual([])
+    expect(section).not.toHaveTextContent(/devpost|bitcoin\+\+|business.card/i)
+  })
+
+  it('makes no plea to be returned and offers no reward', () => {
+    expect(renderSection()).not.toHaveTextContent(/if found|return to|reward/i)
   })
 
   it('offers the plain CV on an asset tag', () => {
@@ -56,10 +74,11 @@ describe('ContactSection', () => {
     expect(tag).toHaveTextContent(contactCopy.cv.kicker)
   })
 
-  it('has exactly the links it should: the address, each profile link and the CV', () => {
+  it('has exactly the links it should: the address, the four strips and the CV', () => {
     const links = within(renderSection()).getAllByRole('link')
 
-    expect(links).toHaveLength(content.profile.links.length + 2)
+    expect(links).toHaveLength(contactBands(content.profile.links).length + 2)
+    expect(links).toHaveLength(6)
     for (const link of links) {
       expect(link).toHaveAccessibleName(/\S/)
     }

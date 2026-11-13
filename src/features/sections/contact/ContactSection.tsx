@@ -12,9 +12,9 @@ import { contactBands } from './links'
 import { ReturnLabel } from './ReturnLabel'
 
 /**
- * The end of the page: the "if found, please return to" label with the work
- * address, a strip of wristband for every other way to reach him, the asset
- * tag that leads to the plain CV, and a line of small print to close on.
+ * The end of the page: the address label with the work address, a strip of
+ * wristband for each other way to reach him, the asset tag that leads to the
+ * plain CV, and a line of small print to close on.
  */
 export const ContactSection: FunctionComponent<SectionProps> = ({ content }) => (
   <SectionFrame id="contact" surface="mat" title={contactCopy.title} kicker={contactCopy.kicker}>

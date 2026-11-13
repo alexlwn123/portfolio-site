@@ -1,23 +1,36 @@
 import { describe, expect, it } from 'vitest'
 
 import { content } from '../../../content'
-import { BAND_TONES, cityLine, contactBands, mailto } from './links'
+import { BAND_TONES, cityLine, CONTACT_LINK_IDS, contactBands, mailto } from './links'
 
 describe('contactBands', () => {
   const bands = contactBands(content.profile.links)
+  const urlOf = (id: string): string | undefined =>
+    content.profile.links.find((link) => link.id === id)?.url
 
-  it('is one band for every link in the profile, in the profile’s order', () => {
-    expect(bands.map(({ id }) => id)).toEqual(content.profile.links.map(({ id }) => id))
-    expect(bands.map(({ href }) => href)).toEqual(content.profile.links.map(({ url }) => url))
+  it('is a band for each of the four ways to reach him, in the order he chose', () => {
+    expect(CONTACT_LINK_IDS).toEqual(['x', 'github', 'booking', 'linkedin'])
+    expect(bands.map(({ id }) => id)).toEqual(CONTACT_LINK_IDS)
+    expect(bands.map(({ href }) => href)).toEqual(CONTACT_LINK_IDS.map(urlOf))
+  })
+
+  it('leaves out the other links the record holds: they are not ways to reach him', () => {
+    const offered = bands.map(({ id }) => id)
+
+    for (const id of ['devpost', 'bitcoinPlusPlus', 'card'] as const) {
+      expect(content.profile.links.map((link) => link.id)).toContain(id)
+      expect(offered).not.toContain(id)
+    }
   })
 
   it('prints the short label where the record has one, and the full label where it has not', () => {
-    const labels = Object.fromEntries(bands.map(({ id, label }) => [id, label]))
+    expect(bands.map(({ label }) => label)).toEqual(['X', 'GitHub', 'Book 30 min', 'LinkedIn'])
+  })
 
-    expect(labels.booking).toBe('Book 30 min')
-    expect(labels.github).toBe('GitHub')
-    expect(labels.bitcoinPlusPlus).toBe('bitcoin++ community profile')
-    expect(labels.card).toBe('Business-card page')
+  it('is a band less for a record that has dropped one of the four', () => {
+    const without = content.profile.links.filter(({ id }) => id !== 'booking')
+
+    expect(contactBands(without).map(({ id }) => id)).toEqual(['x', 'github', 'linkedin'])
   })
 
   it('cuts neighbouring bands from different colours, all of them pale enough for ink', () => {

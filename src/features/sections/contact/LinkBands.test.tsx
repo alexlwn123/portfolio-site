@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { content } from '../../../content'
 import { contactCopy } from './copy'
 import { LinkBands } from './LinkBands'
-import { contactBands } from './links'
+import { CONTACT_LINK_IDS, contactBands } from './links'
 
 const bands = contactBands(content.profile.links)
 
@@ -15,7 +15,8 @@ describe('LinkBands', () => {
     const list = screen.getByRole('list', { name: contactCopy.bands.list })
     const items = within(list).getAllByRole('listitem')
 
-    expect(items).toHaveLength(content.profile.links.length)
+    expect(items).toHaveLength(bands.length)
+    expect(items).toHaveLength(CONTACT_LINK_IDS.length)
     for (const item of items) {
       expect(within(item).getAllByRole('link')).toHaveLength(1)
     }
@@ -25,12 +26,13 @@ describe('LinkBands', () => {
     render(<LinkBands bands={bands} />)
     const links = screen.getAllByRole('link')
 
-    expect(links.map((link) => link.getAttribute('href'))).toEqual(
-      content.profile.links.map(({ url }) => url),
-    )
-    expect(links.map((link) => link.textContent.trim())).toEqual(
-      content.profile.links.map(({ label, shortLabel }) => shortLabel ?? label),
-    )
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(bands.map(({ href }) => href))
+    expect(links.map((link) => link.textContent.trim())).toEqual([
+      'X',
+      'GitHub',
+      'Book 30 min',
+      'LinkedIn',
+    ])
   })
 
   it('marks each strip with the link it carries', () => {
@@ -40,7 +42,7 @@ describe('LinkBands', () => {
       [...container.querySelectorAll('li[data-band]')].map((item) =>
         item.getAttribute('data-band'),
       ),
-    ).toEqual(content.profile.links.map(({ id }) => id))
+    ).toEqual(['x', 'github', 'booking', 'linkedin'])
   })
 
   it('draws the snaps and the tear-off tab for the eye only', () => {
@@ -48,7 +50,7 @@ describe('LinkBands', () => {
     const drawn = container.querySelectorAll('[aria-hidden="true"]')
 
     expect(drawn.length).toBeGreaterThan(0)
-    expect(screen.getByRole('link').textContent.trim()).toBe('GitHub')
+    expect(screen.getByRole('link').textContent.trim()).toBe('X')
   })
 
   it('renders nothing when there are no links', () => {

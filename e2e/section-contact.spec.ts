@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { content } from '../src/content'
 import { MIN_TEXT_PX } from '../src/features/lid/placement/artboards'
 import { contactCopy } from '../src/features/sections/contact/copy'
+import { contactBands } from '../src/features/sections/contact/links'
 import {
   COLUMN_WIDTHS,
   columnFaults,
@@ -29,8 +30,10 @@ import {
 } from './sectionsA'
 
 const { profile } = content
-/** The address, a strip for each profile link, and the plain CV. */
-const LINKS = profile.links.length + 2
+/** The strips: the four ways to reach him, in the order he put them. */
+const BANDS = contactBands(profile.links)
+/** The address, a strip for each way to reach him, and the plain CV. */
+const LINKS = BANDS.length + 2
 /** The whole label, its tangerine border included. */
 const LABEL = 'div:has(> div > [data-return-label])'
 const STRIPS = 'li[data-band] a'
@@ -48,7 +51,7 @@ test.describe('say hello', () => {
       await expect(section.locator('[data-return-label]')).toBeVisible()
       await expect(section.getByText(profile.name)).toBeVisible()
       await expect(section.getByRole('link', { name: new RegExp(profile.email) })).toBeVisible()
-      for (const { id } of profile.links) {
+      for (const { id } of BANDS) {
         await expect(section.locator(`li[data-band="${id}"]`)).toBeVisible()
       }
       await expect(section.getByRole('link', { name: /Plain CV/ })).toBeVisible()
@@ -115,7 +118,7 @@ test.describe('say hello', () => {
     const strips = await drawnEach(section, STRIPS)
 
     expect(isNear(label.fromLeft), `the label starts ${String(label.fromLeft)}em in`).toBe(true)
-    expect(strips).toHaveLength(profile.links.length)
+    expect(strips).toHaveLength(BANDS.length)
     expect(strips.filter(({ fromRight }) => !isNear(fromRight))).toEqual([])
     expect(strips.filter(({ fromLeft }) => fromLeft < label.fromLeft + label.width)).toEqual([])
   })
@@ -151,7 +154,7 @@ test.describe('say hello', () => {
     const section = await openSectionOnNarrowPhone(page, 'contact')
     const sizes = await drawnText(section)
 
-    expect(sizes.length).toBeGreaterThan(profile.links.length)
+    expect(sizes.length).toBeGreaterThan(BANDS.length)
     expect(sizes.filter(({ px }) => px < MIN_TEXT_PX)).toEqual([])
   })
 
@@ -174,16 +177,36 @@ test.describe('say hello', () => {
     expect(addresses?.map((address) => address.toLowerCase())).toEqual([profile.email])
   })
 
-  test('has a strip for every profile link, each leading where the record says', async ({
+  test('has a strip for each of the four ways to reach him, in his order, each leading where the record says', async ({
     page,
   }) => {
     const section = await openSection(page, 900, 'contact')
 
-    for (const { id, label, shortLabel, url } of profile.links) {
+    await expect(section.locator('li[data-band] a')).toHaveText(
+      ['X', 'GitHub', 'Book 30 min', 'LinkedIn'],
+      { ignoreCase: true },
+    )
+    for (const { id, label, href } of BANDS) {
       const link = section.locator(`li[data-band="${id}"]`).getByRole('link')
-      await expect(link).toHaveAttribute('href', url)
-      await expect(link).toHaveText(shortLabel ?? label, { ignoreCase: true })
+      await expect(link).toHaveAttribute('href', href)
+      await expect(link).toHaveText(label, { ignoreCase: true })
     }
+  })
+
+  test('links to no other profile, and the label is his address and nothing more', async ({
+    page,
+  }) => {
+    const section = await openSection(page, 1440, 'contact')
+    const hrefs = await section
+      .locator('a')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''))
+
+    expect(hrefs.filter((href) => /devpost|btcpp|qr\.lwn\.lol/.test(href))).toEqual([])
+    await expect(section).not.toContainText(/devpost|bitcoin\+\+|business.card/i)
+    await expect(section).not.toContainText(/if found|return to|reward/i)
+    await expect(section.locator('[data-return-label]')).toHaveText(
+      new RegExp(`^\\s*${profile.name}\\s+.*${profile.email}\\s*$`, 's'),
+    )
   })
 
   test('the asset tag leads to the plain CV', async ({ page }) => {

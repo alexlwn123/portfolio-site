@@ -8,14 +8,10 @@ export const contactCopy = {
   title: ['Say', 'hello'],
   kicker: 'got something worth building? let’s talk.',
 
-  /** The label on the underside that gets a lost laptop home. */
-  label: {
-    plea: ['If found,', 'please return to'],
-    email: 'Write to',
-    reward: 'Reward: one sticker, hardly used.',
-  },
+  /** The address label: the hint beside the work address. */
+  label: { email: 'Write to' },
 
-  /** The strips of wristband, one to a link. */
+  /** The strips of wristband, one to a way of reaching him. */
   bands: { list: 'Elsewhere' },
 
   /** The asset tag that leads to the plain CV. */

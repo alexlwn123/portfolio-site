@@ -3,7 +3,6 @@ import type { ReactElement } from 'react'
 import type { Profile } from '../../../content'
 import { cx } from '../../../lib/classNames'
 import { ArrowRight } from '../../stickers/illustrations/Glyphs'
-import { Lines } from '../../stickers/Lines'
 import { Vinyl } from '../../stickers/Vinyl'
 import voice from '../../stickers/voice.module.css'
 import { Stuck } from '../Stuck'
@@ -16,9 +15,9 @@ interface ReturnLabelProps {
 }
 
 /**
- * The label on the underside that gets a lost laptop home: "if found, please
- * return to", his name, his city, and the work address as the one way to
- * write to him. The address is the profile's and no other.
+ * The address label: his name, his city, and the work address as the one way
+ * to write to him, and nothing else. The address is the profile's and no
+ * other.
  */
 export function ReturnLabel({ profile }: ReturnLabelProps): ReactElement {
   return (
@@ -26,9 +25,6 @@ export function ReturnLabel({ profile }: ReturnLabelProps): ReactElement {
       <Vinyl as="div" className={styles.label}>
         <div className={styles.face} data-return-label="">
           <span className={styles.tape} aria-hidden="true" />
-          <p className={cx(voice.label, styles.plea)}>
-            <Lines lines={contactCopy.label.plea} />
-          </p>
           <address className={styles.address}>
             <span className={cx(voice.display, styles.name)}>{profile.name}</span>{' '}
             <span className={cx(voice.label, styles.city)}>{cityLine(profile.location)}</span>{' '}
@@ -39,8 +35,8 @@ export function ReturnLabel({ profile }: ReturnLabelProps): ReactElement {
                 <ArrowRight className={styles.arrow} />
               </span>
             </a>
-          </address>{' '}
-          <p className={cx(voice.marker, styles.reward)}>{contactCopy.label.reward}</p>
+          </address>
+          {/* A space ends the label, so the address never runs into the next words of the page. */}{' '}
         </div>
       </Vinyl>
     </Stuck>

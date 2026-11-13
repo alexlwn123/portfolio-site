@@ -27,7 +27,7 @@ const MOVERS = [
   ['a ribbon on the badge', '[data-badge-card] nav a'],
   ['a pin on a ribbon of the badge', '[data-badge-card] nav a[data-pin]'],
   ['a sticker in a section that is a link', 'section[data-section] a[data-stuck]'],
-  ['the address on the return label', 'section#contact a[href^="mailto:"]'],
+  ['the address on the contact label', 'section#contact a[href^="mailto:"]'],
   ['a patent number on the plate', 'section#patents a[href*="patents.google"]'],
 ] as const
 
