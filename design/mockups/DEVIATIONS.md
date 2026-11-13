@@ -607,6 +607,16 @@ ribbons, the strap, the count stickers, the plain CV) and mail addresses stay in
 function decides it, `linkTo` in `src/lib/linkTo.ts`; `tests/build/links.test.ts` checks every anchor
 in the built pages and `e2e/outbound.spec.ts` follows the links in a browser.
 
+### A way to the contact section on the cover
+
+Since 2026-11-13, at the owner's request, the cover holds one more thing: "contact me", with a drawn
+arrow, written in his marker under the left end of the hello tag. It leads to the contact section at
+the foot of the page, for a visitor who came to write to him. It is deliberately quiet: white where
+the cue to scroll is in highlighter, about three quarters of its size, on one line, and its arrow
+does not nod. It is the sticker `contact` (a `cue` that is `quiet`), placed in all four compositions
+against the same line of the screen as the hello tag, so the two stay together on a screen of any
+height. The cover's links are now eight: the six ribbons, this one and the cue.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

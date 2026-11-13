@@ -1,7 +1,7 @@
 /*
- * The cue to scroll: handwriting on the bare lid, in highlighter, with the
- * marker's arrow after its last word. It is a link, and two lines of it are
- * taller than a fingertip needs.
+ * The ways on from the cover: handwriting on the bare lid, with the marker's
+ * arrow after the last word. The cue to scroll is in highlighter. It is a
+ * link, and two lines of it are taller than a fingertip needs.
  */
 .cue {
   display: block;
@@ -24,6 +24,33 @@
   }
 }
 
+/*
+ * The quieter line, under the hello tag: the same hand in white, smaller, and
+ * on one line. It is the way to the contact section, there for whoever came
+ * to write to him, and it must never compete with the cue to scroll. One line
+ * of it is shorter than a fingertip needs, so it is padded to that.
+ */
+.quiet {
+  padding-block: 0.4em;
+  color: var(--white);
+  font-size: 1.6em;
+  white-space: nowrap;
+}
+
+.quiet > .arrow {
+  width: 0.85em;
+  height: 0.7em;
+  margin-left: 0.3em;
+  vertical-align: -0.04em;
+}
+
+/* On a phone it sits in the strip of lid beside the badge, and must stay clear of the card. */
+@container lid (max-width: 560px) {
+  .quiet {
+    font-size: 1.5em;
+  }
+}
+
 /* Under the pointer or the keyboard the words are underlined, as handwriting is: with one stroke. */
 :is(a:hover, a:focus-visible) > .cue {
   text-decoration: underline;
@@ -40,7 +67,8 @@
     animation: cue-on 0.4s ease-out 1.2s backwards;
   }
 
-  .arrow {
+  /* Only the cue to scroll nods: the quiet line stays still. */
+  .cue:not(.quiet) > .arrow {
     animation: cue-nod 1.6s ease-in-out 1.7s infinite alternate;
   }
 }

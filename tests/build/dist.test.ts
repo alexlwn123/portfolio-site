@@ -301,7 +301,7 @@ describe('the home page’s script', () => {
 })
 
 describe('the lid’s two parts', () => {
-  it('opens on a cover that holds the name, the badge on its lanyard, the hello tag and the cue', async () => {
+  it('opens on a cover that holds the name, the badge on its lanyard, the hello tag and the two ways on', async () => {
     const page = await readPage('/')
     const ids = [...page.querySelectorAll('[data-lid-cover] [data-sticker]')].map((sticker) =>
       sticker.getAttribute('data-sticker'),
@@ -313,6 +313,10 @@ describe('the lid’s two parts', () => {
     expect(page.querySelector('[data-lid-cover] a[data-sticker="cue"]')?.getAttribute('href')).toBe(
       '/#pile',
     )
+    expect(
+      page.querySelector('[data-lid-cover] a[data-sticker="contact"]')?.getAttribute('href'),
+    ).toBe('/#contact')
+    expect(page.querySelector('section#contact')).not.toBeNull()
   })
 
   it('puts every other sticker in the pile, a region named by its own heading', async () => {

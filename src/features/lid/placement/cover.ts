@@ -15,6 +15,11 @@ import { type CoverLayout, type CoverPlacement, parseCoverLayout } from './schem
  * screen is taller than it is wide: the name runs across the top, the hello
  * tag sits under it, and the badge hangs lower, with its ribbons trailing off
  * the bottom of the screen.
+ *
+ * The way to the contact section is written under the hello tag's left end
+ * and is measured from the same line of the screen, so the two stay together
+ * on a screen of any height. It has no width: it is one line, as long as its
+ * words.
  */
 
 const HANG_WIDTH = 260
@@ -30,6 +35,7 @@ const wide: Record<CoverId, CoverPlacement> = {
   lanyard: { ...hang(-150), z: 2 },
   badge: { ...hang(-150), z: 9 },
   hello: { from: 'left', against: 'middle', x: 8, y: 128, w: 460, r: 1.5, z: 5 },
+  contact: { from: 'left', against: 'middle', x: 16, y: 262, r: -2, z: 4 },
   cue: { from: 'right', against: 'bottom', x: 276, y: 34, w: 176, r: -3, z: 4 },
 }
 
@@ -38,6 +44,7 @@ const landscape: Record<CoverId, CoverPlacement> = {
   lanyard: { ...hang(-196), z: 2 },
   badge: { ...hang(-196), z: 9 },
   hello: { from: 'left', against: 'middle', x: 2, y: 34, w: 372, r: 1.5, z: 5 },
+  contact: { from: 'left', against: 'middle', x: 10, y: 190, r: -2, z: 4 },
   cue: { from: 'left', against: 'bottom', x: 8, y: 16, w: 300, r: -2, z: 4 },
 }
 
@@ -46,6 +53,7 @@ const portrait: Record<CoverId, CoverPlacement> = {
   lanyard: { ...hang(170), z: 2 },
   badge: { ...hang(170), z: 9 },
   hello: { from: 'left', against: 'top', x: 2, y: 436, w: 400, r: 1.5, z: 5 },
+  contact: { from: 'left', against: 'top', x: 10, y: 596, r: -2, z: 4 },
   cue: { from: 'left', against: 'bottom', x: 10, y: 60, w: 300, r: -3, z: 4 },
 }
 
@@ -54,6 +62,7 @@ const phone: Record<CoverId, CoverPlacement> = {
   lanyard: { ...hang(100), z: 2 },
   badge: { ...hang(100), z: 9 },
   hello: { from: 'left', against: 'top', x: 0, y: 232, w: 358, r: 1.2, z: 5 },
+  contact: { from: 'left', against: 'top', x: 2, y: 384, r: -2, z: 4 },
   cue: { from: 'left', against: 'bottom', x: 2, y: 26, w: 100, r: -4, z: 4 },
 }
 

@@ -34,6 +34,8 @@ export const copy = deepFreeze({
     },
     /** The cover's cue to scroll, in his handwriting. Its arrow is drawn. */
     cue: { text: 'scroll for the highlights' },
+    /** The cover's quieter line, under the hello tag: straight to the contact section. Its arrow is drawn. */
+    contact: { text: 'contact me' },
     /** The pile under the cover: its heading sticker and the line under it. */
     pile: {
       title: ['At a', 'glance'],

@@ -20,8 +20,9 @@ import {
 
 /*
  * The lid's two parts. The cover is the first screen and nothing but: the
- * name, the hello tag, the badge on its lanyard and a cue to scroll. The pile
- * is every other sticker, one scroll down, under a heading of its own.
+ * name, the hello tag, the badge on its lanyard, a quiet way to the contact
+ * section and a cue to scroll. The pile is every other sticker, one scroll
+ * down, under a heading of its own.
  */
 
 /** The screens the cover must hold on: laptops, a tablet both ways up, and two phones. */
@@ -60,6 +61,8 @@ const NOT_SHOWN = { wide: ['tilt'], desktop: ['tilt'], phone: ['tilt', 'tally'] 
 const SAMPLES_PER_SIDE = 12
 /** Rounding, and the hair a turned corner pokes out by. */
 const HAIR_PX = 1
+/** The smallest a link may be, each way, for a fingertip to find it. */
+const MIN_TARGET_PX = 24
 
 function named({ width, height }: Screen): string {
   return `${String(width)} by ${String(height)}`
@@ -123,7 +126,7 @@ test.describe('the cover', () => {
       await openCover(page, screen)
       const badge = sticker(page, 'badge')
 
-      for (const id of ['name', 'hello', 'cue'] as const) {
+      for (const id of ['name', 'hello', 'contact', 'cue'] as const) {
         expect(isOnScreen(await edgesOf(sticker(page, id)), screen), id).toBe(true)
       }
       // The frame the photo shows through: the picture itself is larger, and cropped by it.
@@ -133,6 +136,30 @@ test.describe('the cover', () => {
       expect(isOnScreen(photo, screen), 'the photo').toBe(true)
       expect(isOnScreen(given, screen), 'the given name').toBe(true)
       expect(isOnScreen(family, screen), 'the family name').toBe(true)
+    })
+
+    test(`writes the way to the contact section under the hello tag, clear of it and of the cue, at ${named(screen)}`, async ({
+      page,
+    }) => {
+      await openCover(page, screen)
+      const contact = await edgesOf(sticker(page, 'contact'))
+      const hello = await edgesOf(sticker(page, 'hello'))
+      const cue = await edgesOf(sticker(page, 'cue'))
+      const middle = (contact.top + contact.bottom) / 2
+
+      // Under the tag, starting near its left end. The tag is turned, so its box is a hair taller than it is.
+      expect(middle).toBeGreaterThan(hello.bottom)
+      expect(contact.left).toBeGreaterThanOrEqual(hello.left)
+      expect(contact.left).toBeLessThan((hello.left + hello.right) / 2)
+      const clearOfCue =
+        contact.right <= cue.left ||
+        contact.left >= cue.right ||
+        contact.bottom <= cue.top ||
+        contact.top >= cue.bottom
+      expect(clearOfCue, 'the way to the contact section and the cue').toBe(true)
+      // A fingertip finds it.
+      expect(contact.bottom - contact.top).toBeGreaterThanOrEqual(MIN_TARGET_PX)
+      expect(contact.right - contact.left).toBeGreaterThanOrEqual(MIN_TARGET_PX)
     })
 
     test(`holds nothing else, and shows no sticker of the pile, at ${named(screen)}`, async ({
@@ -150,19 +177,20 @@ test.describe('the cover', () => {
         screen.height,
       )
       expect(showing).toEqual([])
-      // No buttons, no counts, no tags: its only links are the six ribbons and the cue.
-      await expect(page.locator('[data-lid-cover]').getByRole('link')).toHaveCount(7)
+      // No buttons, no counts, no tags: its only links are the six ribbons, the way to the
+      // contact section and the cue.
+      await expect(page.locator('[data-lid-cover]').getByRole('link')).toHaveCount(8)
       await expect(page.locator('[data-lid-cover]').getByRole('button')).toHaveCount(0)
     })
 
-    test(`keeps the hello tag, the name and the cue clear of the badge at ${named(screen)}`, async ({
+    test(`keeps the hello tag, the name and the two ways on clear of the badge at ${named(screen)}`, async ({
       page,
     }) => {
       await openCover(page, screen)
       // The sleeve is the card itself. The ribbons under it trail off the screen.
       const card = await edgesOf(page.locator('[data-badge-card] > :first-child'))
 
-      for (const id of ['name', 'hello', 'cue'] as const) {
+      for (const id of ['name', 'hello', 'contact', 'cue'] as const) {
         const box = await edgesOf(sticker(page, id))
         const apart =
           box.right <= card.left ||
@@ -202,6 +230,38 @@ test.describe('the cover', () => {
     await cue.click()
     await expect(page).toHaveURL(/#pile$/)
     await expect(page.getByRole('heading', { level: 2 }).first()).toBeInViewport()
+  })
+
+  test('writes a quieter way to the contact section in the same marker, which leads there', async ({
+    page,
+  }) => {
+    await openCover(page, { width: 1440, height: 900 })
+    const contact = page.locator('[data-lid-cover]').getByRole('link', {
+      name: copy.lid.contact.text,
+    })
+    const cue = page.getByRole('link', { name: copy.lid.cue.text })
+    const written = (link: typeof contact): Promise<{ family: string; px: number; ink: string }> =>
+      link
+        .locator('span')
+        .first()
+        .evaluate((words) => {
+          const { fontFamily, fontSize, color } = getComputedStyle(words)
+          return { family: fontFamily, px: parseFloat(fontSize), ink: color }
+        })
+
+    await expect(contact).toHaveAttribute('data-sticker', 'contact')
+    const [quiet, loud] = [await written(contact), await written(cue)]
+    expect(quiet.family).toContain('Permanent Marker')
+    // Quieter than the cue to scroll: smaller, and not in highlighter.
+    expect(quiet.px).toBeLessThan(loud.px)
+    expect(quiet.ink).not.toBe(loud.ink)
+
+    await contact.click()
+    await expect(page).toHaveURL(/#contact$/)
+    await expect(page.locator('section#contact')).toBeInViewport()
+    await expect(
+      page.locator('section#contact').getByRole('heading', { level: 2 }),
+    ).toBeInViewport()
   })
 
   for (const screen of SCREENS.filter(({ width }) => width >= WIDE_MIN_WIDTH_PX)) {

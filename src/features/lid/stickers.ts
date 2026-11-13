@@ -44,16 +44,17 @@ import type {
 /*
  * The lid's stickers in reading order. The DOM follows this order, so a
  * screen reader and the Tab key meet the name first, then the badge and its
- * ribbons, the introduction and the way down; and then the pile under its
- * own heading: where he has worked, the counts, the content and last the
- * contact links. Where each sticker lands is decided by placement/ alone.
+ * ribbons, the introduction, the way to the contact section and the way
+ * down; and then the pile under its own heading: where he has worked, the
+ * counts, the content and last the contact links. Where each sticker lands is
+ * decided by placement/ alone.
  *
  * Which stickers exist is a design decision and is written here. What they
  * say is not: every name, count, city and address is read from the content.
  */
 
 /** The cover: the first screen, and nothing but. */
-export const COVER_IDS = ['name', 'lanyard', 'badge', 'hello', 'cue'] as const
+export const COVER_IDS = ['name', 'lanyard', 'badge', 'hello', 'contact', 'cue'] as const
 
 /** The pile: everything else that has been stuck on, one scroll down. */
 export const PILE_IDS = [
@@ -167,10 +168,14 @@ function sectionRibbons(stats: Stats): readonly RibbonSpec[] {
   ]
 }
 
-/** The first screen: who he is, his badge, two lines of introduction and the way down. */
+/**
+ * The first screen: who he is, his badge, two lines of introduction, a quiet
+ * way straight to the contact section for whoever came to write to him, and
+ * the way down.
+ */
 function cover(content: Content, stats: Stats): readonly Spec[] {
   const { profile } = content
-  const { hello, lanyard, cue } = copy.lid
+  const { hello, lanyard, cue, contact } = copy.lid
 
   return [
     {
@@ -194,7 +199,14 @@ function cover(content: Content, stats: Stats): readonly Spec[] {
       highlight: hello.highlight,
       lines: introduction(content),
     },
-    { id: 'cue', kind: 'cue', text: cue.text, href: pileAnchor() },
+    {
+      id: 'contact',
+      kind: 'cue',
+      text: contact.text,
+      href: sectionAnchor('contact'),
+      quiet: true,
+    },
+    { id: 'cue', kind: 'cue', text: cue.text, href: pileAnchor(), quiet: false },
   ]
 }
 

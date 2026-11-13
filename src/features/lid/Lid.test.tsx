@@ -92,15 +92,25 @@ describe('Lid', () => {
     )
   })
 
-  it('keeps the cover to the name, the badge, the hello tag and the cue', () => {
+  it('leads from the cover straight to the contact section, in a quieter line', () => {
+    renderLid()
+
+    const contact = screen.getByRole('link', { name: 'contact me' })
+    expect(contact).toHaveAttribute('href', '/#contact')
+    expect(contact).toHaveAttribute('data-sticker', 'contact')
+    expect(contact.closest('[data-lid-cover]')).not.toBeNull()
+    expect(contact).not.toHaveAttribute('target')
+  })
+
+  it('keeps the cover to the name, the badge, the hello tag and the two ways on', () => {
     const container = renderLid()
     const cover = container.querySelector<HTMLElement>('[data-lid-cover]')
 
     expect(cover?.querySelectorAll('button')).toHaveLength(0)
     expect(cover?.querySelector('[data-sticker="cv"]')).toBeNull()
     expect(cover?.querySelectorAll('ul[aria-label]')).toHaveLength(0)
-    // Its only links are the six ribbons and the cue.
-    expect(within(cover ?? container).getAllByRole('link')).toHaveLength(7)
+    // Its only links are the six ribbons, the way to the contact section and the cue.
+    expect(within(cover ?? container).getAllByRole('link')).toHaveLength(8)
   })
 
   it('does not make the name a link', () => {
@@ -460,7 +470,15 @@ describe('Lid', () => {
       (sticker) => sticker.getAttribute('data-sticker'),
     )
 
-    expect(fixed).toEqual(['lanyard', 'badge', 'cue', 'pile-kicker', 'next-spot', 'tally'])
+    expect(fixed).toEqual([
+      'lanyard',
+      'badge',
+      'contact',
+      'cue',
+      'pile-kicker',
+      'next-spot',
+      'tally',
+    ])
   })
 
   it('types no arrow or star: each is drawn', () => {

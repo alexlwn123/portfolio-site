@@ -121,8 +121,8 @@ describe('the cover’s compositions', () => {
     expect(COVERS.phone.board).toBe('phone')
   })
 
-  it('holds the name, the hello tag, the badge on its lanyard and the cue, and nothing else', () => {
-    expect(COVER_IDS).toEqual(['name', 'lanyard', 'badge', 'hello', 'cue'])
+  it('holds the name, the hello tag, the badge on its lanyard and the two ways on, and nothing else', () => {
+    expect(COVER_IDS).toEqual(['name', 'lanyard', 'badge', 'hello', 'contact', 'cue'])
     for (const name of COVER_NAMES) {
       expect(Object.keys(covers[name]).toSorted(), name).toEqual([...COVER_IDS].toSorted())
     }
@@ -210,6 +210,18 @@ describe('the cover’s compositions', () => {
     expect(covers[name].cue.against).toBe('bottom')
     expect(covers[name].cue.z).toBeLessThan(covers[name].hello.z)
   })
+
+  it.each(COVER_NAMES)(
+    'writes the way to the contact section under the hello tag, on the bare lid, and moves with it: %s',
+    (name) => {
+      const { contact, hello } = covers[name]
+
+      expect(contact.from).toBe(hello.from)
+      expect(contact.against).toBe(hello.against)
+      expect(contact.y).toBeGreaterThan(hello.y)
+      expect(contact.z).toBeLessThan(hello.z)
+    },
+  )
 })
 
 describe('the pile’s placements', () => {

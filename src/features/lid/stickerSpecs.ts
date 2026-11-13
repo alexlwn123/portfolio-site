@@ -61,9 +61,13 @@ export interface HelloSpec<Id extends string> extends Spec<'hello', Id> {
   readonly highlight: string
 }
 
-/** The cover's cue to scroll: a line in his hand that leads down to the pile. */
+/**
+ * A way on from the cover, in his hand: the cue to scroll, which leads down
+ * to the pile, and a quieter line that leads straight to one section.
+ */
 export interface CueSpec<Id extends string> extends LinkSpec<'cue', Id> {
   readonly text: string
+  readonly quiet: boolean
 }
 
 /** A heading that is a sticker, shouted over two lines, as every section's is. */

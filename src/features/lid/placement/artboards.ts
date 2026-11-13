@@ -4,9 +4,10 @@
  * is placed, so a placement of 470 units is always 47em.
  *
  * The cover is the first screen and nothing but: the name, the hello tag, the
- * badge on its lanyard and a cue to scroll. It is exactly as tall as the
- * screen, and its unit comes from the smaller of the screen's width and its
- * height, so the composition always fits, as a picture set to "contain" does.
+ * badge on its lanyard, a quiet way to the contact section and a cue to
+ * scroll. It is exactly as tall as the screen, and its unit comes from the
+ * smaller of the screen's width and its height, so the composition always
+ * fits, as a picture set to "contain" does.
  *
  * The pile is everything else that has been stuck on. It has an artboard for
  * each of the page's three widths, and its unit is the sections' own: it

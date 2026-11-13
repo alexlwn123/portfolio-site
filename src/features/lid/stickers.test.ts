@@ -35,11 +35,11 @@ describe('lidStickers', () => {
     expect(stickers.map(({ id }) => id)).toEqual(STICKER_IDS)
   })
 
-  it('reads name, badge and ribbons, then the intro and the cue, then the pile under its heading', () => {
+  it('reads name, badge and ribbons, then the intro and the two ways on, then the pile under its heading', () => {
     const kinds = stickers.map(({ kind }) => kind)
 
-    expect(kinds.slice(0, 5)).toEqual(['name', 'lanyard', 'badge', 'hello', 'cue'])
-    expect(kinds.slice(5, 8)).toEqual(['heading', 'scrawl', 'assetTag'])
+    expect(kinds.slice(0, 6)).toEqual(['name', 'lanyard', 'badge', 'hello', 'cue', 'cue'])
+    expect(kinds.slice(6, 9)).toEqual(['heading', 'scrawl', 'assetTag'])
     expect(kinds.slice(-5)).toEqual(['wristband', 'wristband', 'tilt', 'sound', 'tidy'])
   })
 
@@ -53,8 +53,8 @@ describe('lidStickers', () => {
     expect(new Set(STICKER_IDS).size).toBe(STICKER_IDS.length)
   })
 
-  it('puts nothing on the cover but the name, the badge on its lanyard, the hello tag and the cue', () => {
-    expect(COVER_IDS).toEqual(['name', 'lanyard', 'badge', 'hello', 'cue'])
+  it('puts nothing on the cover but the name, the badge on its lanyard, the hello tag and the two ways on', () => {
+    expect(COVER_IDS).toEqual(['name', 'lanyard', 'badge', 'hello', 'contact', 'cue'])
     expect(Object.isFrozen(coverStickers(content, stats))).toBe(true)
     expect(Object.isFrozen(pileStickers(content, stats))).toBe(true)
   })
@@ -71,6 +71,17 @@ describe('lidStickers', () => {
       kind: 'cue',
       text: 'scroll for the highlights',
       href: '/#pile',
+      quiet: false,
+    })
+  })
+
+  it('writes a quieter line before it that leads straight to the contact section', () => {
+    expect(sticker('contact', 'cue')).toEqual({
+      id: 'contact',
+      kind: 'cue',
+      text: 'contact me',
+      href: '/#contact',
+      quiet: true,
     })
   })
 
@@ -79,7 +90,7 @@ describe('lidStickers', () => {
 
     expect(ids.indexOf('ncr-win')).toBe(ids.indexOf('latest-win') + 1)
     expect(ids.indexOf('patents')).toBe(ids.indexOf('elsewhere') - 1)
-    expect(STICKER_IDS).toHaveLength(43)
+    expect(STICKER_IDS).toHaveLength(44)
   })
 
   it('puts the three buttons last, after everything there is to read', () => {
@@ -472,6 +483,7 @@ describe('lidStickers', () => {
         '/#organized',
         '/#talks',
         '/#patents',
+        '/#contact',
       ]),
     )
     expect(internal.filter((href) => href.startsWith('/cv/'))).toEqual(['/cv/'])

@@ -225,6 +225,7 @@ test('accounts for every sticker: on the mockup, or added since', () => {
 
   expect([...compared, ...ADDED_SINCE].toSorted()).toEqual([...STICKER_IDS].toSorted())
   expect(ADDED_SINCE).toEqual([
+    'contact',
     'cue',
     'pile-title',
     'pile-kicker',

@@ -133,7 +133,7 @@ function openingFace(spec: OpeningSpec, photo: BadgePhotoImage): ReactElement {
 function writtenFace(spec: WrittenSpec): ReactElement {
   switch (spec.kind) {
     case 'cue':
-      return <Cue text={spec.text} />
+      return <Cue text={spec.text} quiet={spec.quiet} />
     case 'heading':
       return <HeadingLabel lines={spec.lines} />
     case 'scrawl':
