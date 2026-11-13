@@ -1,0 +1,171 @@
+/*
+ * A cutting from the press: white paper, cut top and bottom with pinking
+ * shears, and a strip of highlighter tape across the top to hold it down.
+ */
+.clipping {
+  --teeth: 1.1em;
+
+  position: relative;
+  display: grid;
+  width: 32em;
+  max-width: 100%;
+}
+
+/* A cutting given more height than its print needs is a longer piece of paper. */
+.clipping > .paper {
+  display: grid;
+}
+
+.sheet {
+  position: relative;
+  padding: 2.2em 1.8em 1.7em;
+  background: var(--white);
+  color: var(--ink);
+}
+
+/* The pinked edges: a row of teeth above the paper and another below. */
+.sheet::before,
+.sheet::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: calc(var(--teeth) / 2);
+  content: '';
+}
+
+.sheet::before {
+  bottom: 100%;
+  background: conic-gradient(from 135deg at 50% 0, transparent 90deg, var(--white) 0) 0 0 /
+    var(--teeth) 100% repeat-x;
+}
+
+.sheet::after {
+  top: 100%;
+  background: conic-gradient(from -45deg at 50% 100%, transparent 90deg, var(--white) 0) 0 0 /
+    var(--teeth) 100% repeat-x;
+}
+
+/* The tape. */
+.paper::before {
+  position: absolute;
+  top: -1.5em;
+  left: 50%;
+  z-index: 1;
+  width: 9em;
+  height: 2.4em;
+  margin-left: -4.5em;
+  background: var(--hi);
+  opacity: 0.9;
+  rotate: -3deg;
+  content: '';
+}
+
+/* The masthead, over a double rule as a newspaper sets it. */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1em 0.9em;
+  align-items: baseline;
+  margin: 0;
+  padding-bottom: 0.55em;
+  border-bottom: 0.42em double var(--ink);
+  font: inherit;
+}
+
+.outlet {
+  font-size: 2.5em;
+  line-height: 1;
+}
+
+.programme {
+  font-size: 1.36em;
+}
+
+.headline {
+  margin: 0.6em 0 0;
+  font-size: 2.05em;
+  font-weight: var(--weight-heavy);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.link {
+  color: var(--ink);
+  text-decoration-color: var(--gum);
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.14em;
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration-color: var(--ink);
+  text-decoration-thickness: 0.16em;
+}
+
+.link:focus-visible,
+.reference:focus-visible {
+  outline: 0.16em solid var(--ink);
+  outline-offset: 0.12em;
+  border-radius: 0.1em;
+  box-shadow: 0 0 0 0.42em var(--hi);
+}
+
+.byline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.9em;
+  margin: 0.7em 0 0;
+  font-size: 1.3em;
+  line-height: 1.25;
+}
+
+.claim {
+  margin: 0.65em 0 0;
+  font-size: 1.5em;
+  line-height: 1.3;
+}
+
+.claim {
+  padding-top: 0.6em;
+  border-top: 0.08em solid var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+/* A strip of tape with a plain page of reference written on it. */
+.seeAlso {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.6em 1.1em 0.55em;
+  background: var(--mint);
+  box-shadow: 0 0.35em 0.5em rgba(var(--shadow-rgb), 0.4);
+  color: var(--ink);
+  font-size: 1.5em;
+  line-height: 1.25;
+  rotate: -1.5deg;
+}
+
+.lead {
+  font-size: 0.9em;
+}
+
+.reference {
+  display: inline-block;
+  padding: 0.2em 0;
+  color: var(--ink);
+  font-weight: var(--weight-bold);
+}
+
+/* On a tablet a cutting is trimmed narrower, so that it fits beside the stamp card. */
+@container section (max-width: 1099px) {
+  .clipping {
+    width: 28em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .clipping {
+    width: 32em;
+  }
+}

@@ -1,0 +1,206 @@
+/* The conference badge: a card in a clear sleeve, clipped to the lanyard. */
+.clip {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+/*
+ * The clip is drawn in a box as wide as the badge and as tall as the straps
+ * above it. A drawing takes no clicks, and this one must not take them from a
+ * sticker that sits between the straps. The element is named so that this
+ * outranks the rule that lets everything else on the hang be touched.
+ */
+svg.clip {
+  pointer-events: none;
+}
+
+.metalLight {
+  stop-color: var(--metal-light);
+}
+
+.metalMid {
+  stop-color: var(--metal-mid);
+}
+
+.metalShine {
+  stop-color: #e3e6ef;
+}
+
+.metalEdge {
+  stroke: var(--metal-dark);
+}
+
+.strapLoop {
+  fill: rgba(255, 255, 255, 0.6);
+  stroke: rgba(255, 255, 255, 0.95);
+}
+
+.badge {
+  position: absolute;
+  top: 29.6em;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 23.6em;
+  margin-left: -11.8em;
+  transform-origin: 50% 0;
+  rotate: 2.5deg;
+}
+
+/*
+ * Hung by the page's script, the card is something to take hold of: by a
+ * mouse or a pen in any direction, and by a finger that starts sideways (a
+ * finger that starts up or down scrolls the page, and a pinch still zooms).
+ */
+[data-hang] > .badge {
+  cursor: grab;
+  touch-action: pan-y pinch-zoom;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+[data-hang-held] > .badge {
+  cursor: grabbing;
+}
+
+/*
+ * Moving, it turns a few degrees in depth with its motion (--tip-x degrees about
+ * its upright axis, --tip-y about its top edge) and lifts off the lid by --raise,
+ * from 0 to 1: it comes a little closer and its shadow falls further and
+ * softer (see .sleeve).
+ */
+[data-hang-moving] > .badge {
+  transform: rotateX(calc(var(--tip-y, 0) * -1deg)) rotateY(calc(var(--tip-x, 0) * 1deg))
+    translateZ(calc(var(--raise, 0) * 3em));
+}
+
+.sleeve {
+  position: relative;
+  width: 100%;
+  padding: 3.1em 0.9em 0.9em;
+  border: 0.15em solid rgba(255, 255, 255, 0.9);
+  border-radius: 1.6em;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.25) 45%,
+    rgba(255, 255, 255, 0.45)
+  );
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(
+      calc(var(--cast-x) * (1.8 + var(--raise, 0) * 2.4))
+        calc(var(--cast-y) * (1.8 + var(--raise, 0) * 2.4)) calc(0.9em + var(--raise, 0) * 1.3em)
+        rgba(var(--shadow-rgb), calc(0.45 - var(--raise, 0) * 0.13))
+    );
+}
+
+/* The slot the clip goes through. */
+.sleeve::before {
+  position: absolute;
+  top: 0.95em;
+  left: 50%;
+  width: 5.2em;
+  height: 1.15em;
+  margin-left: -2.6em;
+  border-radius: 1em;
+  background: #1a1f9e;
+  box-shadow:
+    inset 0 0.18em 0.22em rgba(0, 0, 0, 0.55),
+    0 0 0 0.12em rgba(255, 255, 255, 0.8);
+  content: '';
+}
+
+/* Glare across the plastic. */
+.sleeve::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 0 18%,
+    rgba(255, 255, 255, 0.4) 23%,
+    transparent 30% 54%,
+    rgba(255, 255, 255, 0.24) 60%,
+    transparent 68%
+  );
+
+  /* The glare slides across the plastic as the card turns. */
+  background-position: calc(var(--tip-x, 0) * -0.5em) 0;
+  pointer-events: none;
+  content: '';
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.8em;
+  background: var(--white);
+  text-align: center;
+}
+
+.roles {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0.7em 1.1em 0.6em;
+  font-size: 1.08em;
+  list-style: none;
+}
+
+.name,
+.organization {
+  margin: 0;
+}
+
+.given {
+  display: block;
+  margin-top: 0.2em;
+  font-size: 5em;
+  line-height: 0.86;
+  letter-spacing: 0.01em;
+}
+
+.family {
+  display: block;
+  margin-top: 0.2em;
+  padding-left: 0.5em;
+  font-size: 1.5em;
+  letter-spacing: 0.5em;
+}
+
+.title {
+  margin: 0.5em 0 0;
+  padding: 0.42em 0.2em 0.38em;
+  background: var(--ink);
+  color: var(--hi);
+  font-size: 1.82em;
+  letter-spacing: 0.03em;
+}
+
+.organization {
+  position: relative;
+  padding: 0.55em 0 0.7em;
+  font-size: 1.28em;
+  font-weight: var(--weight-bold);
+}
+
+@container lid (max-width: 560px) {
+  .roles {
+    font-size: 1.2em;
+  }
+}
+
+/*
+ * The roles are the badge's smallest line. At 1.08em they are under 11px
+ * where the wide artboard's unit is one pixel, so they are set a touch larger
+ * there.
+ */
+@container lid (min-width: 1100px) {
+  .roles {
+    font-size: 1.1em;
+  }
+}

@@ -1,0 +1,33 @@
+/* The three voices of the lid. The mockup calls them .bw, .cd and .mk. */
+
+/* Bowlby One, always shouted. */
+.display {
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  text-transform: uppercase;
+}
+
+/* Bricolage Grotesque, condensed and heavy: every small label. */
+.label {
+  font-stretch: var(--label-stretch);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+}
+
+/* Permanent Marker: his own handwriting. */
+.marker {
+  font-family: var(--font-marker);
+  font-weight: var(--weight-regular);
+}
+
+/* Read out, not shown. Sized in rem so it never counts as small print. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  font-size: 1rem;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}

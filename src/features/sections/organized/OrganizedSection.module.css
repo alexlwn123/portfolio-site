@@ -1,0 +1,84 @@
+/*
+ * The scene under the heading: a hand, the totals beside it, and the arm
+ * below. It is the stage of design/mockups/02-wristbands.html, whose artboard
+ * is 728 units wide. On the wide artboard the whole composition is drawn
+ * three tenths larger, which is the mockup's arrangement at that width.
+ *
+ * The measures every part reads:
+ *   --hw     the hand's width; --hu is one unit of its 300-unit drawing
+ *   --aw     the wrist's width, where the arm starts
+ *   --cx     the arm's centre line
+ *   --hy     how far down the scene the hand's fingertips are
+ *   --slope  how much wider the arm gets on each side for every em of length
+ *   --widen  how much wider each band is than the one above it
+ *   --bh     how tall a band is; --bm is the room above and below it
+ *   --line   how tall the first line of a band's label is: the city, in his hand
+ *
+ * The scene is as wide as the column. The arm is on its middle, and the
+ * labels are lettered out to its edges: those on the left from the column's
+ * left edge, those on the right up to its right edge.
+ */
+.scene {
+  --hw: 30em;
+  --hu: calc(var(--hw) / 300);
+  --aw: calc(var(--hu) * 176);
+  --cx: 50%;
+  --hy: 0em;
+  --slope: 0.0263;
+  --widen: 0.318em;
+  --bh: 4.5em;
+  --bm: 0.57em;
+  --line: 2.04em;
+
+  /* The frame's padding under the scene, in the scene's own em: the arm runs off through it. */
+  --run-off: 7em;
+
+  position: relative;
+  font-size: 1.3em;
+}
+
+/* The hand's last 2.6em are under the first band. */
+.top {
+  position: relative;
+  height: calc(var(--hy) + var(--hw) * 310 / 300 - 2.6em);
+}
+
+.hand {
+  position: absolute;
+  top: var(--hy);
+  left: calc(var(--cx) - var(--hw) / 2);
+  z-index: 2;
+  width: var(--hw);
+  filter: drop-shadow(0 0.6em 0.6em rgba(var(--shadow-rgb), 0.4));
+}
+
+/* The mockup's own artboard, held to the column: the labels have a little less room than it gave them. */
+@container section (max-width: 1099px) {
+  .scene {
+    --run-off: 8em;
+    --line: 1.84em;
+
+    font-size: 1em;
+  }
+}
+
+/* A phone: the arm runs down the left edge and the labels are lettered to its right. */
+@container section (max-width: 560px) {
+  .scene {
+    --hw: 18em;
+    --cx: 9em;
+    --hy: 14.8em;
+    --slope: 0.012;
+    --widen: 0.21em;
+    --run-off: 6.5em;
+  }
+
+  /*
+   * The frame's heading is one size for every section, and on a phone this
+   * section's ten-letter first line is wider than the artboard. It is drawn
+   * a tenth smaller here, which is the whole of what it needs.
+   */
+  :global(#organized-title) {
+    font-size: 0.9em;
+  }
+}

@@ -1,0 +1,13 @@
+/* The line under a heading on the lid: the same size and colour as a section's kicker. */
+.scrawl {
+  display: block;
+  color: var(--hi);
+  font-size: 2.2em;
+  line-height: 1.2;
+}
+
+@container lid (max-width: 560px) {
+  .scrawl {
+    font-size: 1.9em;
+  }
+}

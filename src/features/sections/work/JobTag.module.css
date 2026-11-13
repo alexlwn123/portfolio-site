@@ -1,0 +1,267 @@
+/*
+ * An asset tag, the size a job deserves: a band that says whose property he
+ * was, the title in the display face, when it began, his own line about it
+ * in marker, and a barcode with its number underneath. The lid's small asset
+ * tag (AssetTag.module.css) is the same object two sizes down. It is as wide
+ * as the place it hangs in: on a laptop, from the column's edge to the rule.
+ */
+.job {
+  position: relative;
+  width: 100%;
+}
+
+.tag {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 13.6em;
+  grid-template-areas:
+    'head head'
+    'body body';
+  padding: 0.62em;
+  border-radius: 0.9em;
+  box-shadow:
+    inset 0 0 0 0.4em var(--white),
+    inset 0 0 0 0.62em var(--ink);
+}
+
+.head {
+  grid-area: head;
+  margin: 0;
+  font: inherit;
+}
+
+/* The band across the top: "property of", and under it, whose. */
+.owner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  min-height: 6.5em;
+  padding: 0.75em 16.6em 0.55em 1.6em;
+  border-radius: 0.3em 0.3em 0 0;
+  background: var(--c);
+  color: var(--t, var(--ink));
+}
+
+.ownerLabel {
+  font-size: 1.3em;
+  white-space: nowrap;
+}
+
+.org {
+  font-size: 4em;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+
+.title {
+  display: block;
+  padding: 0.5em 1.1em 0 0.7em;
+  color: var(--ink);
+  font-size: 2.3em;
+  line-height: 1.04;
+}
+
+.body {
+  grid-area: body;
+  padding: 0.5em 1.7em 1.3em;
+}
+
+.team,
+.when,
+.words,
+.number {
+  margin: 0;
+}
+
+.team {
+  font-size: 1.5em;
+}
+
+.when {
+  font-size: 1.55em;
+  letter-spacing: 0.07em;
+}
+
+/* His own words, written on the tag with a marker. */
+.words {
+  margin-top: 0.3em;
+  font-size: 1.75em;
+  line-height: 1.2;
+  text-wrap: pretty;
+}
+
+/* The barcode, on a white window let into the band, with its number underneath. */
+.asset {
+  grid-row: 1;
+  grid-column: 2;
+  align-self: start;
+  margin: 0.7em 1.8em 0 0;
+  padding: 0.5em 0.7em 0.3em;
+  border-radius: 0.3em;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.bars {
+  height: 3.2em;
+}
+
+.number {
+  margin-top: 0.3em;
+  font-size: 1.2em;
+  letter-spacing: 0.12em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ---------- the tag still in service ---------- */
+
+/* An inspection sticker over the tag's lower corner: this one is live. */
+.seal {
+  position: absolute;
+  right: 2.6em;
+  bottom: -2.2em;
+  z-index: 1;
+  margin: 0;
+  rotate: 9deg;
+}
+
+/* His words stop short of it. */
+.job[data-current] .body {
+  padding-right: 12.4em;
+}
+
+.sealFace {
+  display: grid;
+  place-content: center;
+  width: 9.6em;
+  height: 9.6em;
+  border: 0.42em solid var(--white);
+  border-radius: 50%;
+  outline: 0.14em dashed var(--ink);
+  outline-offset: -1.05em;
+  background: var(--mint);
+  color: var(--ink);
+  text-align: center;
+}
+
+.sealWords {
+  display: block;
+  font-size: 1.95em;
+  line-height: 0.92;
+}
+
+.sealNote {
+  display: block;
+  margin-top: 0.3em;
+  font-size: 1.2em;
+  letter-spacing: 0.02em;
+}
+
+@container section (max-width: 1099px) {
+  /* One column: the barcode goes along the foot, its number beside it. */
+  .tag {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'head'
+      'body'
+      'asset';
+  }
+
+  .owner {
+    min-height: 0;
+    padding: 0.7em 1.3em 0.55em;
+  }
+
+  .ownerLabel {
+    font-size: 1.25em;
+  }
+
+  .org {
+    font-size: 2.7em;
+  }
+
+  .title {
+    padding: 0.5em 0.62em 0;
+    font-size: 2.05em;
+  }
+
+  .body {
+    padding: 0.55em 1.3em 0.9em;
+  }
+
+  .team {
+    font-size: 1.4em;
+  }
+
+  .when {
+    font-size: 1.5em;
+  }
+
+  .words {
+    font-size: 1.62em;
+  }
+
+  .asset {
+    display: flex;
+    grid-area: asset;
+    gap: 1.2em;
+    align-items: center;
+    margin: 0;
+    padding: 0 1.3em 1.2em;
+    border-radius: 0;
+    background: none;
+  }
+
+  .bars {
+    flex: 1;
+    height: 3.2em;
+  }
+
+  .number {
+    flex: none;
+    margin: 0;
+    font-size: 1.25em;
+  }
+
+  .seal {
+    top: -3.3em;
+    right: 1.2em;
+    bottom: auto;
+  }
+
+  .job[data-current] .body {
+    padding-right: 1.3em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .org {
+    font-size: 2.55em;
+  }
+
+  .title {
+    font-size: 2em;
+  }
+
+  .team {
+    font-size: 1.35em;
+  }
+
+  .when {
+    font-size: 1.45em;
+  }
+
+  .words {
+    font-size: 1.6em;
+  }
+
+  .seal {
+    top: -4.1em;
+    right: 0.6em;
+  }
+
+  .sealFace {
+    width: 9em;
+    height: 9em;
+  }
+}

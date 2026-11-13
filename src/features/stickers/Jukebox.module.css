@@ -1,0 +1,88 @@
+/* A jukebox sticker: an equaliser that never stops, beside the name. */
+.case {
+  display: flex;
+  gap: 1.2em;
+  align-items: center;
+  padding: 1.4em 2em 1.4em 1.9em;
+  border-radius: 3.2em;
+  color: var(--white);
+}
+
+.equaliser {
+  display: flex;
+  flex: none;
+  gap: 0.32em;
+  align-items: flex-end;
+  height: 3.6em;
+}
+
+.bar {
+  width: 0.55em;
+  height: 40%;
+  border-radius: 0.2em;
+  background: var(--hi);
+  transform-origin: bottom;
+  animation: bounce 0.9s ease-in-out infinite alternate;
+}
+
+.bar:nth-child(2) {
+  height: 100%;
+  background: var(--gum);
+  animation-delay: -0.3s;
+}
+
+.bar:nth-child(3) {
+  height: 65%;
+  background: var(--mint);
+  animation-delay: -0.6s;
+}
+
+.bar:nth-child(4) {
+  height: 85%;
+  background: var(--tang);
+  animation-delay: -0.15s;
+}
+
+.bar:nth-child(5) {
+  height: 50%;
+  animation-delay: -0.45s;
+}
+
+@keyframes bounce {
+  from {
+    transform: scaleY(0.3);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.name {
+  display: block;
+  color: var(--hi);
+  font-size: 2.7em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.detail {
+  display: block;
+  margin-top: 0.3em;
+  font-size: 1.12em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+@container lid (max-width: 560px) {
+  .detail {
+    font-size: 1.2em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}

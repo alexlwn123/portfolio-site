@@ -1,0 +1,92 @@
+/*
+ * What lies on the mat beside the stickers: the knife they were cut with and
+ * the scraps that were weeded away. Neither is a sticker, so neither has a
+ * die-cut edge: only the shadow of a thing put down.
+ */
+.prop {
+  position: relative;
+  display: block;
+  list-style: none;
+  pointer-events: none;
+}
+
+.knife,
+.offcuts {
+  display: block;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0.25em 0.5em 0.35em rgba(0, 0, 0, 0.45));
+}
+
+.knife {
+  width: 5.2em;
+}
+
+.offcuts {
+  width: 21em;
+}
+
+/* Scribbled on the mat with a paint marker. */
+.note {
+  position: absolute;
+  color: var(--mint);
+  font-size: 1.7em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* The knife's own metal. */
+.blade {
+  fill: var(--metal-light);
+}
+
+.steel {
+  fill: var(--metal-mid);
+}
+
+.gleam {
+  fill: none;
+  stroke: var(--white);
+  opacity: 0.55;
+}
+
+.faint {
+  opacity: 0.5;
+}
+
+/* The curls. */
+.gum {
+  stroke: var(--gum);
+}
+
+.mint {
+  stroke: var(--mint);
+}
+
+.white {
+  stroke: var(--white);
+}
+
+/* The knife lies across the mat, blade to the right, as it was put down. */
+.prop[data-mat-prop='knife'] {
+  display: grid;
+  place-items: center;
+  width: 30em;
+  height: 12em;
+}
+
+.prop[data-mat-prop='knife'] .knife {
+  rotate: 78deg;
+}
+
+.prop[data-mat-prop='knife'] .note {
+  bottom: 0;
+  left: 1em;
+  rotate: -8deg;
+}
+
+.prop[data-mat-prop='offcuts'] .note {
+  right: 0;
+  bottom: -1.3em;
+  rotate: -4deg;
+}

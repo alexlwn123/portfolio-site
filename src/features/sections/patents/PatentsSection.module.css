@@ -1,0 +1,15 @@
+/*
+ * The underside of the machine: the rating plate, across the whole column,
+ * and on it the stickers it left the factory with. The stickers are stuck to
+ * the plate, so the plate's tilt is given here and they take it with them.
+ */
+.underside {
+  position: relative;
+  rotate: -0.8deg;
+}
+
+@container section (max-width: 560px) {
+  .underside {
+    rotate: -0.5deg;
+  }
+}

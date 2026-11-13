@@ -1,0 +1,63 @@
+/*
+ * Anything that hangs from the top of the lid: the lanyard's straps and the
+ * badge on the end of them. Both are placed at the same point and swing about
+ * a pivot 30em above it, so they move as one.
+ */
+.hang {
+  transform-origin: 50% -30em;
+  pointer-events: none;
+}
+
+/*
+ * Arriving, when motion is welcome: the badge is held above the top of the
+ * lid for a moment and then drops in on its lanyard, and sways from there.
+ * The page's script takes over as soon as it runs (see [data-hang] below): if
+ * the badge is still held above the lid, the physics drops it from there, and
+ * this drop is the one a visitor without the script gets.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .hang {
+    animation:
+      hang-in 0.75s cubic-bezier(0.3, 1.3, 0.5, 1) 0.25s backwards,
+      sway 5.5s ease-in-out 1s infinite alternate;
+  }
+}
+
+@keyframes hang-in {
+  from {
+    translate: 0 -75em;
+  }
+}
+
+.hang > * {
+  pointer-events: auto;
+}
+
+@keyframes sway {
+  from {
+    rotate: -1.3deg;
+  }
+
+  to {
+    rotate: 1.9deg;
+  }
+}
+
+/*
+ * Hung by the page's script (see enhance/badgeDom.ts), which takes over from
+ * the sway. While the badge moves, the script sets where it hangs from
+ * (--hang-ox, --hang-oy), how far it has moved (--hang-dx, --hang-dy) and its
+ * turn (--hang-turn). The perspective is for the card's small turn in depth
+ * (see Badge.module.css), seen from the card's own middle. Asleep where it
+ * hangs, every one of these is gone and the badge is the static page.
+ */
+.hang[data-hang] {
+  animation: none;
+}
+
+.hang[data-hang-moving] {
+  transform-origin: var(--hang-ox) var(--hang-oy);
+  transform: translate(var(--hang-dx), var(--hang-dy)) rotate(var(--hang-turn));
+  perspective: 160em;
+  perspective-origin: var(--hang-ox) var(--hang-oy);
+}

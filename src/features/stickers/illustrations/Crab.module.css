@@ -1,0 +1,13 @@
+/* The Clawthing Store crab. Its white edge is drawn by the die-cut filter. */
+.caption {
+  fill: var(--white);
+}
+
+.shell {
+  stroke: var(--tang-light);
+}
+
+/* The colour of the die-cut border the filter grows around the drawing. */
+.edge {
+  flood-color: var(--white);
+}

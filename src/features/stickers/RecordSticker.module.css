@@ -1,0 +1,28 @@
+/* A square tangerine sticker: a big mark over three lines of figures. */
+.record {
+  padding: 0.9em 0.8em 1.2em;
+  border-radius: 1.6em;
+  text-align: center;
+}
+
+/* Ink with a white shadow. The mockup's white mark is 2.9:1 on tangerine. */
+.mark {
+  display: block;
+  color: var(--ink);
+  font-size: 6.6em;
+  line-height: 0.82;
+  text-shadow: 0.045em 0.05em 0 var(--white);
+}
+
+.detail {
+  display: block;
+  margin-top: 0.55em;
+  font-size: 1.12em;
+  line-height: 1.15;
+}
+
+@container lid (max-width: 560px) {
+  .detail {
+    font-size: 1.2em;
+  }
+}

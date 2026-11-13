@@ -1,0 +1,405 @@
+/*
+ * The mat, with the stickers stood on it in rows. Nobody places a sticker by
+ * hand: matRows.ts shares them out into rows and gives each a number of the
+ * mat's columns, twenty-four across on a laptop and twelve on a tablet, and
+ * every row adds up to the whole width. So a row's first sticker stands on
+ * the column's left edge and its last on the right, and a project added to
+ * the records later is stood in a row like the rest.
+ *
+ * A row of stickers is two rows of the grid: the stickers, which stand on the
+ * foot of the first, and their captions, which hang from the head of the
+ * second. That is what a row shares: the line its stickers stand on. It does
+ * not share a size. Each face is cut as wide as its shape wants (--most) or
+ * as its place allows (--fill of it), whichever is less.
+ */
+.stickers {
+  --row-gap: 2.2em;
+
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+
+  /* The last row's captions leave no gap under them. */
+  margin: 0 0 calc(var(--row-gap) * -1);
+  padding: 0;
+  list-style: none;
+}
+
+.stickers > li {
+  grid-row-end: span 2;
+  grid-column-end: span 5;
+}
+
+/* ---------- how many columns a sticker was given ---------- */
+
+.stickers > [data-span='3'] {
+  grid-column-end: span 3;
+}
+
+.stickers > [data-span='4'] {
+  grid-column-end: span 4;
+}
+
+.stickers > [data-span='5'] {
+  grid-column-end: span 5;
+}
+
+.stickers > [data-span='6'] {
+  grid-column-end: span 6;
+}
+
+.stickers > [data-span='7'] {
+  grid-column-end: span 7;
+}
+
+.stickers > [data-span='8'] {
+  grid-column-end: span 8;
+}
+
+.stickers > [data-span='9'] {
+  grid-column-end: span 9;
+}
+
+.stickers > [data-span='10'] {
+  grid-column-end: span 10;
+}
+
+.stickers > [data-span='11'] {
+  grid-column-end: span 11;
+}
+
+.stickers > [data-span='12'] {
+  grid-column-end: span 12;
+}
+
+.stickers > [data-span='24'] {
+  grid-column-end: span 24;
+}
+
+/* ---------- where it stands in its row ---------- */
+
+/* The first stands on the mat's left edge and the last on its right. */
+.stickers > [data-place='first'],
+.stickers > [data-place='only'] {
+  --lean: start;
+
+  grid-column-start: 1;
+}
+
+.stickers > [data-place='middle'] {
+  --lean: center;
+}
+
+.stickers > [data-place='last'] {
+  --lean: end;
+  --caption-inset: 0em;
+  --caption-outset: 0.9em;
+}
+
+/* ---------- how each is put down ---------- */
+
+/* No two neighbours lean the same way. */
+.stickers > li:nth-child(6n + 1) {
+  --tilt: -2deg;
+}
+
+.stickers > li:nth-child(6n + 2) {
+  --tilt: 2.5deg;
+}
+
+.stickers > li:nth-child(6n + 3) {
+  --tilt: -1.5deg;
+}
+
+.stickers > li:nth-child(6n + 4) {
+  --tilt: 3deg;
+}
+
+.stickers > li:nth-child(6n + 5) {
+  --tilt: -3deg;
+}
+
+.stickers > li:nth-child(6n) {
+  --tilt: 1.5deg;
+}
+
+/* Tape and marker take turns through the palette. */
+.stickers > li:nth-child(3n + 2) {
+  --tape: var(--hi);
+  --pen: var(--hi);
+}
+
+.stickers > li:nth-child(4n + 3) {
+  --tape: var(--mint);
+  --pen: var(--mint);
+}
+
+/*
+ * A winner's flag stands over its sticker, planted a little way into its top
+ * edge (--flag-bite), and his note stands over the day job. A sticker cut low
+ * and wide is lettered right to its top edge, and so is a pointed one at its
+ * tip: there the flag only just touches.
+ */
+.stickers > [data-won] {
+  --flag-bite: 2.3em;
+  --headroom: calc(5.7em - var(--flag-bite));
+}
+
+.stickers > [data-won][data-face='jukebox'],
+.stickers > [data-won][data-face='capsule'],
+.stickers > [data-won][data-face='ticket'],
+.stickers > [data-won][data-face='mint'],
+.stickers > [data-won][data-face='ramp'],
+.stickers > [data-won][data-face='bumper'] {
+  --flag-bite: 0.5em;
+}
+
+.stickers > [data-won][data-face='tree'] {
+  --flag-bite: 1em;
+}
+
+.stickers > [data-day-job] {
+  --headroom: 3.2em;
+}
+
+/* ---------- how wide each shape is cut ---------- */
+
+.stickers > [data-project] {
+  --most: 22em;
+  --fill: 0.94;
+}
+
+.stickers > [data-face='computer'] {
+  --most: 30.5em;
+  --fill: 0.98;
+  --caption-inset: 3em;
+}
+
+/* The tall shapes are cut narrower, each to a width of its own. */
+.stickers > [data-face='plinko'] {
+  --most: 19em;
+}
+
+.stickers > [data-face='knight'] {
+  --most: 18.5em;
+}
+
+.stickers > [data-face='hex'],
+.stickers > [data-face='puzzle'] {
+  --most: 20em;
+}
+
+.stickers > [data-face='button'] {
+  --most: 19.5em;
+}
+
+.stickers > [data-face='parking'] {
+  --most: 17.5em;
+}
+
+.stickers > [data-face='stamp'] {
+  --most: 16em;
+}
+
+.stickers > [data-face='shield'] {
+  --most: 17em;
+}
+
+.stickers > [data-face='tree'] {
+  --most: 16.5em;
+}
+
+.stickers > [data-face='mint'],
+.stickers > [data-face='ramp'],
+.stickers > [data-face='ticket'],
+.stickers > [data-face='bumper'] {
+  --most: 25em;
+  --fill: 1;
+}
+
+.stickers > [data-face='capsule'] {
+  --most: 29em;
+  --fill: 1.04;
+}
+
+/*
+ * The jukebox is set in type, small print and all, so it is cut a little
+ * wider than its place: narrower, and its address would be under 11px on a
+ * 1100px screen. It rides over its neighbour's edge instead.
+ */
+.stickers > [data-face='jukebox'] {
+  --most: 30em;
+  --fill: 1.14;
+}
+
+/* ---------- what lies beside them ---------- */
+
+/* The knife was put down over the first row, where the stickers beside the lead stand lower. */
+.stickers > .knife {
+  position: absolute;
+  top: -3.4em;
+  right: 5em;
+}
+
+/* The scraps were swept to the foot of the mat's last row. */
+.stickers > .offcuts {
+  align-self: end;
+  justify-self: end;
+  grid-row-end: span 1;
+}
+
+/* ---------- 728 units: a tablet. Twelve columns, two or three stickers to a row. ---------- */
+
+@container section (max-width: 1099px) {
+  .stickers {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .stickers > [data-span-tablet='3'] {
+    grid-column-end: span 3;
+  }
+
+  .stickers > [data-span-tablet='4'] {
+    grid-column-end: span 4;
+  }
+
+  .stickers > [data-span-tablet='5'] {
+    grid-column-end: span 5;
+  }
+
+  .stickers > [data-span-tablet='6'] {
+    grid-column-end: span 6;
+  }
+
+  .stickers > [data-span-tablet='7'] {
+    grid-column-end: span 7;
+  }
+
+  .stickers > [data-span-tablet='8'] {
+    grid-column-end: span 8;
+  }
+
+  .stickers > [data-span-tablet='9'] {
+    grid-column-end: span 9;
+  }
+
+  .stickers > [data-span-tablet='10'] {
+    grid-column-end: span 10;
+  }
+
+  .stickers > [data-span-tablet='11'] {
+    grid-column-end: span 11;
+  }
+
+  .stickers > [data-span-tablet='12'] {
+    grid-column-end: span 12;
+  }
+
+  .stickers > [data-place] {
+    --lean: center;
+    --caption-inset: 0.9em;
+    --caption-outset: 0em;
+
+    grid-column-start: auto;
+  }
+
+  .stickers > [data-place-tablet='first'],
+  .stickers > [data-place-tablet='only'] {
+    --lean: start;
+
+    grid-column-start: 1;
+  }
+
+  .stickers > [data-place-tablet='last'] {
+    --lean: end;
+    --caption-inset: 0em;
+    --caption-outset: 0.9em;
+  }
+
+  .stickers > [data-face='computer'] {
+    --caption-inset: 4em;
+  }
+
+  .stickers > .knife {
+    top: -2em;
+    right: -1em;
+    font-size: 0.72em;
+  }
+}
+
+/* ---------- 390 units: a phone. One flowing column, leaning left and right. ---------- */
+
+@container section (max-width: 560px) {
+  .stickers {
+    display: flex;
+    flex-direction: column;
+    gap: 3.6em;
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
+
+  /* Cut a size smaller, so that more than one is on the screen at a time. */
+  .stickers > [data-project] {
+    --lean: flex-start;
+    --caption-inset: 0.9em;
+    --caption-outset: 0em;
+    --fill: 1;
+    --flag-top: -2.2em;
+  }
+
+  /* Every other sticker hangs from the right, and each leans its own way. */
+  .stickers > [data-project]:nth-child(even) {
+    --tilt: 2.5deg;
+    --lean: flex-end;
+    --caption-inset: 0em;
+    --caption-outset: 0.9em;
+
+    align-self: flex-end;
+  }
+
+  .stickers > [data-project]:nth-child(odd) {
+    --tilt: -2deg;
+  }
+
+  .stickers > [data-project]:nth-child(3n) {
+    --tilt: 0deg;
+  }
+
+  /* A little of each rides over the one before. */
+  .stickers > [data-project]:nth-child(n + 2) {
+    margin-top: -1.4em;
+  }
+
+  /* A flag stands above its sticker, so a winner keeps clear of the links over it. */
+  .stickers > [data-won]:nth-child(n + 2) {
+    margin-top: 2.6em;
+  }
+
+  .stickers > [data-won],
+  .stickers > [data-day-job] {
+    --headroom: 0em;
+  }
+
+  .stickers > [data-face='computer'] {
+    --most: 34em;
+    --tilt: -1.5deg;
+    --caption-inset: 2.4em;
+
+    margin-top: 3.4em;
+  }
+
+  .stickers > [data-face='jukebox'] {
+    --flag-top: -4em;
+  }
+
+  .stickers > .knife {
+    position: static;
+    align-self: center;
+    font-size: 1em;
+  }
+
+  .stickers > .offcuts {
+    align-self: center;
+  }
+}

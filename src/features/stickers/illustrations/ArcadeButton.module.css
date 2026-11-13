@@ -1,0 +1,31 @@
+/* The Last Pay Wins button: a pink dome on an ink disc. */
+.title {
+  fill: var(--hi);
+  letter-spacing: 1.5px;
+}
+
+.small {
+  fill: var(--white);
+}
+
+/* The dome's own pinks: lit from the upper left, shaded underneath. */
+.base {
+  fill: #8e0f57;
+}
+
+.domeLight {
+  stop-color: #ffb3d8;
+}
+
+.domeMid {
+  stop-color: var(--gum);
+}
+
+.domeDark {
+  stop-color: #c2187a;
+}
+
+.shine {
+  fill: var(--white);
+  opacity: 0.6;
+}

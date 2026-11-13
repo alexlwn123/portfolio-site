@@ -1,0 +1,235 @@
+/*
+ * What is lettered on the lid beside a wristband. A port of the mockup's
+ * .note: the city in marker, when and where under it, the figures as small
+ * pills, and a scrawl in highlighter where there is a story.
+ *
+ * A label is set against the edge of the column, away from the arm: flush
+ * left on the left of it, flush right on the right. The mockup set it against
+ * the band. So that a label still belongs to its band, its first line is
+ * ruled across to it with a row of dots, as a contents page rules a title
+ * across to its page number.
+ */
+.note {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 0 0.7em;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  color: var(--white);
+  text-align: left;
+}
+
+:global([data-side='right']) .note {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+/*
+ * The label is set in rows, so that it is short enough to sit beside two
+ * bands without pushing them apart. The city has a row to itself. The date
+ * and the line more share one when both fit. The pills start a row of their
+ * own, which this empty piece opens, and the press piece's link joins them
+ * when there is room. What is said last has a row to itself again. Nothing
+ * is moved out of the order the markup has it in.
+ */
+.note::after {
+  flex: 0 0 100%;
+  order: 1;
+  content: '';
+}
+
+.city,
+.scrawl {
+  flex: 0 0 100%;
+}
+
+.chips,
+.pressLink {
+  order: 2;
+}
+
+.scrawl {
+  order: 3;
+}
+
+.city,
+.when,
+.about,
+.press,
+.scrawl {
+  margin: 0;
+}
+
+.city {
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
+  font-size: 2em;
+  line-height: 1.02;
+  white-space: nowrap;
+}
+
+/* The row of dots, from the city to the band. */
+.city::after {
+  flex: 1;
+  min-width: 0;
+  border-top: 0.11em dotted rgba(255, 255, 255, 0.62);
+  content: '';
+}
+
+:global([data-side='right']) .city {
+  flex-direction: row-reverse;
+}
+
+.when {
+  margin-top: 0.2em;
+  font-size: 1.15em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+}
+
+/* The line more: lighter than the date, so the two read apart. */
+.about {
+  margin-top: 0.2em;
+  color: var(--hi);
+  font-size: 1.15em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  margin: 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+:global([data-side='right']) .chips {
+  justify-content: flex-end;
+}
+
+.chip {
+  display: block;
+  padding: 0.24em 0.64em 0.2em;
+  border-radius: 2em;
+  background: var(--white);
+  box-shadow: 0 0.16em 0 rgba(var(--shadow-rgb), 0.5);
+  color: var(--ink);
+  font-size: 1.04em;
+  rotate: -1.5deg;
+  white-space: nowrap;
+}
+
+.prize {
+  background: var(--hi);
+  rotate: 1.5deg;
+}
+
+/*
+ * ---------- the press piece ----------
+ *
+ * Its paragraph is not a box of its own: the link and the line under it are
+ * set in the label's rows, the link beside the pills.
+ */
+.press {
+  display: contents;
+}
+
+.pressLink {
+  display: inline-flex;
+  gap: 0.35em;
+  align-items: center;
+  margin-top: 0.5em;
+  background: var(--gum);
+  text-decoration: none;
+  rotate: 2deg;
+  transition: background-color 0.2s;
+}
+
+.pressLink:hover,
+.pressLink:focus-visible {
+  background: var(--hi);
+}
+
+.pressLink:focus-visible {
+  outline: 0.22em solid var(--hi);
+  outline-offset: 0.2em;
+  border-radius: 2em;
+  box-shadow: 0 0 0 0.62em var(--ink);
+}
+
+.arrow {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.scrawl {
+  margin-top: 0.35em;
+  color: var(--hi);
+  font-size: 1.32em;
+  line-height: 1.05;
+  rotate: -2deg;
+}
+
+@container section (max-width: 1099px) {
+  .city {
+    font-size: 1.8em;
+  }
+}
+
+/* A phone: every label is to the right of the arm, set flush left, with no row of dots. */
+@container section (max-width: 560px) {
+  .note,
+  :global([data-side='right']) .note {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  :global([data-side='right']) .chips {
+    justify-content: flex-start;
+  }
+
+  .city,
+  :global([data-side='right']) .city {
+    display: block;
+    white-space: normal;
+  }
+
+  .city::after {
+    content: none;
+  }
+
+  /* 11px and over on the narrowest phone. */
+  .when,
+  .about {
+    font-size: 1.2em;
+  }
+
+  .scrawl {
+    font-size: 1.42em;
+    line-height: 1.1;
+  }
+
+  .chips {
+    gap: 0.4em 0.35em;
+  }
+
+  .chip {
+    padding: 0.24em 0.62em 0.2em;
+    font-size: 1.2em;
+  }
+
+  /* A target of 24px or more on a 360px phone, where a chip's type is about 11px. */
+  .pressLink {
+    min-height: 2.3em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pressLink {
+    transition: none;
+  }
+}

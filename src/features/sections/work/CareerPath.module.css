@@ -1,0 +1,440 @@
+/*
+ * The career path: a steel rule laid on the cutting mat, the present at its
+ * head and a graduation to a year. On a laptop the rule stands on the middle
+ * of the column: job tags hang off its left side, out to the column's edge,
+ * and everything else is stuck down along its right, out to the other edge.
+ *
+ * The rule is not to scale. A year is as long as what happened in it: a year
+ * with nothing on record is a break in the steel, and a job's tag hangs down
+ * past the years after it in which no other job began, so those years cost
+ * the tag's side nothing. The steel is drawn a graduation at a time, each one
+ * as long as its year, which is what lets it break.
+ *
+ * The column is 100 units wide on a laptop, 66.8 on a tablet and 35.8 on a
+ * phone (see SectionFrame.module.css), so every width here is in ems.
+ */
+.path {
+  /* A side of the rule, the rule itself, and the foot it ends in. */
+  --side: 45.5em;
+  --rule-w: 9em;
+  --foot: 5em;
+  --tick: 0.12em;
+
+  /* Brushed steel, lit down its middle. */
+  --steel:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0 0.16em,
+      rgba(255, 255, 255, 0.32) 0.16em 0.22em,
+      rgba(23, 18, 43, 0.05) 0.22em 0.3em
+    ),
+    linear-gradient(
+      90deg,
+      var(--metal-mid) 0%,
+      #c9cedb 6%,
+      var(--metal-light) 30%,
+      #fafbfd 52%,
+      #c9cedb 86%,
+      var(--metal-mid) 100%
+    );
+
+  /* An even run of fine ticks down both edges, every fifth one longer. */
+  --ticks:
+    repeating-linear-gradient(var(--ink) 0 var(--tick), transparent var(--tick) 5em) right top /
+      2.2em 100% no-repeat,
+    repeating-linear-gradient(var(--ink) 0 var(--tick), transparent var(--tick) 1em) right top /
+      1.2em 100% no-repeat,
+    repeating-linear-gradient(var(--ink) 0 var(--tick), transparent var(--tick) 1em) left top /
+      0.8em 100% no-repeat;
+
+  /* The year's own line, across the whole rule. */
+  --line: linear-gradient(var(--ink), var(--ink)) top / 100% 0.24em no-repeat;
+
+  /* The steel's ground edges, and the shadow it casts on the mat. */
+  --edges: inset 0.14em 0 0 rgba(255, 255, 255, 0.85), inset -0.14em 0 0 rgba(23, 18, 43, 0.3);
+  --cast: 0 0.5em 0.6em rgba(var(--shadow-rgb), 0.5);
+
+  position: relative;
+
+  /* The foot is let into the last year's length of rule, and runs on a little past it. */
+  padding-bottom: calc(var(--foot) - 2.6em);
+}
+
+/* ---------- the stops ---------- */
+
+/*
+ * One grid for the whole path, a row to a stop. The first column has no
+ * width: a graduation is placed in it and stands on the rule's own column,
+ * so that inside a stop the columns are met in the order the markup has them
+ * (the year, the jobs, the rest) and each stop starts a row of its own.
+ */
+.stops {
+  display: grid;
+  grid-template-columns: 0 var(--side) var(--rule-w) minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A stop lends its parts to the path's grid, so that a tag can hang past the stops after it. */
+.stop {
+  display: contents;
+}
+
+/* A graduation: a length of the rule, the year's line across it, and the year. */
+.year {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  width: var(--rule-w);
+  min-height: 7.4em;
+  margin: 0 0 0 var(--side);
+  padding: 0.6em 0 0 0.8em;
+  background: var(--line), var(--ticks), var(--steel);
+  box-shadow: var(--edges), var(--cast);
+  color: var(--ink);
+
+  /* The shadow falls to the sides only: above and below, the rule carries on. */
+  clip-path: inset(0 -2em);
+}
+
+.numeral {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-size: 2.9em;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-shadow: 0 0.045em 0 rgba(255, 255, 255, 0.85);
+}
+
+/* The head of the rule: no scale above the newest year, only a plate that says "now". */
+.now {
+  padding: 0.9em 0.6em 0;
+  border-radius: 0.5em 0.5em 0 0;
+  background: var(--steel);
+}
+
+.nowPlate {
+  display: block;
+  padding: 0.3em 0 0.22em;
+  border-radius: 0.3em;
+  background: var(--ink);
+  color: var(--hi);
+  font-size: 2.1em;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* The foot: what the rule measures, engraved above the hole it hangs by. */
+.foot {
+  position: absolute;
+  bottom: 0;
+  left: var(--side);
+  z-index: 2;
+  width: var(--rule-w);
+  height: var(--foot);
+  border-radius: 0 0 0.5em 0.5em;
+  background:
+    radial-gradient(
+      circle at 50% calc(100% - 2.1em),
+      var(--ink) 0 0.72em,
+      rgba(23, 18, 43, 0.45) 0.72em 0.9em,
+      transparent 0.92em
+    ),
+    var(--steel);
+  box-shadow: var(--edges), var(--cast);
+  clip-path: inset(0 -2em -2em);
+}
+
+.unit {
+  position: absolute;
+  right: 0;
+  bottom: 2.5em;
+  left: 0;
+  color: var(--ink);
+  font-size: 1.3em;
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-shadow: 0 0.06em 0 rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- a year with nothing in it: a break in the steel ---------- */
+
+/*
+ * As a long part is drawn on a plan: the rule stops at a jagged edge, the mat
+ * shows through, and the rule carries on from a matching edge. The year keeps
+ * its line and its numeral, and costs no more than that.
+ */
+.quiet > .year {
+  --break-at: 3.9em;
+  --tooth: 0.7em;
+  --gap: 0.9em;
+
+  min-height: 5.9em;
+  background: none;
+  box-shadow: none;
+  clip-path: none;
+  filter: drop-shadow(0 0.4em 0.3em rgba(var(--shadow-rgb), 0.5));
+}
+
+.quiet > .year::before,
+.quiet > .year::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  box-shadow: var(--edges);
+  content: '';
+}
+
+.quiet > .year::before {
+  top: 0;
+  height: var(--break-at);
+  background: var(--line), var(--ticks), var(--steel);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--tooth)),
+    87.5% 100%,
+    75% calc(100% - var(--tooth)),
+    62.5% 100%,
+    50% calc(100% - var(--tooth)),
+    37.5% 100%,
+    25% calc(100% - var(--tooth)),
+    12.5% 100%,
+    0 calc(100% - var(--tooth))
+  );
+}
+
+/* Engraved a size down, so that the break costs as little as it can. */
+.quiet .numeral {
+  font-size: 2.5em;
+}
+
+.quiet > .year::after {
+  top: calc(var(--break-at) - var(--tooth) + var(--gap));
+  bottom: 0;
+  background: var(--steel);
+  clip-path: polygon(
+    0 0,
+    12.5% var(--tooth),
+    25% 0,
+    37.5% var(--tooth),
+    50% 0,
+    62.5% var(--tooth),
+    75% 0,
+    87.5% var(--tooth),
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* ---------- what hangs from a stop ---------- */
+
+/* The job tags hang off the rule: tucked under its edge and swung a little about it. */
+.tags {
+  display: flex;
+  flex-direction: column;
+  grid-column: 2;
+  gap: 1.2em;
+  align-self: start;
+  margin-right: -1.2em;
+  padding: 1.2em 0 1.4em;
+  transform-origin: 100% 2em;
+  rotate: -1.1deg;
+}
+
+/* A tag hangs past the stops after it in which no other job began. */
+.past1 {
+  grid-row-end: span 2;
+}
+
+.past2 {
+  grid-row-end: span 3;
+}
+
+.past3 {
+  grid-row-end: span 4;
+}
+
+.stop:nth-child(even) > .tags {
+  rotate: 0.9deg;
+}
+
+.stop:nth-child(3n) > .tags {
+  rotate: -0.5deg;
+}
+
+/* The current tag hangs lower, under its seal. */
+.present > .tags {
+  padding-top: 4.4em;
+  rotate: -0.8deg;
+}
+
+/* Everything else, stuck down from the rule out to the column's other edge. */
+.aside {
+  display: flex;
+  flex-direction: column;
+  grid-column: 4;
+  gap: 1.2em;
+  align-self: start;
+  min-width: 0;
+  padding: 1em 0 1em 2em;
+}
+
+/* ---------- 728 units: a tablet. The rule lies down the left edge. ---------- */
+
+@container section (max-width: 1099px) {
+  .path {
+    --rule-w: 6.6em;
+    --tags-w: 31em;
+    --ticks:
+      repeating-linear-gradient(var(--ink) 0 var(--tick), transparent var(--tick) 5em) right top /
+        1.5em 100% no-repeat,
+      repeating-linear-gradient(var(--ink) 0 var(--tick), transparent var(--tick) 1em) right top /
+        0.8em 100% no-repeat;
+    --line: linear-gradient(var(--ink), var(--ink)) top / 100% 0.22em no-repeat;
+  }
+
+  .foot {
+    left: 0;
+  }
+
+  /* A stop is a row of its own again: the rule, a job beside it, and the rest beside the job. */
+  .stops {
+    display: block;
+  }
+
+  .stop {
+    display: grid;
+    grid-template-columns: var(--rule-w) var(--tags-w) minmax(0, 1fr);
+  }
+
+  .year {
+    grid-row: 1;
+    width: auto;
+    min-height: 6.4em;
+    margin: 0;
+    padding: 0.5em 0 0 0.55em;
+  }
+
+  .numeral {
+    font-size: 2.05em;
+  }
+
+  .now {
+    padding: 0.9em 0.5em 0;
+  }
+
+  .nowPlate {
+    font-size: 1.8em;
+  }
+
+  .quiet > .year {
+    --break-at: 3.5em;
+
+    min-height: 5.6em;
+  }
+
+  .quiet .numeral {
+    font-size: 2.05em;
+  }
+
+  .tags {
+    grid-row: 1;
+    margin: 0 0 0 -1.2em;
+    transform-origin: 0 2em;
+    rotate: 0.9deg;
+  }
+
+  .past1,
+  .past2,
+  .past3 {
+    grid-row-end: auto;
+  }
+
+  .stop:nth-child(even) > .tags {
+    rotate: -0.8deg;
+  }
+
+  .stop:nth-child(3n) > .tags {
+    rotate: 0.5deg;
+  }
+
+  .present > .tags {
+    rotate: 0.7deg;
+  }
+
+  .aside {
+    grid-row: 1;
+    grid-column: 3;
+    padding: 1.3em 0 1.8em 1.6em;
+  }
+
+  /* A year in which no job began: the rest has the whole width beside the rule. */
+  .year + .aside {
+    grid-column: 2 / -1;
+  }
+}
+
+/* ---------- 390 units: a phone. One column in time order, beside the rule. ---------- */
+
+@container section (max-width: 560px) {
+  .path {
+    --rule-w: 5.4em;
+  }
+
+  .stop {
+    grid-template-columns: var(--rule-w) minmax(0, 1fr);
+  }
+
+  /* What began, then what else happened. */
+  .year {
+    grid-row: 1 / span 2;
+    min-height: 6em;
+    padding: 0.5em 0 0 0.4em;
+  }
+
+  .numeral {
+    font-size: 1.85em;
+  }
+
+  .now {
+    padding: 0.8em 0.35em 0;
+  }
+
+  .nowPlate {
+    font-size: 1.55em;
+    letter-spacing: 0.05em;
+  }
+
+  .quiet > .year {
+    --break-at: 3.3em;
+
+    min-height: 5.4em;
+  }
+
+  .quiet .numeral {
+    font-size: 1.85em;
+  }
+
+  .tags {
+    grid-column: 2;
+    align-items: stretch;
+    margin: 0 0 0 1.2em;
+    padding: 1em 0 0.6em;
+  }
+
+  .present > .tags {
+    padding-top: 4.6em;
+  }
+
+  .aside,
+  .year + .aside {
+    grid-row: 2;
+    grid-column: 2;
+    padding: 0.9em 0 2em 1.2em;
+  }
+}

@@ -1,0 +1,197 @@
+/*
+ * One project on the mat: the sticker, and under it what the project is and
+ * where to find it. The two are parts of the mat's own grid (see
+ * ProjectsSection.module.css): the sticker stands on the foot of one row and
+ * the caption hangs from the head of the next, so that every sticker in a row
+ * stands on the same line. How wide the sticker is cut (--most, --fill), how
+ * it leans in its place (--lean) and how the whole is turned (--tilt) are set
+ * from outside.
+ */
+.item {
+  --tilt: 0deg;
+  --caption-tilt: 1.2deg;
+
+  position: relative;
+  display: grid;
+  grid-template-rows: subgrid;
+  justify-items: var(--lean, start);
+  min-width: 0;
+  list-style: none;
+  rotate: var(--tilt);
+}
+
+/*
+ * The sticker, with whatever is pinned to it. It is a container, so that a
+ * face set in type can be sized by the width it was cut to.
+ */
+.top {
+  position: relative;
+  align-self: end;
+  width: min(calc(100% * var(--fill, 0.94)), var(--most, 22em));
+  margin-top: var(--headroom, 0em);
+  container-type: inline-size;
+}
+
+/* What it is and where to find it, under the sticker. */
+.about {
+  display: flex;
+  flex-direction: column;
+  align-items: var(--lean, start);
+  align-self: start;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: var(--row-gap, 0em);
+}
+
+/* A heading for the outline; on the mat it is the sticker and nothing more. */
+.name {
+  margin: 0;
+  font: inherit;
+}
+
+.face {
+  width: 100%;
+}
+
+/*
+ * The lid's stickers are set in type, so they grow by their type size: each
+ * is given the size at which it is exactly as wide as its place.
+ */
+.item[data-face='jukebox'] .face {
+  width: max-content;
+  font-size: calc(100cqw / 22.6);
+}
+
+.item[data-face='parking'] .face {
+  font-size: calc(100cqw / 12.3);
+}
+
+/* A bumper is as wide as the name on it, and never wider than its place. */
+.item[data-face='bumper'] .face {
+  width: max-content;
+  max-width: 100%;
+  font-size: 1.5em;
+}
+
+/* Planted in the sticker's top edge, standing over it, where it covers no lettering. */
+.flag {
+  position: absolute;
+  bottom: calc(100% - var(--flag-bite, 2.3em));
+  left: var(--flag-left, 0.4em);
+  z-index: 2;
+  rotate: var(--flag-tilt, -4deg);
+}
+
+/* In his hand, over the sticker of the place he works. */
+.dayJob {
+  position: absolute;
+  top: -1.55em;
+  left: 0.9em;
+  display: flex;
+  gap: 0.3em;
+  align-items: center;
+  margin: 0;
+  color: var(--hi);
+  font-size: 2.3em;
+  line-height: 1;
+  white-space: nowrap;
+  rotate: -4deg;
+}
+
+.pointer {
+  width: 0.85em;
+  height: 0.85em;
+  translate: 0 0.12em;
+}
+
+/*
+ * What the project is, printed on a strip from a label printer and stuck
+ * across the sticker's foot. The ticks down its left edge are where the
+ * printer cut it.
+ */
+.tape {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  max-width: min(100% - 1.8em, 23em);
+  margin: -0.75em var(--caption-outset, 0) 0 var(--caption-inset, 0.9em);
+  padding: 0.55em 0.95em 0.6em 1.25em;
+  border-radius: 0.12em;
+  background:
+    repeating-linear-gradient(var(--ink) 0 0.16em, transparent 0.16em 0.4em) 0.5em 0 / 0.14em 100%
+      no-repeat,
+    var(--tape, var(--white));
+  box-shadow:
+    0 0.1em 0 rgba(var(--shadow-rgb), 0.5),
+    0 0.35em 0.5em rgba(var(--shadow-rgb), 0.4);
+  color: var(--ink);
+  font-size: 1.3em;
+  font-weight: var(--weight-medium);
+  line-height: 1.24;
+  rotate: var(--caption-tilt);
+}
+
+/* The same, for a description short enough to write on the mat by hand. */
+.hand {
+  position: relative;
+  z-index: 1;
+  max-width: min(100% - 2.6em, 15em);
+  margin: 0.45em var(--caption-outset, 0) 0 var(--caption-inset, 0.6em);
+  color: var(--pen, var(--white));
+  font-size: 1.68em;
+  line-height: 1.1;
+  text-wrap: balance;
+  rotate: calc(var(--caption-tilt) * -1.4);
+}
+
+.links {
+  position: relative;
+  z-index: 1;
+  margin: 0.95em var(--caption-outset, 0) 0 var(--caption-inset, 0.9em);
+  rotate: calc(var(--caption-tilt) * 0.5);
+}
+
+/* A phone: a column of its own, the sticker over its caption. */
+@container section (max-width: 560px) {
+  .item {
+    display: flex;
+    flex-direction: column;
+    align-items: var(--lean, flex-start);
+    width: min(100%, 31em);
+  }
+
+  .item[data-face='computer'] {
+    width: min(100%, 35.8em);
+  }
+
+  .top {
+    width: min(100%, var(--most, 22em));
+  }
+
+  .about {
+    padding-bottom: 0;
+  }
+
+  /* Planted in the corner, leaning out. */
+  .flag {
+    top: var(--flag-top, -2.2em);
+    right: -1em;
+    bottom: auto;
+    left: auto;
+    rotate: 5deg;
+  }
+
+  .tape {
+    max-width: min(100%, 20em);
+    font-size: 1.5em;
+  }
+
+  .hand {
+    max-width: min(100%, 13.5em);
+    font-size: 1.95em;
+  }
+
+  .dayJob {
+    font-size: 2.1em;
+  }
+}

@@ -1,0 +1,322 @@
+/*
+ * The plain CV. Same site as the lid (the tokens, one cobalt accent,
+ * Bricolage Grotesque) with everything loud taken out.
+ */
+
+.page {
+  --when-width: 11rem;
+
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-5) var(--space-8);
+}
+
+/* :where keeps these resets weaker than any class below. */
+:where(.page) p {
+  margin: 0;
+}
+
+:where(.page) ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- skip link ---------- */
+
+.skip {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: var(--weight-bold);
+  border-radius: var(--radius-sm);
+  transform: translateY(-200%);
+}
+
+.skip:focus {
+  transform: none;
+  outline-color: var(--color-text);
+}
+
+/* ---------- header ---------- */
+
+.header {
+  padding-bottom: var(--space-6);
+  border-bottom: 0.125rem solid var(--color-text);
+}
+
+.back {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+
+.name {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--text-2xl);
+  font-stretch: var(--label-stretch);
+  font-weight: var(--weight-heavy);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+
+.role {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: 1.3;
+}
+
+.place,
+.reach {
+  color: var(--color-text-muted);
+}
+
+.reach {
+  margin-top: var(--space-1);
+}
+
+.field {
+  margin-top: var(--space-5);
+  font-weight: var(--weight-medium);
+}
+
+.words {
+  margin-top: var(--space-2);
+  max-width: var(--measure);
+}
+
+.nav {
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+
+.nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+
+.nav a {
+  display: inline-block;
+  padding: var(--space-1) 0;
+}
+
+/* ---------- sections ---------- */
+
+.section {
+  padding-top: var(--space-7);
+  scroll-margin-top: var(--space-4);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 0.0625rem solid var(--color-rule);
+  color: var(--color-accent);
+  font-size: var(--text-md);
+  font-stretch: var(--label-stretch);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-tracking);
+  line-height: var(--leading-tight);
+  text-transform: uppercase;
+}
+
+.subheading {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--text-md);
+  font-weight: var(--weight-heavy);
+  line-height: var(--leading-tight);
+}
+
+.summary {
+  max-width: var(--measure);
+  margin-bottom: var(--space-2);
+}
+
+.summary:last-of-type {
+  margin-bottom: var(--space-5);
+}
+
+/* ---------- entries: a date column and a body ---------- */
+
+.entry + .entry {
+  margin-top: var(--space-5);
+}
+
+.entries > .entry {
+  display: grid;
+  grid-template-columns: var(--when-width) minmax(0, 1fr);
+  column-gap: var(--space-5);
+}
+
+.entries > .entry > .body {
+  grid-column: 2;
+}
+
+.when {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: 1.75;
+}
+
+.body {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.entryTitle {
+  font-weight: var(--weight-heavy);
+  line-height: 1.4;
+}
+
+.result {
+  color: var(--color-accent);
+}
+
+.result::after {
+  content: ' ·';
+  color: var(--color-text-muted);
+  font-weight: var(--weight-regular);
+}
+
+.org {
+  font-weight: var(--weight-medium);
+}
+
+.meta,
+.note,
+.links {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.links {
+  font-weight: var(--weight-bold);
+}
+
+.body > * + * {
+  margin-top: var(--space-1);
+}
+
+/* ---------- small lists ---------- */
+
+.inlineList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.inlineList li:not(:last-child)::after {
+  content: ' ·';
+}
+
+.contact li + li {
+  margin-top: var(--space-2);
+}
+
+.term {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.term::after {
+  content: ':';
+}
+
+/* ---------- footer ---------- */
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 0.0625rem solid var(--color-rule);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Read by screen readers, not shown. */
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- narrow screens: the date sits above the body ---------- */
+
+@media (max-width: 36rem) {
+  .entries > .entry {
+    display: block;
+  }
+
+  .when {
+    line-height: var(--leading-normal);
+  }
+}
+
+/* ---------- print (the page-wide rules are in print.css) ---------- */
+
+@media print {
+  .page {
+    --when-width: 38mm;
+
+    max-width: none;
+    padding: 0;
+  }
+
+  .header {
+    padding-bottom: var(--space-4);
+  }
+
+  .name {
+    margin-top: 0;
+    font-size: var(--text-xl);
+  }
+
+  .section {
+    padding-top: var(--space-5);
+  }
+
+  .entry + .entry {
+    margin-top: var(--space-3);
+  }
+
+  .entry {
+    break-inside: avoid;
+  }
+
+  .sectionTitle,
+  .subheading,
+  .summary {
+    break-after: avoid;
+  }
+
+  .sectionTitle,
+  .result {
+    color: #000;
+  }
+
+  .footer {
+    margin-top: var(--space-6);
+  }
+
+  /* Screen-reader context for links is not for paper. */
+  .visuallyHidden {
+    display: none;
+  }
+}

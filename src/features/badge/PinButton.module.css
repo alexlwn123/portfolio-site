@@ -1,0 +1,118 @@
+/*
+ * A pin-back button on a ribbon. The link is the round thing a finger finds:
+ * it keeps its place. The drawing inside it hangs from its pin, a little
+ * askew, and swings when it is touched.
+ */
+.pin {
+  position: relative;
+  display: block;
+  width: var(--button, 6.2em);
+  height: var(--button, 6.2em);
+  border-radius: 50%;
+  color: var(--t, var(--ink));
+  text-decoration: none;
+}
+
+.pin:focus-visible {
+  z-index: 1;
+  outline: 0.25em solid var(--hi);
+  outline-offset: 0.15em;
+  box-shadow: 0 0 0 0.65em var(--ink);
+}
+
+/*
+ * The button stands off the ribbon by the depth of its pin, so its shadow
+ * falls further than a sticker's would. It turns about the pin, near its top.
+ *
+ * Askew, it hangs a little outside the link, and it swings the other way when
+ * touched. So the drawing takes no pointer of its own: only the link's round
+ * box does, which never moves. Otherwise a pointer on the drawing's overhang
+ * would lose the button as it swung away, and catch it again as it fell back.
+ */
+.button {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(0 0.04em 0.03em rgba(var(--shadow-rgb), 0.55))
+    drop-shadow(
+      calc(var(--cast-x) * 0.5) calc(var(--cast-y) * 0.5) 0.18em rgba(var(--shadow-rgb), 0.5)
+    );
+  transform-origin: 50% 16%;
+  rotate: var(--lean, 0deg);
+  transition: rotate 0.5s var(--ease-slap);
+}
+
+.pin:hover > .button,
+.pin:focus-visible > .button {
+  rotate: calc(var(--lean, 0deg) * -0.7);
+}
+
+/* The rolled edge: the same metal as the badge's clip. */
+.metalLight {
+  stop-color: var(--metal-light);
+}
+
+.metalMid {
+  stop-color: var(--metal-mid);
+}
+
+.metalDark {
+  stop-color: var(--metal-dark);
+}
+
+/* The printed disc, in the pin's own colour, and what is printed on it. */
+.face {
+  fill: var(--c);
+}
+
+.lettering {
+  fill: var(--t, var(--ink));
+}
+
+/*
+ * The dome: light off the film towards the lamp, nothing across the middle,
+ * and the disc turning away from the eye at its edge.
+ */
+.sheen {
+  stop-color: var(--white);
+  stop-opacity: 0.5;
+}
+
+.sheenGone {
+  stop-color: var(--white);
+  stop-opacity: 0;
+}
+
+.shadeGone {
+  stop-color: var(--ink);
+  stop-opacity: 0;
+}
+
+.shade {
+  stop-color: var(--ink);
+  stop-opacity: 0.38;
+}
+
+/* Where the print wraps over the rim, and the bright line the film catches beside it. */
+.edge {
+  fill: none;
+  stroke: var(--ink);
+  stroke-opacity: 0.22;
+  stroke-width: 1.2;
+}
+
+.glint {
+  fill: none;
+  stroke: var(--white);
+  stroke-linecap: round;
+  stroke-opacity: 0.85;
+  stroke-width: 1.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

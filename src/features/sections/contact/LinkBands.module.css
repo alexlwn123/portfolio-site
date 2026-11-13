@@ -1,0 +1,170 @@
+/*
+ * A strip of wristband to a link, cut from the lid's wristbands
+ * (Wristband.module.css) and made tall enough for a thumb. On a laptop the
+ * strips are a ladder: every one runs the width of its column, so they share
+ * a left edge and end together at the column's right edge, and the ladder is
+ * spread to the height it is given. Each still lies at its own small tilt.
+ */
+.bands {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  rotate: -1.1deg;
+}
+
+.item:nth-child(2n) {
+  rotate: 0.8deg;
+}
+
+.item:nth-child(3n) {
+  rotate: -0.4deg;
+}
+
+.item:nth-child(4n) {
+  rotate: 1.2deg;
+}
+
+.band {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 6em;
+  padding: 0.5em 6.6em 0.4em 5.8em;
+  overflow: hidden;
+  border-radius: 3em 0.6em 0.6em 3em;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0 0.5em,
+      rgba(255, 255, 255, 0.13) 0.5em 0.56em
+    ),
+    var(--c);
+  box-shadow:
+    inset 0 0.4em 0 rgba(255, 255, 255, 0.35),
+    inset 0 -0.4em 0 rgba(0, 0, 0, 0.14);
+  color: var(--ink);
+}
+
+/* The two holes a wristband's snap goes through. */
+.snaps {
+  position: absolute;
+  top: 50%;
+  left: 1.9em;
+  width: 3.2em;
+  height: 1.3em;
+  margin-top: -0.65em;
+  background:
+    radial-gradient(circle at 0.65em 50%, var(--ink) 0 0.6em, transparent 0.64em),
+    radial-gradient(circle at 2.55em 50%, var(--ink) 0 0.6em, transparent 0.64em);
+}
+
+.label {
+  font-size: 3em;
+  line-height: 1.02;
+  letter-spacing: 0.07em;
+  text-wrap: balance;
+}
+
+.tab {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 5.4em;
+  border-left: 0.18em dashed rgba(23, 18, 43, 0.7);
+  background:
+    repeating-linear-gradient(-58deg, transparent 0 0.6em, rgba(23, 18, 43, 0.5) 0.6em 0.74em),
+    rgba(255, 255, 255, 0.72);
+}
+
+/*
+ * A tablet: the strips are set in rows, and every row is stretched to the
+ * width of the column. Each strip is given its share of a row to start from,
+ * in the order the strips come: a short one beside a long one, then a long
+ * one beside a short one. A list of another length still wraps into rows
+ * that fill the column.
+ */
+@container section (max-width: 1099px) {
+  .bands {
+    flex-flow: row wrap;
+    gap: 1.6em 1.4em;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .item {
+    display: grid;
+    flex: 1 1 32%;
+  }
+
+  .item:nth-child(4n + 2) {
+    flex-basis: 56%;
+  }
+
+  .item:nth-child(4n + 3) {
+    flex-basis: 54%;
+  }
+
+  .item:nth-child(4n + 4) {
+    flex-basis: 34%;
+  }
+
+  /* The link, the face it lifts by (Stuck.tsx) and the band all stretch to the row's height. */
+  .link,
+  .link > [data-stuck-face],
+  .band {
+    display: flex;
+  }
+
+  .link > [data-stuck-face] {
+    flex: 1;
+  }
+
+  .band {
+    flex: 1;
+    min-height: 6.4em;
+    padding: 0.6em 7.4em 0.5em 6em;
+    border-radius: 3.2em 0.6em 0.6em 3.2em;
+  }
+
+  .label {
+    font-size: 2.5em;
+  }
+}
+
+/* A phone: the ladder again, a strip to a row. */
+@container section (max-width: 560px) {
+  .bands {
+    flex-flow: column;
+    gap: 1.4em;
+  }
+
+  .item:nth-child(n) {
+    flex-basis: auto;
+  }
+
+  .band {
+    min-height: 6.2em;
+    padding: 0.6em 5.6em 0.5em 5.4em;
+    border-radius: 3.1em 0.6em 0.6em 3.1em;
+  }
+
+  .snaps {
+    left: 1.6em;
+  }
+
+  .label {
+    font-size: 2.3em;
+  }
+
+  .tab {
+    width: 4em;
+  }
+}

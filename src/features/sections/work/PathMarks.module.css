@@ -1,0 +1,192 @@
+/*
+ * The small stickers along the other side of the rule: what else happened in
+ * a year. One shape to a kind, so a year can be read at a glance: tangerine
+ * for wins, a length of spearmint wristband for hackathons run, a file label
+ * for patent filings, a bubblegum ribbon for the first talk.
+ *
+ * They run from the rule to the column's edge, two abreast, and an odd one
+ * out leads across the whole width. Down the side of a job's tag that sets
+ * the length of its year they are listed one under another instead.
+ */
+.marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 1.3em;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  flex: 1 1 19em;
+  min-width: 0;
+  rotate: -1.1deg;
+}
+
+.item:nth-child(2n) {
+  rotate: 0.9deg;
+}
+
+.item:nth-child(3n) {
+  rotate: -0.5deg;
+}
+
+/* An odd number abreast: the first takes a line to itself. */
+.item:first-child:nth-last-child(odd),
+.down > .item {
+  flex-basis: 100%;
+}
+
+/* The ones with the most to say are given the most of a line. */
+.item[data-mark='wins'] {
+  flex-basis: 22.5em;
+}
+
+.item[data-mark='organized'] {
+  flex-basis: 21.5em;
+}
+
+.item[data-mark='filed'] {
+  flex-basis: 16.5em;
+}
+
+/* With a line to itself the ribbon says its two words on one. */
+.down .kicker > * {
+  display: inline;
+}
+
+/* ---------- what every face shares ---------- */
+
+.face {
+  display: flex;
+  gap: 0.95em;
+  align-items: flex-start;
+  padding: 0.9em 1.3em 0.95em 1.1em;
+  border: 0.36em solid var(--white);
+  border-radius: 1.1em;
+  background: var(--c, var(--white));
+  color: var(--ink);
+}
+
+.figure {
+  flex: none;
+  min-width: 0.72em;
+  font-size: 4.5em;
+  line-height: 0.86;
+  text-align: center;
+}
+
+.text {
+  display: block;
+  min-width: 0;
+}
+
+.unit {
+  display: block;
+  font-size: 1.3em;
+  line-height: 1.05;
+  letter-spacing: 0.07em;
+}
+
+.lines {
+  display: block;
+  margin-top: 0.45em;
+}
+
+.line {
+  display: block;
+  font-size: 1.36em;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  text-wrap: pretty;
+}
+
+.line + .line {
+  margin-top: 0.34em;
+}
+
+.name {
+  font-weight: var(--weight-heavy);
+}
+
+/* ---------- one shape to a kind ---------- */
+
+.wins {
+  --c: var(--tang);
+
+  border-radius: 1.7em 0.5em 1.7em 0.5em;
+}
+
+/* A length of wristband: round at the wrist end. */
+.organized {
+  --c: var(--mint);
+
+  text-wrap: balance;
+
+  padding-left: 1.5em;
+  border-radius: 3.4em 0.6em 0.6em 3.4em;
+}
+
+/* A file label: white stock with a dashed rule round it. */
+.filed {
+  border: 0.2em dashed var(--ink);
+  border-radius: 0.4em;
+  outline: 0.36em solid var(--white);
+}
+
+/* A ribbon, cut to a swallowtail at one end. */
+.firstTalk {
+  --c: var(--gum);
+
+  flex-direction: column;
+  gap: 0;
+  padding: 0.95em 2.9em 1em 1.3em;
+  border: 0;
+  border-radius: 0.3em 0 0 0.3em;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1.6em) 50%, 100% 100%, 0 100%);
+}
+
+.kicker {
+  display: block;
+  font-size: 1.5em;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+/* A tablet has room for three abreast where no job began. */
+@container section (max-width: 1099px) {
+  .marks {
+    gap: 1em 1.2em;
+  }
+
+  .item:nth-child(n),
+  .item:first-child:nth-last-child(odd) {
+    flex-basis: 17em;
+  }
+
+  /* Beside a job the column is a narrow one, and they are listed down it. */
+  .beside > .item:nth-child(n),
+  .down > .item:nth-child(n) {
+    flex-basis: 100%;
+  }
+
+  .figure {
+    font-size: 4em;
+  }
+}
+
+/* A phone lists them all. */
+@container section (max-width: 560px) {
+  .item:nth-child(n) {
+    flex-basis: 100%;
+  }
+
+  .unit {
+    font-size: 1.3em;
+  }
+
+  .line {
+    font-size: 1.42em;
+  }
+}

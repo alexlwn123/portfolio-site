@@ -1,0 +1,447 @@
+/*
+ * The plate of patent records: one sheet of brushed metal, riveted at its
+ * corners and stamped in the label face. It is the lid's compliance label
+ * grown up, so it is cut from the same metal (metal.module.css). A plate is
+ * not a sticker: it has no white die-cut edge, only the bevel of its own
+ * thickness. Its tilt is the underside's (PatentsSection.module.css).
+ *
+ * Two stretches of it are left bare for the stickers
+ * (InspectionStickers.module.css): the right end of its head, and the right
+ * of its foot beside the footnote.
+ */
+.plate {
+  position: relative;
+  padding: 3.6em 4.6em 4.2em;
+  border-radius: 1.3em;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.3) 0 0.06em,
+      rgba(23, 18, 43, 0.045) 0.06em 0.13em,
+      rgba(255, 255, 255, 0) 0.13em 0.22em
+    ),
+    var(--c);
+  box-shadow:
+    inset 0 0.22em 0 rgba(255, 255, 255, 0.95),
+    inset 0 -0.26em 0 rgba(23, 18, 43, 0.3),
+    inset 0.2em 0 0 rgba(255, 255, 255, 0.6),
+    inset -0.2em 0 0 rgba(23, 18, 43, 0.18);
+  color: var(--ink);
+}
+
+/* ---------- rivets ---------- */
+
+.rivet {
+  position: absolute;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 36% 30%,
+    var(--white) 0 10%,
+    var(--metal-light) 16% 38%,
+    var(--metal-mid) 68%,
+    var(--metal-dark) 100%
+  );
+  box-shadow:
+    0 0.14em 0.16em rgba(23, 18, 43, 0.55),
+    0 0 0 0.16em rgba(23, 18, 43, 0.16);
+}
+
+.topLeft {
+  top: 1.2em;
+  left: 1.2em;
+}
+
+.topRight {
+  top: 1.2em;
+  right: 1.2em;
+}
+
+.bottomLeft {
+  bottom: 1.2em;
+  left: 1.2em;
+}
+
+.bottomRight {
+  right: 1.2em;
+  bottom: 1.2em;
+}
+
+/* ---------- the head of the plate ---------- */
+
+.head {
+  display: flex;
+  gap: 2em 6em;
+  align-items: flex-end;
+  padding-bottom: 2.2em;
+  border-bottom: 0.3em solid var(--ink);
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  align-items: flex-start;
+}
+
+/* Stamped lettering: ink, with the light catching the lower edge of each stroke. */
+.heading {
+  margin: 0;
+  font-size: 4.5em;
+  line-height: 0.92;
+  text-shadow: 0 0.035em 0 rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+.facts,
+.fields {
+  margin: 0;
+}
+
+.facts {
+  display: flex;
+  gap: 1em;
+  align-items: stretch;
+}
+
+/* A boxed field, as a rating plate has them: a label, and a stamped value. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  min-width: 0;
+  padding: 0.6em 0.9em 0.55em;
+  border: 0.16em solid var(--ink);
+  border-radius: 0.35em;
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.term {
+  font-size: 1.2em;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.value {
+  margin: 0;
+  font-size: 1.65em;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0.04em 0 rgba(255, 255, 255, 0.75);
+}
+
+/* A date is stamped whole, never broken across lines. */
+.value time {
+  white-space: nowrap;
+}
+
+.holder {
+  flex-direction: row;
+  gap: 1em;
+  align-items: baseline;
+  padding: 0.7em 1.1em 0.6em;
+}
+
+.holder .value {
+  font-size: 2.4em;
+  white-space: nowrap;
+}
+
+/* The one count: a big figure, and beside it what it is a count of. */
+.count {
+  gap: 0.7em;
+  justify-content: space-between;
+  padding: 0.9em 1.6em 0.9em 1.4em;
+}
+
+.count .value {
+  display: flex;
+  gap: 1.1em;
+  align-items: center;
+  font-size: 1em;
+}
+
+.figure {
+  font-family: var(--font-display);
+  font-size: 7.4em;
+  font-weight: var(--weight-regular);
+  line-height: 0.82;
+}
+
+/* Two lines beside the figure, and a box no wider than they are: the first line sets its width. */
+.unit {
+  max-width: 5em;
+  font-size: 2.7em;
+  line-height: 1.02;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- a row to a filing ---------- */
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * A row is one line on a laptop: the title from the plate's left edge, and
+ * the number and the filing date at its right end. The two fields are the
+ * same width in every row, so they stand in columns down the plate.
+ */
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75em 3.4em;
+  align-items: center;
+  padding: 1.6em 0 1.7em;
+  border-bottom: 0.14em solid rgba(23, 18, 43, 0.55);
+}
+
+.title {
+  margin: 0;
+  font-size: 2.3em;
+  font-weight: var(--weight-heavy);
+  line-height: 1.12;
+  letter-spacing: -0.005em;
+  text-shadow: 0 0.04em 0 rgba(255, 255, 255, 0.75);
+  text-wrap: balance;
+}
+
+/* The number, then the day it was filed. */
+.fields {
+  display: grid;
+  grid-template-columns: 22.5em 14.5em;
+  gap: 0.8em;
+  align-items: stretch;
+}
+
+/* The number is the row's nameplate, and its link: ink, lettered in highlighter. */
+.numberField {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.numberField .term {
+  padding: 0.6em 0.9em 0;
+}
+
+.numberField .value {
+  display: flex;
+  flex: 1;
+  font-size: 1em;
+  text-shadow: none;
+}
+
+/*
+ * The link keeps its place and the ink stamp inside it lifts, so a pointer
+ * resting on the stamp's edge stays on the link.
+ */
+.number {
+  display: flex;
+  flex: 1;
+  color: var(--hi);
+  font-size: 1.95em;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.stamp {
+  display: flex;
+  flex: 1;
+  gap: 0.5em;
+  align-items: center;
+  min-height: 2.5em;
+  padding: 0.2em 0.75em 0.15em;
+  border-radius: 0.3em;
+  background: var(--ink);
+  transition:
+    translate var(--duration-hover) var(--ease-slap),
+    box-shadow var(--duration-hover);
+}
+
+.arrow {
+  width: 0.8em;
+  height: 0.8em;
+  transition: translate 0.2s;
+}
+
+.number:hover > .stamp,
+.number:focus-visible > .stamp {
+  box-shadow: 0 0.2em 0 rgba(23, 18, 43, 0.35);
+  translate: 0 -0.1em;
+}
+
+.number:hover .arrow,
+.number:focus-visible .arrow {
+  translate: 0.2em 0;
+}
+
+/* The lid's ring: highlighter with an ink edge, visible on the metal too. */
+.number:focus-visible {
+  outline: 0.16em solid var(--hi);
+  outline-offset: 0.14em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.44em var(--ink);
+}
+
+.footnote {
+  margin: 1.7em 0 0;
+  font-size: 1.3em;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+@container section (max-width: 1099px) {
+  /* The foot is left bare, for the stickers stuck across it. */
+  .plate {
+    padding: 3.8em 3.4em 9.4em;
+  }
+
+  .head {
+    gap: 2em 3em;
+    justify-content: space-between;
+  }
+
+  .footnote {
+    text-align: left;
+  }
+
+  .heading {
+    font-size: 3.5em;
+  }
+
+  .figure {
+    font-size: 5.8em;
+  }
+
+  .unit {
+    font-size: 2.2em;
+  }
+
+  /* The title has a line to itself, and the fields go under it. */
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1.9em 0 2.1em;
+  }
+
+  /* Two abreast: the number and the filing date, the width of the plate between them. */
+  .fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* An odd field out takes the whole row, so none is left half empty. */
+  .fields .field:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@container section (max-width: 560px) {
+  .plate {
+    padding: 3.9em 1.8em 7.4em;
+  }
+
+  .rivet {
+    width: 1.8em;
+    height: 1.8em;
+  }
+
+  .topLeft,
+  .topRight {
+    top: 1em;
+  }
+
+  .bottomLeft,
+  .bottomRight {
+    bottom: 1em;
+  }
+
+  .topLeft,
+  .bottomLeft {
+    left: 1em;
+  }
+
+  .topRight,
+  .bottomRight {
+    right: 1em;
+  }
+
+  .head {
+    flex-direction: column;
+    gap: 1.2em;
+    align-items: stretch;
+  }
+
+  .lead {
+    gap: 1.2em;
+    align-items: stretch;
+  }
+
+  .heading {
+    font-size: 3.6em;
+  }
+
+  .holder {
+    flex-direction: column;
+    gap: 0.35em;
+  }
+
+  /* The count takes the plate's width, its figure and words set on the middle. */
+  .count {
+    flex: 1 1 0;
+    align-items: center;
+  }
+
+  .figure {
+    font-size: 5.4em;
+  }
+
+  .unit {
+    font-size: 2.3em;
+  }
+
+  /* The number has a row to itself, and so does a last field left on its own. */
+  .fields .numberField,
+  .fields .field:last-child:nth-child(even) {
+    grid-column: 1 / -1;
+  }
+
+  .fields .field:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+
+  .title {
+    font-size: 2.05em;
+  }
+
+  .value {
+    font-size: 1.7em;
+  }
+
+  .holder .value {
+    font-size: 2.3em;
+  }
+
+  .number {
+    font-size: 1.9em;
+  }
+
+  .stamp {
+    min-height: 2.6em;
+  }
+
+  .footnote {
+    font-size: 1.3em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp,
+  .arrow {
+    transition: none;
+  }
+}

@@ -1,0 +1,30 @@
+/* A bumper sticker: two shouted lines and a line of small print. */
+.bumper {
+  padding: 1.3em 1.9em 1.2em;
+  border-radius: 1em;
+}
+
+.title {
+  display: block;
+  font-size: 3.15em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.note {
+  display: block;
+  margin-top: 0.55em;
+  font-size: 1.15em;
+  font-weight: var(--weight-bold);
+  line-height: 1.25;
+}
+
+@container lid (max-width: 560px) {
+  .title {
+    font-size: 2.9em;
+  }
+
+  .note {
+    font-size: 1.2em;
+  }
+}

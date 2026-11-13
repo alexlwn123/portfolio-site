@@ -1,0 +1,155 @@
+/*
+ * An employer's asset tag: the serious sticker a company puts on a laptop.
+ * It is the asset tag's and the compliance label's sibling, cut three ways
+ * so that a row of them reads as five different companies' stationery. The
+ * metal of the plate and the strip is in metal.module.css.
+ */
+.tag {
+  display: flex;
+  gap: 0.9em;
+  align-items: center;
+  width: max-content;
+  padding: 0.8em 1.15em 0.72em 1.2em;
+  border-radius: 0.6em;
+  box-shadow:
+    inset 0 0 0 0.3em var(--white),
+    inset 0 0 0 0.42em var(--ink);
+}
+
+.words {
+  display: block;
+}
+
+.kicker,
+.organization,
+.issued {
+  display: block;
+  white-space: nowrap;
+}
+
+.kicker,
+.issued {
+  font-size: 1.1em;
+  line-height: 1.15;
+}
+
+.organization {
+  font-size: 1.95em;
+  font-weight: var(--weight-heavy);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+.issued {
+  margin-top: 0.12em;
+}
+
+/* A barcode: the same bars as the asset tag's, a size down. */
+.bars {
+  flex: none;
+  width: 2.5em;
+  height: 3.9em;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 0.2em,
+    transparent 0.2em 0.36em,
+    var(--ink) 0.36em 0.45em,
+    transparent 0.45em 0.8em,
+    var(--ink) 0.8em 1.1em,
+    transparent 1.1em 1.25em
+  );
+}
+
+/* A plate reads from its barcode, as the asset tag does. */
+.plate {
+  flex-direction: row-reverse;
+  padding-left: 1.1em;
+}
+
+/*
+ * A paper label: white, with the kicker reversed out of an ink bar across the
+ * top and a hazard stripe along the foot, as on a label nobody is meant to
+ * remove.
+ */
+.label {
+  display: block;
+  padding: 0 0 1.05em;
+  border-radius: 0.45em;
+  background: var(--white);
+  box-shadow: inset 0 0 0 0.2em var(--ink);
+}
+
+.label::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 0.62em;
+  background: repeating-linear-gradient(-45deg, var(--hi) 0 0.4em, var(--ink) 0.4em 0.8em);
+  content: '';
+}
+
+.label .kicker {
+  padding: 0.5em 1.1em 0.36em;
+  background: var(--ink);
+  color: var(--white);
+}
+
+.label .organization {
+  padding: 0.22em 0.56em 0;
+}
+
+.label .issued {
+  padding: 0 1.1em;
+}
+
+/* A strip: narrow, with a rivet at each end. */
+.strip {
+  padding: 0.62em 2.3em 0.55em;
+  border-radius: 2em;
+  background:
+    radial-gradient(circle at 1.15em 50%, var(--metal-dark) 0 0.3em, transparent 0.34em),
+    radial-gradient(
+      circle at calc(100% - 1.15em) 50%,
+      var(--metal-dark) 0 0.3em,
+      transparent 0.34em
+    ),
+    var(--c);
+  box-shadow:
+    inset 0 0 0 0.26em var(--white),
+    inset 0 0 0 0.36em var(--ink);
+  text-align: center;
+}
+
+.strip .organization {
+  font-size: 1.7em;
+}
+
+/*
+ * On a phone the unit is under a pixel, so the small lines are set larger.
+ * The tags share a narrow column beside the badge there, so a long name takes
+ * two lines and the plate gives up its barcode.
+ */
+@container lid (max-width: 560px) {
+  .kicker,
+  .issued {
+    font-size: 1.2em;
+  }
+
+  .organization {
+    width: min-content;
+    font-size: 1.75em;
+    white-space: normal;
+  }
+
+  .plate .bars {
+    display: none;
+  }
+}
+
+@container section (max-width: 560px) {
+  .kicker,
+  .issued {
+    font-size: 1.2em;
+  }
+}

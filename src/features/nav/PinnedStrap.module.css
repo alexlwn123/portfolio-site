@@ -1,0 +1,136 @@
+/*
+ * The lanyard's strap, laid flat: bubblegum with dark edges and ink lettering
+ * (src/features/badge/Lanyard.module.css), a metal buckle at its near end.
+ * It is page furniture, not a sticker, so it is sized in rem and is the same
+ * height at every width: --pinned-height, which the page sets and each
+ * section leaves room for when a link lands on it.
+ */
+.strap {
+  --strap-edge: 0.1875rem;
+
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  height: var(--pinned-height);
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--gum-dark) 0 var(--strap-edge),
+    var(--gum) var(--strap-edge) calc(100% - var(--strap-edge)),
+    var(--gum-dark) calc(100% - var(--strap-edge))
+  );
+  box-shadow: 0 0.25rem 0.5rem rgba(var(--shadow-rgb), 0.38);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-stretch: var(--label-stretch);
+  font-size: 0.875rem;
+  font-weight: var(--label-weight);
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/*
+ * The links. Where they do not all fit, as on a phone, they scroll sideways
+ * inside this list and the page itself never does. The buckle is beside the
+ * list, not in it, so nothing scrolls under it.
+ */
+.run {
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.run::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+/* Every link is as tall as the strap, which makes it a target of 44px. */
+.link {
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
+  height: 100%;
+  padding: 0.0625rem 0.7em 0;
+  color: inherit;
+  text-decoration: none;
+  background: linear-gradient(var(--hi), var(--hi)) 50% 50% / 0 1.75em no-repeat;
+  transition: background-size 0.18s;
+}
+
+/* A pass of the highlighter under the word, as on the hello tag. */
+.link:hover,
+.link:focus-visible {
+  background-size: 100% 1.75em;
+}
+
+.link:focus-visible {
+  outline: 0.125rem solid var(--ink);
+  outline-offset: -0.5rem;
+  border-radius: 0;
+}
+
+.star {
+  width: 0.7em;
+  height: 0.7em;
+  color: var(--white);
+}
+
+/* The buckle: brushed metal over the strap's end, with the way back to the top. */
+.buckle {
+  position: relative;
+  z-index: 1;
+  margin-right: 0.2em;
+  border-right: var(--strap-edge) solid var(--metal-dark);
+  background: linear-gradient(
+    180deg,
+    var(--metal-light),
+    var(--metal-mid) 52%,
+    var(--metal-light) 88%,
+    var(--metal-mid)
+  );
+  box-shadow:
+    inset 0 var(--strap-edge) 0 rgba(255, 255, 255, 0.7),
+    0.25rem 0 0.375rem rgba(var(--shadow-rgb), 0.3);
+}
+
+.buckle .link {
+  padding-inline: 0.9em 0.8em;
+}
+
+/* The one arrow the site draws, turned to point up. */
+.up {
+  width: 1em;
+  height: 1em;
+  rotate: -90deg;
+}
+
+@media (min-width: 1100px) {
+  .strap {
+    font-size: 0.9375rem;
+  }
+
+  .link {
+    padding-inline: 0.9em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+  }
+}

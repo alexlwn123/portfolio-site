@@ -1,0 +1,52 @@
+/*
+ * Palette classes for drawings. Colours stay in the tokens: an SVG shape takes
+ * a class here where the mockup typed a hex value into fill or stroke.
+ */
+
+/* Every drawing fills its sticker and may spill over its own edge. */
+.art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.ink {
+  fill: var(--ink);
+}
+
+.white {
+  fill: var(--white);
+}
+
+.tang {
+  fill: var(--tang);
+}
+
+.gum {
+  fill: var(--gum);
+}
+
+.hi {
+  fill: var(--hi);
+}
+
+.mint {
+  fill: var(--mint);
+}
+
+.hollow {
+  fill: none;
+}
+
+.inkLine {
+  stroke: var(--ink);
+}
+
+.whiteLine {
+  stroke: var(--white);
+}
+
+.tangLine {
+  stroke: var(--tang);
+}

@@ -1,0 +1,4 @@
+/* The medal's face takes the tone it is cut from: highlighter unless told otherwise. */
+.face {
+  fill: var(--c, var(--hi));
+}

@@ -1,0 +1,97 @@
+/*
+ * The vinyl skin: a white die-cut edge around a colour, with a gloss on top.
+ * The shape is wrapped in :where() so that a sticker's own class can change
+ * its padding, corners, edge or surface whichever stylesheet loads last.
+ */
+:where(.vinyl) {
+  display: block;
+  padding: 0.5em;
+  border-radius: 1.5em;
+  background: var(--c, var(--white));
+  box-shadow: inset 0 0 0 0.5em var(--white);
+}
+
+.vinyl {
+  position: relative;
+  overflow: hidden;
+}
+
+.vinyl::before {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0) 26%,
+    rgba(255, 255, 255, 0) 64%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  pointer-events: none;
+  content: '';
+}
+
+/*
+ * A corner that has started to peel. The cut grows from 2.4em to 4.2em while
+ * the sticker is lifted: --lift comes from Sticker.module.css and the
+ * clip-path animates between the two polygons.
+ */
+.peel {
+  --cut: calc(2.4em + var(--lift, 0) * 1.8em);
+
+  transition: clip-path 0.3s var(--ease-slap);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%
+  );
+}
+
+.peelTopLeft {
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut));
+}
+
+/*
+ * The peeled corner folded over: the sticker's silver backing, lit by the
+ * lamp. The mockup meant to draw it and never did (see DEVIATIONS.md), so it
+ * is drawn only once the page's script is running, and only while the corner
+ * is lifting: at rest the corner is the plain cut it always was.
+ */
+:global([data-enhanced]) .peel::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  width: var(--cut);
+  height: var(--cut);
+  border-top-left-radius: 0.5em;
+  background: linear-gradient(
+    calc(115deg + var(--lx) * 40deg),
+    var(--metal-mid) 0%,
+    var(--metal-light) calc(14% + var(--ly) * 22%),
+    #dfe1ec calc(34% + var(--ly) * 12%),
+    var(--metal-mid) 50%
+  );
+  opacity: var(--lift, 0);
+  pointer-events: none;
+  transition: opacity 0.2s;
+  content: '';
+}
+
+:global([data-enhanced]) .peelTopLeft::after {
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: 0;
+  border-radius: 0 0 0.5em;
+  rotate: 180deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peel,
+  :global([data-enhanced]) .peel::after {
+    transition: none;
+  }
+}

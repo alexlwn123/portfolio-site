@@ -1,0 +1,10 @@
+---
+import { content, stats } from '../content'
+import { NotFound } from '../features/notFound/NotFound'
+import { buildMeta } from '../features/seo/meta'
+import Base from '../layouts/Base.astro'
+---
+
+<Base meta={buildMeta('notFound', content, stats)}>
+  <NotFound />
+</Base>

@@ -1,0 +1,27 @@
+/* Definitions only: takes no room and paints nothing itself. */
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.holo1 {
+  stop-color: var(--holo-1);
+}
+
+.holo2 {
+  stop-color: var(--holo-2);
+}
+
+.holo3 {
+  stop-color: var(--holo-3);
+}
+
+.holo4 {
+  stop-color: var(--holo-4);
+}
+
+.holo5 {
+  stop-color: var(--holo-5);
+}

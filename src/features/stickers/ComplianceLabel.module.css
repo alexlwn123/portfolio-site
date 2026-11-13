@@ -1,0 +1,78 @@
+/*
+ * The small print: a compliance label, the kind stuck under every laptop. It
+ * is the asset tag's sibling, cut from the same metal with the same white
+ * edge and ink keyline, a size down and with nothing on it but type.
+ */
+.label {
+  padding: 0.72em 1.05em 0.66em;
+  border-radius: 0.5em;
+  box-shadow:
+    inset 0 0 0 0.24em var(--white),
+    inset 0 0 0 0.34em var(--ink);
+}
+
+/*
+ * The heading has a line to itself, and under it the numbers stand in columns
+ * of two, read down: the label is narrow, and two of the longer numbers do
+ * not fit across it.
+ */
+.print {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.8em;
+  font-size: 1.06em;
+  line-height: 1.16;
+}
+
+.heading {
+  flex-basis: 100%;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* A number is never broken across lines, and neither is the heading. */
+.run {
+  display: block;
+  white-space: nowrap;
+}
+
+/* Numbers one above the other need nothing between them. */
+.separator {
+  display: none;
+}
+
+/*
+ * A phone's label is wide and shallow, so each pair is a line of it instead,
+ * with a dot between the two. The heading and the first pair share a line
+ * where there is room, and part where there is not.
+ */
+@container lid (max-width: 560px) {
+  .print {
+    column-gap: 0.42em;
+    font-size: 1.2em;
+  }
+
+  .heading {
+    flex-basis: auto;
+  }
+
+  .group {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .group > .run,
+  .separator {
+    display: inline;
+  }
+}
+
+/* On the wide artboard a unit is a pixel at its narrowest, and 1.06em would be under 11px. */
+@container lid (min-width: 1100px) {
+  .print {
+    font-size: 1.1em;
+  }
+}

@@ -1,0 +1,241 @@
+import { PHONE_MAX_WIDTH_PX, WIDE_MIN_WIDTH_PX } from '../placement/artboards'
+import type { Frames, Timers } from './ticker'
+import type { Reading } from './tilt'
+
+/*
+ * Everything the lid's script asks of the browser, in one place. Each thing
+ * is looked for before it is used, and what is missing is null: the parts of
+ * the script that need it then leave the lid as it was. Tests hand the script
+ * an Env of their own.
+ */
+
+/** The phone's sense of which way up it is. */
+export interface Orientation {
+  /**
+   * Asks for readings. Where the platform wants to be asked from a user
+   * gesture (iOS), this is the asking. False means refused.
+   */
+  readonly ask: () => Promise<boolean>
+  /** Starts readings. Returns the way to stop them. */
+  readonly listen: (onReading: (reading: Reading) => void) => () => void
+  /** How far the screen is turned from the way the phone is built, in degrees. */
+  readonly screenAngle: () => number
+}
+
+/** Watches elements come on and go off screen. */
+export interface ScreenWatch {
+  readonly watch: (element: Element) => void
+}
+
+export type ScreenReport = (element: Element, onScreen: boolean) => void
+
+/** Something watched has come into view or gone out of it, and where on the screen it is. */
+export interface Sighting {
+  readonly element: Element
+  /** True when any of it is on the screen at all. */
+  readonly showing: boolean
+  /**
+   * True when enough of it is on the screen to be seen: a quarter of it, or,
+   * for something taller than the screen, a fifth of the screen full of it.
+   */
+  readonly onScreen: boolean
+  readonly left: number
+  readonly top: number
+}
+
+/** Everything that came into view or went out of it together. */
+export type SightReport = (seen: readonly Sighting[]) => void
+
+/** Watches for elements coming into view, until told to forget them. */
+export interface SightWatch {
+  readonly watch: (element: Element) => void
+  readonly forget: (element: Element) => void
+}
+
+export interface Env {
+  /** True when the visitor has asked for less motion. Read once, when the page loads. */
+  readonly reducedMotion: boolean
+  /** True on a device whose main pointer is a finger. */
+  readonly touch: boolean
+  /** True once the browser has painted the page. */
+  readonly painted: () => boolean
+  readonly frames: Frames
+  readonly timers: Timers
+  /** localStorage, or null where it is closed. Only reading and writing a key is asked of it. */
+  readonly storage: Pick<Storage, 'getItem' | 'setItem'> | null
+  /** Makes an audio context, or null where there is no Web Audio. */
+  readonly createAudio: () => AudioContext | null
+  /** Null where there is no IntersectionObserver. */
+  readonly onScreen: ((report: ScreenReport) => ScreenWatch) | null
+  /**
+   * Watches for things coming into view, and reports them a batch at a time
+   * with where each is. Null where there is no IntersectionObserver.
+   */
+  readonly onSight: ((report: SightReport) => SightWatch) | null
+  /** The time now, in ms, by the clock the frames keep. */
+  readonly now: () => number
+  /** Null where the device reports no orientation. */
+  readonly orientation: Orientation | null
+  /** Calls back when the lid changes between its arrangements. */
+  readonly onRearrange: (callback: () => void) => void
+}
+
+/** The lid changes arrangement where either of these starts or stops matching. */
+const REARRANGE_QUERIES = [
+  `(max-width: ${String(PHONE_MAX_WIDTH_PX)}px)`,
+  `(min-width: ${String(WIDE_MIN_WIDTH_PX)}px)`,
+] as const
+
+/** How far outside the screen a sticker is still counted as on it. */
+const SCREEN_MARGIN = '80px'
+
+/**
+ * When a thing coming into view is reported: as its first edge shows, and
+ * again as each further twentieth of it does, up to half. The screen is measured whole, with
+ * no margin, so that what lies at the very foot of the page can still be
+ * seen: nothing waits for a part of the screen it can never reach.
+ */
+const SIGHT_STEP = 0.05
+const SIGHT_STEP_COUNT = 10
+const SIGHT_STEPS: readonly number[] = Array.from(
+  { length: SIGHT_STEP_COUNT + 1 },
+  (_, index) => index * SIGHT_STEP,
+)
+/** A thing is on screen once this much of it shows. */
+const SEEN_SHARE = 0.25
+/** Or, when it is taller than that allows, once this much of the screen is full of it. */
+const SEEN_SCREEN_SHARE = 0.2
+
+/** iOS asks before it gives readings, through a function no other platform has. */
+interface OrientationPermission {
+  readonly requestPermission?: () => Promise<string>
+}
+
+type Win = Window & typeof globalThis
+
+function storageOf(win: Win): Storage | null {
+  try {
+    return win.localStorage
+  } catch {
+    // Reading the property itself throws when storage is blocked.
+    return null
+  }
+}
+
+function audioOf(win: Win): () => AudioContext | null {
+  return () => ('AudioContext' in win ? new win.AudioContext() : null)
+}
+
+function screenWatchOf(win: Win): Env['onScreen'] {
+  if (!('IntersectionObserver' in win)) {
+    return null
+  }
+  return (report) => {
+    const observer = new win.IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          report(entry.target, entry.isIntersecting)
+        }
+      },
+      { rootMargin: SCREEN_MARGIN },
+    )
+    return {
+      watch: (element) => {
+        observer.observe(element)
+      },
+    }
+  }
+}
+
+/** One entry of the observer's, as a sighting. */
+function sightingOf(entry: IntersectionObserverEntry, win: Win): Sighting {
+  const { target, isIntersecting, intersectionRatio, intersectionRect, rootBounds } = entry
+  const screen = rootBounds?.height ?? win.innerHeight
+  const enough =
+    intersectionRatio >= SEEN_SHARE || intersectionRect.height >= screen * SEEN_SCREEN_SHARE
+  return {
+    element: target,
+    showing: isIntersecting,
+    onScreen: isIntersecting && enough,
+    left: entry.boundingClientRect.left,
+    top: entry.boundingClientRect.top,
+  }
+}
+
+function sightWatchOf(win: Win): Env['onSight'] {
+  if (!('IntersectionObserver' in win)) {
+    return null
+  }
+  return (report) => {
+    const observer = new win.IntersectionObserver(
+      (entries) => {
+        report(entries.map((entry) => sightingOf(entry, win)))
+      },
+      { threshold: [...SIGHT_STEPS] },
+    )
+    return {
+      watch: (element) => {
+        observer.observe(element)
+      },
+      forget: (element) => {
+        observer.unobserve(element)
+      },
+    }
+  }
+}
+
+function orientationOf(win: Win): Orientation | null {
+  if (typeof win.DeviceOrientationEvent !== 'function') {
+    return null
+  }
+  const permission = win.DeviceOrientationEvent as OrientationPermission
+  return {
+    ask: async () =>
+      permission.requestPermission === undefined ||
+      (await permission.requestPermission()) === 'granted',
+    listen: (onReading) => {
+      const listener = ({ beta, gamma }: DeviceOrientationEvent): void => {
+        onReading({ beta, gamma })
+      }
+      win.addEventListener('deviceorientation', listener, { passive: true })
+      return () => {
+        win.removeEventListener('deviceorientation', listener)
+      }
+    },
+    screenAngle: () => ('orientation' in win.screen ? win.screen.orientation.angle : 0),
+  }
+}
+
+/** What this browser can do. */
+export function browserEnv(win: Win): Env {
+  const matches = (query: string): boolean => win.matchMedia(query).matches
+
+  return {
+    reducedMotion: matches('(prefers-reduced-motion: reduce)'),
+    touch: matches('(hover: none) and (pointer: coarse)'),
+    painted: () => win.performance.getEntriesByName('first-contentful-paint').length > 0,
+    frames: {
+      request: (callback) => win.requestAnimationFrame(callback),
+      cancel: (handle) => {
+        win.cancelAnimationFrame(handle)
+      },
+    },
+    timers: {
+      set: (callback, delayMs) => win.setTimeout(callback, delayMs),
+      clear: (handle) => {
+        win.clearTimeout(handle)
+      },
+    },
+    storage: storageOf(win),
+    createAudio: audioOf(win),
+    onScreen: screenWatchOf(win),
+    onSight: sightWatchOf(win),
+    now: () => win.performance.now(),
+    orientation: orientationOf(win),
+    onRearrange: (callback) => {
+      for (const query of REARRANGE_QUERIES) {
+        win.matchMedia(query).addEventListener('change', callback)
+      }
+    },
+  }
+}

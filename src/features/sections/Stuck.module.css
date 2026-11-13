@@ -1,0 +1,105 @@
+/*
+ * A sticker in the flow of a section: the shadow of Sticker.module.css
+ * without its placement. The lamp is at rest here, so the shadow falls
+ * straight down, as it does on the lid before the page's script runs.
+ */
+.stuck {
+  --lx: var(--lamp-rest-x);
+  --ly: var(--lamp-rest-y);
+  --cast-x: calc((var(--lamp-rest-x) - var(--lx)) * var(--cast-reach));
+  --cast-y: calc(0.5em + (var(--lamp-rest-y) - var(--ly)) * var(--cast-reach));
+  --lift: 0;
+
+  position: relative;
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(var(--cast-x) var(--cast-y) 0.5em rgba(var(--shadow-rgb), 0.38));
+}
+
+/*
+ * A sticker that is a link lifts under the pointer and under keyboard focus.
+ * Its face lifts, inside it. The link keeps its place, so hovering on its
+ * very edge holds: nothing slides away from the pointer and drops back.
+ */
+.lifts {
+  transition: filter var(--duration-hover);
+}
+
+.face {
+  position: relative;
+  display: block;
+  transition:
+    translate var(--duration-hover) var(--ease-slap),
+    scale var(--duration-hover) var(--ease-slap);
+}
+
+.lifts:hover > .face,
+.lifts:focus-visible > .face {
+  translate: 0 -0.35em;
+  scale: 1.035;
+}
+
+.lifts:hover,
+.lifts:focus-visible {
+  --lift: 1;
+
+  z-index: 2;
+  filter: drop-shadow(
+      calc(var(--cast-x) * 0.2) calc(var(--cast-y) * 0.2) 0 rgba(var(--shadow-rgb), 0.5)
+    )
+    drop-shadow(
+      calc(var(--cast-x) * 2.6) calc(var(--cast-y) * 2.6) 1em rgba(var(--shadow-rgb), 0.42)
+    );
+}
+
+/* The lid's ring: highlighter with an ink edge, visible on any surface. */
+.lifts:focus-visible {
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.3em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+/*
+ * Pressed on as it scrolls into view. The page's script holds back what is
+ * off screen when it starts, and lets each thing go when it comes into view:
+ * a quick press, for rhythm and not for show. Only that script sets these
+ * marks, and only where motion is welcome, so nothing here can hide a sticker
+ * by itself.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .stuck[data-land='wait'] {
+    opacity: 0;
+  }
+
+  .stuck[data-land='press'] {
+    animation: press 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.25) var(--land-delay, 0s) backwards;
+  }
+}
+
+@keyframes press {
+  from {
+    translate: 0 -0.5em;
+    scale: 1.06;
+    opacity: 0;
+  }
+}
+
+/* On paper everything is on. */
+@media print {
+  .stuck[data-land] {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lifts,
+  .face {
+    transition: none;
+  }
+}

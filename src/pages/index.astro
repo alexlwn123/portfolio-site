@@ -1,0 +1,23 @@
+---
+import 'virtual:lid-placement.css'
+
+import { getImage } from 'astro:assets'
+
+import portrait from '../assets/alex-lewin.png'
+import { content, stats } from '../content'
+import { resolveBadgePhoto } from '../features/badge/photoSources'
+import { HomePage } from '../features/home/HomePage'
+import { buildMeta } from '../features/seo/meta'
+import Base from '../layouts/Base.astro'
+
+const photo = await resolveBadgePhoto(getImage, portrait)
+---
+
+<Base meta={buildMeta('home', content, stats)}>
+  <HomePage content={content} stats={stats} photo={photo} />
+</Base>
+
+<script>
+  // The home page's one script. The lid above is whole without it.
+  import '../features/lid/enhance/lid.client'
+</script>

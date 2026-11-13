@@ -1,0 +1,212 @@
+/*
+ * The address label: white label stock with a heavy tangerine border, his
+ * name as big as the label allows, his city, and the address on an ink plate
+ * that is the link. A strip of highlighter tape holds one corner down.
+ */
+.stuck {
+  display: grid;
+  rotate: -1deg;
+}
+
+.label {
+  display: grid;
+  padding: 0.9em;
+  border-radius: 2em;
+  background: var(--tang);
+  box-shadow: inset 0 0 0 0.5em var(--white);
+}
+
+/* Given more height than it needs, the label keeps the address in its middle. */
+.face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3.4em 3.2em 3.2em;
+  border-radius: 1.2em;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.tape {
+  position: absolute;
+  top: -1.9em;
+  right: 5em;
+  z-index: 4;
+  width: 11em;
+  height: 3.2em;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 0.1em, transparent 0.1em 0.5em),
+    var(--hi);
+  opacity: 0.9;
+  rotate: 5deg;
+}
+
+.address {
+  display: block;
+  font-style: normal;
+}
+
+.name {
+  display: block;
+  font-size: 7.3em;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+}
+
+.city {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 3em;
+  line-height: 1;
+  letter-spacing: 0.09em;
+}
+
+/* The address: an ink plate lettered in highlighter, the whole of it the link. */
+/*
+ * The link keeps its place and the ink bar inside it lifts, so a pointer
+ * resting on the bar's edge stays on the link.
+ */
+.email {
+  display: block;
+  margin-top: 1.9em;
+  color: var(--hi);
+  text-decoration: none;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 1em;
+  align-items: center;
+  padding: 1.3em 2em 1.2em;
+  border-radius: 1em;
+  background: var(--ink);
+  transition:
+    translate var(--duration-hover) var(--ease-slap),
+    scale var(--duration-hover) var(--ease-slap);
+}
+
+.hint {
+  /* "Write to" sits on its own line, so the address and its arrow share the next. */
+  flex: 1 1 100%;
+  color: var(--white);
+  font-size: 1.6em;
+  letter-spacing: 0.12em;
+}
+
+.to {
+  font-stretch: var(--label-stretch);
+  font-size: 4.4em;
+  font-weight: var(--label-weight);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+
+.arrow {
+  flex: none;
+  width: 2.8em;
+  height: 2.8em;
+  margin-left: auto;
+  transition: translate 0.2s;
+}
+
+.email:hover > .bar,
+.email:focus-visible > .bar {
+  translate: 0 -0.25em;
+  scale: 1.012;
+}
+
+.email:hover .arrow,
+.email:focus-visible .arrow {
+  translate: 0.5em 0;
+}
+
+/* The lid's ring: highlighter with an ink edge. On the white label the ink edge is what shows. */
+.email:focus-visible {
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.3em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+@container section (max-width: 1099px) {
+  .stuck {
+    rotate: -1.2deg;
+  }
+
+  .face {
+    padding: 3em 3em 2.8em;
+  }
+
+  .name {
+    font-size: 8.1em;
+  }
+
+  .city {
+    font-size: 2.8em;
+  }
+
+  .to {
+    font-size: 4.6em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .stuck {
+    rotate: -1.1deg;
+  }
+
+  .label {
+    padding: 0.8em;
+    border-radius: 1.7em;
+  }
+
+  .face {
+    padding: 2.6em 1.5em 2em;
+  }
+
+  .tape {
+    right: 2.4em;
+    width: 8.4em;
+    height: 2.6em;
+  }
+
+  .name {
+    font-size: 4.25em;
+  }
+
+  .city {
+    font-size: 2.2em;
+  }
+
+  .email {
+    margin-top: 1.5em;
+  }
+
+  .bar {
+    gap: 0.25em 0.8em;
+    padding: 1.2em 1.2em 1.1em;
+  }
+
+  .hint {
+    font-size: 1.4em;
+  }
+
+  .to {
+    font-size: 2.85em;
+  }
+
+  .arrow {
+    width: 2.4em;
+    height: 2.4em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .arrow {
+    transition: none;
+  }
+}

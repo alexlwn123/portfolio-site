@@ -1,0 +1,37 @@
+/*
+ * Holographic foil in CSS: fine diagonal stripes, a hot spot and a rainbow
+ * that slide with the lamp (0 to 1 across and down). --lx and --ly are the
+ * lamp as the sticker the foil is on sees it: see Sticker.module.css.
+ */
+.foil {
+  background:
+    repeating-linear-gradient(
+      calc(52deg + var(--lx) * 36deg),
+      rgba(255, 255, 255, 0) 0 0.55em,
+      rgba(255, 255, 255, 0.4) 0.62em,
+      rgba(255, 255, 255, 0) 0.8em
+    ),
+    radial-gradient(
+      circle at calc(var(--lx) * 100%) calc(var(--ly) * 100%),
+      rgba(255, 255, 255, 0.75),
+      rgba(255, 255, 255, 0) 38%
+    ),
+    linear-gradient(
+      calc(105deg + var(--ly) * 50deg),
+      var(--holo-1) 0%,
+      var(--holo-2) 17%,
+      var(--holo-3) 34%,
+      var(--holo-4) 52%,
+      var(--holo-5) 70%,
+      var(--holo-1) 86%,
+      var(--holo-2) 100%
+    );
+  background-position:
+    0 0,
+    0 0,
+    calc(var(--lx) * 100%) calc(var(--ly) * 100%);
+  background-size:
+    100% 100%,
+    100% 100%,
+    240% 240%;
+}

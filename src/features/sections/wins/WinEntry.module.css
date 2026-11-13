@@ -1,0 +1,259 @@
+/*
+ * One win on the sheet: the sticker, a little crooked, and beside it what the
+ * record says, printed on the backing paper in ink.
+ *
+ * A win asks for a share of a line of the sheet, a first place for more than
+ * a second or a prize, and two share a line. From one line to the next the
+ * stickers change sides, so no two stand in a column. The newest has a line
+ * to itself, and under it the sheet is ruled off from the rest.
+ */
+.entry {
+  display: flex;
+  flex: 1 1 40%;
+  flex-direction: var(--run, row);
+  gap: 2.4em;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.entry[data-finish='first'] {
+  flex-basis: 46%;
+}
+
+/* The newest: the whole width, its sticker half as large again, and a rule under it. */
+.entry:first-child {
+  --room: 1.3;
+  --ride: 5.2em;
+
+  flex-basis: 100%;
+  gap: 4em;
+  padding-bottom: 3.4em;
+  border-bottom: 0.16em dashed rgba(var(--shadow-rgb), 0.45);
+}
+
+/* The first under that rule rides up over it. */
+.entry:nth-child(2) {
+  --ride: 6.6em;
+}
+
+/* Every other line of two has its stickers on the far side. */
+.entry:nth-child(4n),
+.entry:nth-child(4n + 1) {
+  --run: row-reverse;
+}
+
+.entry:first-child {
+  --run: row;
+}
+
+/* The sticker's place. One that rides over a printed rule is pulled up across it. */
+.slot {
+  display: flex;
+  flex: none;
+  justify-content: center;
+  margin-top: calc(var(--ride, 0em) * -1);
+}
+
+/* No two neighbours sit at the same angle. */
+.entry:nth-child(4n + 1) > .slot {
+  --tilt: -3deg;
+}
+
+.entry:nth-child(4n + 2) > .slot {
+  --tilt: 2.5deg;
+}
+
+.entry:nth-child(4n + 3) > .slot {
+  --tilt: -1.5deg;
+}
+
+.entry:nth-child(4n + 4) > .slot {
+  --tilt: 3.5deg;
+}
+
+.facts {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The newest is set in two columns under its name, as the lead of a page is. */
+.entry:first-child > .facts {
+  column-gap: 3em;
+  columns: 2;
+}
+
+.entry:first-child > .facts > * {
+  break-inside: avoid;
+}
+
+.entry:first-child .title,
+.entry:first-child .result {
+  column-span: all;
+}
+
+.entry:first-child .title {
+  font-size: 3.4em;
+}
+
+.entry:first-child .result {
+  margin-bottom: 0.7em;
+  font-size: 1.6em;
+}
+
+.entry:first-child .what {
+  margin-top: 0;
+  font-size: 1.6em;
+}
+
+.title,
+.result,
+.what,
+.line {
+  margin: 0;
+}
+
+.title {
+  font-size: 2.5em;
+  line-height: 1;
+}
+
+.result {
+  margin-top: 0.4em;
+  font-size: 1.4em;
+  font-weight: var(--weight-bold);
+  line-height: 1.3;
+}
+
+/* The result, run over with a highlighter. */
+.place {
+  padding: 0.05em 0.3em;
+  border-radius: 0.2em;
+  background: var(--hi);
+  font-weight: var(--weight-heavy);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.what {
+  margin-top: 0.55em;
+  font-size: 1.45em;
+  line-height: 1.34;
+}
+
+.line {
+  margin-top: 0.4em;
+  color: var(--color-text-muted);
+  font-size: 1.32em;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.3em;
+  margin: 0.35em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The padding makes every link a target of 24px or more on a phone. */
+.link {
+  display: inline-block;
+  padding: 0.42em 0;
+  color: var(--deep);
+  font-size: 1.4em;
+  font-weight: var(--weight-bold);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.2em;
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration-thickness: 0.2em;
+}
+
+/* The lid's ring, with the ink inside it: the paper is white, so the ink edge is what shows. */
+.link:focus-visible {
+  outline: 0.2em solid var(--ink);
+  outline-offset: 0.15em;
+  border-radius: 0.2em;
+  background: var(--hi);
+}
+
+/* A tablet: one win to a line, the stickers on one side and then the other. */
+@container section (max-width: 1099px) {
+  .entry,
+  .entry[data-finish='first'] {
+    flex-basis: 100%;
+  }
+
+  .entry:nth-child(n) {
+    --run: row;
+  }
+
+  .entry:nth-child(even) {
+    --run: row-reverse;
+  }
+
+  .entry:first-child {
+    --room: 1.1;
+
+    gap: 2.4em;
+  }
+
+  .entry:first-child > .facts {
+    columns: 1;
+  }
+
+  .entry:first-child .title {
+    font-size: 3em;
+  }
+
+  .what {
+    font-size: 1.5em;
+  }
+}
+
+/* A phone: the sticker, and under it what it was for. */
+@container section (max-width: 560px) {
+  .entry {
+    flex-direction: column;
+    gap: 1.2em;
+  }
+
+  .entry:first-child {
+    --room: 1;
+
+    gap: 1.2em;
+    padding-bottom: 3em;
+  }
+
+  .slot {
+    margin-top: 0;
+  }
+
+  /* Left and right in turn, so the sheet does not read as one column. */
+  .entry:nth-child(odd) > .slot {
+    align-self: flex-start;
+  }
+
+  .entry:nth-child(even) > .slot {
+    align-self: flex-end;
+  }
+
+  .title,
+  .entry:first-child .title {
+    font-size: 2.4em;
+  }
+
+  .entry:first-child .result {
+    margin-bottom: 0;
+    font-size: 1.4em;
+  }
+
+  .entry:first-child .what {
+    margin-top: 0.55em;
+    font-size: 1.5em;
+  }
+}

@@ -1,0 +1,19 @@
+/* A small pill: one shouted word in a white-edged lozenge. */
+.pill {
+  display: block;
+  padding: 0.32em 0.95em 0.28em;
+  border: 0.26em solid var(--white);
+  border-radius: 2em;
+  background: var(--c, var(--white));
+  color: var(--t, var(--ink));
+  font-stretch: var(--label-stretch);
+  font-size: 1.3em;
+  font-weight: var(--label-weight);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.big {
+  font-size: 1.55em;
+}

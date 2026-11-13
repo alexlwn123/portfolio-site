@@ -1,0 +1,130 @@
+/*
+ * A band of the home page. It is as wide as the screen, and what is in it is
+ * measured in the lid's design unit: inside .units one em is ten units, on an
+ * artboard 1100 units wide on a laptop, 728 on a tablet and 390 on a phone.
+ * The three widths and the two breakpoints are the lid's own (see
+ * src/features/lid/placement/artboards.ts), so a sticker is the same size
+ * here as it is up there.
+ */
+.frame {
+  /* The lamp at rest, as on the lid. Shadows and foil read these. */
+  --lamp-rest-x: 0.35;
+  --lamp-rest-y: 0.3;
+  --lamp-x: var(--lamp-rest-x);
+  --lamp-y: var(--lamp-rest-y);
+  --cast-reach: 1.8em;
+
+  position: relative;
+  isolation: isolate;
+
+  /* Room for whatever the page pins to the top of the screen. */
+  scroll-margin-top: var(--pinned-height, 0px);
+  container: section / inline-size;
+  overflow-x: clip;
+  color: var(--white);
+  font-family: var(--font-body);
+  line-height: normal;
+}
+
+/*
+ * A link reached by keyboard is brought clear of the strap pinned over the
+ * section, with room for its focus ring, and not left underneath it.
+ */
+.frame :is(a, button, summary, [tabindex]) {
+  scroll-margin-top: calc(var(--pinned-height, 0px) + 0.75rem);
+}
+
+/* The lid again: brushed cobalt. */
+.lid {
+  background:
+    radial-gradient(90% 50% at 10% -5%, rgba(150, 170, 255, 0.35), transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      rgba(0, 0, 40, 0.05) 1px 2px,
+      transparent 2px 4px
+    ),
+    var(--cobalt);
+}
+
+/* A cutting mat: ink, ruled in spearmint. */
+.mat {
+  background:
+    linear-gradient(rgba(47, 230, 181, 0.22) 1px, transparent 1px) 0 0 / 100% 10rem,
+    linear-gradient(90deg, rgba(47, 230, 181, 0.22) 1px, transparent 1px) 0 0 / 10rem 100%,
+    linear-gradient(rgba(47, 230, 181, 0.08) 1px, transparent 1px) 0 0 / 100% 2rem,
+    linear-gradient(90deg, rgba(47, 230, 181, 0.08) 1px, transparent 1px) 0 0 / 2rem 100%,
+    var(--ink);
+}
+
+/*
+ * The column every section is set in: 1000 units between two gutters of 50.
+ * The unit grows with the screen up to 1440px across and stops there, so on a
+ * larger screen the margins grow and the type does not.
+ */
+.units {
+  max-width: 1440px;
+  margin-inline: auto;
+  padding: 7em 5em 9em;
+  font-size: min(calc(100cqw / 110), calc(1440px / 110));
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4em;
+  align-items: flex-start;
+  margin-bottom: 4.5em;
+}
+
+/* The heading is sized as a sticker, not as a heading. */
+.title {
+  margin: 0;
+  font: inherit;
+  rotate: -2.5deg;
+}
+
+.kicker {
+  margin: 0 0 0 0.6em;
+  color: var(--hi);
+  font-size: 2.2em;
+  line-height: 1.2;
+  rotate: -1.5deg;
+}
+
+/*
+ * A wider measure, for a section that is a surface to spread things out on:
+ * the screen from margin to margin, up to half as wide again as the column.
+ * The unit is the column's, so nothing is drawn larger: there is only more
+ * room across. The heading moves out with the rest, and still stands on the
+ * left edge of what is under it. On a tablet and a phone the column is the
+ * screen already.
+ */
+@container section (min-width: 1100px) {
+  .wide {
+    max-width: 150em;
+    padding-inline: 3.2em;
+  }
+}
+
+@container section (max-width: 1099px) {
+  .units {
+    padding: 6em 3em 8em;
+    font-size: calc(100cqw / 72.8);
+  }
+}
+
+@container section (max-width: 560px) {
+  .units {
+    padding: 5em 1.6em 6.5em;
+    font-size: calc(100cqw / 39);
+  }
+
+  .header {
+    margin-bottom: 3.2em;
+  }
+
+  .kicker {
+    font-size: 1.9em;
+  }
+}

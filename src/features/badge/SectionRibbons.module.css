@@ -1,0 +1,196 @@
+/* Stick-on ribbons under the badge: the way into each section of the page. */
+.ribbons {
+  width: 100%;
+  margin-top: -0.2em;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  margin-top: -0.85em;
+}
+
+/* Each ribbon is stuck on a little askew: --o shifts it, --rr tilts it. */
+.ribbon {
+  position: relative;
+  display: block;
+  width: 20.6em;
+  height: 4.3em;
+  color: var(--t, var(--ink));
+  text-decoration: none;
+  filter: drop-shadow(
+    calc(var(--cast-x) * 0.56) calc(var(--cast-y) * 0.56) 0.22em rgba(var(--shadow-rgb), 0.45)
+  );
+  translate: calc(var(--o, 0) * 0.1em) 0;
+  rotate: var(--rr, 0deg);
+}
+
+.item:nth-child(4n + 1) .ribbon {
+  --o: -5;
+  --rr: -1.4deg;
+}
+
+.item:nth-child(4n + 2) .ribbon {
+  --o: 4;
+  --rr: 1deg;
+}
+
+.item:nth-child(4n + 3) .ribbon {
+  --o: -2;
+  --rr: -0.6deg;
+}
+
+.item:nth-child(4n + 4) .ribbon {
+  --o: 5;
+  --rr: 1.6deg;
+}
+
+/*
+ * Each ribbon is tucked under the one above it. Past the fourth, a ribbon
+ * leans as the first four do in turn. Eight is more than the badge has ever
+ * carried, and any more than that would still lie in the order they come.
+ */
+.item:nth-child(1) .ribbon {
+  z-index: 8;
+}
+
+.item:nth-child(2) .ribbon {
+  z-index: 7;
+}
+
+.item:nth-child(3) .ribbon {
+  z-index: 6;
+}
+
+.item:nth-child(4) .ribbon {
+  z-index: 5;
+}
+
+.item:nth-child(5) .ribbon {
+  z-index: 4;
+}
+
+.item:nth-child(6) .ribbon {
+  z-index: 3;
+}
+
+.item:nth-child(7) .ribbon {
+  z-index: 2;
+}
+
+.item:nth-child(8) .ribbon {
+  z-index: 1;
+}
+
+/*
+ * A ribbon that is a link slides out a little under the pointer. Its face
+ * slides, inside it: the ribbon keeps its place, so a pointer on its end
+ * stays on it. The face's type is 1.85 times the ribbon's, and the slide is
+ * 0.9 of the ribbon's em.
+ */
+a.ribbon:hover > .face,
+a.ribbon:focus-visible > .face {
+  translate: calc(0.9em / 1.85) 0;
+}
+
+.item .ribbon:focus-visible {
+  z-index: 9;
+  outline: 0.3em solid var(--hi);
+  outline-offset: 0.3em;
+  border-radius: 0;
+  box-shadow: 0 0 0 0.85em var(--ink);
+}
+
+/* The printed face, with pinked ends cut by the mask. */
+.face {
+  display: flex;
+  gap: 0.45em;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 0.25em;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5),
+      rgba(255, 255, 255, 0) 30%,
+      rgba(0, 0, 0, 0.13)
+    ),
+    var(--c);
+  font-size: 1.85em;
+  letter-spacing: 0.04em;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% /
+    0.46em 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 0.46em 100%;
+  transition: translate 0.25s var(--ease-slap);
+}
+
+/*
+ * The ribbon with buttons pinned to it. It is two ribbons deep, less the tuck
+ * between them, so the stack under the badge is exactly as long as it would
+ * be with a ribbon for each button. Its word sits where any ribbon's does,
+ * and the buttons are pinned to its two lower corners.
+ */
+.pinned {
+  --depth: 4.3em;
+  --tuck: 0.85em;
+  --button: 6.2em;
+
+  height: calc(var(--depth) * 2 - var(--tuck));
+}
+
+.pinned > .face {
+  align-items: flex-start;
+  padding-bottom: 0;
+}
+
+/* A ribbon's own depth, in the face's larger type, with the same lift off the pinked edge. */
+.word {
+  display: flex;
+  align-items: center;
+  height: calc(4.3em / 1.85);
+  padding-bottom: 0.25em;
+}
+
+/*
+ * The buttons lie over the ribbon, not in its face: the face is cut by a
+ * mask, and a button is not. Each hangs a little off the ribbon's end and its
+ * foot, as a button pinned near a corner does, and clear of the word.
+ */
+.pins {
+  position: absolute;
+  inset: auto -1.3em -0.8em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pinItem {
+  display: flex;
+}
+
+/* Each is pinned on by hand: one hangs askew one way, the next the other. */
+.pinItem:nth-child(odd) {
+  --lean: -8deg;
+}
+
+.pinItem:nth-child(even) {
+  --lean: 6deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .face {
+    transition: none;
+  }
+}

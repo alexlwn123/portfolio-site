@@ -1,0 +1,442 @@
+/*
+ * One wristband around the arm. A port of the mockup's .band: the band is as
+ * wide as the arm is where it sits (--k counts the bands above it), tilted a
+ * little (--r), with its loose tail pointing at its label.
+ *
+ * --over is how much wider a band is than the first one. Its margins take
+ * that back, so every band takes the first one's room in the row and the
+ * rows can share one column for the arm.
+ *
+ * --h is how tall this band is. Whatever it is, the band takes the room of a
+ * band of the usual height (--bh), with its middle where that one's would be:
+ * so the bands are evenly spaced down the arm, and a label can be set level
+ * with the middle of its band without knowing which kind it is.
+ */
+.band {
+  /* Foil reads the lamp. Here it is always at rest. */
+  --lx: var(--lamp-rest-x);
+  --ly: var(--lamp-rest-y);
+  --over: calc(var(--k, 0) * var(--widen));
+  --h: var(--bh);
+
+  position: relative;
+  display: flex;
+  gap: 0.7em;
+  align-items: center;
+  width: calc(var(--aw) + 3em + var(--over));
+  height: var(--h);
+  margin: calc(var(--bm) + (var(--bh) - var(--h)) / 2) calc(var(--over) / -2);
+  padding: 0 1em;
+  border-radius: 0.7em;
+  color: var(--t, var(--ink));
+  rotate: var(--r, 0deg);
+  filter: drop-shadow(0 0.1em 0 rgba(var(--shadow-rgb), 0.5))
+    drop-shadow(0 0.38em 0.32em rgba(var(--shadow-rgb), 0.4));
+  transition:
+    translate 0.3s var(--ease-slap),
+    rotate 0.3s;
+}
+
+/* The band curves away round the arm at both ends, and catches the light along its top. */
+.band::before {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--shadow-rgb), 0.34),
+      rgba(var(--shadow-rgb), 0) 9%,
+      rgba(255, 255, 255, 0.22) 30%,
+      rgba(var(--shadow-rgb), 0) 62%,
+      rgba(var(--shadow-rgb), 0.3)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.35) 0 0.26em,
+      transparent 0.26em calc(100% - 0.26em),
+      rgba(0, 0, 0, 0.14) calc(100% - 0.26em)
+    );
+  pointer-events: none;
+  content: '';
+}
+
+/* The loose tail of the band points at its label. */
+.band::after {
+  position: absolute;
+  top: 0.65em;
+  right: -2.5em;
+  bottom: 0.65em;
+  z-index: -1;
+  width: 3.4em;
+  border-radius: 0.3em;
+  background:
+    repeating-linear-gradient(-58deg, transparent 0 0.5em, rgba(23, 18, 43, 0.45) 0.5em 0.62em),
+    var(--c, var(--white));
+  filter: brightness(0.92);
+  rotate: -9deg;
+  transform-origin: 0 50%;
+  content: '';
+}
+
+:global([data-side='left']) > * > .band {
+  flex-direction: row-reverse;
+}
+
+:global([data-side='left']) > * > .band::after {
+  right: auto;
+  left: -2.5em;
+  rotate: 9deg;
+  transform-origin: 100% 50%;
+}
+
+/* Under the pointer a band straightens and slides toward its label. */
+:global([data-side]):hover > * > .band {
+  rotate: 0deg;
+}
+
+:global([data-side='right']):hover > * > .band {
+  translate: 0.9em 0;
+}
+
+:global([data-side='left']):hover > * > .band {
+  translate: -0.9em 0;
+}
+
+/* ---------- what is printed on every band ---------- */
+.number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.75em;
+  height: 1.75em;
+  padding-top: 0.05em;
+  border: 0.13em solid currentcolor;
+  border-radius: 50%;
+  font-size: 1.3em;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.52em;
+  line-height: 1;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ---------- colours ---------- */
+.mint {
+  --c: var(--mint);
+}
+
+.tang {
+  --c: var(--tang);
+}
+
+.hi {
+  --c: var(--hi);
+}
+
+.white {
+  --c: var(--white);
+}
+
+.sky {
+  --c: var(--sky);
+}
+
+.cobalt {
+  --c: var(--cobalt);
+  --t: var(--white);
+}
+
+.ink {
+  --c: var(--ink);
+  --t: var(--white);
+}
+
+.deep {
+  --c: var(--deep);
+  --t: var(--tang-light);
+}
+
+/* ---------- paper: a printed block at the clasp end ---------- */
+.tyvek {
+  background: var(--c, var(--white));
+}
+
+.clasp {
+  flex: none;
+  align-self: stretch;
+  width: 2.5em;
+  margin: 0 -1em 0 0;
+  border-radius: 0 0.7em 0.7em 0;
+}
+
+:global([data-side='left']) > * > .band > .clasp {
+  margin: 0 0 0 -1em;
+  border-radius: 0.7em 0 0 0.7em;
+}
+
+.stripes {
+  background: repeating-linear-gradient(-45deg, var(--ink) 0 0.3em, transparent 0.3em 0.72em);
+}
+
+.checker {
+  background: conic-gradient(var(--ink) 25%, transparent 0 50%, var(--ink) 0 75%, transparent 0) 0
+    0 / 0.9em 0.9em;
+}
+
+.hazard {
+  background: repeating-linear-gradient(-45deg, var(--hi) 0 0.45em, var(--ink) 0.45em 0.9em);
+}
+
+.zig {
+  background:
+    linear-gradient(135deg, var(--ink) 25%, transparent 25%) -0.4em 0 / 0.8em 0.8em,
+    linear-gradient(225deg, var(--ink) 25%, transparent 25%) -0.4em 0 / 0.8em 0.8em;
+}
+
+.lines {
+  background: repeating-linear-gradient(90deg, var(--ink) 0 0.2em, transparent 0.2em 0.56em);
+}
+
+.bars {
+  background: repeating-linear-gradient(0deg, var(--white) 0 0.36em, transparent 0.36em 0.82em);
+}
+
+.tiles {
+  background:
+    linear-gradient(var(--white) 0.16em, transparent 0.16em) 0 0 / 0.8em 0.8em,
+    linear-gradient(90deg, var(--white) 0.16em, transparent 0.16em) 0 0 / 0.8em 0.8em;
+}
+
+.dots {
+  background: radial-gradient(var(--ink) 0.2em, transparent 0.24em) 0 0 / 0.7em 0.7em;
+}
+
+/* Two hours long. */
+.thin {
+  --h: 3em;
+}
+
+.thin .name {
+  font-size: 1.3em;
+}
+
+.thin .number {
+  font-size: 1.05em;
+}
+
+/* ---------- woven cloth, with a sliding bead ---------- */
+.woven {
+  border-radius: 0.25em;
+  background:
+    linear-gradient(
+      180deg,
+      var(--e1) 0 0.34em,
+      var(--e2) 0.34em 0.68em,
+      transparent 0.68em calc(100% - 0.68em),
+      var(--e2) calc(100% - 0.68em) calc(100% - 0.34em),
+      var(--e1) calc(100% - 0.34em)
+    ),
+    repeating-linear-gradient(45deg, rgba(23, 18, 43, 0.09) 0 0.12em, transparent 0.12em 0.3em),
+    var(--c, var(--white));
+}
+
+/* The cut end of a cloth band frays. */
+.woven::after {
+  top: 0.2em;
+  bottom: 0.2em;
+  width: 3em;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--c, var(--white)) 0 0.22em,
+    transparent 0.22em 0.4em
+  );
+  filter: none;
+}
+
+.inkTang {
+  --e1: var(--ink);
+  --e2: var(--tang);
+}
+
+.tangCobalt {
+  --e1: var(--tang);
+  --e2: var(--cobalt);
+}
+
+.skyCobalt {
+  --e1: var(--sky);
+  --e2: var(--cobalt);
+}
+
+.bead {
+  z-index: 3;
+  flex: none;
+  align-self: center;
+  width: 1.1em;
+  height: 5.3em;
+  margin: 0 -0.5em;
+  border-radius: 0.4em;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 60%), var(--ink);
+  box-shadow: inset 0.12em 0 0 rgba(255, 255, 255, 0.3);
+}
+
+/* ---------- moulded silicone ---------- */
+.silicone {
+  --h: 4.2em;
+
+  border-radius: 2.3em;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.38),
+      rgba(255, 255, 255, 0) 30%,
+      rgba(0, 0, 0, 0.22)
+    ),
+    var(--c, var(--white));
+}
+
+.silicone::after {
+  display: none;
+}
+
+.silicone .name {
+  font-family: var(--font-display);
+  font-stretch: 100%;
+  font-size: 1.5em;
+  font-weight: var(--weight-regular);
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 -0.06em 0 rgba(0, 0, 0, 0.45),
+    0 0.05em 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ---------- holographic: the big one ---------- */
+.foil {
+  --h: 6.2em;
+}
+
+.foil::after {
+  background: linear-gradient(90deg, var(--holo-3), var(--holo-4));
+  filter: none;
+}
+
+.foil .name {
+  font-family: var(--font-display);
+  font-stretch: 100%;
+  font-size: 1.62em;
+  font-weight: var(--weight-regular);
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+}
+
+/* ---------- not printed yet ---------- */
+/* A long strip, still to be cut to length: ten units longer than a printed band. */
+.blank {
+  --over: 10em;
+
+  margin-top: 0;
+  background: var(--white);
+  outline: 0.16em dashed var(--ink);
+  outline-offset: -0.5em;
+  rotate: -5deg;
+}
+
+.blank::after {
+  display: none;
+}
+
+.blank .name {
+  font-size: 1.75em;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---------- a phone: every band's tail and clasp is on the right ---------- */
+@container section (max-width: 560px) {
+  .band {
+    --over: calc(min(var(--k, 0), 20) * var(--widen));
+
+    gap: 0.5em;
+    width: calc(var(--aw) + 2.6em + var(--over));
+    height: auto;
+    min-height: 4.6em;
+    margin: var(--bm) 0;
+    padding: 0.5em 0.7em;
+  }
+
+  .band::after,
+  :global([data-side='left']) > * > .band::after {
+    right: -1.8em;
+    left: auto;
+    width: 2.6em;
+    rotate: -9deg;
+    transform-origin: 0 50%;
+  }
+
+  :global([data-side='left']) > * > .band {
+    flex-direction: row;
+  }
+
+  :global([data-side='left']):hover > * > .band {
+    translate: 0.9em 0;
+  }
+
+  .number,
+  .thin .number {
+    font-size: 1.2em;
+  }
+
+  .name,
+  .thin .name,
+  .foil .name,
+  .silicone .name {
+    font-size: 1.22em;
+  }
+
+  .clasp,
+  :global([data-side='left']) > * > .band > .clasp {
+    width: 1.8em;
+    margin: 0 -0.7em 0 0;
+    border-radius: 0 0.7em 0.7em 0;
+  }
+
+  .clasp {
+    margin-block: -0.5em;
+  }
+
+  .thin {
+    min-height: 3em;
+    padding: 0.35em 0.7em;
+  }
+
+  .foil {
+    min-height: 6em;
+  }
+
+  .bead {
+    height: 5.6em;
+    margin-block: -0.5em;
+  }
+
+  .blank {
+    --over: 3.4em;
+  }
+
+  .blank .name {
+    font-size: 1.4em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .band {
+    transition: none;
+  }
+}

@@ -1,0 +1,74 @@
+/* A "HELLO I'm a" name tag, filled in by hand: two short sentences. */
+.intro {
+  margin: 0;
+}
+
+.top {
+  display: flex;
+  gap: 0.9em;
+  align-items: baseline;
+  padding: 0.75em 1.4em 0.5em;
+  border-radius: 1em 1em 0 0;
+  background: var(--tang);
+
+  /* Ink, not the mockup's white, which is 2.9:1 on tangerine. */
+  color: var(--ink);
+}
+
+.greeting {
+  font-size: 3.3em;
+  line-height: 0.9;
+  letter-spacing: 0.03em;
+}
+
+.lead {
+  font-size: 1.55em;
+}
+
+.text {
+  display: block;
+  padding: 0.5em 0.8em 0.75em;
+  font-size: 1.95em;
+  line-height: 1.2;
+}
+
+/* A sentence to a line where the tag is wide enough for that, as it is on a laptop. Elsewhere they run on. */
+@container lid (min-width: 1100px) {
+  .line {
+    display: block;
+  }
+}
+
+/*
+ * A pass of the highlighter: a stroke under the phrase, behind its letters.
+ * It is a piece of its own so that it can be drawn, from left to right, once
+ * the tag has landed.
+ */
+.highlight {
+  position: relative;
+  isolation: isolate;
+  background: none;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.highlight::before {
+  position: absolute;
+  inset: 55% 0 8%;
+  z-index: -1;
+  background: var(--hi);
+  transform-origin: 0 50%;
+  content: '';
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .highlight::before {
+    animation: stroke 0.32s cubic-bezier(0.3, 0.7, 0.2, 1) 0.98s backwards;
+  }
+}
+
+@keyframes stroke {
+  from {
+    scale: 0 1;
+  }
+}

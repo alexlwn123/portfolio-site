@@ -1,0 +1,158 @@
+/*
+ * The shirt on the left, from the column's left edge, and beside it a stack
+ * of the smaller stickers, every one out to the column's right edge. The
+ * stack starts level with the section's heading, which is over the shirt, and
+ * is spread to end where the shirt's hem does. Each sticker has a place of its
+ * own (.air, .pass, .card, .cutting, .also), a size that suits it and a lean.
+ * A sticker's own stylesheet gives it a width: where a place overrules that,
+ * it does so from under .around, to be the stronger rule wherever it loads.
+ */
+.stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 2.5em;
+  align-items: stretch;
+}
+
+.around {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2.4em;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 0;
+  margin-top: -19em;
+}
+
+/* The sign is lit beside the heading. */
+.air {
+  font-size: 1.1em;
+  rotate: 2deg;
+}
+
+/* A pass is taller than it is wide, so it is the one sticker narrower than the stack. */
+.pass {
+  font-size: 1.16em;
+  rotate: -2.5deg;
+}
+
+/* The record sticker rides over the card's corner, so the card stands in by that much. */
+.card {
+  margin-right: 0.8em;
+  font-size: 1.02em;
+  rotate: 1deg;
+}
+
+/* The cuttings are trimmed to the width of the stack. */
+.cutting {
+  width: 100%;
+  rotate: -1.5deg;
+}
+
+.cutting + .cutting {
+  width: 92%;
+  rotate: 1.8deg;
+}
+
+.around > .cutting > * {
+  width: 100%;
+}
+
+/*
+ * ---------- 728 units: the shirt, then the stickers in rows ----------
+ *
+ * Every row runs from the column's left edge to its right: the sign and the
+ * pass, the stamp card across the whole column, then the two cuttings, with
+ * the page of reference under the shorter one.
+ */
+@container section (max-width: 1099px) {
+  .stage {
+    flex-direction: column;
+    gap: 5em;
+  }
+
+  .around {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.4em 2.8em;
+    align-items: start;
+    margin-top: 0;
+  }
+
+  .air,
+  .pass,
+  .card {
+    font-size: 1em;
+  }
+
+  .air {
+    rotate: -1.5deg;
+  }
+
+  .around > .air > * {
+    width: 100%;
+  }
+
+  .pass {
+    justify-self: end;
+    font-size: 1.1em;
+    rotate: 2.5deg;
+  }
+
+  .card {
+    grid-column: 1 / -1;
+    margin-right: 0;
+    rotate: -0.8deg;
+  }
+
+  .around > .card > * {
+    width: 100%;
+  }
+
+  /* The first cutting is as long as the second and the page of reference under it. */
+  .cutting {
+    display: grid;
+    grid-row: span 2;
+    align-self: stretch;
+    rotate: -1.2deg;
+  }
+
+  .cutting + .cutting {
+    grid-row: auto;
+    align-self: start;
+    width: 100%;
+    rotate: 1.4deg;
+  }
+
+  .also {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+/* ---------- 390 units: one column, each sticker the width of it ---------- */
+
+@container section (max-width: 560px) {
+  .stage {
+    gap: 4.4em;
+  }
+
+  .around {
+    display: flex;
+    flex-flow: column;
+    gap: 4em;
+    align-items: stretch;
+  }
+
+  .pass {
+    align-self: center;
+    font-size: 1.1em;
+  }
+
+  .also {
+    align-self: flex-end;
+    margin-top: -1em;
+  }
+}

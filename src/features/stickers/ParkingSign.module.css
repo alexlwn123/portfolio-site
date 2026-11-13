@@ -1,0 +1,42 @@
+/* A parking sign: a big letter on a deep blue plate, named underneath. */
+.sign {
+  padding: 1em 1em 0.75em;
+  border-radius: 1.3em;
+  text-align: center;
+}
+
+.plate {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 0.8em;
+  background: var(--deep);
+  color: var(--white);
+}
+
+.letter {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-right: 0.12em;
+  font-size: 8.2em;
+  line-height: 1;
+}
+
+.bolt {
+  position: absolute;
+  right: 0.5em;
+  bottom: 0.45em;
+  display: block;
+  width: 3.1em;
+  height: auto;
+  overflow: visible;
+}
+
+.name {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 1.22em;
+  white-space: nowrap;
+}

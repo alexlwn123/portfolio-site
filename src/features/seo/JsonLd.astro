@@ -1,0 +1,15 @@
+---
+/*
+ * The one place the site writes unescaped text into a page. A JSON-LD data
+ * block has to be raw, so `json` must come from serializeJsonLd, which escapes
+ * every character that could close the element or start markup. This file is
+ * the only one exempt from the astro/no-set-html-directive lint rule.
+ */
+interface Props {
+  json: string
+}
+
+const { json } = Astro.props
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

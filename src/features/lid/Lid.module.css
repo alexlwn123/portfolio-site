@@ -1,0 +1,174 @@
+/*
+ * The lid of the laptop. It is the page's first surface and runs from one
+ * edge of the screen to the other at every width: no desk under it, no frame
+ * round it, no corners. The stickers are placed on the stage inside it, in
+ * two blocks: the cover, one screen tall, and the pile under it. The
+ * placement stylesheet sizes both from artboards.ts.
+ */
+
+/* More lid shows when the page is pulled past its top. */
+:global(body):has(.lid) {
+  background: var(--cobalt);
+}
+
+.lid {
+  /*
+   * The lamp: the one light the whole lid is lit by, across and down, from 0
+   * to 1. It rests here, where the mockup started it, and geometry/foil.ts
+   * holds the same two numbers. The page's script moves --lamp-x and --lamp-y
+   * and nothing else. Shadows, peeling corners and foil all follow from them,
+   * in the stylesheets of the things themselves.
+   */
+  --lamp-rest-x: 0.35;
+  --lamp-rest-y: 0.3;
+  --lamp-x: var(--lamp-rest-x);
+  --lamp-y: var(--lamp-rest-y);
+
+  /* How far a shadow swings as the lamp crosses the lid. */
+  --cast-reach: 1.8em;
+
+  position: relative;
+  isolation: isolate;
+
+  /*
+   * Stickers overhang the edges and are cut off there. Clipped, not hidden: a
+   * hidden overflow can still be scrolled, and focus on a sticker near the
+   * bottom edge would slide every sticker up with it.
+   */
+  overflow: clip;
+  background:
+    radial-gradient(
+      130px 70px at 100% 0%,
+      rgba(226, 231, 255, 0.38),
+      rgba(226, 231, 255, 0.08) 45%,
+      transparent 70%
+    ),
+    radial-gradient(
+      90px 120px at 0% 100%,
+      rgba(226, 231, 255, 0.34),
+      rgba(226, 231, 255, 0.07) 45%,
+      transparent 70%
+    ),
+    linear-gradient(
+      112deg,
+      transparent 26%,
+      rgba(255, 255, 255, 0.14) 39%,
+      rgba(255, 255, 255, 0.02) 46%,
+      transparent 60%
+    ),
+    radial-gradient(90% 50% at 10% -5%, rgba(150, 170, 255, 0.6), transparent 70%),
+    radial-gradient(80% 45% at 105% 104%, rgba(12, 10, 95, 0.75), transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      rgba(0, 0, 40, 0.05) 1px 2px,
+      transparent 2px 4px
+    ),
+    var(--cobalt);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: normal;
+}
+
+/* The grain of anodised metal. */
+.lid::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('./noise.svg');
+  mix-blend-mode: soft-light;
+  opacity: 0.5;
+  pointer-events: none;
+  content: '';
+}
+
+/* The two blocks, one under the other, and the scuffs drawn across both. */
+.stage {
+  position: relative;
+}
+
+/*
+ * The cover: exactly one screen. Its font size is its own design unit, which
+ * the placement stylesheet takes from the smaller of the screen's width and
+ * height, so its composition always fits. It is never a stacking context,
+ * and neither is the pile: a sticker carried from one to the other stays on
+ * top of what it passes over.
+ */
+.cover {
+  position: relative;
+  height: 100svh;
+}
+
+/*
+ * A browser that does not know the small viewport height gets the large one.
+ * It is a rule of its own because the build keeps only the last of two
+ * declarations of one property.
+ */
+@supports not (height: 100svh) {
+  .cover {
+    height: 100vh;
+  }
+}
+
+/*
+ * The page's column on the cover. The stickers are placed against it: the
+ * name from its left edge, the badge from its right, and both from the top,
+ * the middle or the bottom of the screen.
+ */
+.board {
+  position: absolute;
+  inset: 0;
+  margin-inline: auto;
+}
+
+/*
+ * The cover arriving, when motion is welcome. The name goes on a letter at a
+ * time and a pass of light crosses it (DieCutText.module.css); the badge
+ * drops in on its lanyard (hang.module.css, then the page's script); the
+ * hello tag is slapped down here, once most of the name is on, and its
+ * highlighter is drawn after it lands (HelloTag.module.css); the cue comes
+ * last (Cue.module.css). All of it is over in about a second and a half, and
+ * the name can be read in under one.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .cover :global([data-sticker='hello']) {
+    --entrance: lid-slap 0.45s cubic-bezier(0.2, 1.4, 0.35, 1) 0.5s backwards;
+  }
+}
+
+/* The pile: every sticker is placed against it. Its font size is the page's design unit. */
+.pile {
+  position: relative;
+}
+
+.scuffs {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--white);
+  stroke-linecap: round;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+/* A list of stickers takes no room itself: each one is placed on the stage. */
+.group,
+.slot {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The name and the pile's title are headings, but each is sized as a sticker, not as a heading. */
+.heading {
+  margin: 0;
+  font: inherit;
+}
+
+/* The line under the pile's title is a paragraph, set as handwriting on the lid. */
+.scrawl {
+  margin: 0;
+}

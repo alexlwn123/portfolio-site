@@ -1,0 +1,73 @@
+/*
+ * The two straps, each a band from far above the lid down to the clip. They
+ * are drawn as lines with a wide stroke, on the square the badge shares with
+ * them, so that the page's script can bend them: geometry/lanyard.ts has the
+ * lines, and one unit there is a tenth of an em here.
+ */
+.straps {
+  filter: drop-shadow(
+    calc(var(--cast-x) * 0.8) calc(var(--cast-y) * 0.8) 0.4em rgba(var(--shadow-rgb), 0.4)
+  );
+}
+
+.drawing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+/*
+ * The drawing's box lies over the medal between the straps and takes nothing
+ * meant for it. The element is named so that this outranks the rule that lets
+ * everything else on the hang be touched.
+ */
+svg.drawing {
+  pointer-events: none;
+}
+
+/*
+ * A strap pulled past its length gets a little narrower: --thin is 1 at rest
+ * and the script lowers it as the strap stretches.
+ */
+.edge,
+.face {
+  fill: none;
+}
+
+.edge {
+  stroke: var(--gum-dark);
+  stroke-width: calc(var(--thin, 1) * 29px);
+}
+
+.face {
+  stroke: var(--gum);
+  stroke-width: calc(var(--thin, 1) * 23px);
+}
+
+/*
+ * Ink, not the mockup's white, which is 3:1 on bubblegum. The optical size is
+ * pinned to the lettering's own, so that a word is as long as
+ * geometry/labelFace.ts says at any size the lid is shown.
+ */
+.words {
+  fill: var(--ink);
+  font-stretch: var(--label-stretch);
+  font-weight: var(--label-weight);
+  font-variation-settings: 'opsz' 13.5;
+  letter-spacing: 0.16em;
+  text-anchor: middle;
+  text-transform: uppercase;
+}
+
+.star {
+  fill: var(--ink);
+}
+
+/* The line the stars ride: only its corners show, as stars. */
+.stars {
+  fill: none;
+  stroke: none;
+}

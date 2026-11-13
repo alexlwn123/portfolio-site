@@ -1,0 +1,96 @@
+/*
+ * Design tokens for "Sticker Shock", read from the approved mockups in
+ * design/mockups/. The short names (--ink, --cobalt, --tang ...) are the
+ * mockup's own, so its CSS can be ported without renaming anything.
+ */
+:root {
+  /* ---------- palette: the lid and its stickers ---------- */
+  --ink: #17122b;
+  --cobalt: #2b35f5;
+  --deep: #1b1fa8;
+  --tang: #ff6b1a;
+  --gum: #ff4fa3;
+  --hi: #eeff41;
+  --mint: #2fe6b5;
+  --white: #ffffff;
+
+  /* supporting colours used by single stickers */
+  --gum-dark: #c81f78;
+  --tang-light: #ffb27a;
+  --sky: #5cf0ff;
+
+  /* holographic foil stops, in order */
+  --holo-1: #5cf0ff;
+  --holo-2: #b39aff;
+  --holo-3: #ff86da;
+  --holo-4: #fff06a;
+  --holo-5: #7dffbe;
+
+  /* brushed metal: lanyard clip, peeled sticker backing */
+  --metal-light: #f4f6fb;
+  --metal-mid: #9aa1b8;
+  --metal-dark: #6d7389;
+
+  /* every sticker shadow is this navy at a different strength */
+  --shadow-rgb: 9, 6, 60;
+
+  /* ---------- semantic colours for plain pages ---------- */
+  --color-surface: var(--white);
+  --color-surface-sunken: #f4f5f9;
+  --color-text: var(--ink);
+  --color-text-muted: #55506b;
+  --color-accent: var(--cobalt);
+  --color-on-accent: var(--white);
+  --color-on-accent-highlight: var(--hi);
+  --color-rule: #d5d8e4;
+
+  /* ---------- type ---------- */
+  --font-display: 'Bowlby One', 'Arial Black', Impact, sans-serif;
+  --font-body:
+    'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+  --font-marker: 'Permanent Marker', 'Marker Felt', 'Bradley Hand', 'Comic Sans MS', cursive;
+  /* an emoji is drawn by whichever colour emoji face the visitor's system has */
+  --font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+
+  /* the condensed, shouted label style the mockup calls .cd */
+  --label-stretch: 75%;
+  --label-weight: 800;
+  --label-tracking: 0.05em;
+
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+  --weight-heavy: 800;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.375rem;
+  --text-xl: 2rem;
+  --text-2xl: clamp(2.5rem, 2rem + 3vw, 4rem);
+
+  --leading-tight: 1.1;
+  --leading-normal: 1.55;
+
+  /* ---------- space, shape, measure ---------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-pill: 2rem;
+
+  --measure: 44rem;
+  --focus-width: 0.1875rem;
+
+  /* ---------- motion: stickers slap down and spring back ---------- */
+  --ease-slap: cubic-bezier(0.2, 1.5, 0.4, 1);
+  --duration-hover: 0.28s;
+  --duration-slap: 0.45s;
+}

@@ -1,0 +1,9 @@
+/* A barcode's bars, stretched to the box their sticker gives them. */
+.bars {
+  display: block;
+  width: 100%;
+  height: 3em;
+
+  /* Whole bars or none: a blurred edge is what stops a scanner reading it. */
+  shape-rendering: crispedges;
+}

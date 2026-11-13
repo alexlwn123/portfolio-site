@@ -1,0 +1,26 @@
+/* A foil sticker for one win: the rank, big, beside what was won and where. */
+.win {
+  display: flex;
+  gap: 1.1em;
+  align-items: center;
+  padding: 1.35em 1.7em 1.35em 1.6em;
+}
+
+.rank {
+  font-size: 4.6em;
+  line-height: 0.9;
+}
+
+.title {
+  display: block;
+  font-size: 2.3em;
+  line-height: 1;
+}
+
+.detail {
+  display: block;
+  margin-top: 0.4em;
+  font-size: 1.22em;
+  font-weight: var(--weight-bold);
+  line-height: 1.15;
+}

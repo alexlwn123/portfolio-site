@@ -1,0 +1,109 @@
+/*
+ * The running count beside the current job: a round sticker to a figure,
+ * overlapping like a row of dots, and "so far" written over them in marker.
+ * On a laptop the row runs from the rule to the column's edge, each dot as
+ * large as its share of that.
+ */
+.totals {
+  padding-top: 0.2em;
+}
+
+.label {
+  margin: 0 0 0.2em 0.3em;
+  color: var(--hi);
+  font-size: 2.3em;
+  line-height: 1;
+  rotate: -3deg;
+}
+
+.list {
+  --overlap: 0.9em;
+
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-right: calc(var(--overlap) * -1);
+  rotate: -5deg;
+}
+
+.item:last-child {
+  margin-right: 0;
+}
+
+.item:nth-child(2n) {
+  margin-top: 0.7em;
+  rotate: 4deg;
+}
+
+.item:nth-child(3n) {
+  rotate: -2deg;
+}
+
+.dot {
+  display: grid;
+  place-content: center;
+  aspect-ratio: 1;
+  padding: 0 0.7em;
+  border: 0.38em solid var(--white);
+  border-radius: 50%;
+  background: var(--c, var(--white));
+  color: var(--ink);
+  text-align: center;
+}
+
+.figure {
+  display: block;
+  font-size: 3.5em;
+  line-height: 0.95;
+}
+
+.unit {
+  display: block;
+  margin-top: 0.15em;
+  font-size: 1.2em;
+  line-height: 1.02;
+}
+
+/* Narrower than a laptop the dots keep their size and take a second row. */
+@container section (max-width: 1099px) {
+  .totals {
+    padding-top: 0.6em;
+  }
+
+  .list {
+    flex-wrap: wrap;
+    gap: 0.8em 0;
+  }
+
+  .item {
+    flex: 0 0 8.8em;
+  }
+
+  .item:nth-child(2n) {
+    margin-top: 0.9em;
+  }
+
+  .figure {
+    font-size: 3.2em;
+  }
+}
+
+@container section (max-width: 560px) {
+  .totals {
+    padding-top: 0.3em;
+  }
+
+  .item {
+    flex-basis: 9.2em;
+  }
+
+  .unit {
+    font-size: 1.22em;
+  }
+}
