@@ -21,7 +21,7 @@ function peelable(id: string): string {
   return `
     <div data-sticker="${id}" data-grab data-peelable>
       <span>
-        <a href="https://example.test/${id}">${id}</a>
+        <a data-peel-face href="https://example.test/${id}">${id}</a>
         <button type="button" hidden data-peel-tab aria-expanded="false"
           aria-controls="${id}-note" aria-label="Peel back ${id}"></button>
       </span>
@@ -143,6 +143,8 @@ export interface LidFixture {
   readonly lid: HTMLElement
   readonly sticker: (id: string) => HTMLElement
   readonly tab: (id: string) => HTMLElement
+  /** The face of a sticker that has a note under it: the link that is also what peels it. */
+  readonly face: (id: string) => HTMLElement
   readonly note: (id: string) => HTMLElement
   readonly control: (name: string) => HTMLElement
 }
@@ -172,6 +174,7 @@ export function lidFixture(): LidFixture {
     lid,
     sticker,
     tab: (id) => find(sticker(id), '[data-peel-tab]'),
+    face: (id) => find(sticker(id), '[data-peel-face]'),
     note: (id) => find(sticker(id), '[data-note]'),
     control: (name) => find(lid, `[data-control="${name}"]`),
   }

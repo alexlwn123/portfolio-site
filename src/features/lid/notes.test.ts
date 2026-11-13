@@ -31,11 +31,11 @@ describe('lidNotes', () => {
     })
   })
 
-  it('gives a win its project’s links, then its own, then the way to the CV', () => {
+  it('gives a win its project’s links, then its own, then the way to the full story on this page', () => {
     expect(notes['latest-win'].links).toEqual([
       { label: 'Site', href: 'https://stringersafety.com' },
       { label: 'Post on X', href: 'https://x.com/ALewin/status/2013474336208835045' },
-      { label: 'More in the CV', href: '/cv/#wins' },
+      { label: 'Full story', href: '/#wins' },
     ])
   })
 
@@ -46,7 +46,7 @@ describe('lidNotes', () => {
     })
     expect(notes['ncr-win'].links.map(({ label }) => label)).toEqual([
       'Post on LinkedIn',
-      'More in the CV',
+      'Full story',
     ])
   })
 
@@ -75,7 +75,7 @@ describe('lidNotes', () => {
       { label: 'Site', href: 'https://pleb.fm' },
       { label: 'Code', href: 'https://github.com/PlebFM/PlebFM' },
       { label: 'Demo video', href: 'https://youtu.be/_AwXSzzc9k0?t=839' },
-      { label: 'More in the CV', href: '/cv/#projects' },
+      { label: 'Full story', href: '/#projects' },
     ])
   })
 
@@ -85,7 +85,7 @@ describe('lidNotes', () => {
       lines: ['AI-designed crab merch and apparel. Marketed towards agents.'],
       links: [
         { label: 'Site', href: 'https://clawthing.store' },
-        { label: 'More in the CV', href: '/cv/#projects' },
+        { label: 'Full story', href: '/#projects' },
       ],
     })
   })

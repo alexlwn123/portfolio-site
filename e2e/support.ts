@@ -121,9 +121,14 @@ export async function edgesOf(locator: Locator): Promise<Edges> {
   })
 }
 
-/** Every link on the lid, in the order the markup has them. */
+/**
+ * Every link on the lid, in the order the markup has them. The face of a
+ * sticker with a note under it is one of them: it is a link in the markup,
+ * though the page's script tells a reader it is the button that peels it.
+ */
 export function lidLinks(page: Page): Locator {
-  return page.locator('[data-lid]').getByRole('link')
+  const lid = page.locator('[data-lid]')
+  return lid.getByRole('link').or(lid.locator('[data-peel-face]'))
 }
 
 /** How long the stickers take to slap down, the last of them included. */

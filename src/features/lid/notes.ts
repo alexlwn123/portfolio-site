@@ -2,8 +2,8 @@ import type { Content, Link, Project, Win } from '../../content'
 import { copy } from '../../content/copy'
 import { deepFreeze } from '../../lib/deepFreeze'
 import { eventLabel, fieldLabel, firstWeekNote, resultLabel, winTitle } from '../cv/describe'
-import type { SectionId } from '../cv/labels'
-import { cvSection, findById, latestPodiumWin } from './facts'
+import { type HomeSectionId, sectionAnchor } from '../sections/sectionIds'
+import { findById, latestPodiumWin } from './facts'
 import type { NoteSpec, TextLink } from './stickerSpecs'
 import { FIELD_WIN, type StickerId } from './stickers'
 
@@ -33,14 +33,21 @@ export function isNoted(id: string): id is NotedId {
   return NOTED_IDS.some((noted) => noted === id)
 }
 
-/** The record's links, each address once, followed by the way to the full story. */
-function linksOf(links: readonly Link[], section: SectionId): readonly TextLink[] {
+/** The sections of this page a note can lead on to. */
+type NotedSection = Extract<HomeSectionId, 'wins' | 'projects'>
+
+/**
+ * The record's links, each address once, followed by the way to the full
+ * story: the section of this page the sticker belongs to. A press on the
+ * sticker peels it, so this link is how a visitor goes on from it.
+ */
+function linksOf(links: readonly Link[], section: NotedSection): readonly TextLink[] {
   const unique = links.filter(
     (link, index) => links.findIndex(({ url }) => url === link.url) === index,
   )
   return [
     ...unique.map(({ label, url }) => ({ label, href: url })),
-    { label: copy.lid.note.more, href: cvSection(section) },
+    { label: copy.lid.note.more, href: sectionAnchor(section) },
   ]
 }
 

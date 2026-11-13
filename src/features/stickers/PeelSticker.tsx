@@ -26,10 +26,12 @@ export interface PeelStickerProps {
 }
 
 /**
- * A sticker with a note stuck underneath it. The face is still a link. Beside
- * it is the corner that peels, a button the page's script shows and works, and
- * then the note: so the Tab key goes from the face to the corner to the note's
- * own links.
+ * A sticker with a note stuck underneath it. The face is a link. Beside it is
+ * the corner that peels, a button the page's script shows and works, and then
+ * the note: so the Tab key goes from the face to the corner to the note's own
+ * links. With the script, a press anywhere on the face peels the sticker too
+ * instead of following the link (enhance/peelDom.ts finds the face by
+ * data-peel-face): the note's links are then the way to the site.
  */
 export function PeelSticker({
   id,
@@ -55,7 +57,7 @@ export function PeelSticker({
       )}
     >
       <span className={styles.flap}>
-        <a className={styles.face} {...linkTo(href)} aria-label={label}>
+        <a className={styles.face} {...linkTo(href)} aria-label={label} data-peel-face="">
           {children}
         </a>
         <button

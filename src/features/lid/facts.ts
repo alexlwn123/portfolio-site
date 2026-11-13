@@ -12,9 +12,7 @@ import type {
 import { publishablePatents } from '../../content/derive'
 import { winName } from '../../content/winName'
 import { formatMillions, formatNumber } from '../../lib/formatNumber'
-import { PATHS } from '../../lib/paths'
 import { resultLabel } from '../cv/describe'
-import type { SectionId } from '../cv/labels'
 
 /*
  * Looks up what the lid prints. Nothing here states a fact of its own: each
@@ -177,11 +175,6 @@ export function filingNumbers(patents: readonly Patent[]): readonly string[] {
     throw new Error('There is no patent filing to print on the compliance label')
   }
   return numbers
-}
-
-/** The address of a section of the CV page. A dead anchor does not type-check. */
-export function cvSection(id: SectionId): string {
-  return `${PATHS.cv}#${id}`
 }
 
 /** "Lightning Welder: 1st overall, bitcoin++ Berlin, ecash edition, 2024". */

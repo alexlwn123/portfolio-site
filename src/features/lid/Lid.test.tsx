@@ -307,15 +307,17 @@ describe('Lid', () => {
     expect(container.querySelector('a[href^="#"]')).toBeNull()
   })
 
-  it('sends every sticker’s own link to this page, and only a note’s "more" to the CV', () => {
+  it('sends every sticker’s own link, and every note’s last one, to this page: none to a part of the CV', () => {
     renderLid()
+    const links = screen.getAllByRole('link')
 
-    const toTheCv = screen
-      .getAllByRole('link')
-      .filter((link) => link.getAttribute('href')?.startsWith('/cv/#'))
-    expect(toTheCv.length).toBe(NOTED_IDS.length)
-    for (const link of toTheCv) {
+    expect(links.filter((link) => link.getAttribute('href')?.startsWith('/cv/#'))).toEqual([])
+    // A note ends with the way to the full story: the section of this page its sticker belongs to.
+    const fullStories = links.filter((link) => link.textContent.startsWith('Full story'))
+    expect(fullStories).toHaveLength(NOTED_IDS.length)
+    for (const link of fullStories) {
       expect(link.closest('[data-note]')).not.toBeNull()
+      expect(link.getAttribute('href')).toMatch(/^\/#(wins|projects)$/)
     }
   })
 

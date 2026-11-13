@@ -6,7 +6,6 @@ import {
   balanceLines,
   compactSats,
   currentJob,
-  cvSection,
   fieldFigure,
   fieldWin,
   filingNumbers,
@@ -246,11 +245,6 @@ describe('filingNumbers', () => {
 })
 
 describe('links', () => {
-  it('points at a CV section', () => {
-    expect(cvSection('wins')).toBe('/cv/#wins')
-    expect(cvSection('patents')).toBe('/cv/#patents')
-  })
-
   it('says a win in one line, as the CV does', () => {
     expect(winSummary(win('lightning-welder'))).toBe(
       'Lightning Welder: 1st overall, bitcoin++ Berlin, ecash edition, 2024',

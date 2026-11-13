@@ -355,8 +355,14 @@ test.describe('pick up, throw, re-stick', () => {
     await expect(page).toHaveURL(/\/cv\/$/)
     await page.goBack()
     await page.locator('[data-lid][data-enhanced]').waitFor()
-    // The face of a sticker with a note under it is a link like any other.
-    await sticker(page, 'lightning-welder').locator('a').first().click()
+    // A sticker with a note under it is not left by a press on its face: it peels, and the
+    // note's last link is the way on to the full story.
+    await sticker(page, 'lightning-welder').locator('[data-peel-face]').click()
+    await expect(noteOf(page, 'lightning-welder')).toBeVisible()
+    expect(new URL(page.url()).hash).toBe('')
+    await noteOf(page, 'lightning-welder')
+      .getByRole('link', { name: /^Full story/ })
+      .click()
     await expect(page).toHaveURL(/\/#wins$/)
   })
 
@@ -533,7 +539,9 @@ test.describe('peel to reveal', () => {
 
     await expect(noteOf(page, 'lightning-welder')).toBeVisible()
     await expect(noteOf(page, 'arion-parking')).toBeHidden()
-    await expect(page.locator('[aria-expanded="true"]')).toHaveCount(1)
+    // One sticker is open, and both of its controls say so: its face and its corner.
+    await expect(page.locator('[aria-expanded="true"]')).toHaveCount(2)
+    await expect(sticker(page, 'lightning-welder').locator('[aria-expanded="true"]')).toHaveCount(2)
   })
 
   test('every project and win sticker has its story under it', async ({ page }) => {
@@ -591,14 +599,74 @@ test.describe('peel to reveal', () => {
     expect(new URL(page.url()).pathname).toBe('/')
   })
 
-  test('clicking the face of a sticker still follows its link, peeled or not', async ({ page }) => {
+  test('a press anywhere on the face peels the sticker, and a second sticks it back: the page stays where it is', async ({
+    page,
+  }) => {
     await openLid(page, 1280)
+    const face = sticker(page, 'latest-win').locator('[data-peel-face]')
+    await face.scrollIntoViewIfNeeded()
+    const box = await boxOf(face)
 
-    await (await cornerOf(page, 'latest-win')).click()
+    // Not on the corner: a third of the way in from the face's left edge.
+    await page.mouse.click(box.x + box.width / 3, box.y + box.height / 2)
     await expect(noteOf(page, 'latest-win')).toBeVisible()
-    await sticker(page, 'latest-win').locator('a').first().click()
+    await expect(face).toHaveAttribute('aria-expanded', 'true')
+    await expect(face).toHaveAttribute('role', 'button')
+    expect(new URL(page.url()).hash).toBe('')
 
-    await expect(page).toHaveURL(/\/#wins$/)
+    // Peeled, the face is curled back off its note. A press on any of it that still shows
+    // sticks it down again.
+    const shows = await face.evaluate((element) => {
+      const { left, top, width, height } = element.getBoundingClientRect()
+      const points = Array.from({ length: 81 }, (_, index) => ({
+        x: left + (width * (1 + (index % 9))) / 10,
+        y: top + (height * (1 + Math.floor(index / 9))) / 10,
+      }))
+      return (
+        points.find(({ x, y }) => {
+          const hit = document.elementFromPoint(x, y)
+          return hit !== null && element.contains(hit)
+        }) ?? null
+      )
+    })
+    if (!shows) {
+      throw new Error('Peeled, none of the face can be pressed')
+    }
+    await page.mouse.click(shows.x, shows.y)
+    await expect(noteOf(page, 'latest-win')).toBeHidden()
+    await expect(face).toHaveAttribute('aria-expanded', 'false')
+    expect(new URL(page.url()).pathname).toBe('/')
+  })
+
+  test('the note’s links are the way on: the site in a new tab, the full story on this page', async ({
+    page,
+  }) => {
+    await openLid(page, 1280)
+    const face = sticker(page, 'pleb-fm').locator('[data-peel-face]')
+    await face.scrollIntoViewIfNeeded()
+    await face.click()
+    const note = noteOf(page, 'pleb-fm')
+
+    await expect(note).toBeVisible()
+    const site = note.getByRole('link', { name: /^Site/ })
+    await expect(site).toHaveAttribute('href', notes['pleb-fm'].links[0]?.href ?? '')
+    await expect(site).toHaveAttribute('target', '_blank')
+    await note.getByRole('link', { name: /^Full story/ }).click()
+    await expect(page).toHaveURL(/\/#projects$/)
+    await expect(page.locator('section#projects')).toBeInViewport()
+  })
+
+  test('with no script the face is the link it always was', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false })
+    const plain = await context.newPage()
+    await plain.goto('/')
+    const face = plain.locator('[data-sticker="lightning-welder"] [data-peel-face]')
+
+    await expect(face).not.toHaveAttribute('role')
+    await expect(face).toHaveAttribute('href', '/#wins')
+    await face.click()
+    await expect(plain).toHaveURL(/\/#wins$/)
+    await context.close()
   })
 
   test('a note never traps the visitor: a press, a key or the Tab key gets past it', async ({

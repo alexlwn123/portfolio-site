@@ -26,10 +26,16 @@ import { clamp, type Point, ZERO } from './vector'
  * --peel for how far, and aria-expanded on the corner (see
  * PeelSticker.module.css and Note.module.css).
  *
- * A sticker opens when its corner is pressed (a click, Enter or Space), when
- * the corner is dragged past halfway, or with the arrow keys on the corner.
- * It re-sticks on Escape, on a press anywhere outside it, when focus moves on
- * to something else, and when another is opened.
+ * A sticker opens when it is pressed anywhere on its face or on its corner (a
+ * click, Enter or Space), when the corner is dragged past halfway, or with
+ * the arrow keys on the corner. It re-sticks when it is pressed again, on
+ * Escape, on a press anywhere outside it, when focus moves on to something
+ * else, and when another is opened.
+ *
+ * The face is a link in the markup, and stays one for a page with no script
+ * and for a press that asks the browser for a new tab. With the script a
+ * plain press on it peels the sticker instead of leaving the page: the links
+ * in the note are the way to the site.
  */
 
 export interface PeelHooks {
@@ -46,6 +52,8 @@ export interface Peeler {
 interface Parts {
   readonly sticker: HTMLElement
   readonly tab: HTMLElement
+  /** The face: a link, and with the script what peels the sticker when it is pressed. */
+  readonly face: HTMLElement | null
   readonly note: HTMLElement | null
 }
 
@@ -106,6 +114,7 @@ const FASTEST_PEEL = 6
 const NOTE_MARGIN_PX = 12
 const PEEL_DECIMALS = 3
 const SECOND_MS = 1000
+const SPACE = ' '
 const PASSIVE = { passive: true } as const
 const OUTSIDE = { capture: true, passive: true } as const
 
@@ -128,7 +137,8 @@ function partsOf(lid: HTMLElement): ReadonlyMap<string, Parts> {
       const tab = sticker.querySelector<HTMLElement>('[data-peel-tab]')
       const id = sticker.getAttribute('data-sticker')
       const note = sticker.querySelector<HTMLElement>('[data-note]')
-      return tab && id !== null ? [[id, { sticker, tab, note }] as const] : []
+      const face = sticker.querySelector<HTMLElement>('[data-peel-face]')
+      return tab && id !== null ? [[id, { sticker, tab, face, note }] as const] : []
     }),
   )
 }
@@ -137,6 +147,20 @@ function partsOf(lid: HTMLElement): ReadonlyMap<string, Parts> {
 function idOf({ parts }: Context, target: EventTarget | null): string | null {
   const tab = target instanceof Element ? target.closest('[data-peel-tab]') : null
   return [...parts].find(([, each]) => each.tab === tab)?.[0] ?? null
+}
+
+/** The sticker whose face an event happened on, if it happened on one. */
+function faceIdOf({ parts }: Context, target: EventTarget | null): string | null {
+  const face = target instanceof Element ? target.closest('[data-peel-face]') : null
+  if (face === null) {
+    return null
+  }
+  return [...parts].find(([, each]) => each.face === face)?.[0] ?? null
+}
+
+/** A press with the main button and nothing held: not one that asks for a new tab or window. */
+function isPlainPress(event: MouseEvent): boolean {
+  return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey
 }
 
 function openParts({ parts, model }: Context): Parts | undefined {
@@ -190,8 +214,9 @@ function draw({ parts, model }: Context): void {
 function announce(context: Context, before: string | null, now: string | null): void {
   const { parts, model } = context
   const fitted = now === null ? null : fit(context, now)
-  for (const [id, { tab, sticker }] of parts) {
+  for (const [id, { tab, face, sticker }] of parts) {
     tab.setAttribute('aria-expanded', String(id === now))
+    face?.setAttribute('aria-expanded', String(id === now))
     if (id === now && fitted !== null) {
       setVars(sticker, {
         '--note-x': `${String(Math.round(fitted.x))}px`,
@@ -321,8 +346,36 @@ function cornerPressed(context: Context, event: MouseEvent): void {
   commit(context, toggle(model.get().peel, id))
 }
 
+/**
+ * The face is pressed. The sticker peels, or re-sticks, and the link the face
+ * also is is not followed. The click that ends a drag of the sticker never
+ * gets here: the drag keeps it (dragDom.ts).
+ */
+function facePressed(context: Context, event: MouseEvent): void {
+  const id = faceIdOf(context, event.target)
+  if (id === null || !isPlainPress(event)) {
+    return
+  }
+  event.preventDefault()
+  commit(context, toggle(context.model.get().peel, id))
+}
+
+/** Space on the face presses it, as it does a button. A link would scroll the page instead. */
+function facePressedByKey(context: Context, event: KeyboardEvent): boolean {
+  const id = event.key === SPACE ? faceIdOf(context, event.target) : null
+  if (id === null) {
+    return false
+  }
+  event.preventDefault()
+  commit(context, toggle(context.model.get().peel, id))
+  return true
+}
+
 function keyDown(context: Context, event: KeyboardEvent): void {
   const { model, doc } = context
+  if (facePressedByKey(context, event)) {
+    return
+  }
   const focused = idOf(context, event.target)
   const open = openParts(context)
   const next = key(model.get().peel, event.key, focused)
@@ -392,6 +445,18 @@ export function installPeel(
   }
 }
 
+/** Tells a reader the face is what peels the sticker now: a button that opens its note. */
+function markAsControl(face: HTMLElement | null, note: HTMLElement | null): void {
+  if (face === null) {
+    return
+  }
+  face.setAttribute('role', 'button')
+  face.setAttribute('aria-expanded', 'false')
+  if (note !== null && note.id !== '') {
+    face.setAttribute('aria-controls', note.id)
+  }
+}
+
 /** Shows every corner and starts listening for what is done to them. */
 function listen(context: Context): void {
   const { lid, doc, parts } = context
@@ -401,13 +466,15 @@ function listen(context: Context): void {
   const onFocusOut = (event: FocusEvent): void => {
     leftFor(context, event.relatedTarget)
   }
-  for (const { tab } of parts.values()) {
+  for (const { tab, face, note } of parts.values()) {
     tab.removeAttribute('hidden')
+    markAsControl(face, note)
   }
   lid.addEventListener('pointerdown', onDown, PASSIVE)
   lid.addEventListener('focusout', onFocusOut, PASSIVE)
   lid.addEventListener('click', (event) => {
     cornerPressed(context, event)
+    facePressed(context, event)
   })
   doc.addEventListener('keydown', (event) => {
     keyDown(context, event)

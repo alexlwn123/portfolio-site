@@ -188,11 +188,19 @@ for (const width of [1440, 728, 390] as const) {
     await expect(page.locator('section#patents')).toBeInViewport()
   })
 
-  test(`the NCR medal reaches the wins at ${String(width)} wide`, async ({ page }) => {
+  test(`the NCR medal peels, and its note reaches the wins, at ${String(width)} wide`, async ({
+    page,
+  }) => {
     await openLid(page, width)
+    const medal = page.locator('[data-sticker="ncr-win"]')
 
-    await page
-      .getByRole('link', { name: '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads' })
+    // With the page's script the medal's face is what peels it: a button, named as the link was.
+    await medal
+      .getByRole('button', { name: '1st of 300+ teams, NCR Global Hackathon 2021, team Eth Heads' })
+      .click()
+    await medal
+      .locator('[data-note]')
+      .getByRole('link', { name: /^Full story/ })
       .click()
 
     await expect(page).toHaveURL(/\/#wins$/)

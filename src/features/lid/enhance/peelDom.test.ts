@@ -81,7 +81,9 @@ describe('peeling stickers on the page', () => {
     expect(fixture.sticker('pleb-fm')).not.toHaveAttribute('data-peel')
     expect(fixture.tab('pleb-fm')).toHaveAttribute('aria-expanded', 'false')
     expect(peelOf('ncr-win')).toBe('1')
-    expect(fixture.lid.querySelectorAll('[aria-expanded="true"]')).toHaveLength(1)
+    // One sticker is open, and both of its controls say so: its corner and its face.
+    const expanded = [...fixture.lid.querySelectorAll('[aria-expanded="true"]')]
+    expect(expanded).toEqual([fixture.face('ncr-win'), fixture.tab('ncr-win')])
   })
 
   it('re-sticks on Escape, and hands focus back to the corner when it was in the note', () => {
@@ -222,6 +224,112 @@ describe('peeling stickers on the page', () => {
     env.frames.flush(600)
     expect(fixture.sticker('pleb-fm')).not.toHaveAttribute('data-peel')
     expect(key(fixture.sticker('cv'), 'ArrowUp').defaultPrevented).toBe(false)
+  })
+
+  it('opens when the face is pressed, anywhere on it, and does not follow the link the face is', () => {
+    const { env } = setUp()
+    const press = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 })
+
+    fixture.face('pleb-fm').dispatchEvent(press)
+
+    expect(press.defaultPrevented).toBe(true)
+    expect(fixture.sticker('pleb-fm')).toHaveAttribute('data-peel')
+    expect(fixture.face('pleb-fm')).toHaveAttribute('aria-expanded', 'true')
+    expect(fixture.tab('pleb-fm')).toHaveAttribute('aria-expanded', 'true')
+    env.frames.flush(600)
+    expect(peelOf('pleb-fm')).toBe('1')
+  })
+
+  it('re-sticks when the face is pressed again', () => {
+    const { env } = setUp()
+    fixture.face('pleb-fm').click()
+    env.frames.flush(600)
+
+    fixture.face('pleb-fm').click()
+    expect(fixture.face('pleb-fm')).toHaveAttribute('aria-expanded', 'false')
+    env.frames.flush(600)
+
+    expect(fixture.sticker('pleb-fm')).not.toHaveAttribute('data-peel')
+  })
+
+  it('tells a reader the face is what peels the sticker: a button that opens its note', () => {
+    setUp()
+    const face = fixture.face('pleb-fm')
+
+    expect(face).toHaveAttribute('role', 'button')
+    expect(face).toHaveAttribute('aria-expanded', 'false')
+    expect(face).toHaveAttribute('aria-controls', 'pleb-fm-note')
+    // It is still the link it was: with no script, and for a press that asks for a new tab.
+    expect(face).toHaveAttribute('href', 'https://example.test/pleb-fm')
+  })
+
+  it.each(['metaKey', 'ctrlKey', 'shiftKey', 'altKey'] as const)(
+    'leaves a press with %s held to the browser: it opens the link in its own way',
+    (modifier) => {
+      setUp()
+      const press = new MouseEvent('click', { bubbles: true, cancelable: true, [modifier]: true })
+
+      fixture.face('pleb-fm').dispatchEvent(press)
+
+      expect(press.defaultPrevented).toBe(false)
+      expect(fixture.sticker('pleb-fm')).not.toHaveAttribute('data-peel')
+    },
+  )
+
+  it('leaves a press of another button alone', () => {
+    setUp()
+    const press = new MouseEvent('click', { bubbles: true, cancelable: true, button: 1 })
+
+    fixture.face('pleb-fm').dispatchEvent(press)
+
+    expect(press.defaultPrevented).toBe(false)
+    expect(fixture.sticker('pleb-fm')).not.toHaveAttribute('data-peel')
+  })
+
+  it('opens with Space on the face, as a button does, without scrolling the page', () => {
+    const { env } = setUp()
+
+    const pressed = key(fixture.face('pleb-fm'), ' ')
+
+    expect(pressed.defaultPrevented).toBe(true)
+    expect(fixture.face('pleb-fm')).toHaveAttribute('aria-expanded', 'true')
+    env.frames.flush(600)
+    expect(peelOf('pleb-fm')).toBe('1')
+  })
+
+  it('follows a link in the note as any link: that is the way to the site now', () => {
+    const { env } = setUp()
+    open(env, 'pleb-fm')
+    const link = fixture.note('pleb-fm').querySelector('a') as HTMLElement
+    const press = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 })
+
+    link.dispatchEvent(press)
+
+    expect(press.defaultPrevented).toBe(false)
+    expect(fixture.tab('pleb-fm')).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('peels nothing for a press on a sticker that has no note: its link is followed', () => {
+    setUp()
+    const press = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 })
+
+    fixture.sticker('cv').dispatchEvent(press)
+
+    expect(press.defaultPrevented).toBe(false)
+    expect(fixture.lid.querySelectorAll('[data-peel]')).toHaveLength(0)
+  })
+
+  it('closes the one that was open when another’s face is pressed', () => {
+    const { env } = setUp()
+    fixture.face('pleb-fm').click()
+    env.frames.flush(600)
+
+    fixture.face('ncr-win').click()
+    env.frames.flush(600)
+
+    expect(fixture.sticker('pleb-fm')).not.toHaveAttribute('data-peel')
+    expect(fixture.face('pleb-fm')).toHaveAttribute('aria-expanded', 'false')
+    expect(fixture.face('ncr-win')).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('re-sticks when something outside the sticker is pressed, and not for a press inside it', () => {

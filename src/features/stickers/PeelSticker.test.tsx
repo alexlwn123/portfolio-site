@@ -57,6 +57,10 @@ describe('PeelSticker', () => {
     const face = screen.getByRole('link', { name: 'Pleb FM, a jukebox' })
     expect(face).toHaveAttribute('href', 'https://pleb.fm')
     expect(face).toHaveTextContent('face')
+    // Marked for the page's script, which makes a press on it peel the sticker.
+    expect(face).toHaveAttribute('data-peel-face')
+    // In the markup it is only a link: the script is what makes it a button.
+    expect(face).not.toHaveAttribute('role')
   })
 
   it('opens its face in a new tab when it leaves the site', () => {
