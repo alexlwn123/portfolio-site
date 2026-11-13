@@ -7,8 +7,8 @@ const hackathons: PinnedRibbon = {
   label: 'HACKATHONS',
   tone: 'hi',
   pins: [
-    { label: 'WINNER', count: '×9', href: '/#wins', tone: 'ink' },
-    { label: 'ORGANIZER', count: '×16', href: '/#organized', tone: 'tang' },
+    { id: 'winner', label: 'WINNER', count: '×9', href: '/#wins', tone: 'ink' },
+    { id: 'organizer', label: 'ORGANIZER', count: '×16', href: '/#organized', tone: 'tang' },
   ],
 }
 

@@ -85,7 +85,11 @@ test('the ribbons are the five things he is, with a pin on the hackathons for ea
     'INVENTOR',
   ])
   await expect(links).toHaveCount(RIBBONS.length)
-  await expect(links).toHaveText([
+  // A ribbon is named by its word. A pin is a drawing, so it is named by its label.
+  const names = await links.evaluateAll((found) =>
+    found.map((link) => link.getAttribute('aria-label') ?? link.textContent),
+  )
+  expect(names).toEqual([
     'ENGINEER',
     `WINNER ×${String(stats.wins.total)}`,
     `ORGANIZER ×${String(stats.organized.count)}`,
@@ -93,8 +97,19 @@ test('the ribbons are the five things he is, with a pin on the hackathons for ea
     'SPEAKER',
     'INVENTOR',
   ])
-  // The hackathons ribbon is not a link itself: its two pins are.
+  // The hackathons ribbon is not a link itself: its two pins are, each a round button.
   await expect(nav.locator('[data-pin]')).toHaveCount(2)
+  await expect(nav.locator('[data-pin] > svg[data-pin-button]')).toHaveCount(2)
+  const pins = await nav.locator('[data-pin]').evaluateAll((found) =>
+    found.map((pin) => {
+      const { width, height } = pin.getBoundingClientRect()
+      return {
+        round: getComputedStyle(pin).borderRadius === '50%',
+        square: Math.abs(width - height),
+      }
+    }),
+  )
+  expect(pins.every(({ round, square }) => round && square < 1)).toBe(true)
   await expect(nav.getByText('HACKATHONS')).toBeVisible()
   expect(await nav.getByText('HACKATHONS').evaluate((word) => word.closest('a'))).toBeNull()
 })

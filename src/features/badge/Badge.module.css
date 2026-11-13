@@ -193,3 +193,14 @@ svg.clip {
     font-size: 1.2em;
   }
 }
+
+/*
+ * The roles are the badge's smallest line. At 1.08em they are under 11px
+ * where the wide artboard's unit is one pixel, so they are set a touch larger
+ * there.
+ */
+@container lid (min-width: 1100px) {
+  .roles {
+    font-size: 1.1em;
+  }
+}

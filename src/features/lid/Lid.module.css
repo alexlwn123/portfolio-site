@@ -154,18 +154,6 @@
   pointer-events: none;
 }
 
-/*
- * The badge's smallest line, the roles across the top of its card, is 1.08em:
- * under 11px where the wide artboard's unit is one pixel. It is set a touch
- * larger there. The rule belongs in Badge.module.css beside the phone's, and
- * is here only because that file was being rewritten when this was added.
- */
-@container lid (min-width: 1100px) {
-  .stage :global([data-sticker='badge']) div > ul {
-    font-size: 1.1em;
-  }
-}
-
 /* A list of stickers takes no room itself: each one is placed on the stage. */
 .group,
 .slot {

@@ -620,6 +620,275 @@ height. The cover's links are now eight: the six under the badge, this one and t
 ### One ribbon for the hackathons, with two pins
 
 Since 2026-11-13, at the owner's request, the `WINNER ×9` and `ORGANIZER ×16` ribbons are one
+ribbon, `HACKATHONS`, cut from highlighter yellow, with two pin-back buttons pinned to it, the kind
+handed out at a conference: `WINNER ×9` in ink and `ORGANIZER ×16` in orange. The badge now hangs
+five ribbons: ENGINEER, HACKATHONS, BUILDER, SPEAKER, INVENTOR.
+
+- **A button is drawn** (`src/features/badge/PinButton.tsx`): a printed disc in a rolled metal rim,
+  what it is lettered around the top and its count across the middle, with a dome of light over
+  the print and a glint at the edge. It is 62 units across. On a 360px phone that is 57px, and its
+  smallest lettering is 11px.
+- **The buttons are the links.** `WINNER ×9` leads to the wins and `ORGANIZER ×16` to the hackathons
+  he organized. The ribbon itself is not a link: it stands for two sections, so its word is a
+  heading for the buttons. The ways in under the badge are still six, and they still reach every
+  section but the contact one. They are no longer in the order of the page: the two about
+  hackathons come together.
+- **The stack is as long as it was.** The ribbon is two ribbons deep, less the tuck between them, so
+  the ribbons trail exactly as far as six did, and nothing placed around them moved. The buttons
+  are pinned to its two lower corners and hang a little off its ends and its foot.
+- **A button swings on its pin.** It hangs a few degrees askew and swings the other way under the
+  pointer or the keyboard. The link keeps its place, so a pointer on its edge stays on it.
+- **The comparison with the mockup** leaves the whole ribbon out, buttons and all, where it used to
+  leave out only the `WINNER` ribbon's count: the mockup has two ribbons there. What is left out is
+  now 4.0% of the picture (the allowance went from 2% to 4.5%), and the difference over the rest is
+  2.20% against a tolerance of 2.70%. An empty item keeps
+  the second ribbon's turn in the dressed page, so SPEAKER and BUILDER still lean as the mockup's
+  third and fourth ribbons did.
+- The rule that set the badge's roles a touch larger on the wide artboard matched any list inside
+  the badge. It is in `Badge.module.css` now, on the roles alone.
+- Code: `src/features/badge/ribbons.ts` (a ribbon is a link, or carries pins),
+  `src/features/badge/SectionRibbons.tsx` and `src/features/badge/PinButton.tsx`.
+
+### What could not be checked here
+
+The tests run in headless Chromium on a desktop. A real phone's tilt (the tests send the readings a
+sensor would), the sounds as heard, Safari and Firefox, and a pen on a tablet have not been tried.
+
+## Round 2: a proper site
+
+Alex's feedback on the built lid: it read as a screenshot on a desk ("weird margins"), and its
+first screen was "just focusing on the hackathon stuff". Both answers move the lid further from
+the mockup, so this round also changed how the lid is compared with it.
+
+### Full bleed, and a third arrangement
+
+|                    | Before                                        | Now                                                                       |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------------- |
+| The lid            | A 1001px card with 12px corners on an ink desk | Cobalt from edge to edge at every width, no desk, no corners, no padding |
+| Arrangements       | 390 (to 560px) and 728 (561px and up)         | 390 (to 560px), 728 (561 to 1099px) and a new wide one, 1100 (1100px up)  |
+| Largest artboard   | 728 units at 1001px                           | 1100 units, growing to 1920px (1.75px a unit), then centred               |
+| Artboard heights   | 728 × 1300, 390 × 2256                         | 1100 × 1090, 728 × 1510, 390 × 2526                                       |
+| Below the lid      | The desk                                      | The strap pinned to the top, then the first section                       |
+
+Past 1920px the stickers stop growing and are centred, and the cobalt and its brushed texture run
+on to both edges. The wide arrangement is `src/features/lid/placement/wide.ts`. Its badge hangs
+from a point 120 units above the top edge (`rise` in `artboards.ts`), higher than on the other
+two, so that at 1440 × 900 the first screen shows the name, the hello tag, the badge with the top
+of its ribbons, the Plain CV tag and both counts. The lid is kept clear 60 units either side of
+the badge and 120 below its ribbons, for the badge's drag and spring.
+
+### The whole career, not only hackathons
+
+- **The hello tag** introduces the whole person. Its handwriting is his own first line followed by
+  "I build AI agents at" the employer the record marks as current, "Before that: bitcoin and
+  Lightning apps." and "Along the way:" the count of granted patents "and hackathons around the
+  world." The highlighted phrase is now "AI agents", where the mockup had "hackathons".
+- **Five asset tags** for his employers (Finite Computer, Fedi, Zion, BlockSpaces, NCR), drawn as
+  the silver plates, white "property of" labels and riveted strips companies stick on their
+  laptops: `src/features/stickers/PropertyTag.tsx`. Each has the organization and, where the record
+  has one, the start year ("Issued 2024"); the current job reads "In service". They link to the
+  work section.
+- **Six ribbons**, in the order of the page: ENGINEER, WINNER ×9, BUILDER, ORGANIZER ×16, SPEAKER,
+  INVENTOR. The mockup had four (ORGANIZER, WINNER, SPEAKER, BUILDER).
+- **Links stay on the page.** Every sticker and ribbon that went to `/cv/#…` now goes to the
+  matching section of the home page. Plain CV still goes to `/cv/`, and the "More in the CV" link
+  at the foot of a peeled sticker's note still goes to the CV's own section.
+- **Nothing was dropped.** To make room, the stickers below the hello tag moved down on the 728
+  and phone arrangements (200 to 260 units on 728). The eight city pills kept their size and were moved
+  into the gaps.
+
+### The strap pinned to the top
+
+`src/features/nav/`: the lanyard's strap laid flat between the lid and the first section,
+`position: sticky`, 44px tall at every width, a `nav` named "On this page" (the ribbons' is
+"Sections"). It carries Top and a link to each section; on a phone the links scroll sideways
+inside it. The page sets `--pinned-height` to its height, so a section followed from it lands with
+its heading clear. Following a link on the page glides there, except under reduced motion.
+
+### How the comparison with the mockup changed
+
+Until this round `e2e/lid-visual.spec.ts` compared the lid as laid out with the mockup, and left
+out the places taken by everything added since. With the asset tags, the sixth ribbon and the
+moved stickers those places would have come to well over the 9% it allowed, and the comparison
+would have guarded almost nothing. It now works the other way round:
+
+1. **It dresses the lid as the mockup** before taking the picture (`e2e/mockupArrangement.ts`): it
+   adds a stylesheet that puts every sticker the mockup has back at the mockup's place, size,
+   tilt and stacking, makes the stage the mockup's 1300 units tall and takes off everything added
+   since (the five asset tags, the NCR medal, the patents label and the three buttons the script
+   shows). It then gives the hello tag the mockup's sentence around "hackathons" and hangs the
+   mockup's four ribbons in the mockup's order.
+2. **It compares the two pictures** as before: at most 2.7% of the pixels may differ, and every
+   sticker not in the list of recorded departures must match to 0.1%. Today the difference is
+   1.63%.
+3. **Only the two counts the ninth win changed are left out**: the wins seal's figure and the
+   WINNER ribbon's ×9. The allowance for what is left out came down from 9% to 2%; they take 1.57%.
+4. **Two new checks keep it honest.** Every sticker on the lid is either on the mockup or on the
+   list of additions, so a new sticker cannot slip past unnoticed. And the dressed lid is checked
+   to have every mockup sticker at the mockup's exact place, its height, the mockup's hello
+   wording and its four ribbons, so the dressing cannot quietly stop working.
+
+What it still guards: how every sticker of the mockup is drawn (vinyl, cut, paint, lettering,
+shadow), at the mockup's width. What it no longer guards: where the stickers are stuck, the
+wording of the hello tag, and the ribbons beyond the mockup's four. Those are covered by
+`e2e/lid.spec.ts` instead, at 390, 728 and 1440 wide, with 1100, 1920 and 2560 checked for
+overflow and for the 11px floor. The review screenshots are now taken at 1920, 1440, 728 and 390.
+
+## Round 3: a cover, a pile and motion
+
+Alex's feedback on the deployed site: the art direction is right, the landing screen is "too busy",
+and the margins are "kind of funky". He asked for "a larger, more minimalist landing page with my
+name, the badge, and maybe the short hello, I'm thing", the stats and most of the stickers moved
+"to another section, maybe after scrolling down", and "a bit more flourishing animation". The lid
+is the same surface with the same stickers, in two parts.
+
+### The lid is two blocks
+
+|                 | Before                                             | Now                                                                                           |
+| --------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| The lid         | One stage, about forty stickers on one artboard    | A cover and, under it, a pile: two blocks inside the one `[data-lid]`                         |
+| First screen    | Name, hello, badge, CV tag, five employers, counts | The cover: name, hello tag, badge on its lanyard, a cue to scroll. Nothing else               |
+| Cover's height  | Whatever the artboard came to                      | Exactly one screen (`100svh`, `100vh` where there is no small viewport)                       |
+| Cover's unit    | The page's, from the width                         | The smaller of width and height, so the composition fits as a picture set to "contain" does   |
+| Name            | 460 units of 1100 (42%)                            | 590 of the column's 1000 (59%) on a laptop, the column's whole width on a phone               |
+| Pile's unit     | Grew to 1920px                                     | Stops at 1440px, as the sections' does                                                        |
+| Pile artboards  | 1100 × 1090, 728 × 1510, 390 × 2526 (whole lid)    | 1100 × 856, 728 × 1296, 390 × 2212 (the pile alone)                                           |
+| Hello tag       | Four sentences: now, before, patents, hackathons   | Two short lines: who he is and where, and "I build AI agents at" his current employer         |
+
+- **The cover has four compositions** (`src/features/lid/placement/cover.ts`): a laptop's, a
+  tablet's on its side, a tablet's upright (narrower than nine tenths of its height) and a phone's.
+  A placement on it is measured in from one edge of the page's column and down from the top of the
+  screen, its middle or its bottom. So the name's left edge is the edge every section's heading
+  sits on at any width, the badge's card ends on the column's right edge, and what a wider or
+  taller screen adds is bare lid between and around them.
+- **It is centred down the screen, not across it.** A composition centred across would leave the
+  name off the column's edge on every screen that is not the artboard's own shape, which is most
+  laptops. The spare width goes between the name and the badge instead.
+- **Past 1440px the cover's unit grows a tenth more and stops** (`COVERS.wide.capPx`). The column
+  stops growing at 1440px, and a name any larger would run into the badge.
+- **It never shrinks its type under 11px.** On a screen too short for the composition at the
+  smallest legible unit (a phone on its side, a very short window) the cover grows taller than the
+  screen instead. That is the one case in which it is not exactly one screen.
+- **The pile has a heading**, "Stuck on / so far", an `h2` drawn as the sections' headings are
+  (`src/features/sections/HeadingLabel.tsx`, now shared) on the same left edge, with a line in his
+  hand under it. The cover's cue, "scroll, it gets stickier", is a link to it (`/#pile`).
+- **The ribbons trail off the cover and land on the pile.** On a laptop and a tablet the pile
+  keeps its top right corner bare for them (`LANDINGS` in `artboards.ts`). On a phone the badge is
+  most of the screen's width, so the pile starts under the last ribbon, by a gap the stylesheet
+  works out from the screen's height.
+- **No sticker covers another's link**, at any width: `e2e/lid-cover.spec.ts` probes every sticker
+  on a grid. The first two rounds held only what was added after the mockup to that.
+- **Three stickers are new** (the cue, the pile's heading and the line under it), so the lid has
+  43. The sentences that left the hello tag ("Before that: bitcoin and Lightning apps. Along the
+  way: two granted patents, and hackathons around the world.") were dropped: the employers' tags,
+  the patents label and the counts in the pile say the same from the records.
+
+### Motion
+
+All of it runs only where motion is welcome, animates only `transform`, `translate`, `rotate`,
+`scale` and `opacity`, and adds to a page that is whole without it.
+
+- **The name is drawn a letter at a time.** Each letter is a piece of its own
+  (`src/features/stickers/DieCutText.tsx`), placed from a table of the face's advances
+  (`geometry/nameFace.ts`), so the letters can be slapped down one after another, 55ms apart. The
+  mockup set each line as one piece of text, stretched to the measure and kerned by the browser.
+  Set letter by letter there is no kerning: on the 480-unit drawing the E of ALEX sits 1.9 units
+  to the right of the mockup's and the L 1 unit. The optical size is pinned to 96, which is what
+  browsers chose themselves at that size.
+- **One pass of light** crosses the name's foil once it is on. **The three sparks no longer
+  twinkle for ever**: they come on after the light, twinkle twice and are still.
+- **The hello tag** is slapped down as the name finishes, and its highlighter is a stroke of its
+  own (a pseudo-element where the mockup had a background), drawn from left to right once the tag
+  has landed.
+- **The badge drops in.** The stylesheet holds it above the lid for a quarter of a second and
+  drops it; the page's script, if it has run by then, drops it by its physics from where it is
+  held. Before, it dropped only when the script ran before the first paint, and was otherwise
+  tossed from where it hung.
+- **The pile lands as it scrolls into view**, each sticker slapped down in its turn, 60ms after
+  its neighbour and never more than half a second after it came into view
+  (`src/features/lid/enhance/arrive.ts`). The first sticker to land and every fifth after it are
+  heard when sound is on, five at most.
+- **Each section's heading and stickers are pressed on** the first time they scroll into view: a
+  quarter of a second, 35ms apart.
+- **Nothing is hidden by the stylesheet alone.** A sticker is held back only by the script, only
+  after the browser has said it is off the screen, and is shown at once if anything goes wrong.
+  What is on screen when the page opens is never touched.
+- **Nothing loops for ever** but the nod of the cue's arrow, and, until the script runs, the sway
+  of the badge.
+
+### How the comparison with the mockup changed
+
+`e2e/lid-visual.spec.ts` still dresses the lid as the mockup and compares the pictures, to the same
+2.7% and 0.1%. To put each sticker back at the mockup's place it now first takes the two blocks
+away (`oneStageCss` in `e2e/mockupArrangement.ts`): the cover, its column and the pile stop being
+what stickers are placed against, so all of them are placed on one stage again. Three stickers
+joined the list of what the mockup never had (the cue, the pile's heading, the line under it), and
+the name joined the list of recorded departures, for the two letters above.
+
+What guards the first screen now is `e2e/lid-cover.spec.ts`, at 1440 × 900, 1920 × 1080,
+1280 × 720, 1024 × 768, 768 × 1024, 390 × 844 and 360 × 640: the cover exactly one screen tall, the
+name, the hello tag and the cue wholly on it, the badge's photo and name on it, and no sticker of
+the pile showing. `e2e/lid-arrival.spec.ts` guards the motion, and that nothing stays hidden with
+the script, without it, or with motion reduced.
+
+### The badge's scrawl is gone
+
+Alex asked for the "real title ↓" note on the badge to be removed. The badge now prints his title
+with nothing scrawled beside it, and the "(real title)" that a screen reader heard after the title
+went with it. The rows above about the scrawl's colour, its arrow and how it is read out describe
+the lid before this. The badge was already one of the comparison's recorded departures; without
+the note the lid differs from the mockup by 1.99% of pixels, against 2.70% allowed.
+
+### The words were gone over
+
+Alex asked for the copy to be gone over for anything "out of place for a portfolio site designed
+to make me look good", and for the lines about who a press piece names to come off. What changed:
+
+| Where                         | Before                                                                 | Now                                                               |
+| ----------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Press, everywhere             | The claim, then "The piece names neither the event nor him." or the like | The claim alone. Who a piece names stays in the record, unprinted |
+| The cover's cue               | "scroll, it gets stickier"                                             | "scroll for the highlights"                                       |
+| The pile's heading and line   | "Stuck on / so far", "the long versions are further down"              | "At a / glance", "every sticker links to the full story"          |
+| The CV tag on the lid         | "The serious version"                                                  | "Short on time?"                                                  |
+| The button that puts it back  | "Tidy the lid"                                                         | "Reset stickers"                                                  |
+| The workshop sticker and pass | "a real workshop I teach"                                              | "a workshop I teach"                                              |
+| Career path, under the title  | A line about where each tag is stuck                                   | How many roles, from the first employer to the current one        |
+| Wins                          | The newest win an empty outline with a note; two asides in his hand    | Every win has its sticker; no asides                              |
+| Organized, under the title    | "one wristband each. newest at the wrist."                             | No line: the totals are straight under the title                  |
+| Organized, each label         | Dashed pills for figures "not public"; an aside on the one he also won | A figure nobody published is left out; no aside                   |
+| Organized, the upcoming one   | "still on the roll"                                                    | "save the date"                                                   |
+| Projects, under the title     | "serious tech, shipped as toys. freshly cut."                          | No line: the stickers are straight under the title                |
+| Patents, under the title      | "flip the laptop over. it's all on the rating plate."                  | No line: the plate is straight under the title                    |
+| Contact                       | "that's the whole lid. the rest is a conversation.", a line about stickers harmed | "got something worth building? let's talk.", a thank-you |
+
+The record's own note that he ran the hackathon Lightning Welder won, and took no part in the
+judging, is still printed beside that win. The workshop sticker joins the comparison's recorded
+departures, because its line no longer matches the mockup's.
+
+Since 2026-11-12 the compliance label prints `U.S. PATENT FILINGS` and all four publication numbers.
+
+### Links that leave the site open a new tab
+
+Since 2026-11-13, at the owner's request, every link to another host opens in a new tab
+(`target="_blank"` with `rel="noopener"`), on the home page and the plain CV, so the tab the visitor
+was reading stays where it was. Before, no link opened a new window. Links within the site (the
+ribbons, the strap, the count stickers, the plain CV) and mail addresses stay in their tab. One
+function decides it, `linkTo` in `src/lib/linkTo.ts`; `tests/build/links.test.ts` checks every anchor
+in the built pages and `e2e/outbound.spec.ts` follows the links in a browser.
+
+### A way to the contact section on the cover
+
+Since 2026-11-13, at the owner's request, the cover holds one more thing: "contact me", with a drawn
+arrow, written in his marker under the left end of the hello tag. It leads to the contact section at
+the foot of the page, for a visitor who came to write to him. It is deliberately quiet: white where
+the cue to scroll is in highlighter, about three quarters of its size, on one line, and its arrow
+does not nod. It is the sticker `contact` (a `cue` that is `quiet`), placed in all four compositions
+against the same line of the screen as the hello tag, so the two stay together on a screen of any
+height. The cover's links are now eight: the six under the badge, this one and the cue.
+
+### One ribbon for the hackathons, with two pins
+
+Since 2026-11-13, at the owner's request, the `WINNER ×9` and `ORGANIZER ×16` ribbons are one
 ribbon, `HACKATHONS`, cut from highlighter yellow, with two enamel pins stuck on it: `WINNER ×9` in
 ink and `ORGANIZER ×16` in orange, each in a metal rim. The badge now hangs five ribbons: ENGINEER,
 HACKATHONS, BUILDER, SPEAKER, INVENTOR.

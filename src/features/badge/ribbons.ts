@@ -4,7 +4,7 @@ import type { Tone } from '../stickers/tones'
  * What hangs under the badge. A ribbon says what he is and leads to the
  * section that shows it. One ribbon is for two sections at once, the
  * hackathons he has won and the ones he has organized: it is not a link
- * itself, and carries an enamel pin for each, which is.
+ * itself, and carries a pin-back button for each, which is.
  */
 
 /** A ribbon that is one link. */
@@ -14,8 +14,12 @@ export interface LinkRibbon {
   readonly tone: Tone
 }
 
-/** An enamel pin stuck on a ribbon: a link of its own, with a count on it such as "×16". */
+/**
+ * A pin-back button pinned to a ribbon: a link of its own, with a count on it
+ * such as "×16". Its id names the definitions of its drawing.
+ */
 export interface Pin {
+  readonly id: string
   readonly label: string
   readonly count: string
   readonly href: string

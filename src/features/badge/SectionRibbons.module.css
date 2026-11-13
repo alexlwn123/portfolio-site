@@ -134,14 +134,15 @@ a.ribbon:focus-visible > .face {
 }
 
 /*
- * The ribbon with pins on it. It is two ribbons deep, less the tuck between
- * them, so the stack under the badge is exactly as long as it would be with a
- * ribbon for each pin. Its word sits where any ribbon's does, and the pins
- * are stuck across the rest of it.
+ * The ribbon with buttons pinned to it. It is two ribbons deep, less the tuck
+ * between them, so the stack under the badge is exactly as long as it would
+ * be with a ribbon for each button. Its word sits where any ribbon's does,
+ * and the buttons are pinned to its two lower corners.
  */
 .pinned {
   --depth: 4.3em;
   --tuck: 0.85em;
+  --button: 6.2em;
 
   height: calc(var(--depth) * 2 - var(--tuck));
 }
@@ -159,14 +160,17 @@ a.ribbon:focus-visible > .face {
   padding-bottom: 0.25em;
 }
 
-/* The pins lie over the ribbon, not in its face: the face is cut by a mask, and a pin is not. */
+/*
+ * The buttons lie over the ribbon, not in its face: the face is cut by a
+ * mask, and a button is not. Each hangs a little off the ribbon's end and its
+ * foot, as a button pinned near a corner does, and clear of the word.
+ */
 .pins {
   position: absolute;
-  inset: 3.5em 0 auto;
+  inset: auto -1.3em -0.8em;
   display: flex;
-  gap: 0.45em;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: space-between;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -176,83 +180,17 @@ a.ribbon:focus-visible > .face {
   display: flex;
 }
 
-/* Each pin is stuck on by hand: one leans one way, the next the other. */
+/* Each is pinned on by hand: one hangs askew one way, the next the other. */
 .pinItem:nth-child(odd) {
-  --lean: -3deg;
+  --lean: -8deg;
 }
 
 .pinItem:nth-child(even) {
-  --lean: 2.5deg;
-}
-
-/*
- * A pin is a link. The link is as deep as a fingertip needs and keeps its
- * place. What lifts under the pointer is the enamel inside it.
- */
-.pin {
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: 2.9em;
-  border-radius: 99em;
-  color: var(--t, var(--ink));
-  text-decoration: none;
-}
-
-.pin:focus-visible {
-  z-index: 1;
-  outline: 0.25em solid var(--hi);
-  outline-offset: 0.15em;
-  box-shadow: 0 0 0 0.65em var(--ink);
-}
-
-/* Enamel in a metal rim: the colour under a gloss, and the rim from the border's own box. */
-.enamel {
-  display: block;
-  padding: 0.4em 0.7em 0.34em;
-  border: 0.15em solid transparent;
-  border-radius: 99em;
-  background:
-    linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.45),
-        rgba(255, 255, 255, 0) 46%,
-        rgba(0, 0, 0, 0.16)
-      )
-      padding-box,
-    linear-gradient(var(--c), var(--c)) padding-box,
-    linear-gradient(
-        160deg,
-        var(--metal-light),
-        var(--metal-mid) 42%,
-        var(--metal-light) 58%,
-        var(--metal-dark)
-      )
-      border-box;
-  box-shadow: calc(var(--cast-x) * 0.3) calc(var(--cast-y) * 0.3) 0.18em
-    rgba(var(--shadow-rgb), 0.5);
-  font-size: 1.2em;
-  line-height: 1;
-  white-space: nowrap;
-  rotate: var(--lean, 0deg);
-  transition:
-    translate 0.25s var(--ease-slap),
-    rotate 0.25s var(--ease-slap);
-}
-
-.pin:hover > .enamel,
-.pin:focus-visible > .enamel {
-  translate: 0 -0.16em;
-  rotate: 0deg;
-}
-
-.count {
-  letter-spacing: 0;
+  --lean: 6deg;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .face,
-  .enamel {
+  .face {
     transition: none;
   }
 }

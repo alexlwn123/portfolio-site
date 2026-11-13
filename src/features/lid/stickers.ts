@@ -169,8 +169,20 @@ function sectionRibbons(stats: Stats): readonly RibbonSpec[] {
       label: ribbons.hackathons,
       tone: 'hi',
       pins: [
-        { label: ribbons.winner, count: won, href: sectionAnchor('wins'), tone: 'ink' },
-        { label: ribbons.organizer, count: ran, href: sectionAnchor('organized'), tone: 'tang' },
+        {
+          id: 'winner',
+          label: ribbons.winner,
+          count: won,
+          href: sectionAnchor('wins'),
+          tone: 'ink',
+        },
+        {
+          id: 'organizer',
+          label: ribbons.organizer,
+          count: ran,
+          href: sectionAnchor('organized'),
+          tone: 'tang',
+        },
       ],
     },
     { label: ribbons.builder, href: sectionAnchor('projects'), tone: 'gum' },

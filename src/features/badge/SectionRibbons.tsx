@@ -4,7 +4,8 @@ import { cx } from '../../lib/classNames'
 import { linkTo } from '../../lib/linkTo'
 import { toneClass } from '../stickers/tones'
 import voice from '../stickers/voice.module.css'
-import { isPinned, type LinkRibbon, type Pin, type PinnedRibbon, type Ribbon } from './ribbons'
+import { PinButton } from './PinButton'
+import { isPinned, type LinkRibbon, type PinnedRibbon, type Ribbon } from './ribbons'
 import styles from './SectionRibbons.module.css'
 
 interface SectionRibbonsProps {
@@ -27,22 +28,9 @@ function LinkedRibbon({ ribbon }: { readonly ribbon: LinkRibbon }): ReactElement
 }
 
 /**
- * An enamel pin. The link keeps its place and the enamel inside it lifts, so
- * a pointer resting on its edge stays on it.
- */
-function PinLink({ pin }: { readonly pin: Pin }): ReactElement {
-  return (
-    <a className={cx(styles.pin, toneClass(pin.tone))} data-pin="" {...linkTo(pin.href)}>
-      <span className={cx(voice.label, styles.enamel)}>
-        {pin.label} <span className={styles.count}>{pin.count}</span>
-      </span>
-    </a>
-  )
-}
-
-/**
- * A ribbon with pins stuck on it. It is twice a ribbon's depth, and not a
- * link: its word says what the pins are about, and each pin leads somewhere.
+ * A ribbon with buttons pinned to it. It is twice a ribbon's depth, and not a
+ * link: its word says what the buttons are about, and each button leads
+ * somewhere.
  */
 function RibbonWithPins({ ribbon }: { readonly ribbon: PinnedRibbon }): ReactElement {
   return (
@@ -54,8 +42,8 @@ function RibbonWithPins({ ribbon }: { readonly ribbon: PinnedRibbon }): ReactEle
       </span>
       <ul className={styles.pins} role="list">
         {ribbon.pins.map((pin) => (
-          <li key={pin.href} className={styles.pinItem}>
-            <PinLink pin={pin} />
+          <li key={pin.id} className={styles.pinItem}>
+            <PinButton pin={pin} />
           </li>
         ))}
       </ul>

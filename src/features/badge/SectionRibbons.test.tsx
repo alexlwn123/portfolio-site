@@ -76,7 +76,7 @@ describe('SectionRibbons', () => {
     const ribbon = hackathons()
     const pins = within(ribbon).getAllByRole('link')
 
-    expect(pins.map((pin) => pin.textContent.replace(/\s+/g, ' '))).toEqual([
+    expect(pins.map((pin) => pin.getAttribute('aria-label'))).toEqual([
       `WINNER ×${String(stats.wins.total)}`,
       `ORGANIZER ×${String(stats.organized.count)}`,
     ])
@@ -149,12 +149,19 @@ describe('SectionRibbons', () => {
     expect(screen.getByRole('navigation').querySelectorAll('[style]')).toHaveLength(0)
   })
 
-  it('lifts a pin by what is inside it, so the pin itself never moves under the pointer', () => {
+  it('pins each as a round button, a drawing of its own', () => {
     renderRibbons()
+    const drawings = [...hackathons().querySelectorAll('[data-pin] > svg')]
+    const ids = drawings.flatMap((drawing) =>
+      [...drawing.querySelectorAll('[id]')].map(({ id }) => id),
+    )
 
-    for (const pin of hackathons().querySelectorAll('[data-pin]')) {
-      expect(pin.children).toHaveLength(1)
-      expect(pin.firstElementChild?.tagName).toBe('SPAN')
-    }
+    expect(drawings).toHaveLength(2)
+    expect(drawings.every((drawing) => drawing.hasAttribute('data-pin-button'))).toBe(true)
+    expect(drawings.map((drawing) => drawing.querySelector('textPath')?.textContent)).toEqual([
+      'WINNER',
+      'ORGANIZER',
+    ])
+    expect(new Set(ids).size).toBe(ids.length)
   })
 })

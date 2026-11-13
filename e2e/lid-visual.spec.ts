@@ -108,9 +108,10 @@ const NONE: Margin = { top: 0, side: 0, bottom: 0 }
 /**
  * The left-out places must stay a small part of the page, or the comparison
  * means nothing. The seal's figure and the ribbon for the hackathons, which
- * is two ribbons deep, come to 3.6% of it.
+ * is two ribbons deep and has a button hanging off each lower corner, come to
+ * 4.0% of it.
  */
-const MAX_EXCLUDED = 0.04
+const MAX_EXCLUDED = 0.045
 
 /**
  * One box around every matched element and everything that shows inside them,
