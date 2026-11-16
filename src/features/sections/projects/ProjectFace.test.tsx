@@ -46,7 +46,7 @@ describe('ProjectFace', () => {
 
     expect(texts('clawthing-store')).toContain('Clawthing Store')
     expect(texts('last-pay-wins')).toContain('2.5M+ SATS IN WEEK ONE')
-    expect(texts('pleb-fm')).toMatch(/Pleb FM\s+pleb\.fm/)
+    expect(texts('pleb-fm')).toMatch(/Pleb FM\s+plebfm\.lwn\.lol/)
     expect(texts('lightning-welder')).toMatch(/1st overall.*Lightning.*Welder.*BTC\+\+ Berlin ’24/)
     expect(texts('arion-parking')).toMatch(/P.*Arion Parking/)
   })

@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content } from '../../../content'
@@ -36,12 +36,13 @@ describe('EventNote', () => {
     expect(note).toHaveTextContent('Jul 2026 · Canada')
   })
 
-  it('lists the figures as a list, each marked for what it is', () => {
-    renderNote('btcpp-toronto-2026')
+  it('prints none of the figures the record has: no head count, projects or prizes', () => {
+    const note = renderNote('btcpp-toronto-2026')
 
-    const chips = within(screen.getByRole('list')).getAllByRole('listitem')
-    expect(chips.map((chip) => chip.textContent)).toEqual(['16 projects', '17.542M sats in prizes'])
-    expect(chips.map((chip) => chip.getAttribute('data-chip'))).toEqual(['count', 'prize'])
+    expect(screen.queryByRole('list')).toBeNull()
+    expect(note.querySelector('[data-chip]')).toBeNull()
+    expect(note).not.toHaveTextContent(/participants|projects|prizes|sats/i)
+    expect(renderNote('btcpp-nairobi-2026')).not.toHaveTextContent(/90|\$6,180/)
   })
 
   it('adds the line more that the record has', () => {

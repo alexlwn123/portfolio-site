@@ -126,7 +126,6 @@ export const copy = deepFreeze({
     /** The three stickers that are buttons. They appear once the page's script runs. */
     controls: {
       sound: 'Sound',
-      tidy: ['Reset', 'stickers'],
       tilt: ['Tilt', 'me'],
     },
   },
@@ -148,7 +147,6 @@ export const copy = deepFreeze({
     },
     blank: 'save the date',
     notAnnounced: 'not announced',
-    nonMonetary: 'non-monetary prizes',
     coveredBy: (outlet: string) => `covered by ${outlet}`,
     roomForMore: 'room for more',
   },

@@ -6,7 +6,7 @@ import { linkTo } from '../../../lib/linkTo'
 import { ArrowUpRight } from './ArrowUpRight'
 import voice from '../../stickers/voice.module.css'
 import { organizedCopy } from './copy'
-import type { Chip, EventLabel, PressLine } from './eventLabels'
+import type { EventLabel, PressLine } from './eventLabels'
 import styles from './EventNote.module.css'
 
 interface EventNoteProps {
@@ -40,22 +40,6 @@ function When({ label }: EventNoteProps): ReactElement | null {
   )
 }
 
-function Chips({ chips }: { readonly chips: readonly Chip[] }): ReactElement | null {
-  if (chips.length === 0) {
-    return null
-  }
-
-  return (
-    <ul className={styles.chips} role="list">
-      {chips.map(({ kind, text }) => (
-        <li key={text} className={cx(voice.label, styles.chip, styles[kind])} data-chip={kind}>
-          {text}
-        </li>
-      ))}
-    </ul>
-  )
-}
-
 /** The press piece: a link named by the claim. */
 function PressItem({ label, href, claim }: PressLine): ReactElement {
   return (
@@ -74,11 +58,10 @@ function PressItem({ label, href, claim }: PressLine): ReactElement {
 
 /**
  * What is lettered on the lid beside a wristband: the city in his hand, when
- * and where, the figures the organizers published, and a scrawl where there
- * is a story.
+ * and where, any press, and a scrawl where there is a story.
  */
 export function EventNote({ label }: EventNoteProps): ReactElement {
-  const { place, about, chips, press, scrawl } = label
+  const { place, about, press, scrawl } = label
 
   return (
     <div className={styles.note}>
@@ -89,7 +72,6 @@ export function EventNote({ label }: EventNoteProps): ReactElement {
           {line}
         </p>
       ))}
-      <Chips chips={chips} />
       {press.map((item) => (
         <PressItem key={item.href} {...item} />
       ))}

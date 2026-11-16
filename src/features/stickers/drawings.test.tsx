@@ -35,7 +35,7 @@ describe('every drawing', () => {
     ['ArrowRight', <ArrowRight key="right" />],
     ['ArrowDown', <ArrowDown key="down" />],
     ['Bolt', <Bolt key="bolt" />],
-    ['Crab', <Crab key="crab" id="crab" caption="clawthing.store" />],
+    ['Crab', <Crab key="crab" id="crab" caption="clawthing.lwn.lol" />],
     ['ArcadeButton', <ArcadeButton key="button" id="button" top="Last Pay Wins" bottom="2.5M+" />],
     ['DieCutText', <DieCutText key="name" id="name" lines={['Alex', 'Lewin']} />],
     ['Starburst', <Starburst key="burst" top="HACKATHON" figure="8×" bottom="WINNER" />],
@@ -331,9 +331,9 @@ describe('Tally', () => {
 
 describe('illustrations', () => {
   it('prints the crab’s caption and names its filter after the sticker', () => {
-    const { container } = render(<Crab id="clawthing-store" caption="clawthing.store" />)
+    const { container } = render(<Crab id="clawthing-store" caption="clawthing.lwn.lol" />)
 
-    expect(container.querySelector('text')).toHaveTextContent('clawthing.store')
+    expect(container.querySelector('text')).toHaveTextContent('clawthing.lwn.lol')
     expect(ids(container)).toEqual(['clawthing-store-die-cut'])
     expect(container.querySelector('g[filter]')).toHaveAttribute(
       'filter',

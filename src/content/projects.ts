@@ -71,7 +71,7 @@ const records: readonly ProjectInput[] = [
     'clawthing-store',
     'Clawthing Store',
     'AI-designed crab merch and apparel. Marketed towards agents.',
-    [site('https://clawthing.store')],
+    [site('https://clawthing.lwn.lol')],
   ),
   project('fedimint-sdk', 'Fedimint SDK', 'Tools for developing Fedimint clients.', [
     code('https://github.com/fedimint/fedimint-sdk'),
@@ -86,14 +86,14 @@ const records: readonly ProjectInput[] = [
     'bitcoinramps',
     'BitcoinRamps',
     'Compare fees, spreads, privacy, and KYC requirements across top Bitcoin exchanges.',
-    [site('https://bitcoinramps.com')],
+    [site('https://ramps.lwn.lol')],
   ),
   winner('last-pay-wins', 'Last Pay Wins', [
-    site('https://lastpaywins.com'),
+    site('https://lastpaywins.lwn.lol'),
     code('https://github.com/alexlwn123/LastPayWins'),
   ]),
   winner('pleb-fm', 'Pleb FM', [
-    site('https://pleb.fm'),
+    site('https://plebfm.lwn.lol'),
     code('https://github.com/PlebFM/PlebFM'),
     { label: 'Demo video', url: 'https://youtu.be/_AwXSzzc9k0?t=839' },
   ]),

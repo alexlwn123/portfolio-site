@@ -16,8 +16,6 @@ export const contactCopy = {
 
   /** The asset tag that leads to the plain CV. */
   cv: { kicker: 'No stickers, all facts', label: 'Plain CV' },
-
-  smallPrint: 'Thanks for scrolling this far.',
 } as const
 
 /* Frozen all the way down, so no component can rewrite the voice. */

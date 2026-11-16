@@ -90,7 +90,6 @@ const FRAMES: Readonly<Record<StickerKind, Frame>> = {
   tally: { as: 'span', flat: true, decorative: true },
   wristband: { as: 'nav' },
   sound: { control: 'sound', toggle: true },
-  tidy: { control: 'tidy' },
   tilt: { control: 'tilt', toggle: true },
 }
 
@@ -104,7 +103,7 @@ function peelShape(kind: StickerKind): PeelShape {
 type OpeningSpec = Extract<StickerSpec, { kind: 'name' | 'lanyard' | 'badge' | 'hello' }>
 type WrittenSpec = Extract<StickerSpec, { kind: 'cue' | 'heading' | 'scrawl' }>
 type MetalSpec = Extract<StickerSpec, { kind: 'assetTag' | 'propertyTag' | 'complianceLabel' }>
-type ControlSpec = Extract<StickerSpec, { kind: 'sound' | 'tidy' | 'tilt' }>
+type ControlSpec = Extract<StickerSpec, { kind: 'sound' | 'tilt' }>
 type AwardSpec = Extract<
   StickerSpec,
   { kind: 'starburst' | 'roundBadge' | 'foilWin' | 'medal' | 'hexBadge' | 'tally' }
@@ -153,13 +152,11 @@ function metalFace(spec: MetalSpec): ReactElement {
   }
 }
 
-/** The faces of the three buttons. */
+/** The faces of the two buttons. */
 function controlFace(spec: ControlSpec): ReactElement {
   switch (spec.kind) {
     case 'sound':
       return <SoundFace />
-    case 'tidy':
-      return <WordsFace lines={spec.lines} tone="white" />
     case 'tilt':
       return <WordsFace lines={spec.lines} tone="hi" />
   }
@@ -239,7 +236,6 @@ function face(spec: StickerSpec, photo: BadgePhotoImage): ReactElement {
     case 'wristband':
       return <Wristband {...spec} />
     case 'sound':
-    case 'tidy':
     case 'tilt':
       return controlFace(spec)
   }

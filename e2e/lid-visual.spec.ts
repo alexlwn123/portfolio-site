@@ -252,7 +252,6 @@ test('accounts for every sticker: on the mockup, or added since', () => {
     'patents',
     'tilt',
     'sound',
-    'tidy',
   ])
 })
 

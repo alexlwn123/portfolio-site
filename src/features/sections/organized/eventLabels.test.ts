@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../../content'
-import type { HeldEvent, Organized, UpcomingEvent } from '../../../content'
+import type { Organized, UpcomingEvent } from '../../../content'
 import { heldEvents } from '../../../content/derive'
 import { pressClaim } from '../../../content/pressClaim'
 import { organizedCopy } from './copy'
@@ -25,16 +25,8 @@ function record(id: string): Organized {
   return found
 }
 
-/** The labels for a record changed for the test, alone in the list. */
-function labelOf(event: Organized): EventLabel {
-  const [only] = eventLabels({ ...content, organized: [event] })
-  if (!only) {
-    throw new Error('Expected one label')
-  }
-  return only
-}
-
-const chipTexts = (id: string): readonly string[] => label(id).chips.map(({ text }) => text)
+/** A figure with what it counts, as a label once printed it: "90 participants", "$6,180 prizes". */
+const FIGURE = /\$\d|\d[\d,.]*M?\s+(?:participants?|teams?|projects?|prizes|sats)/i
 
 describe('eventLabels', () => {
   it('has a label for every hackathon in the record, in the record’s order', () => {
@@ -53,12 +45,11 @@ describe('eventLabels', () => {
     )
   })
 
-  it('gives the upcoming hackathon the next number, and never a figure', () => {
+  it('gives the upcoming hackathon the next number', () => {
     const next = label('ai-hack-for-freedom-iv')
 
     expect(next.upcoming).toBe(true)
     expect(next.number).toBe(stats.organized.nextNumber)
-    expect(next.chips).toEqual([])
     expect(next.scrawl).toBe(organizedCopy.blank)
   })
 
@@ -102,53 +93,12 @@ describe('eventLabels', () => {
     }
   })
 
-  it('prints an exact head count and a dollar prize as the record has them', () => {
-    expect(chipTexts('btcpp-nairobi-2026')).toEqual(['90 participants', '$6,180 prizes'])
-    expect(chipTexts('bitcoin-2025-official-hackathon')).toEqual([
-      '832 participants',
-      '$58,750 prizes',
-    ])
-    expect(chipTexts('auburnhacks-2020')).toEqual(['112 participants', '$6,340 prizes'])
-  })
+  it('leaves the head count, projects and prizes off every label', () => {
+    for (const each of labels) {
+      const lettered = [each.place, each.where, ...each.about, each.scrawl].join(' ')
 
-  it('counts an event in teams when that is what the record counts', () => {
-    expect(chipTexts('ai-hack-for-freedom-iii')).toEqual(['10 teams', '$50,000 prizes'])
-    expect(chipTexts('ai-hack-for-freedom-ii')).toEqual(['8 teams', '$50,000 prizes'])
-  })
-
-  it('says "about" for an approximate head count, and leaves out a prize nobody published', () => {
-    expect(chipTexts('btcpp-florianopolis-2026')).toEqual(['about 60 participants', '21 projects'])
-  })
-
-  it('keeps a prize in sats in sats, and leaves out a head count nobody published', () => {
-    expect(chipTexts('btcpp-toronto-2026')).toEqual(['16 projects', '17.542M sats in prizes'])
-  })
-
-  it('words a non-monetary prize as one, with no amount', () => {
-    const turbo = label('btcpp-ai-turbo-austin-2025')
-
-    expect(turbo.chips.map(({ text }) => text)).toEqual([
-      '21 participants',
-      organizedCopy.nonMonetary,
-    ])
-    expect(turbo.chips.at(-1)?.text).not.toMatch(/\d|\$/)
-  })
-
-  it('prints no pill at all when no figure was published', () => {
-    const silent: HeldEvent = {
-      ...(record('btcpp-toronto-2026') as HeldEvent),
-      participants: null,
-      prizes: null,
-      projects: null,
-    }
-
-    expect(labelOf(silent).chips).toEqual([])
-  })
-
-  it('puts the counts first, then the prize, and never a pill for what is not on record', () => {
-    expect(label('btcpp-toronto-2026').chips.map(({ kind }) => kind)).toEqual(['count', 'prize'])
-    for (const event of heldEvents(content.organized)) {
-      expect(JSON.stringify(label(event.id).chips), event.id).not.toMatch(/not public/i)
+      expect(each, each.id).not.toHaveProperty('chips')
+      expect(lettered, each.id).not.toMatch(FIGURE)
     }
   })
 

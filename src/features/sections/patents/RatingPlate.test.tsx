@@ -145,7 +145,7 @@ describe('RatingPlate', () => {
     ])
     expect(links[0]).toHaveAccessibleName('US 12,536,579 B2 on Google Patents')
     expect(links[2]).toHaveAccessibleName('US 2023/0032782 A1 on Google Patents')
-    expect(plate).toHaveTextContent('Every number opens its public record on Google Patents.')
+    expect(plate).not.toHaveTextContent(/every number opens|public record/i)
   })
 
   it('leaves a filing off once he takes it off the site', () => {

@@ -47,7 +47,7 @@ describe('ProjectsSection', () => {
       .map((link) => link.getAttribute('href'))
     expect(links).toEqual([
       '#wins',
-      'https://pleb.fm',
+      'https://plebfm.lwn.lol',
       'https://github.com/PlebFM/PlebFM',
       'https://youtu.be/_AwXSzzc9k0?t=839',
     ])

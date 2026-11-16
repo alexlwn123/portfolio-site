@@ -3,7 +3,7 @@
  * of the smaller stickers, every one out to the column's right edge. The
  * stack starts level with the section's heading, which is over the shirt, and
  * is spread to end where the shirt's hem does. Each sticker has a place of its
- * own (.air, .pass, .card, .cutting, .also), a size that suits it and a lean.
+ * own (.air, .card, .cutting, .also), a size that suits it and a lean.
  * A sticker's own stylesheet gives it a width: where a place overrules that,
  * it does so from under .around, to be the stronger rule wherever it loads.
  */
@@ -32,12 +32,6 @@
   rotate: 2deg;
 }
 
-/* A pass is taller than it is wide, so it is the one sticker narrower than the stack. */
-.pass {
-  font-size: 1.16em;
-  rotate: -2.5deg;
-}
-
 /* The record sticker rides over the card's corner, so the card stands in by that much. */
 .card {
   margin-right: 0.8em;
@@ -64,8 +58,8 @@
  * ---------- 728 units: the shirt, then the stickers in rows ----------
  *
  * Every row runs from the column's left edge to its right: the sign and the
- * pass, the stamp card across the whole column, then the two cuttings, with
- * the page of reference under the shorter one.
+ * stamp card, then the two cuttings, with the page of reference under the
+ * shorter one.
  */
 @container section (max-width: 1099px) {
   .stage {
@@ -82,12 +76,13 @@
   }
 
   .air,
-  .pass,
   .card {
     font-size: 1em;
   }
 
+  /* The sign is the shorter of the two, so it is hung level with the card's middle. */
   .air {
+    align-self: center;
     rotate: -1.5deg;
   }
 
@@ -95,20 +90,10 @@
     width: 100%;
   }
 
-  .pass {
-    justify-self: end;
-    font-size: 1.1em;
-    rotate: 2.5deg;
-  }
-
+  /* As on a laptop, the record sticker rides over the card's corner to the column's edge. */
   .card {
-    grid-column: 1 / -1;
-    margin-right: 0;
-    rotate: -0.8deg;
-  }
-
-  .around > .card > * {
-    width: 100%;
+    justify-self: end;
+    rotate: 1.2deg;
   }
 
   /* The first cutting is as long as the second and the page of reference under it. */
@@ -146,9 +131,17 @@
     align-items: stretch;
   }
 
-  .pass {
-    align-self: center;
-    font-size: 1.1em;
+  .air {
+    align-self: stretch;
+  }
+
+  .card {
+    margin-right: 0;
+    rotate: -0.8deg;
+  }
+
+  .around > .card > * {
+    width: 100%;
   }
 
   .also {

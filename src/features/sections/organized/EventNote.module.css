@@ -1,7 +1,8 @@
 /*
  * What is lettered on the lid beside a wristband. A port of the mockup's
- * .note: the city in marker, when and where under it, the figures as small
- * pills, and a scrawl in highlighter where there is a story.
+ * .note: the city in marker, when and where under it, a press link as a
+ * small pill, and a scrawl in highlighter where there is a story. The
+ * mockup's pills of figures are left off.
  *
  * A label is set against the edge of the column, away from the arm: flush
  * left on the left of it, flush right on the right. The mockup set it against
@@ -28,10 +29,9 @@
 /*
  * The label is set in rows, so that it is short enough to sit beside two
  * bands without pushing them apart. The city has a row to itself. The date
- * and the line more share one when both fit. The pills start a row of their
- * own, which this empty piece opens, and the press piece's link joins them
- * when there is room. What is said last has a row to itself again. Nothing
- * is moved out of the order the markup has it in.
+ * and the line more share one when both fit. The press piece's link starts a
+ * row of its own, which this empty piece opens. What is said last has a row
+ * to itself again. Nothing is moved out of the order the markup has it in.
  */
 .note::after {
   flex: 0 0 100%;
@@ -44,7 +44,6 @@
   flex: 0 0 100%;
 }
 
-.chips,
 .pressLink {
   order: 2;
 }
@@ -98,19 +97,6 @@
   line-height: 1.2;
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45em;
-  margin: 0.5em 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-:global([data-side='right']) .chips {
-  justify-content: flex-end;
-}
-
 .chip {
   display: block;
   padding: 0.24em 0.64em 0.2em;
@@ -123,16 +109,10 @@
   white-space: nowrap;
 }
 
-.prize {
-  background: var(--hi);
-  rotate: 1.5deg;
-}
-
 /*
  * ---------- the press piece ----------
  *
- * Its paragraph is not a box of its own: the link and the line under it are
- * set in the label's rows, the link beside the pills.
+ * Its paragraph is not a box of its own: the link is set in the label's rows.
  */
 .press {
   display: contents;
@@ -188,10 +168,6 @@
     text-align: left;
   }
 
-  :global([data-side='right']) .chips {
-    justify-content: flex-start;
-  }
-
   .city,
   :global([data-side='right']) .city {
     display: block;
@@ -213,16 +189,12 @@
     line-height: 1.1;
   }
 
-  .chips {
-    gap: 0.4em 0.35em;
-  }
-
   .chip {
     padding: 0.24em 0.62em 0.2em;
     font-size: 1.2em;
   }
 
-  /* A target of 24px or more on a 360px phone, where a chip's type is about 11px. */
+  /* A target of 24px or more on a 360px phone, where the pill's type is about 11px. */
   .pressLink {
     min-height: 2.3em;
   }

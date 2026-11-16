@@ -72,7 +72,7 @@ describe('lidNotes', () => {
 
   it('sends a project’s note to the projects section, with every link of its record', () => {
     expect(notes['pleb-fm'].links).toEqual([
-      { label: 'Site', href: 'https://pleb.fm' },
+      { label: 'Site', href: 'https://plebfm.lwn.lol' },
       { label: 'Code', href: 'https://github.com/PlebFM/PlebFM' },
       { label: 'Demo video', href: 'https://youtu.be/_AwXSzzc9k0?t=839' },
       { label: 'Full story', href: '/#projects' },
@@ -84,7 +84,7 @@ describe('lidNotes', () => {
       title: 'Clawthing Store',
       lines: ['AI-designed crab merch and apparel. Marketed towards agents.'],
       links: [
-        { label: 'Site', href: 'https://clawthing.store' },
+        { label: 'Site', href: 'https://clawthing.lwn.lol' },
         { label: 'Full story', href: '/#projects' },
       ],
     })
@@ -94,7 +94,9 @@ describe('lidNotes', () => {
     const doubled = {
       ...content,
       wins: content.wins.map((win) =>
-        win.id === 'pleb-fm' ? { ...win, links: [{ label: 'Site', url: 'https://pleb.fm' }] } : win,
+        win.id === 'pleb-fm'
+          ? { ...win, links: [{ label: 'Site', url: 'https://plebfm.lwn.lol' }] }
+          : win,
       ),
     }
     const hrefs = lidNotes(doubled)['pleb-fm'].links.map(({ href }) => href)

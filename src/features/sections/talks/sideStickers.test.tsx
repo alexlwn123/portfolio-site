@@ -2,19 +2,17 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { content, stats } from '../../../content'
-import { BackstagePass } from './BackstagePass'
 import { Clipping, SeeAlso } from './Clipping'
 import { pressCuttings } from './clippings'
 import { EditionCard } from './EditionCard'
 import { OnAirSticker } from './OnAirSticker'
-import { onAirShows, workshopPass } from './tour'
+import { onAirShows } from './tour'
 
 const [show] = onAirShows(content.talks)
-const pass = workshopPass(content.talks)
 const { clippings, references } = pressCuttings(content)
 
-if (!show || !pass) {
-  throw new Error('The records no longer have the show or the workshop these tests are about')
+if (!show) {
+  throw new Error('The records no longer have the show these tests are about')
 }
 
 describe('OnAirSticker', () => {
@@ -112,50 +110,6 @@ describe('EditionCard', () => {
       expect(blank).toHaveAttribute('aria-hidden', 'true')
     }
     expect(card.querySelector('[style]')).toBeNull()
-  })
-})
-
-describe('BackstagePass', () => {
-  it('is for the workshop, by name, and says it is one', () => {
-    render(<BackstagePass pass={pass} />)
-    const sticker = screen.getByRole('article', { name: /^How to Win\s*Every Hackathon$/ })
-
-    expect(sticker).toHaveTextContent('Backstage')
-    expect(sticker).toHaveTextContent('Workshop')
-    expect(sticker).toHaveTextContent('a workshop I teach')
-  })
-
-  it('counts the times it was given from the records, and says where and when', () => {
-    render(<BackstagePass pass={pass} />)
-    const runs = within(screen.getByRole('article')).getAllByRole('listitem')
-
-    expect(screen.getByRole('article')).toHaveTextContent('given ×2')
-    expect(runs.slice(0, 2).map((run) => run.textContent)).toEqual([
-      expect.stringMatching(/^bitcoin\+\+ Florianópolis\s*2025$/),
-      expect.stringMatching(/^bitcoin\+\+ Buenos Aires\s*2024$/),
-    ])
-  })
-
-  it('links to the recording', () => {
-    render(<BackstagePass pass={pass} />)
-
-    expect(
-      screen.getByRole('link', { name: 'Video on YouTube: How to Win Every Hackathon' }),
-    ).toHaveAttribute('href', 'https://www.youtube.com/watch?v=X9yLrPk_LnE')
-  })
-
-  it('copes with a run whose place and year are not recorded, and a workshop with no format', () => {
-    render(
-      <BackstagePass
-        pass={{ ...pass, format: null, given: [{ id: 'somewhere', venue: null, year: null }] }}
-      />,
-    )
-
-    expect(screen.getByRole('article')).toHaveTextContent('given ×1')
-    expect(screen.getByRole('article')).not.toHaveTextContent('Workshop')
-    expect(
-      screen.queryAllByRole('listitem').filter((item) => item.hasAttribute('data-run')),
-    ).toEqual([])
   })
 })
 

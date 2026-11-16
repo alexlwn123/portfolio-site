@@ -4,7 +4,6 @@ import { installDrag } from './dragDom'
 import type { Env } from './env'
 import { installLight } from './lightDom'
 import { installPeel } from './peelDom'
-import { installReset } from './resetControl'
 import { installSound } from './soundDom'
 import { createTicker } from './ticker'
 import { installTilt } from './tiltDom'
@@ -13,10 +12,9 @@ import { installTilt } from './tiltDom'
  * Everything the lid can do once its script has loaded: one light that
  * follows the pointer or a tilted phone, stickers that can be picked up,
  * thrown and peeled back, a badge that hangs, swings and stretches its
- * lanyard, three quiet sounds, and a button that puts it all back. It also
- * sticks the pile down as it scrolls into view, and presses on each section's
- * stickers as they do. Without the script the page is the static page it
- * always was.
+ * lanyard, and three quiet sounds. It also sticks the pile down as it
+ * scrolls into view, and presses on each section's stickers as they do.
+ * Without the script the page is the static page it always was.
  */
 
 /**
@@ -35,8 +33,7 @@ export function enhanceLid(doc: Document, env: Env): boolean {
   const badge = installBadge(lid, env, ticker, { onSnap: sound.slap })
   installTilt(lid, env, light, badge ? { onLean: badge.lean } : {})
   const peel = installPeel(lid, env, ticker, { onPeel: sound.crackle })
-  const drag = installDrag(lid, env, ticker, { onLift: peel.close, onDrop: sound.slap })
-  installReset(lid, badge ? [drag.tidy, peel.close, badge.tidy] : [drag.tidy, peel.close])
+  installDrag(lid, env, ticker, { onLift: peel.close, onDrop: sound.slap })
   installArrivals(doc, lid, env, { onLand: sound.slap })
   lid.setAttribute('data-enhanced', '')
   return true

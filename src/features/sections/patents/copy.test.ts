@@ -75,8 +75,5 @@ describe('patentsCopy', () => {
 
   it('fills its templates with what it is given', () => {
     expect(patentsCopy.plate.on('Google Patents')).toBe('on Google Patents')
-    expect(patentsCopy.plate.footnote('Google Patents')).toBe(
-      'Every number opens its public record on Google Patents.',
-    )
   })
 })

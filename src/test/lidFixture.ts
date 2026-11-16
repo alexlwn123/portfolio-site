@@ -81,9 +81,6 @@ const MARKUP = `
             aria-pressed="false">Tilt me</button>
           <button type="button" hidden data-sticker="sound" data-grab data-control="sound"
             aria-pressed="false" aria-label="Sound"></button>
-          <button type="button" hidden data-sticker="tidy" data-grab data-control="tidy">
-            Reset stickers
-          </button>
         </section>
       </div>
     </div>

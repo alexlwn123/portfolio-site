@@ -20,8 +20,8 @@ function setUp(env: FakeEnv = fakeEnv()) {
     onLift: vi.fn<() => void>(),
     onDrop: vi.fn<(speed: number, pan: number) => void>(),
   }
-  const drag = installDrag(fixture.lid, env, createTicker(env.frames), hooks)
-  return { env, drag, hooks }
+  installDrag(fixture.lid, env, createTicker(env.frames), hooks)
+  return { env, hooks }
 }
 
 function share(element: HTMLElement, name: string): number {
@@ -260,13 +260,13 @@ describe('picking stickers up on the page', () => {
     expect(elsewhere.defaultPrevented).toBe(false)
   })
 
-  it('tidies: every sticker goes back, and nothing is left written on it', () => {
-    const { env, drag } = setUp()
+  it('puts every sticker back when the lid changes arrangement, with nothing left written on it', () => {
+    const { env } = setUp()
     const cv = moveCv(env, [400, 650])
     dragFrom(fixture.sticker('name'), [200, 125], [300, 300])
     env.frames.flush(5)
 
-    drag.tidy()
+    env.rearrange()
     env.frames.flush(600)
 
     for (const sticker of [cv, fixture.sticker('name')]) {
@@ -275,16 +275,6 @@ describe('picking stickers up on the page', () => {
     }
     expect(env.frames.pending()).toBe(0)
     expect(fixture.lid.querySelectorAll('[data-carry]')).toHaveLength(0)
-  })
-
-  it('tidies by itself when the lid changes arrangement, since every home has moved', () => {
-    const { env } = setUp()
-    const cv = moveCv(env, [400, 650])
-
-    env.rearrange()
-
-    expect(cv).not.toHaveAttribute('data-carry')
-    expect(cv.style).toHaveLength(0)
   })
 
   it('carries without swinging or throwing under reduced motion', () => {

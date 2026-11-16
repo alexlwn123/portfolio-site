@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { LinkChips } from './LinkChips'
 
 const links = [
-  { label: 'Site', url: 'https://pleb.fm' },
+  { label: 'Site', url: 'https://plebfm.lwn.lol' },
   { label: 'Code', url: 'https://github.com/PlebFM/PlebFM' },
 ]
 
@@ -14,7 +14,7 @@ describe('LinkChips', () => {
 
     expect(screen.getAllByRole('listitem')).toHaveLength(links.length)
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
-      'https://pleb.fm',
+      'https://plebfm.lwn.lol',
       'https://github.com/PlebFM/PlebFM',
     ])
   })

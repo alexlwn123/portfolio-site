@@ -127,7 +127,7 @@ describe('winFacts', () => {
 
   it('lends a win its project’s links, then its own, each address once', () => {
     expect(hrefs('pleb-fm')).toEqual([
-      'https://pleb.fm',
+      'https://plebfm.lwn.lol',
       'https://github.com/PlebFM/PlebFM',
       'https://youtu.be/_AwXSzzc9k0?t=839',
     ])

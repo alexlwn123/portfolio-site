@@ -194,11 +194,6 @@ export interface SoundSpec<Id extends string> extends Spec<'sound', Id> {
   readonly label: string
 }
 
-/** A button that puts every sticker back where it was stuck. */
-export interface TidySpec<Id extends string> extends Spec<'tidy', Id> {
-  readonly lines: readonly string[]
-}
-
 /** A button, on a phone, that lets tilting it move the light. */
 export interface TiltSpec<Id extends string> extends Spec<'tilt', Id> {
   readonly lines: readonly string[]
@@ -244,7 +239,6 @@ export type StickerSpec<Id extends string = string> =
   | TallySpec<Id>
   | WristbandSpec<Id>
   | SoundSpec<Id>
-  | TidySpec<Id>
   | TiltSpec<Id>
 
 export type StickerKind = StickerSpec['kind']
@@ -267,7 +261,7 @@ export function isDecoration(spec: StickerSpec): boolean {
 }
 
 /** Kinds that are buttons, not content: they do something to the lid itself. */
-const CONTROLS: readonly StickerKind[] = ['sound', 'tidy', 'tilt']
+const CONTROLS: readonly StickerKind[] = ['sound', 'tilt']
 
 export function isControl(spec: StickerSpec): boolean {
   return CONTROLS.includes(spec.kind)

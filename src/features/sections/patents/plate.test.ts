@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { content, stats } from '../../../content'
 import type { Patent } from '../../../content'
 import { patentStats } from '../../../content/derive'
-import { numberField, plateCount, plateFilings, recordSource } from './plate'
+import { numberField, plateCount, plateFilings } from './plate'
 
 function patent(id: string): Patent {
   const found = content.patents.find((candidate) => candidate.id === id)
@@ -70,21 +70,5 @@ describe('numberField', () => {
     expect(new Set(content.patents.map((filing) => numberField(filing).label))).toEqual(
       new Set(['Publication no.']),
     )
-  })
-})
-
-describe('recordSource', () => {
-  it('is where the numbers lead, when they all lead to the same place', () => {
-    expect(recordSource(plateFilings(content.patents))).toBe('Google Patents')
-  })
-
-  it('is nothing when they do not, or when there are none', () => {
-    const elsewhere = {
-      ...patent('us-12536579'),
-      link: { label: 'USPTO', url: 'https://example.org' },
-    }
-
-    expect(recordSource([patent('us-12354083'), elsewhere])).toBeNull()
-    expect(recordSource([])).toBeNull()
   })
 })

@@ -9,7 +9,7 @@ const note = {
   title: 'Pleb FM',
   lines: ['Lightning-powered jukebox.', '1st at SatsxSW hackathon, 2022.'],
   links: [
-    { label: 'Site', href: 'https://pleb.fm' },
+    { label: 'Site', href: 'https://plebfm.lwn.lol' },
     { label: 'Code', href: 'https://github.com/PlebFM/PlebFM' },
   ],
 }
@@ -26,7 +26,7 @@ function renderSticker(shape?: 'card' | 'round'): HTMLElement {
   const { container } = render(
     <PeelSticker
       id="pleb-fm"
-      href="https://pleb.fm"
+      href="https://plebfm.lwn.lol"
       label="Pleb FM, a jukebox"
       peelLabel="Peel back Pleb FM"
       note={note}
@@ -55,7 +55,7 @@ describe('PeelSticker', () => {
     renderSticker()
 
     const face = screen.getByRole('link', { name: 'Pleb FM, a jukebox' })
-    expect(face).toHaveAttribute('href', 'https://pleb.fm')
+    expect(face).toHaveAttribute('href', 'https://plebfm.lwn.lol')
     expect(face).toHaveTextContent('face')
     // Marked for the page's script, which makes a press on it peel the sticker.
     expect(face).toHaveAttribute('data-peel-face')
@@ -92,9 +92,9 @@ describe('PeelSticker', () => {
       (stop) => stop.getAttribute('href') ?? stop.getAttribute('aria-label'),
     )
     expect(stops).toEqual([
-      'https://pleb.fm',
+      'https://plebfm.lwn.lol',
       'Peel back Pleb FM',
-      'https://pleb.fm',
+      'https://plebfm.lwn.lol',
       'https://github.com/PlebFM/PlebFM',
     ])
   })

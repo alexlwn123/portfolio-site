@@ -29,7 +29,6 @@ describe('enhancing the lid', () => {
 
     expect(fixture.lid).toHaveAttribute('data-enhanced')
     expect(fixture.control('sound')).not.toHaveAttribute('hidden')
-    expect(fixture.control('tidy')).not.toHaveAttribute('hidden')
     expect(fixture.control('tilt')).toHaveAttribute('hidden')
     expect(fixture.tab('pleb-fm')).not.toHaveAttribute('hidden')
   })
@@ -55,21 +54,16 @@ describe('enhancing the lid', () => {
     expect(document.querySelector('[data-land]')).toBeNull()
   })
 
-  it('tidies everything with one press: stickers go home and the open note closes', () => {
+  it('has no button that puts the lid back: a sticker stays where it was thrown', () => {
     const env = fakeEnv()
     enhanceLid(document, env)
     dragFrom(fixture.sticker('cv'), [200, 450], [400, 650])
     env.frames.flush(10)
     pointer(window, 'pointerup', { x: 400, y: 650 })
     env.frames.flush(600)
-    fixture.tab('pleb-fm').click()
-    env.frames.flush(600)
 
-    fixture.control('tidy').click()
-    env.frames.flush(600)
-
-    expect(fixture.lid.querySelectorAll('[data-carry], [data-peel]')).toHaveLength(0)
-    expect(fixture.sticker('cv').style).toHaveLength(0)
+    expect(fixture.lid.querySelector('[data-control="tidy"]')).toBeNull()
+    expect(fixture.sticker('cv')).toHaveAttribute('data-carry', 'stuck')
   })
 
   it('re-sticks an open note when a sticker is picked up', () => {
@@ -126,7 +120,7 @@ describe('enhancing the lid', () => {
     expect(fixture.lid.style.getPropertyValue('--lamp-x')).toBe('')
   })
 
-  it('hangs the badge, which drops in and settles, and tidying puts it back from the hand', () => {
+  it('hangs the badge, which drops in, settles and can be pulled', () => {
     const env = fakeEnv()
     enhanceLid(document, env)
     env.frames.flush(1200)
@@ -140,9 +134,6 @@ describe('enhancing the lid', () => {
     pointer(window, 'pointermove', { x: 700, y: 600 })
     env.frames.flush(30)
     expect(badge.style.getPropertyValue('--hang-dx')).not.toBe('')
-
-    fixture.control('tidy').click()
-    expect(badge).not.toHaveAttribute('style')
   })
 
   it('leans the badge with a tilted phone', async () => {

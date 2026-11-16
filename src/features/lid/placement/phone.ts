@@ -47,7 +47,6 @@ const placements: Record<PileId, PhonePlacement> = {
   'more-elsewhere': { x: 6, y: 2142, w: 384, r: 1.5, z: 8 },
   tilt: { x: 300, y: 268, w: 54, r: 6, z: 8 },
   sound: { x: 324, y: 1842, w: 46, r: -8, z: 8 },
-  tidy: { x: 304, y: 1902, w: 66, r: -4, z: 8 },
 }
 
 export const phone = parsePhoneLayout('phone', PILE_IDS, ARTBOARDS.phone, placements)

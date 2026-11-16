@@ -226,7 +226,7 @@ describe('Lid', () => {
     ).toHaveAttribute('href', '/#organized')
     expect(screen.getByRole('link', { name: /^Last Pay Wins: / })).toHaveAttribute(
       'href',
-      'https://lastpaywins.com',
+      'https://lastpaywins.lwn.lol',
     )
   })
 
@@ -238,10 +238,10 @@ describe('Lid', () => {
     const owned = content.projects.flatMap(({ links }) => links.map(({ url }) => url))
 
     expect(hrefs).toEqual([
-      'https://lastpaywins.com',
+      'https://lastpaywins.lwn.lol',
       'https://arionparking.tech',
-      'https://clawthing.store',
-      'https://pleb.fm',
+      'https://clawthing.lwn.lol',
+      'https://plebfm.lwn.lol',
     ])
     for (const href of hrefs) {
       expect(owned).toContain(href)
@@ -446,14 +446,13 @@ describe('Lid', () => {
     }
   })
 
-  it('ends with the three buttons that work the lid: tilt, sound and tidy', () => {
+  it('ends with the two buttons that work the lid: tilt and sound', () => {
     const container = renderLid()
     const controls = [...container.querySelectorAll('[data-control]')]
 
     expect(controls.map((control) => control.getAttribute('data-control'))).toEqual([
       'tilt',
       'sound',
-      'tidy',
     ])
     expect(controls.map((control) => control.getAttribute('data-sticker'))).toEqual(CONTROL_IDS)
     expect(specs.filter(isControl).map(({ id }) => id)).toEqual(CONTROL_IDS)
@@ -462,8 +461,8 @@ describe('Lid', () => {
       'false',
     )
     expect(container.querySelector('[data-control="sound"]')).toHaveAttribute('aria-label', 'Sound')
-    expect(container.querySelector('[data-control="tidy"]')).toHaveTextContent('Reset stickers')
-    expect(container.querySelector('[data-control="tidy"]')).not.toHaveAttribute('aria-pressed')
+    expect(container.querySelector('[data-control="tidy"]')).toBeNull()
+    expect(container).not.toHaveTextContent(/reset stickers|tidy the lid/i)
     expect(container.querySelector('[data-control="tilt"]')).toHaveTextContent('Tilt me')
   })
 

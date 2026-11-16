@@ -55,7 +55,7 @@ describe('inPersonCity', () => {
 
 describe('projectHome', () => {
   it('prefers the project’s own site', () => {
-    expect(projectHome(project('pleb-fm'))).toBe('https://pleb.fm')
+    expect(projectHome(project('pleb-fm'))).toBe('https://plebfm.lwn.lol')
     expect(projectHome(project('arion-parking'))).toBe('https://arionparking.tech')
   })
 

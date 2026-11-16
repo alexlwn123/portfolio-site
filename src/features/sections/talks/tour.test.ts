@@ -2,16 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { content } from '../../../content'
 import type { Talk } from '../../../content'
-import {
-  onAirShows,
-  partLabels,
-  PASS_TALKS,
-  tourDates,
-  tourFormats,
-  tourLegs,
-  tourYears,
-  workshopPass,
-} from './tour'
+import { onAirShows, partLabels, tourDates, tourFormats, tourLegs, tourYears } from './tour'
 
 const dates = tourDates(content.talks)
 
@@ -214,50 +205,5 @@ describe('onAirShows', () => {
 
   it('finds none among dated talks', () => {
     expect(onAirShows([talk({})])).toEqual([])
-  })
-})
-
-describe('workshopPass', () => {
-  it('is for the workshop he has given twice, with where and when', () => {
-    expect(workshopPass(content.talks)).toEqual({
-      id: 'how-to-win-every-hackathon',
-      title: 'How to Win Every Hackathon',
-      lines: ['How to Win', 'Every Hackathon'],
-      format: 'Workshop',
-      given: [
-        { id: 'how-to-win-every-hackathon', venue: 'bitcoin++ Florianópolis', year: 2025 },
-        { id: 'fun-with-lightning', venue: 'bitcoin++ Buenos Aires', year: 2024 },
-      ],
-      links: [{ label: 'Video on YouTube', url: 'https://www.youtube.com/watch?v=X9yLrPk_LnE' }],
-    })
-    expect(PASS_TALKS).toHaveLength(2)
-  })
-
-  it('counts only the runs that are in the record', () => {
-    const [first] = PASS_TALKS
-    const only = content.talks.filter(({ id }) => id === first)
-
-    expect(workshopPass(only)?.given).toHaveLength(1)
-  })
-
-  it('is not made when the workshop is not in the record', () => {
-    expect(workshopPass([talk({})])).toBeNull()
-  })
-
-  it('leaves out a place that is unconfirmed and a format that is not recorded', () => {
-    const [first] = PASS_TALKS
-    const pass = workshopPass([
-      talk({ id: first, format: null, venue: { name: 'Somewhere Hall', confirmed: false } }),
-    ])
-
-    expect(pass?.format).toBeNull()
-    expect(pass?.given).toEqual([{ id: first, venue: null, year: 2025 }])
-  })
-
-  it('gives no year for a run the record does not date', () => {
-    const [first] = PASS_TALKS
-    const pass = workshopPass([talk({ id: first, when: { kind: 'ongoing' } })])
-
-    expect(pass?.given).toEqual([{ id: first, venue: 'Somewhere Hall', year: null }])
   })
 })

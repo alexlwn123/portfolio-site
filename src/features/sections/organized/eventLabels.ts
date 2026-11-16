@@ -1,22 +1,13 @@
 import type { Content, DateSpan, Organized, Press } from '../../../content'
 import { pressClaim } from '../../../content/pressClaim'
-import { formatMillions, formatNumber, formatUsd } from '../../../lib/formatNumber'
 import { organizedCopy } from './copy'
 
 /*
  * What is lettered beside each wristband. Nothing here states a fact of its
- * own: every city, date and figure is read from the hackathon's record, and
- * each kind of figure keeps its own wording, so a count of teams never reads
- * as a head count and a prize in sats never reads as dollars.
+ * own: every city, date and line is read from the hackathon's record. Its
+ * head count, projects and prizes are left off the label: they count only
+ * towards the section's totals.
  */
-
-/** A count, a prize, or a figure the organizers never published. */
-export type ChipKind = 'count' | 'prize'
-
-export interface Chip {
-  readonly kind: ChipKind
-  readonly text: string
-}
 
 /** A piece of press about the hackathon, worded by pressClaim and by nothing else. */
 export interface PressLine {
@@ -39,7 +30,6 @@ export interface EventLabel {
   readonly where: string | null
   /** A line more, where the record has one: his role, then its own note. */
   readonly about: readonly string[]
-  readonly chips: readonly Chip[]
   readonly press: readonly PressLine[]
   /** A line in his handwriting. */
   readonly scrawl: string | null
@@ -62,48 +52,6 @@ function whereOf({ location, date }: Organized): string | null {
     return date === null ? organizedCopy.notAnnounced : null
   }
   return location.kind === 'online' ? location.context : location.country
-}
-
-function headCount({ participants }: Organized): Chip | null {
-  if (participants === null) {
-    return null
-  }
-  const figure = formatNumber(participants.count)
-  switch (participants.unit) {
-    case 'people':
-      return { kind: 'count', text: organizedCopy.people(figure) }
-    case 'aboutPeople':
-      return { kind: 'count', text: organizedCopy.aboutPeople(figure) }
-    case 'teams':
-      return { kind: 'count', text: organizedCopy.teams(figure) }
-  }
-}
-
-function prize({ prizes }: Organized): Chip | null {
-  if (prizes === null) {
-    return null
-  }
-  switch (prizes.kind) {
-    case 'usd':
-      return { kind: 'prize', text: organizedCopy.usdPrizes(formatUsd(prizes.amount)) }
-    case 'sats':
-      return { kind: 'prize', text: organizedCopy.satsPrizes(formatMillions(prizes.amount)) }
-    case 'nonMonetary':
-      return { kind: 'prize', text: organizedCopy.nonMonetary }
-  }
-}
-
-/** What is on record: the counts, then the prize. A figure nobody published is left out. */
-function chipsOf(event: Organized): readonly Chip[] {
-  if (event.status === 'upcoming') {
-    return []
-  }
-  const projects: readonly Chip[] =
-    event.projects === null
-      ? []
-      : [{ kind: 'count', text: organizedCopy.projects(formatNumber(event.projects)) }]
-
-  return [headCount(event), ...projects, prize(event)].filter((chip) => chip !== null)
 }
 
 function pressLine(item: Press, sources: Sources): PressLine {
@@ -148,7 +96,6 @@ export function eventLabels(sources: Sources): readonly EventLabel[] {
     date: event.date,
     where: whereOf(event),
     about: [event.role, event.note].filter((line) => line !== null),
-    chips: chipsOf(event),
     press: pressOf(event, sources),
     scrawl: scrawlOf(event),
   }))

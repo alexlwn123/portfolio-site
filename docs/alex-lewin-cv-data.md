@@ -178,12 +178,12 @@ From his GitHub profile, in the order he lists them. Descriptions are his.
 | BTC Plinko | Plinko with sats. | https://github.com/alexlwn123/btc-plinko |
 | Cargo Leaderboard | A Rust competition for the biggest builds, biggest cleans, and longest compile times. | https://github.com/alexlwn123/cargo-leaderboard |
 | Finite Computer | Open-source AI agent platform spanning chat, private compute, hosted sites, search, and skills. (His employer.) | https://github.com/finitecomputer/fragment |
-| Clawthing Store | AI-designed crab merch and apparel. Marketed towards agents. | https://clawthing.store |
+| Clawthing Store | AI-designed crab merch and apparel. Marketed towards agents. | https://clawthing.lwn.lol |
 | Fedimint SDK | Tools for developing Fedimint clients. | https://github.com/fedimint/fedimint-sdk |
 | Web to SVG Extension | Chromium extension to capture any DOM element as PNG, JPEG, or SVG. | https://github.com/alexlwn123/web-to-svg-extension |
-| BitcoinRamps | Compare fees, spreads, privacy, and KYC requirements across top Bitcoin exchanges. | https://bitcoinramps.com |
-| Last Pay Wins | See wins. | https://lastpaywins.com, https://github.com/alexlwn123/LastPayWins |
-| Pleb FM | See wins. | https://pleb.fm, https://github.com/PlebFM/PlebFM, demo video https://youtu.be/_AwXSzzc9k0?t=839 |
+| BitcoinRamps | Compare fees, spreads, privacy, and KYC requirements across top Bitcoin exchanges. | https://ramps.lwn.lol |
+| Last Pay Wins | See wins. | https://lastpaywins.lwn.lol, https://github.com/alexlwn123/LastPayWins |
+| Pleb FM | See wins. | https://plebfm.lwn.lol, https://github.com/PlebFM/PlebFM, demo video https://youtu.be/_AwXSzzc9k0?t=839 |
 | Rough Consensus | Oxford-style debate voting platform. Used for live debates at bitcoin++ mempool edition 2025. | https://github.com/alexlwn123/Rough-Consensus |
 | Lightning Welder | See wins. | https://github.com/alexlwn123/Lightning-Welder |
 | Arion Parking | See wins. | https://arionparking.tech, https://github.com/atlantabitdevs/park-lightning, video https://www.youtube.com/watch?v=kMpse9ChX3g |

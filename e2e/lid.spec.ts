@@ -55,7 +55,7 @@ const MIN_OUTLINE_PX = 2
 const WEB_FONTS = ['Bowlby One', 'Bricolage Grotesque', 'Permanent Marker'] as const
 
 /** The buttons the script shows on a desktop. "Tilt me" is for touch screens only. */
-const SHOWN_CONTROLS = ['sound', 'tidy'] as const
+const SHOWN_CONTROLS = ['sound'] as const
 /**
  * The last of the badge's ribbons. Each of the others is meant to lie over
  * the one below it, so only this one is held to covering no link at all.
@@ -213,10 +213,7 @@ test.describe('the lid', () => {
       expect(visited[corner - 1], id).toBe(face)
     }
     // The buttons that work the lid come last, after everything there is to read.
-    expect(visited.slice(-SHOWN_CONTROLS.length)).toEqual([
-      'button: Sound',
-      'button: Reset stickers',
-    ])
+    expect(visited.slice(-SHOWN_CONTROLS.length)).toEqual(['button: Sound'])
   })
 
   test('focus ring is visible on every link and button, in a colour that shows', async ({

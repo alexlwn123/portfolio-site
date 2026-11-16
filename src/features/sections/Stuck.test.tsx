@@ -16,20 +16,20 @@ describe('Stuck', () => {
 
   it('is a link when it leads somewhere, with a name when its face is a drawing', () => {
     render(
-      <Stuck href="https://pleb.fm" label="Pleb FM">
+      <Stuck href="https://plebfm.lwn.lol" label="Pleb FM">
         <svg />
       </Stuck>,
     )
 
     const link = screen.getByRole('link', { name: 'Pleb FM' })
-    expect(link).toHaveAttribute('href', 'https://pleb.fm')
+    expect(link).toHaveAttribute('href', 'https://plebfm.lwn.lol')
     expect(link).toHaveClass(styles.stuck ?? '', styles.lifts ?? '')
   })
 
   it('opens a link that leaves the site in a new tab, and keeps any other in its own', () => {
     render(
       <>
-        <Stuck href="https://pleb.fm">Pleb FM</Stuck>
+        <Stuck href="https://plebfm.lwn.lol">Pleb FM</Stuck>
         <Stuck href="/#wins">Wins</Stuck>
       </>,
     )
@@ -57,7 +57,7 @@ describe('Stuck', () => {
     render(
       <>
         <Stuck>Asset tag</Stuck>
-        <Stuck href="https://pleb.fm">Pleb FM</Stuck>
+        <Stuck href="https://plebfm.lwn.lol">Pleb FM</Stuck>
       </>,
     )
 

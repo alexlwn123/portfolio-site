@@ -996,6 +996,66 @@ leads to the contact section ("Reach out"). The whole label is the link. It is c
 label at the foot of the page is, white stock in a tangerine border, because that is where it
 leads. It stands outside the numbered list: it is not one of the hackathons.
 
+### No figures beside the wristbands
+
+Since 2026-11-15, at the owner's request, the label beside each wristband no longer carries the
+mockup's pills of figures: no head count or teams, no count of projects, no prize pool. A label is
+the city, when and where, the record's line more, the press link and the scrawl. The figures stay
+in the record and still add up to the totals over the arm (participants, prize money); only the
+per-hackathon pills are gone. The plain CV still lists them.
+
+### No footnote on the patents plate
+
+Since 2026-11-15, at the owner's request, the line at the foot of the plate, "Every number opens
+its public record on Google Patents.", is gone. Each number is still a link to its record, and
+still says where it leads to anyone who hears it read out ("… on Google Patents"). Without the
+line under it, the last row no longer has a rule under it either: the rules only part the rows.
+On a laptop the plate's foot is kept as deep as the line left it, so the quality check stuck across
+it still clears the last row, as it does on a tablet and a phone.
+
+### The pile on a laptop is an even scatter, loosely sorted
+
+Since 2026-11-15, at the owner's request, the laptop's pile (`src/features/lid/placement/wide.ts`)
+is re-set as an even scatter. It had been set in three bands: the heading, the cities, the workshop
+and the crab down the left; the employers' tags, Last Pay Wins and the patents down the middle; the
+counts and the wins down the right. On a wide screen the spread pulled the bands apart, and lanes of
+bare lid opened between them. On 2026-11-16 he asked for the scatter to stay even but be loosely
+sorted: the five employers' tags are one heap at the top, with the plain CV and the patents just
+under it, and the eight city pills are one heap round the "16 hackathons organized" circle. Later
+the same day he had the circle raised and Austin and Toronto moved under it, above Istanbul, which
+left Berlin, Nairobi and Florianópolis down its left side. The circle now stands as high as it can
+(y=130) without reaching the bare corner kept for the badge's ribbons. The wins sit with the
+winner's count on the left and middle, and the projects are spread across the lower half. Kept in
+one heap, the cities leave more bare lid between the groups than the first, ungrouped scatter did
+when the spread pulls the pile wide: on a 1920px screen the widest lane is about 90 units, against
+about 55 for that scatter and 130 for the three bands. The order from the top is kept: the heading
+first, then the employers and the two counts, then the projects, then the links. The tablet's
+pile, which is the approved mockup's, and the phone's are unchanged.
+
+### No "Reset stickers" button on the lid
+
+Since 2026-11-16, at the owner's request, the white "Reset stickers" label (the mockup's "TIDY THE
+LID") is gone from the lid on every screen, together with the script that showed it
+(`resetControl.ts`). A sticker that has been picked up stays where it was let go until the page is
+reloaded, or until the lid changes arrangement, when every sticker still goes back to its new home.
+The lid's buttons are now the sound button and, on a touch screen, "Tilt me". Rows above that
+describe the button record what it was.
+
+### No thank-you at the end of the page
+
+Since 2026-11-15, at the owner's request, the line of small print that closed the page, "Thanks
+for scrolling this far.", is gone. The contact section, and the page, now end on the CV's asset
+tag.
+
+### No backstage pass in "Talks & press"
+
+Since 2026-11-15, at the owner's request, the pink "Backstage / All access" pass for the workshop
+"How to Win Every Hackathon" is gone from the talks section. Both runs of the workshop are still
+lines on the tour shirt, and its recording is still linked from there. On a laptop the stack beside
+the shirt is the sign, the stamp card and the press, spread down to the hem as before. On a tablet
+the sign now shares the first row with the stamp card, as it does on a laptop, so the card has
+three stamps to a row there instead of five. A phone has one column, as before.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard
