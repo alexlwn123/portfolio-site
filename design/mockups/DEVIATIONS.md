@@ -1013,6 +1013,25 @@ line under it, the last row no longer has a rule under it either: the rules only
 On a laptop the plate's foot is kept as deep as the line left it, so the quality check stuck across
 it still clears the last row, as it does on a tablet and a phone.
 
+### The pile on a laptop is an even scatter, loosely sorted
+
+Since 2026-11-15, at the owner's request, the laptop's pile (`src/features/lid/placement/wide.ts`)
+is re-set as an even scatter. It had been set in three bands: the heading, the cities, the workshop
+and the crab down the left; the employers' tags, Last Pay Wins and the patents down the middle; the
+counts and the wins down the right. On a wide screen the spread pulled the bands apart, and lanes of
+bare lid opened between them. On 2026-11-16 he asked for the scatter to stay even but be loosely
+sorted: the five employers' tags are one heap at the top, with the plain CV and the patents just
+under it, and the eight city pills are one heap round the "16 hackathons organized" circle. Later
+the same day he had the circle raised and Austin and Toronto moved under it, above Istanbul, which
+left Berlin, Nairobi and Florianópolis down its left side. The circle now stands as high as it can
+(y=130) without reaching the bare corner kept for the badge's ribbons. The wins sit with the
+winner's count on the left and middle, and the projects are spread across the lower half. Kept in
+one heap, the cities leave more bare lid between the groups than the first, ungrouped scatter did
+when the spread pulls the pile wide: on a 1920px screen the widest lane is about 90 units, against
+about 55 for that scatter and 130 for the three bands. The order from the top is kept: the heading
+first, then the employers and the two counts, then the projects, then the links. The tablet's
+pile, which is the approved mockup's, and the phone's are unchanged.
+
 ### No "Reset stickers" button on the lid
 
 Since 2026-11-16, at the owner's request, the white "Reset stickers" label (the mockup's "TIDY THE
