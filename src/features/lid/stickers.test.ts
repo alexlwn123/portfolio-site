@@ -446,7 +446,7 @@ describe('lidStickers', () => {
     })
     expect(sticker('arion-parking', 'parkingSign').name).toBe('Arion Parking')
     expect(sticker('clawthing-store', 'crab')).toMatchObject({
-      caption: 'clawthing.store',
+      caption: 'clawthing.lwn.lol',
       label: 'Clawthing Store: AI-designed crab merch and apparel. Marketed towards agents.',
     })
     expect(sticker('pleb-fm', 'jukebox')).toMatchObject({

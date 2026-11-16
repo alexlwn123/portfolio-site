@@ -115,9 +115,9 @@ describe('ProjectSticker', () => {
     const links = within(item).getAllByRole('link')
 
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
-      'https://pleb.fm',
+      'https://plebfm.lwn.lol',
       '/#wins',
-      'https://pleb.fm',
+      'https://plebfm.lwn.lol',
       'https://github.com/PlebFM/PlebFM',
       'https://youtu.be/_AwXSzzc9k0?t=839',
     ])

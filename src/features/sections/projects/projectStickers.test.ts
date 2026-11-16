@@ -81,7 +81,7 @@ describe('projectStickers', () => {
   })
 
   it('opens at the project’s own site when it has one, and at its first link otherwise', () => {
-    expect(sticker('pleb-fm').home).toBe('https://pleb.fm')
+    expect(sticker('pleb-fm').home).toBe('https://plebfm.lwn.lol')
     expect(sticker('auntie-ln').home).toBe('https://bolt.fun/project/auntie-ln')
     expect(sticker('kattis').home).toBe('https://github.com/alexlwn123/kattis')
   })
@@ -147,7 +147,7 @@ describe('projectStickers', () => {
     expect(sticker('pleb-fm').face).toEqual({
       kind: 'jukebox',
       name: 'Pleb FM',
-      lines: ['pleb.fm'],
+      lines: ['plebfm.lwn.lol'],
     })
     expect(sticker('arion-parking').face).toEqual({
       kind: 'parking',
@@ -186,7 +186,7 @@ describe('projectStickers', () => {
 
     const button = sticker('last-pay-wins', projectStickers({ ...content, wins }))
 
-    expect(button.face).toMatchObject({ bottom: 'lastpaywins.com' })
+    expect(button.face).toMatchObject({ bottom: 'lastpaywins.lwn.lol' })
     expect(button.label).toBe('Last Pay Wins')
   })
 

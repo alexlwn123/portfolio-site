@@ -226,7 +226,7 @@ describe('Lid', () => {
     ).toHaveAttribute('href', '/#organized')
     expect(screen.getByRole('link', { name: /^Last Pay Wins: / })).toHaveAttribute(
       'href',
-      'https://lastpaywins.com',
+      'https://lastpaywins.lwn.lol',
     )
   })
 
@@ -238,10 +238,10 @@ describe('Lid', () => {
     const owned = content.projects.flatMap(({ links }) => links.map(({ url }) => url))
 
     expect(hrefs).toEqual([
-      'https://lastpaywins.com',
+      'https://lastpaywins.lwn.lol',
       'https://arionparking.tech',
-      'https://clawthing.store',
-      'https://pleb.fm',
+      'https://clawthing.lwn.lol',
+      'https://plebfm.lwn.lol',
     ])
     for (const href of hrefs) {
       expect(owned).toContain(href)
