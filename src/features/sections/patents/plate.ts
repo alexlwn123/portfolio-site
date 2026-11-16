@@ -36,13 +36,3 @@ export function plateCount({ filings }: Stats['patents']): PlateCount | null {
 export function numberField({ number }: Patent): PlateField {
   return { label: patentsCopy.plate.fields.number, value: patentNumber(number) }
 }
-
-/**
- * Where the plate's numbers lead, when every one of them leads to the same
- * place: "Google Patents". Null when they differ, or when there are none.
- */
-export function recordSource(patents: readonly Patent[]): string | null {
-  const sources = new Set(patents.map(({ link }) => link.label))
-  const [only] = sources
-  return sources.size === 1 && only !== undefined ? only : null
-}

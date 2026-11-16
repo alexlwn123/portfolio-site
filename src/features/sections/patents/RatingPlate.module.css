@@ -7,11 +7,12 @@
  *
  * Two stretches of it are left bare for the stickers
  * (InspectionStickers.module.css): the right end of its head, and the right
- * of its foot beside the footnote.
+ * of its foot.
  */
+/* Its foot is left bare, for the quality check stuck across it. */
 .plate {
   position: relative;
-  padding: 3.6em 4.6em 4.2em;
+  padding: 3.6em 4.6em 7em;
   border-radius: 1.3em;
   background:
     repeating-linear-gradient(
@@ -200,6 +201,11 @@
   border-bottom: 0.14em solid rgba(23, 18, 43, 0.55);
 }
 
+/* The rules part the rows. Under the last there is only the plate's edge. */
+.row:last-child {
+  border-bottom: 0;
+}
+
 .title {
   margin: 0;
   font-size: 2.3em;
@@ -289,13 +295,6 @@
   box-shadow: 0 0 0 0.44em var(--ink);
 }
 
-.footnote {
-  margin: 1.7em 0 0;
-  font-size: 1.3em;
-  letter-spacing: 0.08em;
-  text-align: center;
-}
-
 @container section (max-width: 1099px) {
   /* The foot is left bare, for the stickers stuck across it. */
   .plate {
@@ -305,10 +304,6 @@
   .head {
     gap: 2em 3em;
     justify-content: space-between;
-  }
-
-  .footnote {
-    text-align: left;
   }
 
   .heading {
@@ -432,10 +427,6 @@
 
   .stamp {
     min-height: 2.6em;
-  }
-
-  .footnote {
-    font-size: 1.3em;
   }
 }
 

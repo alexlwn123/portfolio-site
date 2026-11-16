@@ -10,7 +10,7 @@ import metal from '../../stickers/metal.module.css'
 import voice from '../../stickers/voice.module.css'
 import { Stuck } from '../Stuck'
 import { patentsCopy } from './copy'
-import { numberField, type PlateCount, plateCount, plateFilings, recordSource } from './plate'
+import { numberField, type PlateCount, plateCount, plateFilings } from './plate'
 import styles from './RatingPlate.module.css'
 
 /** A rivet to a corner. */
@@ -121,7 +121,6 @@ interface RatingPlateProps {
  */
 export function RatingPlate({ patents, stats, holder }: RatingPlateProps): ReactElement {
   const filings = plateFilings(patents)
-  const source = recordSource(filings)
 
   return (
     <Stuck>
@@ -141,9 +140,6 @@ export function RatingPlate({ patents, stats, holder }: RatingPlateProps): React
               <PlateRow key={patent.id} patent={patent} />
             ))}
           </ol>
-        )}
-        {source !== null && (
-          <p className={cx(voice.label, styles.footnote)}>{patentsCopy.plate.footnote(source)}</p>
         )}
       </div>
     </Stuck>

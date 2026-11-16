@@ -22,7 +22,6 @@ export const patentsCopy = {
     fields: { number: 'Publication no.', filed: 'Filed' },
     /** What follows a number in the name of its link: where it leads. */
     on: (source: string) => `on ${source}`,
-    footnote: (source: string) => `Every number opens its public record on ${source}.`,
   },
 
   /** The two stickers on the plate: a die-cut emoji, and a made-up quality check. */

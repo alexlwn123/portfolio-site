@@ -1004,6 +1004,15 @@ the city, when and where, the record's line more, the press link and the scrawl.
 in the record and still add up to the totals over the arm (participants, prize money); only the
 per-hackathon pills are gone. The plain CV still lists them.
 
+### No footnote on the patents plate
+
+Since 2026-11-15, at the owner's request, the line at the foot of the plate, "Every number opens
+its public record on Google Patents.", is gone. Each number is still a link to its record, and
+still says where it leads to anyone who hears it read out ("… on Google Patents"). Without the
+line under it, the last row no longer has a rule under it either: the rules only part the rows.
+On a laptop the plate's foot is kept as deep as the line left it, so the quality check stuck across
+it still clears the last row, as it does on a tablet and a phone.
+
 ### No backstage pass in "Talks & press"
 
 Since 2026-11-15, at the owner's request, the pink "Backstage / All access" pass for the workshop
