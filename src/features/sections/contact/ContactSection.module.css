@@ -2,7 +2,7 @@
  * The end of the page. On a laptop the label takes the left of the column
  * from its left edge and the strips of wristband are a ladder down the right,
  * out to its right edge: the two are one block, as tall as each other, with
- * the CV's asset tag and the small print on the column's middle under both.
+ * the CV's asset tag on the column's middle under both.
  * On a tablet and a phone it is one column: the label, the strips, the tag.
  */
 .contact {
@@ -41,18 +41,6 @@
   font-size: 1.55em;
 }
 
-.smallPrint {
-  max-width: 34em;
-  margin: 3.4em auto 0;
-  color: var(--white);
-  font-size: 1.5em;
-  font-weight: var(--weight-medium);
-  line-height: 1.4;
-  text-align: center;
-  text-wrap: balance;
-  opacity: 0.86;
-}
-
 @container section (max-width: 1099px) {
   .contact {
     grid-template-columns: minmax(0, 1fr);
@@ -79,9 +67,5 @@
 
   .cvTag {
     font-size: 1.45em;
-  }
-
-  .smallPrint {
-    margin-top: 3em;
   }
 }

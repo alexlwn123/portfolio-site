@@ -1013,6 +1013,12 @@ line under it, the last row no longer has a rule under it either: the rules only
 On a laptop the plate's foot is kept as deep as the line left it, so the quality check stuck across
 it still clears the last row, as it does on a tablet and a phone.
 
+### No thank-you at the end of the page
+
+Since 2026-11-15, at the owner's request, the line of small print that closed the page, "Thanks
+for scrolling this far.", is gone. The contact section, and the page, now end on the CV's asset
+tag.
+
 ### No backstage pass in "Talks & press"
 
 Since 2026-11-15, at the owner's request, the pink "Backstage / All access" pass for the workshop

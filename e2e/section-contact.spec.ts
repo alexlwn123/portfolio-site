@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test'
 
 import { content } from '../src/content'
 import { MIN_TEXT_PX } from '../src/features/lid/placement/artboards'
-import { contactCopy } from '../src/features/sections/contact/copy'
 import { contactBands } from '../src/features/sections/contact/links'
 import {
   COLUMN_WIDTHS,
@@ -38,7 +37,6 @@ const LINKS = BANDS.length + 2
 const LABEL = 'div:has(> div > [data-return-label])'
 const STRIPS = 'li[data-band] a'
 const CV_TAG = 'a[href$="/cv/"]'
-const SMALL_PRINT = '[data-section-body] > p'
 
 test.describe('say hello', () => {
   for (const { width } of SECTION_VIEWPORTS) {
@@ -55,7 +53,6 @@ test.describe('say hello', () => {
         await expect(section.locator(`li[data-band="${id}"]`)).toBeVisible()
       }
       await expect(section.getByRole('link', { name: /Plain CV/ })).toBeVisible()
-      await expect(section.getByText(contactCopy.smallPrint)).toBeVisible()
     })
 
     test(`spills nothing sideways at ${String(width)} wide`, async ({ page }) => {
@@ -93,20 +90,17 @@ test.describe('say hello', () => {
       expect(columnFaults(await columnUse(section))).toEqual([])
     })
 
-    test(`centres the CV tag and the small print under the label and the strips at ${String(width)} wide`, async ({
+    test(`centres the CV tag under the label and the strips at ${String(width)} wide`, async ({
       page,
     }) => {
       const section = await openSection(page, width, 'contact')
       const label = await drawnOne(section, LABEL)
       const strips = await drawnEach(section, STRIPS)
       const tag = await drawnOne(section, CV_TAG)
-      const smallPrint = await drawnOne(section, SMALL_PRINT)
       const above = Math.max(label.bottom, ...strips.map(({ bottom }) => bottom))
 
       expect(isNear(tag.offCentre), `the tag is ${String(tag.offCentre)}em off centre`).toBe(true)
-      expect(isNear(smallPrint.offCentre)).toBe(true)
       expect(tag.top).toBeGreaterThanOrEqual(above)
-      expect(smallPrint.top).toBeGreaterThanOrEqual(tag.bottom)
     })
   }
 
@@ -218,17 +212,18 @@ test.describe('say hello', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 
-  test('is the end of the page: the small print is the last thing on it', async ({ page }) => {
+  test('is the end of the page: the CV tag is the last thing on it', async ({ page }) => {
     const section = await openSection(page, 1440, 'contact')
-    const smallPrint = await pageBox(section.getByText(contactCopy.smallPrint))
+    const tag = await pageBox(section.getByRole('link', { name: /Plain CV/ }))
     const links = await Promise.all((await section.getByRole('link').all()).map(pageBox))
     const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight)
 
     await expect(page.locator('main > section').last()).toHaveAttribute('id', 'contact')
+    await expect(section).not.toContainText(/thanks for scrolling/i)
     for (const link of links) {
-      expect(link.top).toBeLessThan(smallPrint.top)
+      expect(link.top).toBeLessThanOrEqual(tag.top)
     }
-    expect(pageHeight - smallPrint.bottom).toBeLessThan(400)
+    expect(pageHeight - tag.bottom).toBeLessThan(400)
   })
 
   test('shows the focus ring on the address when the keyboard reaches it', async ({ page }) => {

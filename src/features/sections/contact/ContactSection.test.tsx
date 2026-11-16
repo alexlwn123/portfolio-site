@@ -84,12 +84,14 @@ describe('ContactSection', () => {
     }
   })
 
-  it('closes the page with a line of small print', () => {
+  it('closes the page on the CV tag, with no small print after it', () => {
     const section = renderSection()
-    const smallPrint = within(section).getByText(contactCopy.smallPrint)
+    const tag = within(section).getByRole('link', { name: /Plain CV/ })
     const body = section.querySelector('[data-section-body]')
 
-    expect(body?.lastElementChild).toContainElement(smallPrint)
+    expect(body?.lastElementChild).toContainElement(tag)
+    expect(body?.querySelector(':scope > p')).toBeNull()
+    expect(section).not.toHaveTextContent(/thanks for scrolling/i)
   })
 
   it('adds no heading under the title and carries no inline style', () => {

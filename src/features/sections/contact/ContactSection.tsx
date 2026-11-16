@@ -13,8 +13,8 @@ import { ReturnLabel } from './ReturnLabel'
 
 /**
  * The end of the page: the address label with the work address, a strip of
- * wristband for each other way to reach him, the asset tag that leads to the
- * plain CV, and a line of small print to close on.
+ * wristband for each other way to reach him, and the asset tag that leads to
+ * the plain CV, which is the last thing on it.
  */
 export const ContactSection: FunctionComponent<SectionProps> = ({ content }) => (
   <SectionFrame id="contact" surface="mat" title={contactCopy.title} kicker={contactCopy.kicker}>
@@ -31,6 +31,5 @@ export const ContactSection: FunctionComponent<SectionProps> = ({ content }) => 
         </Stuck>
       </div>
     </div>
-    <p className={styles.smallPrint}>{contactCopy.smallPrint}</p>
   </SectionFrame>
 )
