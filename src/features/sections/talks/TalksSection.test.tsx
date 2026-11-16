@@ -39,29 +39,35 @@ describe('TalksSection', () => {
     }
   })
 
-  it('sticks the smaller stickers round the shirt: on air, the record, the pass, the press', () => {
+  it('sticks the smaller stickers round the shirt: on air, the record, the press', () => {
     const section = renderSection()
 
     expect(within(section).getByRole('article', { name: 'BitDevs Radio Hour' })).toBeInTheDocument()
     expect(within(section).getByRole('article', { name: 'bitcoin++' })).toBeInTheDocument()
-    expect(
-      within(section).getByRole('article', { name: /^How to Win\s*Every Hackathon$/ }),
-    ).toBeInTheDocument()
     expect(section.querySelectorAll('[data-press]')).toHaveLength(2)
+  })
+
+  it('has no backstage pass: the workshop is a line on the shirt like any other', () => {
+    const section = renderSection()
+
+    expect(within(section).queryByText(/backstage|all access/i)).toBeNull()
+    expect(
+      within(section).queryByRole('article', { name: /^How to Win\s*Every Hackathon$/ }),
+    ).toBeNull()
+    expect(within(section).getAllByText('How to Win Every Hackathon').length).toBeGreaterThan(0)
   })
 
   it('gives every sticker beside the shirt a place of its own, in the order they are read', () => {
     const places = placesBesideTheShirt(renderSection())
     const cuttings = content.press.filter(({ subject }) => subject.kind !== 'reference')
 
-    // The sign, the pass, the stamp card, a cutting for each piece, and the pages of reference.
-    expect(places).toHaveLength(cuttings.length + 4)
+    // The sign, the stamp card, a cutting for each piece, and the pages of reference.
+    expect(places).toHaveLength(cuttings.length + 3)
     for (const place of places) {
       expect(place.childElementCount).toBe(1)
     }
     expect(places[0]).toHaveTextContent(talksCopy.onAir.sign)
-    expect(places[1]).toHaveTextContent(talksCopy.pass.band)
-    expect(places[2]).toHaveTextContent(talksCopy.record.card)
+    expect(places[1]).toHaveTextContent(talksCopy.record.card)
     expect(places.at(-1)).toHaveTextContent(talksCopy.press.seeAlso)
   })
 
@@ -72,7 +78,7 @@ describe('TalksSection', () => {
     const places = placesBesideTheShirt(section)
 
     expect(within(section).queryByText(talksCopy.press.seeAlso)).toBeNull()
-    expect(places).toHaveLength(press.length + 3)
+    expect(places).toHaveLength(press.length + 2)
     for (const place of places) {
       expect(place.childElementCount).toBe(1)
     }
@@ -120,12 +126,11 @@ describe('TalksSection', () => {
     expect(section.querySelector('[style]')).toBeNull()
   })
 
-  it('leaves out the pass and the sign when the records no longer have them', () => {
+  it('leaves out the sign when the records no longer have it', () => {
     render(<TalksSection content={{ ...content, talks: [] }} stats={stats} />)
     const emptied = screen.getByRole('region')
 
     expect(emptied.querySelectorAll('[data-talk]')).toHaveLength(0)
-    expect(within(emptied).queryByText(talksCopy.pass.band)).toBeNull()
     expect(within(emptied).queryByText(talksCopy.onAir.sign)).toBeNull()
   })
 })

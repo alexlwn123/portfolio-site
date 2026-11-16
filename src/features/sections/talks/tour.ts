@@ -1,12 +1,11 @@
 import type { Link, PartialDate, Talk } from '../../../content'
 import { formatPartialDate, isoDate } from '../../../lib/formatDate'
 import { TALK_FORMATS, TALK_ROLES } from '../../cv/labels'
-import { balanceLines } from '../../lid/facts'
 
 /*
  * The tour, read from the talk records: every appearance with a date as a
- * line of the print, the show that is still running, and the workshop he has
- * given more than once. Nothing here states a fact of its own.
+ * line of the print, and the show that is still running. Nothing here states
+ * a fact of its own.
  */
 
 type Format = NonNullable<Talk['format']>
@@ -50,34 +49,6 @@ export interface OnAirShow {
   readonly detail: string | null
   readonly links: readonly Link[]
 }
-
-/** One time the workshop on the pass was given. */
-export interface PassRun {
-  readonly id: string
-  readonly venue: string | null
-  readonly year: number | null
-}
-
-export interface WorkshopPass {
-  readonly id: string
-  readonly title: string
-  /** The title, split over two lines. */
-  readonly lines: readonly [string, string]
-  readonly format: string | null
-  /** Each time it was given, newest first. */
-  readonly given: readonly PassRun[]
-  readonly links: readonly Link[]
-}
-
-/**
- * The workshop the backstage pass is for, and the earlier run of it under a
- * longer name. Which records these are is a design decision, as the lid's
- * choice of workshop is. How many times it was given is counted from them.
- */
-export const PASS_TALKS = Object.freeze([
-  'how-to-win-every-hackathon',
-  'fun-with-lightning',
-] as const)
 
 /** A panelist on a panel is said once. */
 const ROLE_IMPLIED_BY: Readonly<Partial<Record<Format, Talk['role']>>> = Object.freeze({
@@ -190,26 +161,4 @@ export function onAirShows(talks: readonly Talk[]): readonly OnAirShow[] {
       detail: talk.detail,
       links: talk.links,
     }))
-}
-
-/** The backstage pass, or null when the workshop is no longer in the record. */
-export function workshopPass(talks: readonly Talk[]): WorkshopPass | null {
-  const runs = PASS_TALKS.flatMap((id) => talks.find((talk) => talk.id === id) ?? [])
-  const [first] = runs
-  if (!first) {
-    return null
-  }
-
-  return {
-    id: first.id,
-    title: first.title,
-    lines: balanceLines(first.title),
-    format: first.format === null ? null : TALK_FORMATS[first.format],
-    given: runs.map((run) => ({
-      id: run.id,
-      venue: venueOf(run),
-      year: dateOf(run)?.year ?? null,
-    })),
-    links: runs.flatMap(({ links }) => links),
-  }
 }

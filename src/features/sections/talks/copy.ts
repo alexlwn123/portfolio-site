@@ -48,14 +48,6 @@ export const talksCopy = Object.freeze({
     next: 'next',
   },
 
-  /** The backstage pass for the workshop he keeps being asked to give. */
-  pass: {
-    band: 'Backstage',
-    access: 'All access',
-    note: 'a workshop I teach',
-    given: (times: Figure) => `given ×${String(times)}`,
-  },
-
   /** The press cuttings. What each may claim comes from the record, never from here. */
   press: {
     heading: 'Press',

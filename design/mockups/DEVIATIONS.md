@@ -1004,6 +1004,15 @@ the city, when and where, the record's line more, the press link and the scrawl.
 in the record and still add up to the totals over the arm (participants, prize money); only the
 per-hackathon pills are gone. The plain CV still lists them.
 
+### No backstage pass in "Talks & press"
+
+Since 2026-11-15, at the owner's request, the pink "Backstage / All access" pass for the workshop
+"How to Win Every Hackathon" is gone from the talks section. Both runs of the workshop are still
+lines on the tour shirt, and its recording is still linked from there. On a laptop the stack beside
+the shirt is the sign, the stamp card and the press, spread down to the hem as before. On a tablet
+the sign now shares the first row with the stamp card, as it does on a laptop, so the card has
+three stamps to a row there instead of five. A phone has one column, as before.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard
