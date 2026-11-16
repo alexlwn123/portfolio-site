@@ -34,8 +34,6 @@ export interface BadgeHooks {
 }
 
 export interface BadgeControl {
-  /** Puts the badge back where it hangs, still. */
-  readonly tidy: () => void
   /** Leans gravity, in radians clockwise: a tilted phone. */
   readonly lean: (radians: number) => void
 }
@@ -424,9 +422,6 @@ export function installBadge(
     ticker.run(context.task)
   }
   return {
-    tidy: () => {
-      putBack(context, model.get().hang, model.get().measured)
-    },
     lean: (radians) => {
       leanTo(context, radians)
     },

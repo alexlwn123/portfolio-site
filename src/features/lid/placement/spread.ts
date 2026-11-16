@@ -51,11 +51,7 @@ export const WIDE_SPANS = Object.freeze({
  * the screen's, so these do not spread to the margin: they spread as far as
  * the landing's left edge and stop.
  */
-export const UNDER_THE_LANDING: readonly PileId[] = Object.freeze([
-  'job-finite-computer',
-  'sound',
-  'tidy',
-])
+export const UNDER_THE_LANDING: readonly PileId[] = Object.freeze(['job-finite-computer', 'sound'])
 
 /** Where a sticker's room ends on the right: the screen's margin, or the place the ribbons land. */
 export type SpreadStop = 'edge' | 'landing'

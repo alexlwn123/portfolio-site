@@ -287,20 +287,6 @@ describe('taking hold of the badge', () => {
 })
 
 describe('the badge and the rest of the lid', () => {
-  it('is put back by tidying the lid, even in the hand', () => {
-    const { env, badge } = setUp(fakeEnv({ reducedMotion: true }))
-    grab({ x: MIDDLE.x + 90, y: MIDDLE.y })
-    env.frames.flush(30)
-
-    badge.tidy()
-
-    expect(fixture.sticker('badge')).not.toHaveAttribute('style')
-    expect(fixture.sticker('badge')).not.toHaveAttribute('data-hang-held')
-    expect(env.frames.pending()).toBe(0)
-    pointer(window, 'pointermove', { x: MIDDLE.x + 200, y: MIDDLE.y })
-    expect(env.frames.pending()).toBe(0)
-  })
-
   it('measures the hang again when the lid is rearranged, and is pulled in the new units', () => {
     const { env } = setUp(fakeEnv({ reducedMotion: true }))
     placeHang(fixture.lid, { ...HANG_BOX, width: 520 })

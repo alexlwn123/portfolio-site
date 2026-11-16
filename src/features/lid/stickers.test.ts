@@ -40,7 +40,7 @@ describe('lidStickers', () => {
 
     expect(kinds.slice(0, 6)).toEqual(['name', 'lanyard', 'badge', 'hello', 'cue', 'cue'])
     expect(kinds.slice(6, 9)).toEqual(['heading', 'scrawl', 'assetTag'])
-    expect(kinds.slice(-5)).toEqual(['wristband', 'wristband', 'tilt', 'sound', 'tidy'])
+    expect(kinds.slice(-4)).toEqual(['wristband', 'wristband', 'tilt', 'sound'])
   })
 
   it('is the cover and then the pile: nothing is on both, and nothing is on neither', () => {
@@ -90,14 +90,13 @@ describe('lidStickers', () => {
 
     expect(ids.indexOf('ncr-win')).toBe(ids.indexOf('latest-win') + 1)
     expect(ids.indexOf('patents')).toBe(ids.indexOf('elsewhere') - 1)
-    expect(STICKER_IDS).toHaveLength(44)
+    expect(STICKER_IDS).toHaveLength(43)
   })
 
-  it('puts the three buttons last, after everything there is to read', () => {
+  it('puts the two buttons last, after everything there is to read', () => {
     expect(STICKER_IDS.slice(-CONTROL_IDS.length)).toEqual(CONTROL_IDS)
-    expect(stickers.filter(isControl).map(({ id }) => id)).toEqual(['tilt', 'sound', 'tidy'])
+    expect(stickers.filter(isControl).map(({ id }) => id)).toEqual(['tilt', 'sound'])
     expect(sticker('sound', 'sound')).toEqual({ id: 'sound', kind: 'sound', label: 'Sound' })
-    expect(sticker('tidy', 'tidy').lines).toEqual(['Reset', 'stickers'])
     expect(sticker('tilt', 'tilt').lines).toEqual(['Tilt', 'me'])
     expect(stickers.filter(isControl).flatMap(linksOf)).toEqual([])
   })

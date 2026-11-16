@@ -139,7 +139,7 @@ describe('Sticker', () => {
         <Sticker id="cv" href="/cv/">
           linked
         </Sticker>
-        <Sticker id="tidy" control="tidy">
+        <Sticker id="tilt" control="tilt">
           pressed
         </Sticker>
         <Sticker id="tally" flat>
@@ -180,8 +180,8 @@ describe('Sticker', () => {
   it('is a button, hidden until the script that works it shows it, when it is a control', () => {
     render(
       <>
-        <Sticker id="tidy" control="tidy">
-          Reset stickers
+        <Sticker id="tilt" control="tilt">
+          Tilt me
         </Sticker>
         <Sticker id="sound" control="sound" toggle label="Sound">
           <svg aria-hidden="true" />
@@ -189,22 +189,22 @@ describe('Sticker', () => {
       </>,
     )
 
-    const tidy = stickerOf('Reset stickers')
+    const tilt = stickerOf('Tilt me')
     const sound = screen.getByLabelText('Sound')
-    expect(tidy.tagName).toBe('BUTTON')
-    expect(tidy).toHaveAttribute('type', 'button')
-    expect(tidy).toHaveAttribute('hidden')
-    expect(tidy).toHaveAttribute('data-control', 'tidy')
-    expect(tidy).toHaveAttribute('data-sticker', 'tidy')
-    expect(tidy).toHaveClass(styles.control ?? '', styles.sticker ?? '')
-    expect(tidy).not.toHaveAttribute('aria-pressed')
+    expect(tilt.tagName).toBe('BUTTON')
+    expect(tilt).toHaveAttribute('type', 'button')
+    expect(tilt).toHaveAttribute('hidden')
+    expect(tilt).toHaveAttribute('data-control', 'tilt')
+    expect(tilt).toHaveAttribute('data-sticker', 'tilt')
+    expect(tilt).toHaveClass(styles.control ?? '', styles.sticker ?? '')
+    expect(tilt).not.toHaveAttribute('aria-pressed')
     expect(sound).toHaveAttribute('aria-pressed', 'false')
     expect(screen.queryByRole('button')).toBeNull()
   })
 
   it('stays a link when it has an address, whatever else it is told', () => {
     render(
-      <Sticker id="cv" href="/cv/" control="tidy">
+      <Sticker id="cv" href="/cv/" control="tilt">
         Plain CV
       </Sticker>,
     )

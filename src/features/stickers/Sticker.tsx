@@ -7,7 +7,7 @@ import styles from './Sticker.module.css'
 type StickerTag = 'div' | 'h1' | 'h2' | 'nav' | 'p' | 'span'
 
 /** What a sticker that is a button does to the lid. The page's script finds it by this. */
-export type StickerControl = 'sound' | 'tidy' | 'tilt'
+export type StickerControl = 'sound' | 'tilt'
 
 export interface StickerProps {
   /** The sticker's id. The placement stylesheet finds the element by it. */

@@ -1013,6 +1013,15 @@ line under it, the last row no longer has a rule under it either: the rules only
 On a laptop the plate's foot is kept as deep as the line left it, so the quality check stuck across
 it still clears the last row, as it does on a tablet and a phone.
 
+### No "Reset stickers" button on the lid
+
+Since 2026-11-16, at the owner's request, the white "Reset stickers" label (the mockup's "TIDY THE
+LID") is gone from the lid on every screen, together with the script that showed it
+(`resetControl.ts`). A sticker that has been picked up stays where it was let go until the page is
+reloaded, or until the lid changes arrangement, when every sticker still goes back to its new home.
+The lid's buttons are now the sound button and, on a touch screen, "Tilt me". Rows above that
+describe the button record what it was.
+
 ### No thank-you at the end of the page
 
 Since 2026-11-15, at the owner's request, the line of small print that closed the page, "Thanks

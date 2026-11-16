@@ -132,17 +132,6 @@ for (const width of WIDTHS) {
   })
 }
 
-test('tidying the lid puts the badge back from wherever it was left swinging', async ({ page }) => {
-  const rest = await openAndSettle(page, 1280)
-  await pull(page, rest, { x: -200, y: 60 })
-  await page.mouse.up()
-
-  await page.getByRole('button', { name: 'Reset stickers' }).click()
-
-  expect(await sticker(page, 'badge').getAttribute('style')).toBeNull()
-  await expect(sticker(page, 'badge')).not.toHaveAttribute('data-hang-moving')
-})
-
 test('under reduced motion it does not drop in, and comes straight home when let go', async ({
   page,
 }) => {

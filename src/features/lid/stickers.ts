@@ -95,7 +95,6 @@ export const PILE_IDS = [
   'more-elsewhere',
   'tilt',
   'sound',
-  'tidy',
 ] as const
 
 export const STICKER_IDS = [...COVER_IDS, ...PILE_IDS] as const
@@ -110,7 +109,7 @@ export { EMPLOYER_IDS } from './career'
  * The stickers that are buttons. They stay hidden until the page's script
  * shows them, so they are stuck down after everything else.
  */
-export const CONTROL_IDS = ['tilt', 'sound', 'tidy'] as const satisfies readonly StickerId[]
+export const CONTROL_IDS = ['tilt', 'sound'] as const satisfies readonly StickerId[]
 
 type Spec = StickerSpec<StickerId>
 type Item = LidItem<StickerId>
@@ -477,7 +476,6 @@ function controls(): readonly Spec[] {
   return [
     { id: 'tilt', kind: 'tilt', lines: words.tilt },
     { id: 'sound', kind: 'sound', label: words.sound },
-    { id: 'tidy', kind: 'tidy', lines: words.tidy },
   ]
 }
 

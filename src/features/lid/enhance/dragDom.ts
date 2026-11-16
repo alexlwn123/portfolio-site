@@ -35,11 +35,6 @@ export interface DragHooks {
   readonly onDrop?: (speed: number, pan: number) => void
 }
 
-export interface Drag {
-  /** Puts every sticker back where the placement stuck it. */
-  readonly tidy: () => void
-}
-
 /** The press or the carry in progress. Only one pointer has a sticker at a time. */
 interface Grip {
   readonly sticker: HTMLElement
@@ -327,7 +322,7 @@ function noNativeDrag(event: Event): void {
   }
 }
 
-function tidy(context: Context): void {
+function sendAllHome(context: Context): void {
   const model = context.model.get()
   const inHand = model.grip === null ? [] : [model.grip.sticker]
   for (const sticker of new Set([...model.lying.keys(), ...model.flying.keys(), ...inHand])) {
@@ -363,7 +358,7 @@ export function installDrag(
   env: Env,
   ticker: Ticker,
   hooks: DragHooks = {},
-): Drag {
+): void {
   const model = createStore(untouched(lid))
   const context: Context = {
     lid,
@@ -390,13 +385,11 @@ export function installDrag(
       },
     },
   }
-  const onTidy = (): void => {
-    tidy(context)
-  }
-
   listen(context)
-  env.onRearrange(onTidy)
-  return { tidy: onTidy }
+  // A new arrangement moves every sticker's home, so each goes back to its new one.
+  env.onRearrange(() => {
+    sendAllHome(context)
+  })
 }
 
 /** Listens on the lid for a press, for the click a drag ends with, and for a native drag. */

@@ -47,7 +47,6 @@ const placements: Record<PileId, Placement> = {
   'more-elsewhere': { x: 626, y: 794, w: 440, r: 1.5, z: 8 },
   tilt: { x: 880, y: 712, w: 58, r: -6, z: 8 },
   sound: { x: 690, y: 92, w: 46, r: 8, z: 8 },
-  tidy: { x: 672, y: 36, w: 66, r: -5, z: 8 },
 }
 
 export const wide = parseLayout('wide', PILE_IDS, ARTBOARDS.wide, placements)

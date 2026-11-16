@@ -395,7 +395,7 @@ describe('peeling stickers on the page', () => {
     expect(fixture.sticker('pleb-fm').style.getPropertyValue('--note-y')).toBe('0px')
   })
 
-  it('closes from outside: for the tidy sticker, and for a sticker being picked up', () => {
+  it('closes from outside: for a sticker being picked up', () => {
     const { env, peel } = setUp()
     open(env, 'pleb-fm')
 

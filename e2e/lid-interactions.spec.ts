@@ -20,7 +20,7 @@ import {
 
 /*
  * What the home page's script adds to the lid: one lamp, stickers that can be
- * picked up and peeled back, three buttons and three sounds. Most of these run
+ * picked up and peeled back, two buttons and three sounds. Most of these run
  * with motion welcome, as a visitor gets it. The ones that measure where
  * things end up run with motion reduced, where nothing is still moving.
  */
@@ -254,15 +254,9 @@ test.describe('one lamp for the whole lid', () => {
     // The lamp never ran and the peel was a plain toggle: not one frame or timer was asked for.
     expect(await work(page)).toMatchObject({ frames: 0, timers: 0 })
 
-    // Tidy still works, and a carried sticker sticks where it is let go.
+    // A carried sticker sticks where it is let go.
     await carry(page, 'wins-count', { x: -120, y: 90 })
     expect(await stickerPlaces(page)).not.toEqual(before)
-    await page.getByRole('button', { name: 'Reset stickers' }).click()
-    await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
-    await page.evaluate(() => {
-      window.scrollTo(0, 0)
-    })
-    expect(await stickerPlaces(page)).toEqual(before)
 
     // Carrying a sticker takes frames while it is in the hand, and none once it is let go.
     expect(await page.evaluate(() => document.getAnimations().length)).toBe(0)
@@ -425,7 +419,7 @@ test.describe('pick up, throw, re-stick', () => {
     await context.close()
   })
 
-  test('tidy restores every sticker', async ({ page }) => {
+  test('a new arrangement sends every carried sticker home', async ({ page }) => {
     await openLivelyLid(page, 1280)
     await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
     const before = withoutSwingers(await stickerPlaces(page))
@@ -438,16 +432,22 @@ test.describe('pick up, throw, re-stick', () => {
     await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
     expect(withoutSwingers(await stickerPlaces(page))).not.toEqual(before)
 
-    await page.getByRole('button', { name: 'Reset stickers' }).focus()
-    await page.keyboard.press('Enter')
-    await page.locator(':focus').blur()
+    // Narrower than a laptop the lid takes the tablet's arrangement, and back again the laptop's.
+    const screen = page.viewportSize() ?? { width: 1280, height: 800 }
+    await page.setViewportSize({ ...screen, width: 900 })
+    // Each new arrangement must be seen before the next, or the two would cancel out unseen.
+    await expect(page.locator('[data-carry]')).toHaveCount(0)
+    await page.setViewportSize(screen)
+    await page.evaluate(() => {
+      window.scrollTo(0, 0)
+    })
 
     await expect.poll(async () => withoutSwingers(await stickerPlaces(page))).toEqual(before)
     await expect(page.locator('[data-carry]')).toHaveCount(0)
     await expect(page.locator('[data-sticker][style]')).toHaveCount(0)
   })
 
-  test('every link is still reachable by keyboard and its centre still hit-tests to itself after tidy', async ({
+  test('every link is still reachable by keyboard and its centre still hit-tests to itself after a new arrangement', async ({
     page,
     baseURL,
   }) => {
@@ -458,16 +458,20 @@ test.describe('pick up, throw, re-stick', () => {
     await carry(page, 'hello', { x: 150, y: 400 })
     await carry(page, 'workshop', { x: 200, y: 120 })
     expect((await linksNotUnderTheirOwnCentre(page)).length).toBeGreaterThan(0)
-    await (await cornerOf(page, 'ncr-win')).click()
-    await page.getByRole('button', { name: 'Reset stickers' }).click()
     await page.mouse.move(OFF_THE_LID.x, OFF_THE_LID.y)
+    const screen = page.viewportSize() ?? { width: 728, height: 900 }
+    await page.setViewportSize({ ...screen, width: 1280 })
+    // Each new arrangement must be seen before the next, or the two would cancel out unseen.
+    await expect(page.locator('[data-carry]')).toHaveCount(0)
+    await page.setViewportSize(screen)
 
-    expect(await linksNotUnderTheirOwnCentre(page)).toEqual([])
+    // Measured once the page has laid itself out again at the size it came back to.
+    await expect.poll(async () => linksNotUnderTheirOwnCentre(page)).toEqual([])
     await expect(lidLinks(page)).toHaveCount(hrefs.length)
     await page.locator('body').evaluate((body) => {
       window.scrollTo(0, 0)
       ;(document.activeElement as HTMLElement | null)?.blur()
-      // Start tabbing from the top of the page, not from the button just pressed:
+      // Start tabbing from the top of the page, not from the last sticker carried:
       // the sections under the lid have links of their own.
       body.setAttribute('tabindex', '-1')
       body.focus({ preventScroll: true })
@@ -729,7 +733,7 @@ test.describe('the buttons', () => {
       expect(
         await linksCoveredBy(
           page,
-          ['[data-sticker="tilt"]', '[data-sticker="sound"]', '[data-sticker="tidy"]'],
+          ['[data-sticker="tilt"]', '[data-sticker="sound"]'],
           SAMPLES_PER_SIDE,
         ),
       ).toEqual([])
@@ -768,7 +772,7 @@ test.describe('the buttons', () => {
     await page.getByRole('button', { name: 'Tilt me' }).tap()
 
     await expect(page.locator('[data-control="tilt"]')).toBeHidden()
-    await expect(page.getByRole('button', { name: 'Reset stickers' })).toBeVisible()
+    await expect(page.locator('[data-lid][data-enhanced]')).toHaveCount(1)
     expect(output()).toEqual([])
     await context.close()
   })
@@ -778,7 +782,6 @@ test.describe('the buttons', () => {
 
     await expect(page.locator('[data-control="tilt"]')).toBeHidden()
     await expect(page.getByRole('button', { name: 'Sound' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Reset stickers' })).toBeVisible()
   })
 })
 
@@ -841,14 +844,14 @@ test.describe('sound, off until asked', () => {
     await openLivelyLid(page, 1280)
 
     await page.getByRole('button', { name: 'Sound' }).click()
-    await carry(page, 'wins-count', { x: 300, y: 150 })
+    // Thrown along the top of the pile, clear of the sticker peeled next.
+    await carry(page, 'wins-count', { x: 300, y: -40 })
     await (await cornerOf(page, 'last-pay-wins')).click()
     await expect(noteOf(page, 'last-pay-wins')).toBeVisible()
     // The badge swings, so the pointer is taken to where its first ribbon is now.
     const ribbon = await boxOf(page.locator('[data-sticker="badge"] nav a').first())
     await page.mouse.move(ribbon.x + ribbon.width / 2, ribbon.y + ribbon.height / 2, { steps: 4 })
     await page.keyboard.press('Escape')
-    await page.getByRole('button', { name: 'Reset stickers' }).click()
     await page.waitForTimeout(500)
 
     expect(output()).toEqual([])

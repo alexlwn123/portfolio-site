@@ -126,7 +126,6 @@ export const copy = deepFreeze({
     /** The three stickers that are buttons. They appear once the page's script runs. */
     controls: {
       sound: 'Sound',
-      tidy: ['Reset', 'stickers'],
       tilt: ['Tilt', 'me'],
     },
   },

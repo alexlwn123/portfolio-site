@@ -16,7 +16,6 @@ describe('the home page’s script', () => {
 
     expect(lid).toHaveAttribute('data-enhanced')
     expect(control('sound')).not.toHaveAttribute('hidden')
-    expect(control('tidy')).not.toHaveAttribute('hidden')
   })
 
   it('leaves the lid as it was in a browser it cannot work in, and throws nothing', async () => {
@@ -26,6 +25,6 @@ describe('the home page’s script', () => {
     await expect(import('./lid.client')).resolves.toBeDefined()
 
     expect(lid).not.toHaveAttribute('data-enhanced')
-    expect(control('tidy')).toHaveAttribute('hidden')
+    expect(control('sound')).toHaveAttribute('hidden')
   })
 })
