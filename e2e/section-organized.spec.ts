@@ -5,7 +5,7 @@ import { pressClaim } from '../src/content/pressClaim'
 import { MIN_TEXT_PX, NARROW_PHONE_PX } from '../src/features/lid/placement/artboards'
 import { organizedCopy } from '../src/features/sections/organized/copy'
 import { formatDateSpan } from '../src/lib/formatDate'
-import { formatMillions, formatNumber, formatUsd } from '../src/lib/formatNumber'
+import { formatNumber, formatUsd } from '../src/lib/formatNumber'
 import { COLUMN_WIDTHS, columnFaults, columnUse, drawnEach, drawnOne, isNear } from './columnUse'
 import {
   linkNames,
@@ -32,16 +32,8 @@ const FIRST_LINES = 'li[data-side] > :last-child > * > :first-child'
 const { organized, press } = content
 const totals = stats.organized
 
-/** The figures an event's label must print, straight from its record. */
-function figuresOf(event: (typeof organized)[number]): readonly string[] {
-  const { participants, prizes, projects } = event
-  return [
-    ...(participants === null ? [] : [formatNumber(participants.count)]),
-    ...(projects === null ? [] : [formatNumber(projects)]),
-    ...(prizes?.kind === 'usd' ? [formatUsd(prizes.amount)] : []),
-    ...(prizes?.kind === 'sats' ? [`${formatMillions(prizes.amount)}M sats`] : []),
-  ]
-}
+/** A figure with what it counts, as a label once printed it: "90 participants", "$6,180 prizes". */
+const FIGURE = /\$\d|\d[\d,.]*M?\s+(?:participants?|teams?|projects?|prizes|sats)/i
 
 test.describe('the "organized" section', () => {
   for (const width of SECTION_WIDTHS) {
@@ -231,9 +223,8 @@ test.describe('the "organized" section', () => {
       } else {
         await expect(row, event.id).toContainText(organizedCopy.online)
       }
-      for (const figure of figuresOf(event)) {
-        await expect(row, `${event.id}: ${figure}`).toContainText(figure)
-      }
+      // The head count, projects and prizes count towards the totals only.
+      await expect(row, event.id).not.toContainText(FIGURE)
       for (const line of [event.role, event.note]) {
         if (line !== null) {
           await expect(row, event.id).toContainText(line)

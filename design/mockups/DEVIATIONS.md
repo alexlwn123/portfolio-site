@@ -996,6 +996,14 @@ leads to the contact section ("Reach out"). The whole label is the link. It is c
 label at the foot of the page is, white stock in a tangerine border, because that is where it
 leads. It stands outside the numbered list: it is not one of the hackathons.
 
+### No figures beside the wristbands
+
+Since 2026-11-15, at the owner's request, the label beside each wristband no longer carries the
+mockup's pills of figures: no head count or teams, no count of projects, no prize pool. A label is
+the city, when and where, the record's line more, the press link and the scrawl. The figures stay
+in the record and still add up to the totals over the arm (participants, prize money); only the
+per-hackathon pills are gone. The plain CV still lists them.
+
 ### What could not be checked here
 
 Safari and Firefox, a real phone's small viewport as its bars come and go, and the sounds as heard

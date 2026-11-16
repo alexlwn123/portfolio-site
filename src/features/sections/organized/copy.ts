@@ -25,14 +25,6 @@ const words = deepFreeze({
   online: 'Online',
   upcoming: 'upcoming',
 
-  /* What a band's label can carry. A figure arrives formatted. */
-  people: (count: Figure) => counted(count, 'participant', 'participants'),
-  aboutPeople: (count: Figure) => `about ${counted(count, 'participant', 'participants')}`,
-  teams: (count: Figure) => counted(count, 'team', 'teams'),
-  projects: (count: Figure) => counted(count, 'project', 'projects'),
-  usdPrizes: (amount: string) => `${amount} prizes`,
-  satsPrizes: (millions: string) => `${millions}M sats in prizes`,
-
   /** The press link's name: what it is, then what the piece covered. */
   linkName: (label: string, subject: string) => `${label}: ${subject}`,
 
@@ -55,7 +47,7 @@ const words = deepFreeze({
  * Voice, not facts: the words the "organized" section prints around the
  * record. The words of the approved mockup are copy.wristbands, carried here
  * unchanged. What follows them is what the section says that the mockup did
- * not: the figures it had no wording for, and the names read out to someone
+ * not: the totals' wording, the invitation, and the names read out to someone
  * who cannot see the arm.
  */
 export const organizedCopy = Object.freeze({ ...words, title: TITLE })

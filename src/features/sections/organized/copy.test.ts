@@ -50,18 +50,6 @@ describe('organizedCopy', () => {
     expect(organizedCopy.count(1)).toBe('1 hackathon organized')
   })
 
-  it('words each kind of figure a band’s label can carry', () => {
-    expect(organizedCopy.people(90)).toBe('90 participants')
-    expect(organizedCopy.people(1)).toBe('1 participant')
-    expect(organizedCopy.aboutPeople(60)).toBe('about 60 participants')
-    expect(organizedCopy.teams(10)).toBe('10 teams')
-    expect(organizedCopy.teams(1)).toBe('1 team')
-    expect(organizedCopy.projects(16)).toBe('16 projects')
-    expect(organizedCopy.projects(1)).toBe('1 project')
-    expect(organizedCopy.usdPrizes('$6,180')).toBe('$6,180 prizes')
-    expect(organizedCopy.satsPrizes('17.542')).toBe('17.542M sats in prizes')
-  })
-
   it('invites whoever wants a hackathon of their own, in three short parts', () => {
     expect(organizedCopy.invitation).toEqual({
       question: 'Want to plan your own hackathon?',

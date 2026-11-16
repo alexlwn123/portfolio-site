@@ -148,7 +148,6 @@ export const copy = deepFreeze({
     },
     blank: 'save the date',
     notAnnounced: 'not announced',
-    nonMonetary: 'non-monetary prizes',
     coveredBy: (outlet: string) => `covered by ${outlet}`,
     roomForMore: 'room for more',
   },
